@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880px" height="440px" viewBox="0 0 880 440" role="img" aria-labelledby="title desc">
+  <title id="title">JAML app shell stylize wireframe</title>
+  <desc id="desc">Common app shell showing header, header nav, header toolbar, sidebar nav, main, and footer stylize roles.</desc>
+  <style>
+        text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; font-size: 16px; }
+        .title { font-size: 24px; font-weight: 700; }
+        .label { font-weight: 700; fill: #0f4f8a; }
+        .hint { font-size: 12px; fill: #6b7280; }
+        .frame { fill: #ffffff; stroke: #111827; stroke-width: 2; }
+        .area { fill: #f9fafb; stroke: #6b7280; stroke-width: 2; }
+        .role { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+        .soft { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 2; }
+    </style>
+  <rect x="19.396" y="19.966" width="840" height="397.56" rx="18" class="frame" style=""/>
+  <text x="41.396" y="51.966" class="label" style="white-space: pre; font-size: 16px;">app</text>
+  <rect x="49.396" y="69.966" width="780" height="72" rx="12" class="area"/>
+  <text x="71.396" y="111.966" class="label" style="white-space: pre; font-size: 16px;">header</text>
+  <rect x="175.396" y="87.966" width="238" height="36" rx="10" class="role"/>
+  <text x="195.396" y="110.966" class="label" style="white-space: pre; font-size: 16px;">nav</text>
+  <text x="239.396" y="110.966" class="hint" style="white-space: pre; font-size: 12px;">top-level routes/tabs</text>
+  <rect x="553.396" y="87.966" width="246" height="36" rx="10" class="role"/>
+  <text x="573.396" y="110.966" class="label" style="white-space: pre; font-size: 16px;">toolbar</text>
+  <text x="649.396" y="110.966" class="hint" style="white-space: pre; font-size: 12px;">search/filter/view/refresh</text>
+  <rect x="49.396" y="165.966" width="184" height="188" rx="12" class="area"/>
+  <text x="71.396" y="197.966" class="label" style="white-space: pre; font-size: 16px;">sidebar</text>
+  <rect x="73.396" y="219.966" width="136" height="100" rx="10" class="role"/>
+  <text x="93.396" y="253.966" class="label" style="white-space: pre; font-size: 16px;">nav</text>
+  <text x="93.396" y="279.966" class="hint" style="white-space: pre; font-size: 12px;">section routes</text>
+  <rect x="257.396" y="165.966" width="572" height="188" rx="12" class="area"/>
+  <text x="283.396" y="203.966" class="label" style="white-space: pre; font-size: 16px;">main</text>
+  <text x="341.396" y="203.966" class="hint" style="white-space: pre; font-size: 12px;">primary work area</text>
+  <rect x="283.396" y="233.966" width="226" height="80" rx="10" class="soft"/>
+  <rect x="529.396" y="233.966" width="270" height="80" rx="10" class="soft"/>
+  <rect x="49.396" y="369.966" width="780" height="32.227" rx="10" class="area" style=""/>
+  <text x="71.396" y="391.443" class="hint" style="white-space: pre; font-size: 12px;">footer</text>
+</svg>

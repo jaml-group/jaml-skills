@@ -1,0 +1,8 @@
+{
+  "name": "jaml",
+  "distribution": "@jam/skills",
+  "version": "0.1.0-dev.0",
+  "framework": {
+    "version": "1.6.0"
+  }
+}

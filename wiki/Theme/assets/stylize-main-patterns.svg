@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="890px" height="400px" role="img" aria-labelledby="title desc" viewBox="0 0 890 400">
+  <title id="title">JAML main area stylize wireframe</title>
+  <desc id="desc">Common main area patterns using tile, section, card, list, item, toolbar, and actions stylize roles.</desc>
+  <style>
+        text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; font-size: 16px; }
+        .title { font-size: 24px; font-weight: 700; }
+        .label { font-weight: 700; fill: #0f4f8a; }
+        .hint { font-size: 12px; fill: #6b7280; }
+        .area { fill: #f9fafb; stroke: #6b7280; stroke-width: 2; }
+        .role { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+        .soft { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 2; }
+    </style>
+  <rect x="21.45" y="27.793" width="840" height="350" rx="18" class="area"/>
+  <text x="49.45" y="65.793" class="label" style="white-space: pre; font-size: 16px;">main</text>
+  <rect x="49.45" y="91.793" width="784" height="44" rx="12" class="role"/>
+  <text x="73.45" y="119.793" class="label" style="white-space: pre; font-size: 16px;">toolbar</text>
+  <text x="153.45" y="119.793" class="hint" style="white-space: pre; font-size: 12px;">filter / sort / search / layout switch</text>
+  <rect x="49.45" y="165.793" width="234" height="191.977" rx="14" class="role" style=""/>
+  <text x="75.45" y="203.793" class="label" style="white-space: pre; font-size: 16px;">tile</text>
+  <text x="75.45" y="231.793" class="hint" style="white-space: pre; font-size: 12px;">dashboard/grid unit</text>
+  <rect x="179.45" y="217.793" width="78" height="48" rx="10" class="soft"/>
+  <text x="190.45" y="247.793" class="hint" style="white-space: pre; font-size: 12px;">section</text>
+  <rect x="323.45" y="165.793" width="234" height="191.977" rx="14" class="role" style=""/>
+  <text x="349.45" y="203.793" class="label" style="white-space: pre; font-size: 16px;">card</text>
+  <text x="349.45" y="231.793" class="hint" style="white-space: pre; font-size: 12px;">portable content object</text>
+  <rect x="349.45" y="251.793" width="180" height="26" rx="13" class="soft"/>
+  <text x="369.45" y="269.793" class="hint" style="white-space: pre; font-size: 12px;">actions if decisions exist</text>
+  <rect x="597.45" y="165.793" width="236" height="191.977" rx="14" class="role" style=""/>
+  <text x="623.45" y="203.793" class="label" style="white-space: pre; font-size: 16px;">list</text>
+  <rect x="627.45" y="227.793" width="178" height="22" rx="6" class="soft"/>
+  <text x="641.45" y="243.793" class="hint" style="white-space: pre; font-size: 12px;">item</text>
+  <rect x="627.45" y="259.793" width="178" height="22" rx="6" class="soft"/>
+</svg>

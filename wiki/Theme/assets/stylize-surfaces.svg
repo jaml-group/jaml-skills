@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880px" height="420px" viewBox="0 0 880 420" role="img" aria-labelledby="title desc">
+  <title id="title">JAML surface stylize wireframe</title>
+  <desc id="desc">Common panel, popup, and modal surface stylize roles.</desc>
+  <style>
+        text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; font-size: 16px; }
+        .title { font-size: 24px; font-weight: 700; }
+        .label { font-weight: 700; fill: #0f4f8a; }
+        .hint { font-size: 12px; fill: #6b7280; }
+        .frame { fill: #ffffff; stroke: #111827; stroke-width: 2; }
+        .area { fill: #f9fafb; stroke: #6b7280; stroke-width: 2; }
+        .role { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+        .soft { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 2; }
+        .overlay { fill: #111827; fill-opacity: 0.08; stroke: #6b7280; stroke-width: 2; stroke-dasharray: 8 6; }
+        .line { fill: none; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 6 5; }
+    </style>
+  <rect x="25.88" y="25.208" width="364" height="180" rx="16" class="role"/>
+  <text x="53.88" y="63.208" class="label" style="white-space: pre; font-size: 16px;">panel</text>
+  <text x="115.88" y="63.208" class="hint" style="white-space: pre; font-size: 12px;">auxiliary work surface</text>
+  <rect x="53.88" y="89.208" width="308" height="32" rx="8" class="soft"/>
+  <rect x="53.88" y="141.208" width="142" height="36" rx="8" class="soft"/>
+  <rect x="219.88" y="141.208" width="142" height="36" rx="8" class="soft"/>
+  <text x="53.88" y="193.208" class="hint" style="white-space: pre; font-size: 12px;">Can be side panel, inspector, drawer-like panel.</text>
+  <rect x="471.88" y="51.208" width="118" height="38" rx="19" class="soft"/>
+  <text x="499.88" y="75.208" class="hint" style="white-space: pre; font-size: 12px;">button</text>
+  <path d="M 589.88 70.208 C 621.88 70.208 631.88 115.208 663.88 115.208" class="line"/>
+  <rect x="663.88" y="79.208" width="190" height="98" rx="14" class="role"/>
+  <text x="689.88" y="119.208" class="label" style="white-space: pre; font-size: 16px;">popup</text>
+  <text x="689.88" y="147.208" class="hint" style="white-space: pre; font-size: 12px;">anchored transient surface</text>
+  <rect x="165.88" y="249.208" width="560" height="148" rx="16" class="overlay"/>
+  <text x="191.88" y="279.208" class="hint" style="white-space: pre; font-size: 12px;">overlay/backdrop behavior</text>
+  <rect x="291.88" y="303.208" width="308" height="72" rx="18" class="role"/>
+  <text x="319.88" y="347.208" class="label" style="white-space: pre; font-size: 16px;">modal</text>
+  <text x="387.88" y="347.208" class="hint" style="white-space: pre; font-size: 12px;">blocking dialog target/content</text>
+</svg>

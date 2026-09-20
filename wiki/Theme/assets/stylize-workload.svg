@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="890px" height="380px" viewBox="0 0 890 380" role="img" aria-labelledby="title desc">
+  <title id="title">JAML workload stylize wireframe</title>
+  <desc id="desc">Common form, group, field, actions, list, item, and toolbar stylize roles.</desc>
+  <style>
+        text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2937; font-size: 16px; }
+        .title { font-size: 24px; font-weight: 700; }
+        .label { font-weight: 700; fill: #0f4f8a; }
+        .hint { font-size: 12px; fill: #6b7280; }
+        .area { fill: #f9fafb; stroke: #6b7280; stroke-width: 2; }
+        .role { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+        .soft { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 2; }
+        .line { stroke: #9ca3af; stroke-width: 2; }
+    </style>
+  <rect x="25.447" y="23.823" width="390" height="242" rx="16" class="role"/>
+  <text x="53.447" y="61.823" class="label" style="white-space: pre; font-size: 16px;">form</text>
+  <rect x="61.447" y="89.823" width="320" height="38" rx="8" class="soft"/>
+  <text x="81.447" y="113.823" class="label" style="white-space: pre; font-size: 16px;">group</text>
+  <text x="143.447" y="113.823" class="hint" style="white-space: pre; font-size: 12px;">related controls and content</text>
+  <rect x="61.447" y="143.823" width="320" height="38" rx="8" class="soft"/>
+  <text x="81.447" y="167.823" class="label" style="white-space: pre; font-size: 16px;">field</text>
+  <text x="143.447" y="167.823" class="hint" style="white-space: pre; font-size: 12px;">one label + compound controls</text>
+  <rect x="161.447" y="205.823" width="220" height="38" rx="19" class="soft"/>
+  <text x="183.447" y="229.823" class="label" style="white-space: pre; font-size: 16px;">actions</text>
+  <text x="259.447" y="229.823" class="hint" style="white-space: pre; font-size: 12px;">Cancel / Save</text>
+  <rect x="475.447" y="23.823" width="390" height="335.471" rx="16" class="role" style=""/>
+  <text x="503.447" y="61.823" class="label" style="white-space: pre; font-size: 16px;">list</text>
+  <rect x="505.447" y="85.823" width="330" height="30.343" rx="6" class="soft" style=""/>
+  <text x="521.447" y="107.035" class="hint" style="white-space: pre; font-size: 12px;">item · element</text>
+  <rect x="505.447" y="131.338" width="330" height="30.343" rx="6" class="soft" style=""/>
+  <text x="521.447" y="151.037" class="hint" style="white-space: pre; font-size: 12px;">item · wrapper</text>
+  <rect x="25.447" y="305.823" width="390" height="54" rx="16" class="area"/>
+  <text x="53.447" y="339.823" class="label" style="white-space: pre; font-size: 16px;">toolbar</text>
+  <text x="133.447" y="339.823" class="hint" style="white-space: pre; font-size: 12px;">dense view and tool utilities</text>
+  <rect x="505.447" y="177.46" width="330" height="30.343" rx="6" class="soft" style="stroke-width: 2;"/>
+  <text x="521.447" y="197.159" class="hint" style="white-space: pre; font-size: 12px; stroke-width: 1;">item</text>
+  <rect x="505.447" y="222.877" width="330" height="30.343" rx="6" class="soft" style="stroke-width: 2;"/>
+  <text x="521.447" y="242.576" class="hint" style="white-space: pre; font-size: 12px; stroke-width: 1;">item</text>
+</svg>
