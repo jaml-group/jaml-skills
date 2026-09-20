@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -85,5 +85,18 @@ test('resource collection rejects directory and file links outside its boundary'
         rmSync(resolve(_source, 'leaked.txt'));
         symlinkSync(_temporary, resolve(_source, 'outside'));
         assert.throws(() => filesUnder(_source), /External resource link/);
+    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+});
+
+test('resource collection excludes cloud-sync staging files at every depth', () => {
+    const _temporary = mkdtempSync(resolve(tmpdir(), 'jam-skill-sync-junk-'));
+    try {
+        for (const directory of ['.tmp.driveupload', 'references/.tmp.driveupload']) {
+            mkdirSync(resolve(_temporary, directory), { recursive: true });
+            writeFileSync(resolve(_temporary, directory, 'pending'), 'temporary upload');
+        }
+        const _resource = resolve(_temporary, 'references/guide.md');
+        writeFileSync(_resource, '# Reference');
+        assert.deepEqual(filesUnder(_temporary), [_resource]);
     } finally { rmSync(_temporary, { recursive: true, force: true }); }
 });

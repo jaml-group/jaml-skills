@@ -4,9 +4,21 @@ Use current MCP schemas and the package README supplied by the server as the ope
 
 ## Skill verification
 
-At first MCP use in a conversation, follow the server's bundled-skill verification once and share the result between playground and copilot. `jaml-playground-mcp skill-info --json` locates the bundle.
+At first MCP use in a conversation, run `jaml-playground-mcp skill-info --json` and compare the installed skill's `version.json` → `framework.version` with the reported `framework.version`. Share this check between playground and copilot; recheck only in a new conversation or after a relevant package change. New MCP releases retain framework-baseline metadata and install the skill separately; older releases also report a bundled path. The result is an expected baseline, not a scan of the installed skill or a live latest-version query.
 
-The portable distribution records `distribution: "@jam/skills"`, its independent `version` and the compatible framework version. Legacy skills used the runtime version as their skill version. For legacy metadata, compare its old framework version with the bundled framework baseline first and retain a newer legacy copy. Otherwise migrate to the distribution scheme before comparing independent distribution versions; keep a newer copy from the same scheme and preserve installed `LEARNED.md`. Follow the server's reload instructions after installation. Recheck only in a new conversation or after a relevant package change.
+Matching nonempty framework baselines pass. Independent skill release versions such as `0.1.0-dev.0` are informational: a different or missing skill release version must not trigger an update when `framework.version` matches. Keep that installed skill unchanged.
+
+Differing or missing framework baselines are compatibility questions. Report both values for review; do not infer compatibility from a newer skill release or framework version. Legacy metadata without `framework.version` also needs review; neither the independent `version` nor the distribution identifies a replacement baseline. Resolve the compatibility question before choosing an update.
+
+When authorized setup requires an absent skill, install from the public source:
+
+```sh
+npx skills add jaml-group/jaml-skills --skill jaml
+```
+
+MCP releases with `install-skill` expose the same installer as `jaml-playground-mcp install-skill`. Choose the agent and project/global scope explicitly; for example, `--agent codex --global` installs for Codex across projects. Omit `--global` for project scope. Installation does not configure the MCP server.
+
+Before updating, preserve local edits and installed `LEARNED.md`; the external installer does not merge them. Keep repository symlinks and update their owning checkout through its own workflow instead of overwriting them. After installation, restore preserved corrections where applicable and reread `framework.version` and compare it with the expected framework baseline. Report the result and reload the skill through the client, requesting a restart/reload only if needed. A successful installer exit alone does not prove compatibility. MCP startup and tool calls do not install or update skills automatically.
 
 ## Live playground
 

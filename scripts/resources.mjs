@@ -15,7 +15,7 @@ export function filesUnder(root, boundary = root) {
         if (ancestors.has(_real)) { throw new Error('Recursive resource link: ' + directory); }
         const _next = new Set([...ancestors, _real]);
         for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-            if (['.git', '.DS_Store', 'node_modules', 'dist'].includes(entry.name)) { continue; }
+            if (['.git', '.DS_Store', '.tmp.driveupload', 'node_modules', 'dist'].includes(entry.name)) { continue; }
             const _path = resolve(directory, entry.name);
             if (entry.isDirectory() || entry.isSymbolicLink() && lstatSync(realpathSync(_path)).isDirectory()) { visit(_path, _next); }
             else { assertContained(_path); _files.push(_path); }
