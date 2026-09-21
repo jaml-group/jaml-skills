@@ -393,6 +393,69 @@ Bind or remove a global key combination for one element. Combinations use `+`, s
 
 Bind or remove a character sequence such as `'edit'`. Progress resets when focus leaves `document.body`; omitting `sequence` removes every sequence owned by the element.
 
+### Checked-state and group helpers
+
+Prefer an existing [option element](./JAM-UI/options.md) with `data`, or its documented custom-child usages, when it owns the selection. Use these `jam.*` helpers for controls whose application code owns grouping. They return option objects or checked state; they do not assign an enclosing option element's value or your model state for you.
+
+> **Development compatibility:** `updateCheckedState`, `updateSiblingsCheckedState`, switch-aware `toggleCheck`, and the switch click behavior used below require the updated runtime. Older 1.6.0 bundles can lack these functions or have different group semantics. Verify the consuming runtime; matching package version text alone does not establish support for these development changes.
+
+Membership uses an explicit `HTMLElement[]` or `NodeListOf<HTMLElement>` when provided. Otherwise, group helpers query document-wide `[group="..."]` members using the target's `group` attribute; `checkAll` uses the controller's `check-all` attribute. Keep group names unique per group instance, or pass a scoped list. Include the target in the list when it should appear in the returned selection. These helpers read each member's `element.option`; declare it through [`props.option`](./JAML/jaml-format.md#props) with a non-conflicting element member. Missing option data is not synthesized or filtered out.
+
+| API | Result and behavior |
+|---|---|
+| `jam.updateCheckedState(el, checked?, indeterminate?)` | Returns the new checked boolean. Omitting `checked` toggles `jam-checked`; an explicit boolean sets it. Updates `jam-indeterminate` and a JAM element's state when `autoState` is enabled. This is the low-level visual/state operation; it does not update a switch's boolean value. |
+| `jam.toggleCheck(el, checked?, indeterminate?)` | Returns the new checked boolean. For `JAM-SWITCH`, delegates to `toggle(checked)` and carries the indeterminate flag so value and checked state stay synchronized. For other elements, uses `updateCheckedState`. |
+| `jam.check(target, type = 'checkbox', siblings?)` | Changes the target first, then reconciles siblings and returns all selected option objects. Checkbox mode toggles; radio mode selects an ordinary element but toggles a switch, allowing cancellation. |
+| `jam.updateSiblingsCheckedState(target, type = 'checkbox', siblings?)` | Reads the target's **already updated** checked class without toggling it. In radio mode, a checked target clears checked siblings; an unchecked target does not force a selection. Returns all checked members' option objects. With no list or group, membership defaults to the target alone. |
+| `jam.checkAll(target, siblings?)` | Toggles the check-all controller, applies its new state to every member, and returns the selected option objects. If no explicit list is supplied, resolves members from the controller's `check-all` attribute. |
+| `jam.toggleAll(target, siblings?)` | Inverts each member individually and returns the resulting selected option objects. This is inversion, not “select every member.” Resolves members from the target's `group` when no explicit list is supplied. |
+| `jam.getOptions(groupOrSiblings, checkedOnly = false)` | Reads option objects from a group-name string or an explicit array/NodeList. With `true`, includes only members with `jam-checked`. Does not change state. |
+| `jam.getDomsByGroup(group, checkedOnly = false)` | Returns an `HTMLElement[]` for the document-wide group, optionally restricted to checked members. Does not change state. |
+
+For checkbox reconciliation, `updateSiblingsCheckedState` also updates the matching `[check-all="..."]` controller: all members selected means checked, a nonempty partial selection means indeterminate, and none means unchecked. `check` inherits this behavior; `toggleAll` also updates the aggregate. The explicit list controls which members count, while the check-all controller is still located by the group attribute.
+
+#### Cancelable switch group
+
+This complete example targets the updated runtime described above. Clicking **Fixed**, then **Ignore**, then **Ignore** again produces `fixed`, `ignore`, then `null`. For repeated instances, give each group its own name or derive a scoped list from the instance owner.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    vars: {
+        disposition: null,
+        choices: [
+            { value: 'fixed', name: 'Fixed' },
+            { value: 'ignore', name: 'Ignore' }
+        ]
+    },
+    components: [
+        {
+            type: 'switch-button',
+            buildFor: 'choice in choices',
+            key: 'value',
+            cap: '{{choice.name}}',
+            autoState: true,
+            attrs: { group: 'wiki-review-disposition' },
+            props: { option: '{{choice}}' },
+            onclick(event) {
+                event.preventDefault();
+                jam.toggleCheck(this);
+                const _siblings = this.parentElement.querySelectorAll(
+                    'jam-switch[group="wiki-review-disposition"]'
+                );
+                const _selected = jam.updateSiblingsCheckedState(this, 'radio', _siblings);
+                this.vars.disposition = _selected[0]?.value ?? null;
+            }
+        },
+        { type: 'indicator', cap: 'Disposition', value: "{{disposition || 'None'}}" }
+    ]
+};
+```
+
+The declared click hook runs before the switch's built-in click handler. `preventDefault()` suppresses that handler's toggle; `toggleCheck` performs the single intended update, then `updateSiblingsCheckedState(..., 'radio', ...)` reconciles the already updated target. Using `check` after this toggle would toggle the switch again. Do not combine this click owner with `usage: 'option'` on the same control.
+
+A switch's `onvaluechange` hook runs before its checked class is synchronized. Clearing a sibling can also fire that sibling's value-change callbacks. The example keeps group reconciliation in the click hook, so these notifications do not recursively run the group operation. If your application also changes these controls from bindings, shortcuts or other programmatic paths, route those changes through an equally explicit state/group owner; this click recipe does not observe every external value write.
+
 ### `jam.basicallyStable(el)`
 
 Returns a Promise that resolves when the element and its children are stable (options loaded, containers settled).

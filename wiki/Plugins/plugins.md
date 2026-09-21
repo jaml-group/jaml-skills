@@ -12,6 +12,7 @@ Plugins attach behavior to an element through `plug(el)` and release their owned
 | Hover depth or pointer-following treatment | [`hover.parallax`](./parallax.md), [`auto.moveAlong`](./move.md) | Select the style's documented args; an engine option is not automatically a style option |
 | Limit visible scroll rows | [`interact.virtualScroll`](../Styles/interact.md#interactvirtualscroll) | Read the row sizing and scrolling contract before choosing a strategy |
 | Tooltip or contextual help | [`popup.tip` / `popup.helper`](./popup.md) in `plugins` | Delegate within the containing region; check existing app-level installation before adding another |
+| React to caption or other slot assignment changes | [Named-slot lifecycle](../JAM-UI/JAM-UI.md#named-slot-lifecycle) | Use the existing event and an initial read; check firing limits before introducing DOM observation |
 | Observe child or visibility changes | [`observe.child` / `observe.intersection`](./observe.md) | Use when application logic needs observations rather than a visual treatment |
 | Navigate route outlets | [`router` / `subRouter`](./router-plugins.md) | Router lifecycle owns route resources and nested outlets |
 | Drag data between destinations | [`interact.draggable` / `interact.droppable`](./interact-plugins.md) in `plugins` | Distinct from moving the element's on-screen position |

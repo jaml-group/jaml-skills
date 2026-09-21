@@ -6,6 +6,7 @@ Inspect:
 
 - Element types, inheritance, parameters, control keys, argument forms and render contracts.
 - Bindings, instance state, updates, localization, lifecycle and event ownership.
+- Custom-property plumbing: prefer [automatic `props` bridges](../references/JAML/jaml-format.md#props) over build hooks that only attach data/descriptors; check member collisions, post-`onafterbuild` timing, and the distinction between fresh reads and reactive notifications.
 - Native capability fit, justified adapters and reusable extensions.
 - Application role/token consumption, scoped CSS, shared style registration and business-color handling.
 - Theme definitions only when that domain is part of the task.

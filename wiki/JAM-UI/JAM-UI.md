@@ -237,9 +237,65 @@ export default {
 
 ---
 
+### Named-slot lifecycle
+
+Every named slot present in an element's template at initialization exposes a `[name]slotchange` event and an `on[name]slotchange` hook. For example, `cap` provides `capslotchange` / `oncapslotchange`; the same rule applies to `icon`, `label`, `value`, `unit` and other slots actually present on that element. This works independently of `observeChild`.
+
+| Surface | Runtime signature / payload | Receiver |
+|---|---|---|
+| `on[name]slotchange` | `(slot: HTMLSlotElement, assigned: Node[]) => void` | `this` is the element; arguments are not an event |
+| `[name]slotchange` | `CustomEvent<{ slot: HTMLSlotElement, assigned: Node[] }>` | Dispatched on the element; read `event.detail` |
+| `slotChangedCallback` | `(slotName: string, slot: HTMLSlotElement, assigned: Node[]) => void` | Element subclass callback; preserve inherited behavior when overriding |
+
+On receipt of native `slotchange`, the element reads `slot.assignedNodes({ flatten: true })`, updates the slot's `empty` class, calls `slotChangedCallback`, invokes the named hook, then dispatches the named event. `assigned` is a snapshot array of nodes, including text nodes and flattened fallback content where applicable; it is not a `NodeListOf<Element>` or a list of only direct children. A throwing callback/hook interrupts the remaining steps; returning `false` does not cancel delivery.
+
+#### Listening and delegation
+
+Prefer JAML `on: { capslotchange(event) { ... } }` or `el.on('capslotchange', handler)` for independent subscriptions. Direct hook assignment uses `el.oncapslotchange = function (slot, assigned) { ... }`. The dispatcher looks up the hook dynamically, but a top-level JAML hook param is accepted only when the element exposes that property; use the event form for template-only names such as `label`. In the current runtime, slot-property hooks such as `oncapslotchange` can share their assigned callback across instances, so event listeners are the reliable choice for per-instance behavior.
+
+The named host event has `bubbles: false`, `composed: false` and `cancelable: false`. An ordinary ancestor listener or ancestor `on` map will not receive a descendant's event. Delegation within the same DOM tree uses `root.addEventListener('capslotchange', handler, { capture: true })`; identify the emitting host with `event.target`, and the relevant slot with `event.detail.slot`. It does not cross an enclosing shadow boundary. Remove the listener with the same capture setting when its owner is released.
+
+Native `slotchange` does bubble inside the shadow tree. Nested template slots can therefore notify an outer slot too: for an input, a `capslotchange` may be accompanied by `labelslotchange`. Each payload describes the slot whose listener handled the notification. Do not assume one host event per application update.
+
+#### Initialization and firing limits
+
+- Slots and their listeners are prepared on first connection, before `init` / `oninit` and `mount` / `onmount`. There is no unconditional initial named event or replay for a late subscriber. Read current state when attaching behavior, and use mount/render lifecycle when the behavior depends on attachment or completed child rendering.
+- Native notifications are asynchronous and can coalesce. Adding, removing, replacing or reassigning slotted nodes can notify; changing a descendant's text or attributes without changing assignment does not. JAM-UI can update an existing caption text node in place, so setting `cap` is not a guarantee of `capslotchange`. See the [DOM slot notification contract](https://dom.spec.whatwg.org/#signaling-slot-change).
+- A slot added after template initialization does not automatically receive this bridge. In particular, dynamically created `layer` / `extra` slots are not guaranteed to emit their own named host event.
+- A `value` property does not imply a `value` slot. Text inputs write their internal control, so use `valuechange` / `onvaluechange` for value changes; `valueslotchange` describes slot assignment only where a value slot exists.
+
+#### Reuse before observing DOM
+
+For caption or other slot assignment changes, use these events plus an initial read. For model-driven text updates, synchronize from the existing binding/watcher or value event that owns the change. Add a `MutationObserver` only for a demonstrated requirement those contracts do not cover, such as arbitrary external descendant mutations, and give it explicit cleanup. A plugin subscribes and reads current state when plugged, then removes its listeners when unplugged; see [plugin lifecycle](../Plugins/plugins.md#lifecycle-and-ownership).
+
+This example marks whether the input has caption text on mount and whenever caption assignment changes. In-place caption text updates need synchronization from their data owner as described above.
+
+```javascript jaml-playground
+function syncCaptionState(element, assigned) {
+  const _hasCaption = assigned.some(node => (node.textContent ?? '').trim() !== '');
+  element.toggleAttribute('data-has-caption', _hasCaption);
+}
+
+export default {
+  type: 'input',
+  cap: 'Account',
+  onmount() {
+    syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
+  },
+  on: {
+    capslotchange(event) {
+      const { assigned } = event.detail;
+      syncCaptionState(this, assigned);
+    }
+  }
+};
+```
+
+---
+
 ### Lifecycle hooks
 
-All hooks can be passed as JAML params or set directly on the element instance. Inside all element hooks, `this` = **element**.
+The hooks listed below can be passed as JAML params or set directly on the element instance. Inside all element hooks, `this` = **element**. For slot hooks, including their parameter and subscription limits, see [Named-slot lifecycle](#named-slot-lifecycle).
 
 | Hook | Signature | When |
 |---|---|---|
@@ -315,6 +371,7 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 | `defaultValue` | `any` | Initial value to reset to. Accepts a factory function `() => value`. |
 | `clearable` | `boolean` | Whether `clear()` and the clearable plugin can reset the value. Default `true`. |
 | `onvaluechange` | `(value, oldValue) => void` | Hook fired when value changes. `this` = element. |
+| `onvalueslotchange` | `(slot: HTMLSlotElement, assigned: Node[]) => void` | [Slot hook](#named-slot-lifecycle), only when a value slot is present. Some type declarations say `NodeListOf<Element>`; the runtime argument is `Node[]`. |
 
 ```json jaml-playground
 {

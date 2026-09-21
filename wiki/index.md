@@ -7,7 +7,7 @@ Start here when writing, explaining, or diagnosing JAML. These documents are sha
 | Concept | What it owns | Read when |
 |---|---|---|
 | JAML component | A declarative tree, model, bindings, conditions, and lifecycle | [JAML Format](./JAML/jaml-format.md) for structure; [Binders](./JAML/binder.md) for state; [Component API](./JAML/component.md) for JavaScript builders |
-| Element `type` | The concrete control, inherited parameters, slots, and events | [Element catalog](./JAM-UI/JAM-UI.md), then the selected element page |
+| Element `type` | The concrete control, inherited parameters, slots, and events | [Element catalog](./JAM-UI/JAM-UI.md), then the selected element page; [named-slot lifecycle](./JAM-UI/JAM-UI.md#named-slot-lifecycle) for slot updates |
 | `stylize` and `variant` | Semantic presentation responsibility and an alternate theme recipe | [Roles](./Theme/stylize.md), including nearby role choices and parent context |
 | Singular `style` | Local CSS declarations, with supported token shorthands | [CSS](./Styles/common/css.md) |
 | Plural `styles` | Ordered, removable styles and the behavior they attach | [Styles](./Styles/styles.md) and the selected style page |

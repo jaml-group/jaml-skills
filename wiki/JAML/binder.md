@@ -2,7 +2,26 @@
 
 [toc]
 
-A **binder** is a reactive subscription — whenever a referenced key in `vars` or a remote broker changes, the param is re-evaluated and re-applied. The **messenger** (broker) system connects models, components, and watchers into a shared reactive data bus.
+A **binder** describes data dependencies and how to calculate a value. Applying one to a supported element parameter or component control key creates a reactive subscription through the **messenger** (broker) system. Reading a binder through [`props`](./jaml-format.md#props) instead resolves its current value on demand; that getter does not itself create a subscription.
+
+---
+
+## Binding lifecycle
+
+For a newly built, non-virtual component:
+
+1. **Prepare.** JAML separates literal parameters from bindings, resolves prop aliases to their underlying data keys, and prepares watchers. A compiled binder contains dependency keys and an evaluation function; compilation alone does not subscribe.
+2. **Build.** `onbeforebuild` runs, the element is created, and component accessors such as `props` and `vars` are installed. `onafterbuild` runs at this point, before parameter application and the remaining build tasks. Use `this.props.key` here; the direct `this.element.key` shortcut for custom props may not exist yet.
+3. **Activate.** Parameters are applied and build tasks install the non-conflicting custom-property bridges, then activate the prepared watchers. Generated parameter bindings normally request synchronous initialization from available data. User-declared watchers default to `init: false`. Initial evaluation can therefore happen before mounting, but a setter may defer its visible effect until the element initializes.
+4. **Render.** JAML renders children and runs `onbeforerender` before requested insertion. Connection initializes the element and invokes `oninit` and `onmount`. Under normal asynchronous scheduling, `onafterrender` is queued; it completes only if the render finished and is still current. Destruction, a newer render or element replacement invalidates the older completion. In synchronous runtime mode it runs after that component's own render/attachment step, possibly into a parent that is still detached. Neither mode makes it a barrier for promise-valued bindings, debounced updates, remote data or deferred children.
+5. **Update.** Publications to subscribed keys re-evaluate bound parameters. Watcher callbacks may be debounced; do not assume that writing state immediately updates every element. Prop getters resolve when read, and assigning a literal prop does not publish a change. Reading a prop in arbitrary JavaScript does not register a reactive dependency.
+6. **Dispose.** Destroying a component unsubscribes its watchers and disposes its children. Queued watcher callbacks check whether the subscription is still active. Promise-valued parameter applications also check that their target/update is still current before applying a result; this ignores obsolete results rather than cancelling the promise.
+
+> **Development compatibility:** The render-completion guards and option-readiness handling described here require the updated runtime. Older 1.6.0 bundles may not contain these fixes; verify the runtime used by the consuming application.
+
+For incoming option-value messages, the runtime waits for option readiness and then checks whether the update still belongs to the current element/component. A newer message supersedes an older pending message; destruction or element replacement invalidates it. Current readiness/application failures are reported, while obsolete failures are ignored. Ordinary input messages still apply synchronously. This protects message-driven updates; it does not make every direct element write a superseding message.
+
+The component hooks use component/model access; element hooks and watcher callbacks use the element. See [hook contexts](./jaml-format.md#this-context-reference) and [props read/write behavior](./jaml-format.md#props). A native input's single-key `value` binding also wires the reverse publication path; a computed prop or expression is not automatically two-way.
 
 ---
 
@@ -259,7 +278,7 @@ export default {
 | `key`      | `string`                       | Reactive key to watch. Supports `key@broker` syntax                               |
 | `keys`     | `string[]`                     | Watch multiple keys; callback receives values in same order                       |
 | `callback` | `Function`                     | Called with `(value, data)` on change                                             |
-| `init`     | `boolean \| 'sync' \| 'manual'` | Fire immediately if value already exists; `sync` for sync fire; `manual` skips initial fire but still subscribes |
+| `init`     | `boolean \| 'sync' \| 'manual'` | Default `false`; `true` schedules an initial callback for available data, `'sync'` runs it synchronously, and `'manual'` skips it while still subscribing |
 | `once`     | `boolean`                      | Unsubscribe after first call                                                      |
 | `debounce` | `number`                       | Debounce delay in ms                                                              |
 
@@ -291,7 +310,7 @@ Shorthand watchers that automatically set the element's `value`, `state`, or `da
 
 ## Binder syntax
 
-Any string value in a JAML object that contains `{{key}}` is automatically evaluated as a reactive binder — whenever a referenced key changes, the param is re-evaluated and re-applied. This applies to all element params and control keys that accept binder values (e.g. `showIf`, `buildIf`).
+Supported element parameters and component control keys (such as `showIf` and `buildIf`) accept the binder forms below. Their subscriptions re-evaluate and re-apply the parameter when referenced keys publish changes. The same syntax in `props` follows its [read-time resolution contract](./jaml-format.md#props); arbitrary strings and object fields are not universally reactive.
 
 ---
 
@@ -746,9 +765,11 @@ value: '{{ user.name.toUpperCase() }}'
 value: '{{user.name}}'
 ```
 
-### `init: 'sync'` skips replay from persistent brokers
+### Watcher initialization and replay
 
-When a watcher has `init: 'sync'` and the key exists at subscription time, the callback fires immediately. After that first fire, any subsequent `State.initial` events (e.g. from `milo` replaying stored data on page load) are **skipped**. This prevents double-firing when using persistent brokers. Use `init: true` (the default) if you want the watcher to react to every value including replayed initial state.
+User-declared watchers default to `init: false`; generated parameter bindings normally use `init: 'sync'`. With available data, `'sync'` evaluates immediately during watcher activation, while `true` schedules the initial callback using the watcher's debounce path. Missing data can postpone the initial application.
+
+Initialization tracks which keys already have model data and can suppress later `State.initial` replay for those keys. `init: true` can also suppress such replay; it is not a promise to receive every initial event. Choose initialization for the callback timing you need, not as a replay-all setting.
 
 ### `valueKey` with `@scope` searches the DOM
 
@@ -756,7 +777,7 @@ When `valueKey` uses `@scope`, the system walks up the DOM tree to find the near
 
 ### Compound binder re-evaluates atomically
 
-When any leaf key in a compound binder object changes, the **entire** top-level object is rebuilt with fresh values. This means all sibling leaf values are recalculated together, not just the one that changed. For expensive computations, consider splitting into separate binders.
+For a subscribed parameter, when a leaf dependency publishes a change, the **entire** compound binder object is rebuilt with fresh values. For a compound binder in `props`, rebuilding happens when the property is read. This means all sibling leaf values are recalculated together, not just the one that changed. For expensive computations, consider splitting into separate binders.
 
 ### Template literal binders
 
@@ -834,5 +855,5 @@ Easy access of the element's properties:
 | `this.model` | Root Model   | Always the root `Model` instance               |
 | `this.ref`   | Ref map      | Shortcut to component's `ref` map              |
 | `this.vars`  | Vars proxy   | Shortcut to `this.model.vars`                  |
-| `this.props` | Props object | The static `props` constants of this component |
+| `this.props` | Props access | Resolves literals, aliases and binders; see [props and automatic element properties](./jaml-format.md#props) |
 | `this.shared`| Shared proxy | Upward-looking proxy for nearest `share: true` ancestor |

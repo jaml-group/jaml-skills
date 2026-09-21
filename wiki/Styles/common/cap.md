@@ -22,7 +22,7 @@ Common styles nested under `cap` target the element's `cap` slot. For example, `
 
 ### `cap.asAttr`
 
-Mirrors the current caption to the host's `cap` HTML attribute whenever the `capslotchange` event fires.
+Mirrors the current caption to the host's `cap` HTML attribute whenever the `capslotchange` event fires. This uses the general [named-slot lifecycle](../../JAM-UI/JAM-UI.md#named-slot-lifecycle), including its initialization and firing limits; an in-place caption text update may not refresh this attribute.
 
 ```json jaml-playground
 [

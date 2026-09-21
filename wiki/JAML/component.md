@@ -346,7 +346,7 @@ export default {
 
 Inside `userCard`, `{{name}}` behaves identically to `{{data.username}}` in the outer scope. The CC stays completely decoupled from the outer `vars` shape.
 
-> Props with primitive values (`{ foo: 1 }`) are static constants. Props with binder-string values (`{ foo: '{{key}}' }`) create a live alias that forwards reactivity to the named key. The alias target cannot be reassigned after build, but setting the prop value writes through to the aliased `vars` key.
+> Props with literal primitive values (`{ foo: 1 }`) are writable local values that do not publish reactive updates by themselves. A single-key binder (`{ foo: '{{key}}' }`) creates an alias: setting the exposed prop writes to the target key rather than changing the alias declaration. See [props](./jaml-format.md#props) for automatic element-property binding, expression/object reads and lifecycle timing.
 
 ### CC state ownership
 
@@ -354,7 +354,7 @@ A CC should not define its own `vars` or refer to the caller's future `vars` nam
 
 Use `props` for the CC's public inputs and local state handles:
 
-- Static constants: `props: { step: 2 }`
+- Literal configuration: `props: { step: 2 }`
 - Reactive aliases: `props: { count: '{{firstCount}}' }`
 
 When nested children need to read or write the CC root props, set `share: true` on the CC root and use `this.shared` from child hooks. This keeps event handlers pointed at the CC contract instead of the root model's `vars`.
