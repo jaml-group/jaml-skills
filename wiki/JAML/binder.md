@@ -13,7 +13,7 @@ For a newly built, non-virtual component:
 1. **Prepare.** JAML separates literal parameters from bindings, resolves prop aliases to their underlying data keys, and prepares watchers. A compiled binder contains dependency keys and an evaluation function; compilation alone does not subscribe.
 2. **Build.** `onbeforebuild` runs, the element is created, and component accessors such as `props` and `vars` are installed. `onafterbuild` runs at this point, before parameter application and the remaining build tasks. Use `this.props.key` here; the direct `this.element.key` shortcut for custom props may not exist yet.
 3. **Activate.** Parameters are applied and build tasks install the non-conflicting custom-property bridges, then activate the prepared watchers. Generated parameter bindings normally request synchronous initialization from available data. User-declared watchers default to `init: false`. Initial evaluation can therefore happen before mounting, but a setter may defer its visible effect until the element initializes.
-4. **Render.** JAML renders children and runs `onbeforerender` before requested insertion. Connection initializes the element and invokes `oninit` and `onmount`. Under normal asynchronous scheduling, `onafterrender` is queued; it completes only if the render finished and is still current. Destruction, a newer render or element replacement invalidates the older completion. In synchronous runtime mode it runs after that component's own render/attachment step, possibly into a parent that is still detached. Neither mode makes it a barrier for promise-valued bindings, debounced updates, remote data or deferred children.
+4. **Render.** JAML renders children and runs `onbeforerender` before requested insertion. Connection initializes the element and invokes `oninit` and `onmount`. Under normal asynchronous scheduling, `onafterrender` is queued; it completes only if the render finished and is still current. Destruction, a newer render or element replacement invalidates the older completion. In synchronous runtime mode it runs after that component's own render/attachment step, possibly into a parent that is still detached. Neither mode makes it a barrier for promise-valued bindings, debounced updates, remote data, deferred children, browser layout/paint or animation completion. A completed render can still be hidden, detached or have zero geometry. [`jam.basicallyStable`](../utils.md#jambasicallystableel) is a separate helper with limited waits, not a universal readiness barrier.
 5. **Update.** Publications to subscribed keys re-evaluate bound parameters. Watcher callbacks may be debounced; do not assume that writing state immediately updates every element. Prop getters resolve when read, and assigning a literal prop does not publish a change. Reading a prop in arbitrary JavaScript does not register a reactive dependency.
 6. **Dispose.** Destroying a component unsubscribes its watchers and disposes its children. Queued watcher callbacks check whether the subscription is still active. Promise-valued parameter applications also check that their target/update is still current before applying a result; this ignores obsolete results rather than cancelling the promise.
 
@@ -273,14 +273,14 @@ export default {
 
 **Watcher fields:**
 
-| Field      | Type                           | Description                                                                       |
-| ---------- | ------------------------------ | --------------------------------------------------------------------------------- |
-| `key`      | `string`                       | Reactive key to watch. Supports `key@broker` syntax                               |
-| `keys`     | `string[]`                     | Watch multiple keys; callback receives values in same order                       |
-| `callback` | `Function`                     | Called with `(value, data)` on change                                             |
+| Field      | Type                            | Description                                                                                                                                               |
+| ---------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`      | `string`                        | Reactive key to watch. Supports `key@broker` syntax                                                                                                       |
+| `keys`     | `string[]`                      | Watch multiple keys; callback receives values in same order                                                                                               |
+| `callback` | `Function`                      | Called with `(value, data)` on change                                                                                                                     |
 | `init`     | `boolean \| 'sync' \| 'manual'` | Default `false`; `true` schedules an initial callback for available data, `'sync'` runs it synchronously, and `'manual'` skips it while still subscribing |
-| `once`     | `boolean`                      | Unsubscribe after first call                                                      |
-| `debounce` | `number`                       | Debounce delay in ms                                                              |
+| `once`     | `boolean`                       | Unsubscribe after first call                                                                                                                              |
+| `debounce` | `number`                        | Debounce delay in ms                                                                                                                                      |
 
 ---
 
@@ -305,6 +305,32 @@ Shorthand watchers that automatically set the element's `value`, `state`, or `da
     "dataWatcher": "optionList"
 }
 ```
+
+---
+
+## Runtime data and authored definitions
+
+JAML definitions are trusted application code. Authored `vars` initializers, parameter bindings and props can deliberately interpret binder syntax; nested objects and arrays in an initializer can contain bindings too. Do not paste an external record into those authored positions and assume every string stays literal.
+
+Use per-key writes to `model.vars`, `Object.assign(model.vars, record)`, or the existing model data/broker path for runtime data. Binder-looking strings stay data and update existing authored bindings without a second binder compilation. Writing through an existing authored prop alias also reaches that data path; assigning a new unaliased prop is still editing a declaration. Whole `model.vars = {...}` assignment is not a dictionary-replacement API.
+
+To populate external data before first render, construct the model, write through its vars proxy, then render. This imperative example assumes a connected `#app` host and an initialized Jam-UI runtime:
+
+```javascript
+const model = new jam.Model({
+    type: 'container',
+    components: [
+        { type: 'input', value: '{{report.title}}' },
+        { type: 'label', cap: jaml.var('report.title', (text) => document.createTextNode(String(text ?? ''))) }
+    ]
+});
+model.vars.report = { title: '<b>External {{text}}</b>' };
+model.render(document.querySelector('#app'));
+```
+
+Data interpretation and display interpretation are separate. An input value is text, while a caption string may be interpreted as HTML. For literal caption content, return a `Text` node or an Element populated through `textContent`; see [slot content and literal text](../JAM-UI/JAM-UI.md#slot-content-and-literal-text) for runtime compatibility. `noBinder` and `jaml.pre()` do not sanitize HTML.
+
+An async authored binding ignores obsolete results under its [lifecycle contract](#binding-lifecycle). Independent request callbacks that later assign `model.vars.key` still use arrival order; the application owns request cancellation or version checks.
 
 ---
 
@@ -443,8 +469,8 @@ export default {
 
 **Constraints:**
 
-- Only **top-level** keys in `vars` are detected as reactive dependencies. Dot-paths inside the expression (e.g. `foo.bar`) are not individually tracked — `foo` is subscribed and you access `.bar` inside the expression.
-- Identifier names inside the expression that collide with a top-level key will be treated as that var's value. Avoid using variable names, object literals, or function names that match your top-level keys.
+-   Only **top-level** keys in `vars` are detected as reactive dependencies. Dot-paths inside the expression (e.g. `foo.bar`) are not individually tracked — `foo` is subscribed and you access `.bar` inside the expression.
+-   Identifier names inside the expression that collide with a top-level key will be treated as that var's value. Avoid using variable names, object literals, or function names that match your top-level keys.
 
 ---
 
@@ -666,7 +692,7 @@ export default jaml.wrapper(
 
 ### String template fallback (not recommended)
 
-If a string mixes literal text with `{{key}}` placeholders — e.g. `'abc{{foo}}def'` — the parser cannot evaluate it as a plain JS expression and falls back to resolving it as a template literal: `` '`abc${{{foo}}}def`' ``.
+If a string mixes literal text with `{{key}}` placeholders — e.g. `'abc{{foo}}def'` — the parser cannot evaluate it as a plain JS expression and falls back to resolving it as a template literal: ``'`abc${{{foo}}}def`'``.
 
 ```javascript jaml-playground
 export default {
@@ -689,7 +715,7 @@ This works, but it is easy to write by accident and the fallback behaviour can b
 
 ### `jaml.pre()` — preserve a value from binding
 
-If a string value legitimately contains `{{` and `}}` characters and must **not** be treated as a binder, wrap it with `jaml.pre()`. The parser skips binder detection for preserved values and passes them through as-is.
+For an ordinary element parameter that must retain `{{` and `}}` literally, wrap its value with `jaml.pre()`. The parameter resolver unwraps that preserve marker without inspecting the payload for binder syntax.
 
 ```typescript signature
 jaml.pre(value: any): () => value
@@ -710,7 +736,7 @@ export default {
 };
 ```
 
-`jaml.pre()` works with any value type — objects, arrays, numbers — not just strings. Any value wrapped in it is preserved verbatim and never inspected for binder syntax.
+`jaml.pre()` accepts objects, arrays and numbers as well as strings; one outer wrapper preserves nested parameter data. It is not a universal data container: `vars: { report: jaml.pre(raw) }` currently stores the wrapper function instead of exposing `raw` as a reactive data branch. Use [runtime vars writes](#runtime-data-and-authored-definitions) for initial and later external data. Preservation prevents binder interpretation, not a later setter's intentional HTML processing.
 
 ---
 
@@ -718,7 +744,11 @@ export default {
 
 **Type:** `boolean`
 
-Disable binder evaluation (`{{key}}`) for this component and its descendants. All strings containing `{{` and `}}` will be treated as literal text.
+Disable binder interpretation in this component subtree. The updated development runtime carries the boundary through deep and later-created descendants, nested models and generated loop children; descendant `noBinder: false` cannot reopen it. Prop reads and writes keep implicit aliases and computed declarations literal within the boundary. Reading an inherited declaration outside that boundary retains its normal binding behavior.
+
+This does not disable trusted callbacks, methods, explicit loop structure or other parameter processing. Literal binder syntax may still reach an HTML-capable setter. `noBinder` is neither HTML sanitization nor an executable-code sandbox.
+
+> **Development compatibility:** Older 1.6.0 bundles may apply `noBinder` only locally or at the root and may still interpret implicit prop aliases. Verify the consuming runtime before relying on inherited subtree behavior.
 
 ```javascript jaml-playground
 export default {
@@ -849,11 +879,11 @@ Inside **watcher callbacks**, `this` refers to the **element** (same as element 
 
 Easy access of the element's properties:
 
-| Reference    | Points to    | Notes                                          |
-| ------------ | ------------ | ---------------------------------------------- |
-| `this.cmpt`  | Component    | The component that built this element          |
-| `this.model` | Root Model   | Always the root `Model` instance               |
-| `this.ref`   | Ref map      | Shortcut to component's `ref` map              |
-| `this.vars`  | Vars proxy   | Shortcut to `this.model.vars`                  |
-| `this.props` | Props access | Resolves literals, aliases and binders; see [props and automatic element properties](./jaml-format.md#props) |
-| `this.shared`| Shared proxy | Upward-looking proxy for nearest `share: true` ancestor |
+| Reference     | Points to    | Notes                                                                                                        |
+| ------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| `this.cmpt`   | Component    | The component that built this element                                                                        |
+| `this.model`  | Root Model   | Always the root `Model` instance                                                                             |
+| `this.ref`    | Ref map      | Shortcut to component's `ref` map                                                                            |
+| `this.vars`   | Vars proxy   | Shortcut to `this.model.vars`                                                                                |
+| `this.props`  | Props access | Resolves literals, aliases and binders; see [props and automatic element properties](./jaml-format.md#props) |
+| `this.shared` | Shared proxy | Upward-looking proxy for nearest `share: true` ancestor                                                      |

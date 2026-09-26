@@ -71,20 +71,20 @@ recommended order:
 
 15 layer style groups:
 
-| Group | Doc | Description |
-|---|---|---|
-| `layer.spinner.*` | [spinner](./spinner.md) | Animated spinner/loader effects |
-| `layer.scroller.*` | [scroller](./scroller.md) | Auto-scrolling background patterns |
-| `layer.canvas.*` | [canvas](./canvas.md) | Canvas particle system |
-| `layer.follower.*` | [follower](./follower.md) | Cursor-following decorative effects (spotlight, glow, shadow) |
-| `layer.loader.*` | [loader](./loader.md) | Full-screen loading overlay |
-| `layer.glare.*` | [glare](./glare.md) | Light glare and reflections |
-| `layer.watermark.*` | [watermark](./watermark.md) | Watermark and icon overlays |
-| `layer.ribbon.*` | [ribbon](./ribbon.md) | Corner ribbon decorations |
-| `layer.combo.*` | [combo](./combo.md) | Composite spinner/masked combos |
-| `layer.chart` | [chart](./chart.md) | ECharts integration layer |
-| `layer.background` | [background](./background.md) | Background layer |
-| `layer.border` | [border](./border.md) | Border layer |
-| `layer.css` | [css](./css.md) | Arbitrary CSS layer |
-| `layer.crosshair` | [crosshair](./crosshair.md) | Mouse-following crosshair |
-| `layer.overlay` | [overlay](./overlay.md) | Content overlay layer |
+| Group               | Doc                           | Description                                                   |
+| ------------------- | ----------------------------- | ------------------------------------------------------------- |
+| `layer.spinner.*`   | [spinner](./spinner.md)       | Animated spinner/loader effects                               |
+| `layer.scroller.*`  | [scroller](./scroller.md)     | Auto-scrolling background patterns                            |
+| `layer.canvas.*`    | [canvas](./canvas.md)         | Canvas particle system                                        |
+| `layer.follower.*`  | [follower](./follower.md)     | Cursor-following decorative effects (spotlight, glow, shadow) |
+| `layer.loader.*`    | [loader](./loader.md)         | Full-screen loading overlay                                   |
+| `layer.glare.*`     | [glare](./glare.md)           | Light glare and reflections                                   |
+| `layer.watermark.*` | [watermark](./watermark.md)   | Watermark and icon overlays                                   |
+| `layer.ribbon.*`    | [ribbon](./ribbon.md)         | Corner ribbon decorations                                     |
+| `layer.combo.*`     | [combo](./combo.md)           | Composite spinner/masked combos                               |
+| `layer.chart`       | [chart](./chart.md)           | ECharts integration layer                                     |
+| `layer.background`  | [background](./background.md) | Background layer                                              |
+| `layer.border`      | [border](./border.md)         | Border layer                                                  |
+| `layer.css`         | [css](./css.md)               | Arbitrary CSS layer                                           |
+| `layer.crosshair`   | [crosshair](./crosshair.md)   | Crosshair locator anchored to the host                        |
+| `layer.overlay`     | [overlay](./overlay.md)       | Content overlay layer                                         |

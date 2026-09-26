@@ -6,8 +6,8 @@
 
 ## Slots
 
-| Slot | Type | Description |
-|---|---|---|
+| Slot     | Type    | Description                               |
+| -------- | ------- | ----------------------------------------- |
 | `option` | slotted | Individual button options (`.jam-option`) |
 
 ---
@@ -15,6 +15,7 @@
 ## Style variants
 
 ### `buttongroup.tilted`
+
 Tilted / navigation tab style — buttons have angled edges. No args.
 
 ```json jaml-playground
@@ -33,11 +34,10 @@ Tilted / navigation tab style — buttons have angled edges. No args.
 ```
 
 ### `buttongroup.equalwidth`
+
 Equal-width buttons — each option takes the same amount of space.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Minimum button width | Default: `'6.25rem'` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style buttongroup.equalwidth`.
 
 ```json jaml-playground
 [
@@ -55,6 +55,7 @@ Equal-width buttons — each option takes the same amount of space.
 ```
 
 ### `buttongroup.vertical`
+
 Vertical layout — stacks buttons top-to-bottom. No args.
 
 ```json jaml-playground
@@ -72,6 +73,7 @@ Vertical layout — stacks buttons top-to-bottom. No args.
 ```
 
 ### `buttongroup.stripy`
+
 Zebra striping — alternating row background colors for readability. No args.
 
 ```json jaml-playground

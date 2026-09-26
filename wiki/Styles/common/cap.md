@@ -38,16 +38,14 @@ Mirrors the current caption to the host's `cap` HTML attribute whenever the `cap
 
 These paths add a semantic class to the host. Native and theme styles consume the class as a complete caption recipe, so the exact size, weight, line height, opacity, and color context can vary by theme.
 
-| Path | Class | Role |
-|---|---|---|
-| `cap.main` | `jam-cap-main` | Primary caption |
-| `cap.sub` | `jam-cap-sub` | Supporting caption |
+| Path       | Class          | Role               |
+| ---------- | -------------- | ------------------ |
+| `cap.main` | `jam-cap-main` | Primary caption    |
+| `cap.sub`  | `jam-cap-sub`  | Supporting caption |
 
 Both paths accept the same optional argument:
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `opacity` | `number` | Caption opacity for the selected role | Optional; native CSS falls back to `1` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style cap.main`. Catalog lookup: `style cap.sub`.
 
 The argument writes `--jam-cap-main-opacity` or `--jam-cap-sub-opacity` for the selected path.
 

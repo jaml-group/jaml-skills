@@ -6,13 +6,9 @@
 
 Shows a search-engine shortcut popup when hovering over elements matching a selector. By default it provides Baidu, Bing, and Google search buttons that open the selected text in a new tab.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `selector` | `string` | CSS selector for elements to attach search shortcuts to | Required |
-| `optionsGetter` | `(target: HTMLElement) => ElementOption[]` | Custom search engine options | Default: built-in Baidu/Bing/Google engines |
-| `container` | `string \| Function` | Popup container resolver | — |
-| `allowOverflow` | `boolean` | Allow popup to overflow container | Default: `false` |
-| `class` | `string` | CSS class added to the popup | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin shortcut.search`.
+
+The shortcut provider contract is `optionsGetter(target) => ElementOption[]`. The current `shortcut.search` preset supplies its own provider, which takes precedence over a caller-provided `optionsGetter`; that option cannot currently replace the preset’s search entries.
 
 ```json jaml-playground
 {

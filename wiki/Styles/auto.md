@@ -7,12 +7,10 @@
 ## Variants
 
 ### `auto.badge`
+
 Auto-replaces `[cap:value]` text patterns in the element's text content with inline `<jam-badge>` elements. The text before `sep` becomes the `cap` slot and the text after it becomes the `value` slot. Walks the DOM tree and replaces matching text nodes.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `sep` | `string` | Separator between cap and value in the pattern | Default: `':'` |
-| `dir` | `string` | Layout direction of generated badges | Default: `'horizontal'`. Options: `'horizontal'`, `'vertical'` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.badge`.
 
 ```json jaml-playground
 [
@@ -30,16 +28,12 @@ Auto-replaces `[cap:value]` text patterns in the element's text content with inl
 ```
 
 ### `auto.adjustFont`
+
 Auto-scales font size so text fits within the container without overflow. Listens to resize events (and custom triggers) and adjusts incrementally.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `min` | `number` | Minimum font size | Default: `10`, unit: `px` |
-| `max` | `number \| string` | Maximum font size | Unit: `px` |
-| `target` | `string` | CSS selector for the text element to adjust | Defaults to the element itself |
-| `triggers` | `array` | Events that trigger re-adjustment | Default: `['resize']` |
-| `bias` | `dictionary` | Offset adjustments (e.g. padding compensation) | — |
-| `heightAdjust` | `number` | Percentage of font size to subtract from the height check | Compensates for line-height and font vertical alignment |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.adjustFont`.
+
+Height adjustment compensates for line-height and font vertical alignment.
 
 ```json jaml-playground
 [
@@ -52,11 +46,10 @@ Auto-scales font size so text fits within the container without overflow. Listen
 ```
 
 ### `auto.focus`
+
 Auto-focuses the element on mount. Manages a focus stack — when this element unmounts, focus returns to the previous element in the stack. If `selection` is provided, selects the matching portion of the value.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `selection` | `RegExp` | Regex pattern. The first match in the element's value is selected | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.focus`.
 
 ```json jaml-playground
 [
@@ -75,15 +68,10 @@ Auto-focuses the element on mount. Manages a focus stack — when this element u
 ```
 
 ### `auto.moveAlong`
+
 Makes the element follow another element's screen position. Uses `MelonMove` for smooth animation. Toggles `jam-at-front` class when passing certain angles for z-index management.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `target` | `string` | CSS selector for the element to follow | Required |
-| `delay` | `number` | Delay before starting | Default: `100`, unit: `ms` |
-| `throttle` | `number` | Update interval | Default: `25`, unit: `ms` |
-| `frontZIndex` | `number \| string` | Z-index when visually in front | Default: `1000` |
-| `backZIndex` | `number \| string` | Z-index when visually behind | Default: `'auto'` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.moveAlong`.
 
 ```json jaml-playground
 [
@@ -103,13 +91,10 @@ Makes the element follow another element's screen position. Uses `MelonMove` for
 ```
 
 ### `auto.scrollAlong`
+
 Synchronizes the scroll position of two elements. When the target scrolls, the scroll target mirrors its scroll percentage.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `target` | `string` | CSS selector for the source element to track scrolling on | Required |
-| `scrollTarget` | `string` | CSS selector for the element to scroll in sync | Defaults to the element itself |
-| `delay` | `number` | Delay before starting | Default: `100`, unit: `ms` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.scrollAlong`.
 
 ```json jaml-playground
 [
@@ -134,6 +119,7 @@ Synchronizes the scroll position of two elements. When the target scrolls, the s
 ```
 
 ### `auto.hideIf.empty`
+
 Auto-hides the element when its `data` is empty or null. Listens to `optionchange` events. For option-based elements (`AbstractOptionElement`). No args.
 
 ```json jaml-playground
@@ -148,6 +134,7 @@ Auto-hides the element when its `data` is empty or null. Listens to `optionchang
 ```
 
 ### `auto.hideIf.valueIs0`
+
 Auto-hides the element when its `value` is `0` or `null`. Listens to `valuechange` events. For input elements (`AbstractInputElement`). No args.
 
 ```json jaml-playground
@@ -161,12 +148,10 @@ Auto-hides the element when its `value` is `0` or `null`. Listens to `valuechang
 ```
 
 ### `auto.keepScrollPosition`
+
 Persists and restores the scroll position of an element across page loads using `miso` (sessionStorage).
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `selector` | `string` | CSS selector for the scrollable element | Defaults to the element itself |
-| `delay` | `number \| function` | Delay before restoring | Unit: `ms` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.keepScrollPosition`.
 
 > **Note:** The element must have an `id` attribute for the storage key.
 
@@ -182,11 +167,12 @@ Persists and restores the scroll position of an element across page loads using 
 ```
 
 ### `auto.colored`
+
 Auto-applies accent color tint to the element. **Requires a `color` param** on the element — without it, nothing visible happens.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| _(none)_ | — | — | The element's `color` param provides the tint source |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.colored`.
+
+The element's `color` parameter supplies the tint source.
 
 ```json jaml-playground
 [

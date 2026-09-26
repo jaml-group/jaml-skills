@@ -10,10 +10,7 @@
 
 Applies CSS filter and backdrop-filter effects. Accepts raw CSS filter function strings.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `filter` | `string` | CSS filter value | Shorthand; e.g. `blur(2px) grayscale(0.5)` |
-| `backdrop` | `string` | CSS backdrop-filter value | Shorthand; e.g. `blur(10px)` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style filter`.
 
 ```json jaml-playground
 [

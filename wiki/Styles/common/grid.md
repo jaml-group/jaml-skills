@@ -10,15 +10,7 @@
 
 Sets CSS grid layout properties on a container element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `templateColumns` | `string` | Column track sizes | e.g. `1fr 1fr 1fr` |
-| `templateRows` | `string` | Row track sizes | — |
-| `autoColumns` | `string` | Auto column size | — |
-| `autoRows` | `string` | Auto row size | — |
-| `templateAreas` | `string` | Named grid areas | — |
-| `area` | `string` | Grid area for a child item | CSS `grid-area` with variable fallback |
-| `gap` | `string` | Gap between grid cells | e.g. `1rem` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style grid`.
 
 ```json jaml-playground
 [
@@ -38,12 +30,7 @@ Sets CSS grid layout properties on a container element.
 
 Explicit grid placement for an item using row and column start/span.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `rowStart` | `number` | Grid row start line | — |
-| `colStart` | `number` | Grid column start line | — |
-| `rowSpan` | `number` | Number of rows to span | — |
-| `colSpan` | `number` | Number of columns to span | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style grid.area`.
 
 ```json jaml-playground
 [

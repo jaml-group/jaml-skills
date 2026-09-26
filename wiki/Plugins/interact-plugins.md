@@ -6,12 +6,9 @@
 
 Makes an element a drag source for HTML5 native drag-and-drop. If a `selector` is provided, child elements matching it become draggable instead.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `data` | `Function` | Returns data to attach to the drag event | — |
-| `selector` | `string` | CSS selector for child draggable elements | If set, children matching the selector are made draggable instead of the element itself |
-| `dragstart` | `Function` | Called on drag start | — |
-| `dragend` | `Function` | Called on drag end | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin interact.draggable`.
+
+A selector makes matching children draggable instead of the host element.
 
 ```javascript jaml-playground
 export default {
@@ -35,12 +32,9 @@ export default {
 
 Makes an element a drop target for HTML5 native drag-and-drop.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `dataHandler` | `Function` | Called to process dropped data | Receives the drag data as argument |
-| `handler` | `Function` | Called when a draggable enters the drop zone | — |
-| `accept` | `Function \| any` | Filter for acceptable drag data | — |
-| `prompt` | `string` | Prompt text shown on drag-over | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin interact.droppable`.
+
+The data handler receives the drag data.
 
 ```javascript jaml-playground
 export default {

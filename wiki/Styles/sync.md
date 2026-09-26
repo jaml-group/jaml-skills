@@ -4,12 +4,11 @@
 
 ## Arguments
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `source` | `string` | Element to read | CSS selector or `self`, `parent`, `root` |
-| `target` | `string` | Element to update | CSS selector or `self`, `parent`, `root` |
-| `parent` | `string` | Selector lookup scope | Default `self`; also `parent` or `root` |
-| `callback` | `function \| string` | Receives `(target, source)` with the styled host as `this` | JavaScript is clearest for custom copying |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style sync`.
+
+The callback receives `(target, source)`, with the styled host as `this`.
+
+JavaScript is clearest for a custom copying callback.
 
 Both source and target must resolve. The callback runs before the next repaint after the host's resize notification; this is not an independent observer of every possible source mutation.
 

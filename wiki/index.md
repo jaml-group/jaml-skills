@@ -2,19 +2,21 @@
 
 Start here when writing, explaining, or diagnosing JAML. These documents are shared by people, the documentation viewer, and the `jaml` skill. Each contract has an owning page; topic indexes point to it.
 
+For exported style/plugin signatures and metadata prose, start with the [generated API catalog](API/index.md). It provides English/Chinese views from one pinned digest and lookup for every exported path. Its argument types, order, defaults and option values are authoritative for that snapshot; hand-authored guides provide composition and usage context. Coverage records legacy prose and missing fields explicitly.
+
 ## What the layers do
 
-| Concept | What it owns | Read when |
-|---|---|---|
-| JAML component | A declarative tree, model, bindings, conditions, and lifecycle | [JAML Format](./JAML/jaml-format.md) for structure; [Binders](./JAML/binder.md) for state; [Component API](./JAML/component.md) for JavaScript builders |
-| Element `type` | The concrete control, inherited parameters, slots, and events | [Element catalog](./JAM-UI/JAM-UI.md), then the selected element page; [named-slot lifecycle](./JAM-UI/JAM-UI.md#named-slot-lifecycle) for slot updates |
-| `stylize` and `variant` | Semantic presentation responsibility and an alternate theme recipe | [Roles](./Theme/stylize.md), including nearby role choices and parent context |
-| Singular `style` | Local CSS declarations, with supported token shorthands | [CSS](./Styles/common/css.md) |
-| Plural `styles` | Ordered, removable styles and the behavior they attach | [Styles](./Styles/styles.md) and the selected style page |
-| `plugins` | Explicit behavior attached through the `Plugins` registry | [Plugin selection and lifecycle](./Plugins/plugins.md) |
-| Theme tokens | Values consumed by native and theme recipes | [Tokens](./Theme/tokens.md) for authoring, runtime paths, and modes |
-| Theme stylesheet | Selectors, layout, states, and visual recipes | [Theme](./Theme/theme.md), then [Stylesheets](./Theme/stylesheets.md) |
-| `jam.*` APIs | Imperative rendering, utilities, and runtime operations | [Utilities](./utils.md); [Color System](./color.md) for color functions |
+| Concept                 | What it owns                                                       | Read when                                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JAML component          | A declarative tree, model, bindings, conditions, and lifecycle     | [JAML Format](./JAML/jaml-format.md) for structure; [Binders](./JAML/binder.md) for state; [Component API](./JAML/component.md) for JavaScript builders |
+| Element `type`          | The concrete control, inherited parameters, slots, and events      | [Element catalog](./JAM-UI/JAM-UI.md), then the selected element page; [named-slot lifecycle](./JAM-UI/JAM-UI.md#named-slot-lifecycle) for slot updates |
+| `stylize` and `variant` | Semantic presentation responsibility and an alternate theme recipe | [Roles](./Theme/stylize.md), including nearby role choices and parent context                                                                           |
+| Singular `style`        | Local CSS declarations, with supported token shorthands            | [CSS](./Styles/common/css.md)                                                                                                                           |
+| Plural `styles`         | Ordered, removable styles and the behavior they attach             | [Styles](./Styles/styles.md) and the selected style page                                                                                                |
+| `plugins`               | Explicit behavior attached through the `Plugins` registry          | [Plugin selection and lifecycle](./Plugins/plugins.md)                                                                                                  |
+| Theme tokens            | Values consumed by native and theme recipes                        | [Tokens](./Theme/tokens.md) for authoring, runtime paths, and modes                                                                                     |
+| Theme stylesheet        | Selectors, layout, states, and visual recipes                      | [Theme](./Theme/theme.md), then [Stylesheets](./Theme/stylesheets.md)                                                                                   |
+| `jam.*` APIs            | Imperative rendering, utilities, and runtime operations            | [Utilities](./utils.md); [Color System](./color.md) for color functions                                                                                 |
 
 ## Choose the owner before the API
 
@@ -26,17 +28,17 @@ Start here when writing, explaining, or diagnosing JAML. These documents are sha
 
 ## Agent workflow
 
-For a new page, read [Tutorial](./tutorial.md), JAML Format, and only the element/style/plugin pages the task needs. For theme work, start at [Theme](./Theme/theme.md). For a correction, follow the owning reference back to its implementation rather than copying a similar example.
+For a new dashboard, landing page, form or app, follow [Building a JAML UI](./building-ui.md). Read [Tutorial](./tutorial.md) for syntax, then JAML Format and only the element/style/plugin pages the task needs. For theme work, start at [Theme](./Theme/theme.md). For a correction, follow the owning reference back to its implementation rather than copying a similar example.
 
 Verify examples in layers:
 
-- **Static syntax:** JSON/JavaScript must parse. A `jaml-playground` or `jaml-result` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
-- **Static semantics:** use the current source registry to check types, inherited parameters, style paths, and arguments. Dynamic builders and open argument dictionaries can exceed static metadata; investigate a diagnostic before accepting or rejecting the code.
-- **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. A static pass does not prove visibility, resource loading, or lifecycle behavior.
+-   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground` or `jaml-result` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
+-   **Static semantics:** use the current source registry to check types, inherited parameters, style paths, and arguments. Dynamic builders and open argument dictionaries can exceed static metadata; investigate a diagnostic before accepting or rejecting the code.
+-   **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. A static pass does not prove visibility, resource loading, or lifecycle behavior.
 
 ## Trust and application data
 
-JAML definitions, handlers, binding expressions and external plugin modules are trusted application code. Keep user-provided values in data/model fields; never concatenate them into executable definitions, expressions or module locations. Markdown dialect selection is not sanitization: raw HTML and executable playground directives need an application-owned content policy. See [Markdown](Plugins/markdown.md).
+JAML definitions, authored `vars` initializers, props, handlers, binding expressions and external plugin modules are trusted application code. Populate external records through [runtime model-data writes](JAML/binder.md#runtime-data-and-authored-definitions); never concatenate them into executable definitions, expressions or module locations. A data value remaining literal does not make an HTML-capable display setter safe: use [Text nodes or `textContent`](JAM-UI/JAM-UI.md#slot-content-and-literal-text) for literal captions. `noBinder` and `jaml.pre()` do not sanitize content or sandbox executable code. Markdown dialect selection is not sanitization either; raw HTML and executable playground directives need an application-owned content policy. See [Markdown](Plugins/markdown.md).
 
 ## Maintaining this corpus
 

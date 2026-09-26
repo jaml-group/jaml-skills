@@ -8,29 +8,29 @@ A dashboard composition engine that renders an editable grid-based layout. Cards
 
 Internally creates a `CurrantComposable` instance and registers routes for each page configuration via `rambutan.addRoutes()`.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `config` | `PageInfo[]` | Array of page configurations with cards | If not provided, loaded from localStorage by default |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin composable.composable`.
+
+When configuration is omitted, it is loaded from localStorage.
 
 Each page config supports:
 
-| Field | Type | Description | Notes |
-|---|---|---|---|
-| `path` | `string` | Route path for the page | — |
-| `name` | `string` | Display name | — |
-| `icon` | `string` | Page icon | — |
-| `size` | `number[]` | Grid dimensions | Default: `[24, 12]` |
-| `gap` | `number` | Grid gap | — |
-| `cards` | `object[]` | Array of card definitions | — |
+| Field   | Type       | Description               | Notes               |
+| ------- | ---------- | ------------------------- | ------------------- |
+| `path`  | `string`   | Route path for the page   | —                   |
+| `name`  | `string`   | Display name              | —                   |
+| `icon`  | `string`   | Page icon                 | —                   |
+| `size`  | `number[]` | Grid dimensions           | Default: `[24, 12]` |
+| `gap`   | `number`   | Grid gap                  | —                   |
+| `cards` | `object[]` | Array of card definitions | —                   |
 
 Each card in `cards`:
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `string` | Unique card identifier |
-| `resource` | `object \| string` | JAML config object or URL to lazy-load |
-| `coord` | `object` | `{ rowStart, colStart, rowSpan, colSpan }` grid position |
-| `src` | `string` | Iframe source URL (alternative to `resource`) |
+| Field      | Type               | Description                                              |
+| ---------- | ------------------ | -------------------------------------------------------- |
+| `id`       | `string`           | Unique card identifier                                   |
+| `resource` | `object \| string` | JAML config object or URL to lazy-load                   |
+| `coord`    | `object`           | `{ rowStart, colStart, rowSpan, colSpan }` grid position |
+| `src`      | `string`           | Iframe source URL (alternative to `resource`)            |
 
 Every rendered card is assigned `stylize: 'tile'`, so it receives the active theme's tile role styling regardless of whether it comes from an inline resource, a lazy-loaded resource, or an iframe.
 

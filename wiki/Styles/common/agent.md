@@ -10,10 +10,7 @@
 
 Sets the background of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Background color | Any CSS color value |
-| `image` | `string` | Background image URL or CSS gradient | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.background`.
 
 ```json jaml-playground
 [
@@ -29,12 +26,7 @@ Sets the background of the internal agent element.
 
 Sets the border of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Border width | — |
-| `style` | `string` | Border style | `solid`, `dashed`, `none` |
-| `color` | `string` | Border color | — |
-| `radius` | `string` | Border radius | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.border`.
 
 ```json jaml-playground
 [
@@ -50,12 +42,7 @@ Sets the border of the internal agent element.
 
 Sets the size of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Width | — |
-| `minWidth` | `string` | Minimum width | — |
-| `height` | `string` | Height | — |
-| `minHeight` | `string` | Minimum height | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.size`.
 
 ```json jaml-playground
 [
@@ -71,9 +58,7 @@ Sets the size of the internal agent element.
 
 Sets the padding of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `padding` | `string` | Padding CSS shorthand | e.g. `0.5rem 0.75rem` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.padding`.
 
 ```json jaml-playground
 [
@@ -89,9 +74,7 @@ Sets the padding of the internal agent element.
 
 Sets the margin of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `margin` | `string` | Margin CSS shorthand | e.g. `1rem 0` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.margin`.
 
 ```json jaml-playground
 [
@@ -107,13 +90,7 @@ Sets the margin of the internal agent element.
 
 Sets the text styling of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `font` | `string` | Font family | CSS `fontFamily` |
-| `size` | `string` | Font size | CSS `fontSize` |
-| `weight` | `string` | Font weight | `normal`, `bold` |
-| `color` | `string` | Text color | — |
-| `lineheight` | `string` | Line height | `normal`, `1`, `1.5` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.text`.
 
 ```json jaml-playground
 [
@@ -129,11 +106,7 @@ Sets the text styling of the internal agent element.
 
 Sets the outline of the internal agent element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Outline width | — |
-| `style` | `string` | Outline style | `solid`, `dashed`, `dotted`, `double`, `groove`, `ridge`, `inset`, `outset`, `none` |
-| `color` | `string` | Outline color | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style agent.outline`.
 
 ```json jaml-playground
 [

@@ -4,12 +4,12 @@ Use `validate_jaml` as the static baseline when available. Omit `fileName` for u
 
 Inspect:
 
-- Element types, inheritance, parameters, control keys, argument forms and render contracts.
-- Bindings, instance state, updates, localization, lifecycle and event ownership.
-- Custom-property plumbing: prefer [automatic `props` bridges](../references/JAML/jaml-format.md#props) over build hooks that only attach data/descriptors; check member collisions, post-`onafterbuild` timing, and the distinction between fresh reads and reactive notifications.
-- Native capability fit, justified adapters and reusable extensions.
-- Application role/token consumption, scoped CSS, shared style registration and business-color handling.
-- Theme definitions only when that domain is part of the task.
+-   Element types, inheritance, parameters, control keys, argument forms and render contracts.
+-   Bindings, instance state, updates, localization, lifecycle and event ownership.
+-   Custom-property plumbing: prefer [automatic `props` bridges](../references/JAML/jaml-format.md#props) over build hooks that only attach data/descriptors; check member collisions, post-`onafterbuild` timing, and the distinction between fresh reads and reactive notifications.
+-   [Intent-first capability selection](../references/building-ui.md#choose-elements-by-user-intent): infer the actual operation and coordinated controls, compare native owners and verify any claimed gap. Check the promised selection, keyboard/focus and navigation/panel contract; visual grouping, syntax or an ARIA role alone is insufficient. Retain justified adapters and reusable extensions.
+-   Application role/token consumption and business-color handling; [style ownership and composition](../references/Styles/styles.md#style-ownership-and-composition), including actual declaration placement, theme versus app ownership, native semantic status colors, shared recipes, reusable composition, justified adapters/pixel contracts and state/breakpoint cascade. For refactors, reconcile the reported inventory with the files and parity evidence; tokenized global selectors alone do not prove ownership was corrected.
+-   Theme definitions only when that domain is part of the task.
 
 For every diagnostic, distinguish a real error from a demonstrated analyzer limitation using the owning source or runtime. A static pass cannot establish accessibility, geometry, lifecycle correctness or suitability of the chosen abstractions.
 

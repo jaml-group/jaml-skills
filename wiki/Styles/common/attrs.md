@@ -10,9 +10,9 @@
 
 Accepts any number of HTML attribute name-value pairs to set on the element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| (any key) | `string` | Arbitrary HTML attribute value | Attribute name is the key |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style attrs`.
+
+Each key names the attribute to apply.
 
 ```json jaml-playground
 [

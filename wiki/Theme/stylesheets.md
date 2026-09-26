@@ -12,17 +12,31 @@ The `styles` object uses the same selector-to-style-array grammar as an element'
 
 Selector refinement stops at that JavaScript dictionary boundary:
 
-| Location | Authoring selector | Behavior |
-|---|---|---|
-| `index.mjs` `styles` | `list-legend > item` | `refineSelector()` produces `.jam-list-style[jam-variant="legend"] > .jam-item-style` |
-| element `descStyles` | `list-legend > item` | `refineSelector()` produces the same selector relative to the owning element |
-| `index.scss` | `.jam-list-style[jam-variant='legend'] > .jam-item-style` | Sass compiles ordinary SCSS; Jam-UI does not refine selector shorthand |
+| Location             | Authoring selector                                        | Behavior                                                                              |
+| -------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `index.mjs` `styles` | `list-legend > item`                                      | `refineSelector()` produces `.jam-list-style[jam-variant="legend"] > .jam-item-style` |
+| element `descStyles` | `list-legend > item`                                      | `refineSelector()` produces the same selector relative to the owning element          |
+| `index.scss`         | `.jam-list-style[jam-variant='legend'] > .jam-item-style` | Sass compiles ordinary SCSS; Jam-UI does not refine selector shorthand                |
 
 Do not write `list-legend > item` in SCSS expecting Jam-UI expansion. Sass emits it unchanged as ordinary type selectors.
 
 Nested objects are interpreted as nested selectors. Array values are interpreted as `StyleOption[]`. Plain objects inside an array become `Styles.css(...)`; `{ method, args }` objects call the named style method; strings and style plugin objects are parsed through the normal style runtime.
 
 Every `Theme` starts with Jam-UI's small built-in baseline map; its own `styles` object replaces an entry with the same selector key. When no theme is selected, that baseline map is registered globally. Treat it as an overrideable implementation default, not as a catalogue of stable theme recipes: its selectors and treatments may evolve with the framework.
+
+**Default-style policy:** Keep baseline recipes at framework scope. Express theme-specific changes in that theme's `styles` map, preserving the shared defaults for other themes. This applies to every default style entry; quieter animation is one application of the policy.
+
+Replacement uses the **exact same top-level selector key**, before selector refinement, and replaces the **whole entry** rather than merging plugin arrays. Set that key to `[]` to disable the entry, or explicitly list every plugin the theme wants to retain. For example, when the target baseline uses a `tile` entry containing animations and hover treatment, a theme can keep only the hover treatment:
+
+```js
+export default {
+    styles: {
+        tile: ['hover.withbg']
+    }
+};
+```
+
+Using `tile: []` instead contributes no plugins from that entry. Other matching entries, element-local styles and stylesheet CSS still apply. A narrower or different key, such as `'main > tile'`, adds a separate recipe; it does not remove the baseline `tile` entry or any of its plugins. Check the target runtime's baseline keys when replacing one; this example illustrates replacement and does not promise a fixed baseline plugin list.
 
 ## Variant Selectors
 
@@ -67,16 +81,18 @@ Use stylesheets for:
 -   part and slot selectors
 -   CSS state selectors
 
+For [layout-owned shell profiles](./stylize.md#layout-owned-stylize-profiles), the selected layout owns structure, geometry and scrolling. Theme CSS and runtime style plugins must preserve those constraints while applying visual recipes. The layout-CSS guidance above also covers local content arrangement; it does not give a theme ownership of the shell.
+
 Use runtime tokens only for `sys`, minimal `cmpt`, and chart-derived values. Authoring `ref` may feed generated declarations, but its values must be resolved before runtime and must not appear as `--jam-ref-*` custom properties. Recipe paths are design-time style addresses; import tooling should compile them into selectors and declarations before runtime.
 
 ## Selector Boundary And Specificity
 
 Theme recipes are role-driven and may refine a role with `jam-variant`. The remaining allowed selectors are framework-owned:
 
-- `body`
-- framework `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, or `.jam-tile-style`
-- JAML elements such as `jam-table`
-- framework-owned classes emitted by built-in style plugins
+-   `body`
+-   framework `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, or `.jam-tile-style`
+-   JAML elements such as `jam-table`
+-   framework-owned classes emitted by built-in style plugins
 
 Connect and refine those selectors through normal nesting, combinators, framework attributes, slots, parts, and states. Keep the resulting chain no more specific than the equivalent base recipe.
 
@@ -167,11 +183,11 @@ Think of this as a theme-level `descStyles` map: each key is a selector, and eac
 
 Prefer built-in style plugins when they already own the semantic treatment or runtime behavior:
 
-| Purpose | Built-in paths |
-|---|---|
-| Surface treatment | `with.accent`, `with.tint`, `with.elevation` |
-| Caption hierarchy | `cap.main`, `cap.sub` |
-| Value hierarchy | `value.major`, `value.main`, `value.sub`, `value.minor` |
+| Purpose            | Built-in paths                                                   |
+| ------------------ | ---------------------------------------------------------------- |
+| Surface treatment  | `with.accent`, `with.tint`, `with.elevation`                     |
+| Caption hierarchy  | `cap.main`, `cap.sub`                                            |
+| Value hierarchy    | `value.major`, `value.main`, `value.sub`, `value.minor`          |
 | Child-group layout | `group.bento`, `group.gridline`, `group.stripy`, `group.divider` |
 
 Attach them in JAML or the theme `styles` map. A theme may tune the framework-owned selectors they emit, but it should not reproduce their classes, child management, or runtime behavior in a project-specific selector.

@@ -6,16 +6,13 @@
 
 ## Variants
 
-### `icon`
+### `icon.solid`
 
 Customizes the icon appearance on an element with an icon slot.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Icon color | Uses shorthand; defaults to accent color |
-| `strokeWidth` | `string` | Stroked outline width | Default: `0.0625rem` |
-| `strokeColor` | `string` | Stroke outline color | Dynamic luminance-based |
-| `size` | `string` | Icon size CSS value | e.g. `1.5rem` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style icon.solid`.
+
+`icon` is a style namespace; select a rendering style such as `icon.solid` or `icon.emoji`.
 
 ```json jaml-playground
 [
@@ -23,61 +20,52 @@ Customizes the icon appearance on an element with an icon slot.
         "type": "label",
         "icon": "star",
         "cap": "Starred",
-        "styles": ["icon(size:1.5rem;color:gold)"]
+        "styles": ["icon.solid(size:1.5rem;color:gold)"]
     }
 ]
 ```
 
 ### `emoji`
 
-Renders the icon as an emoji character. Same args as `icon`.
+Renders the icon as an emoji character. Same args as `icon.solid`.
 
 ### `light`
 
-Thin icon style using Font Awesome Light (fal). Same args as `icon` but `strokeWidth` defaults to `0px`.
+Thin icon style using Font Awesome Light (fal). Same args as `icon.solid` but `strokeWidth` defaults to `0px`.
 
 ### `regular`
 
-Regular icon style using Font Awesome Regular (far). Same args as `icon` but `strokeWidth` defaults to `0px`.
+Regular icon style using Font Awesome Regular (far). Same args as `icon.solid` but `strokeWidth` defaults to `0px`.
 
 ### `duotone`
 
-Dual-tone icon style using Font Awesome Duotone (fad). Same args as `icon`, plus:
+Dual-tone icon style using Font Awesome Duotone (fad). Same args as `icon.solid`, plus:
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color2` | `string` | Secondary color | Dynamic secondary color |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style icon.duotone`.
 
 ### `solid`
 
-Solid icon style using Font Awesome Solid (fas). Same args as `icon`.
+Solid icon style using Font Awesome Solid (fas). Same args as `icon.solid`.
 
 ### `brand`
 
-Brand icon style using Font Awesome Brand (fab). Same args as `icon`.
+Brand icon style using Font Awesome Brand (fab). Same args as `icon.solid`.
 
 ### `chars`
 
-Renders icon text as plain characters instead of converting it to a Font Awesome class. Same args as `icon`.
+Renders icon text as plain characters instead of converting it to a Font Awesome class. Same args as `icon.solid`.
 
 ### `withbg`
 
 Icon with a background behind it.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `radius` | `string` | Background border radius | Default: `0.55em` |
-| `bg` | `string` | Background CSS | Radial gradient with accent color |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style icon.withbg`.
 
 ### `withborder`
 
 Icon with a border around it.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `radius` | `string` | Border radius | Default: `1em` |
-| `borderWidth` | `string` | Border width | Default: `0.125rem` |
-| `borderColor` | `string` | Border color | Default: `currentColor` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style icon.withborder`.
 
 ### `bar`
 
@@ -95,7 +83,4 @@ Creates a shaped square icon by inserting a `span.jam-icon-square` into the icon
 
 Creates a shaped arrow icon. Numeric input value changes point it down for negative values and up otherwise. Other elements use their `state` to choose a direction.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Initial arrow direction | Default: `up`; supports `up`, `down`, `left`, `right` |
-| `stateDirections` | `object` | Map element states to directions | Default: `{ expanded: 'down', default: 'right' }`; unmatched states use `up` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style icon.arrow`.

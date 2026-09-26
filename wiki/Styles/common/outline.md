@@ -10,13 +10,9 @@
 
 Applies outline width, style, color, and offset to an element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Outline width CSS value | e.g. `2px` |
-| `style` | `string` | Outline style | `none`, `solid`, `dashed`, `dotted`, `double`, `groove`, `ridge`, `inset`, `outset` |
-| `color` | `string` | Outline color | Any CSS color value |
-| `offset` | `string` | Outline offset from element edge | e.g. `2px` |
-| `outline` | `string` | Shorthand for all outline properties | Overrides individual values |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style outline`.
+
+The outline shorthand overrides its individual fields.
 
 ```json jaml-playground
 [

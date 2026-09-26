@@ -12,11 +12,9 @@ For semantic trait classes such as `is.major`, `with.accent`, and element-scoped
 
 Adds arbitrary CSS classes to the element. Accepts one or more class names.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `clazz` | `string` | CSS class name(s) to add | Shorthand; multiple classes space/comma-separated |
-| `descStyles` | `dictionary` | Descendant styles object | Registered as a global style rule for the class |
-| `revertKey` | `string` | Revert / clean-up key for unstyling | Default: `clazz` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style clazz`.
+
+Descendant styles are registered as a global rule for the class.
 
 ```json jaml-playground
 [

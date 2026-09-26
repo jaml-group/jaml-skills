@@ -79,12 +79,12 @@ Shorthand for passing series-level ECharts options. Wraps the argument in `{ ser
 
 Chart options retain theme-token wrappers until the final option is built for `setOption()`. The following shorthands work recursively in raw ECharts options and in every compatible chart style:
 
-| Shorthand | Accepted value | Native ECharts result | Notes |
-|---|---|---|---|
-| `shadow` | `{color, blur, offsetX, offsetY}`, theme shadow token, or `'none'` | `shadowColor`, `shadowBlur`, `shadowOffsetX`, `shadowOffsetY` | Explicit native fields override a normal shorthand; `'none'` is an absolute reset |
-| `textShadow` | `{color, blur, offsetX, offsetY}`, theme text-shadow token, or `'none'` | `textShadowColor`, `textShadowBlur`, `textShadowOffsetX`, `textShadowOffsetY` | Arbitrary CSS shadow strings are not parsed |
-| `border` | `'none'` only | Transparent border with zero width | Border dictionaries and border tokens are not supported |
-| `textBorder` | `'none'` only | Transparent text border with zero width | Border dictionaries and border tokens are not supported |
+| Shorthand    | Accepted value                                                          | Native ECharts result                                                         | Notes                                                                             |
+| ------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `shadow`     | `{color, blur, offsetX, offsetY}`, theme shadow token, or `'none'`      | `shadowColor`, `shadowBlur`, `shadowOffsetX`, `shadowOffsetY`                 | Explicit native fields override a normal shorthand; `'none'` is an absolute reset |
+| `textShadow` | `{color, blur, offsetX, offsetY}`, theme text-shadow token, or `'none'` | `textShadowColor`, `textShadowBlur`, `textShadowOffsetX`, `textShadowOffsetY` | Arbitrary CSS shadow strings are not parsed                                       |
+| `border`     | `'none'` only                                                           | Transparent border with zero width                                            | Border dictionaries and border tokens are not supported                           |
+| `textBorder` | `'none'` only                                                           | Transparent text border with zero width                                       | Border dictionaries and border tokens are not supported                           |
 
 Raw native boolean `shadow` values are preserved for ECharts-GL light options.
 
@@ -105,31 +105,17 @@ Styles.echarts.bar.itemStyle.border([4, 4, 0, 0]) // Existing border-radius shor
 
 Sets automatic contrast colors for visible labels rendered inside colored chart shapes. Explicit label colors are preserved. For data-colored series, the style follows each item's resolved color and recurses through hierarchical `children` data.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| — | — | No arguments | Applies to supported inside-label positions and chart types |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.labelOnColor`.
+
+This treatment applies to supported inside-label positions and chart types.
 
 ### `echarts.coordSysLayer`
 
 Copies the current series into a silent, label-free presentation layer behind the original chart. Cartesian charts receive a cloned grid and hidden axes; all-pie charts receive cloned series with shifted centers. Offsets are measured in pixels.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `colors` | `array` | Layer palette | Defaults to the chart palette |
-| `z` | `number` | Layer z order | Default: `0` |
-| `offsetX`, `offsetY` | `number` | Horizontal and vertical layer offset | Pixels |
-| `shadow` | `dictionary \| string` | Shadow shorthand | Theme shadow token or dictionary |
-| `shadowColor` | `dictionary \| string` | Shadow color | Overrides `shadow.color` |
-| `shadowBlur` | `number` | Shadow blur | Overrides `shadow.blur` |
-| `shadowOffsetX`, `shadowOffsetY` | `number` | Shadow offsets | Override the shorthand offsets |
-| `border` | `string` | Border shorthand | Supports `'none'` |
-| `borderColor` | `dictionary \| string` | Border color | |
-| `borderWidth` | `number \| string` | Border width | |
-| `borderType`, `borderCap`, `borderJoin` | `string` | Border shape properties | |
-| `borderMiterLimit` | `number` | Border miter limit | |
-| `opacity` | `number` | Layer opacity | |
-| `tuner` | `function \| string` | Tune the layer palette | Accepts the standard color-set tuner forms |
-| `delay` | `number` | Delay before measuring chart geometry | Default: `50` ms |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.coordSysLayer`.
+
+Individual shadow fields override the corresponding fields of the shared shadow value. The tuner accepts the standard color-set tuner forms.
 
 ```javascript jaml-playground
 export default {
@@ -157,17 +143,17 @@ Bar chart. Args: `minHeight`, `width`, `minWidth`, `maxWidth`, `minAngle`, `gap`
 
 **Variants:**
 
-- **`bar.flipXY`** — swap X and Y axes (horizontal bars). No args.
-- **`bar.gradientBg`** — gradient fill per bar series. No args.
-- **`bar.votageLevelColor`** — color a single-series bar chart by resolving each category label through the Jam color registry. Args: `gradient` (default `false`) fades each resolved color toward transparency. The current API spelling is `votageLevelColor`.
-- **`bar.tz`** — pre-styled bar with gradient colors, dashed splits, rounded corners. Args: `barWidth`, `barGap`, `barMinHeight`, `radius`, `itemWidth`, `itemHeight`, `top`.
-- **`bar.floatingBar`** — floating bar with mark points. Args: `show`, `size`, `offset`, `iconColor`, `labelColor`.
-- **`bar.maxHightLight`** — highlight max value per series, dim others. Args: `opacity` (default 0.3 for dimmed).
-- **`bar.singleSwitchStyle`** — toggle-style single bar. Args: `color`, `width`, `radius`, `bgColor`.
-- **`bar.stackBar`** — stacked bar with interval spacers. Args: `interval`, `radius`.
-- **`bar.itemStyle`** — item color, opacity, border, shadow.
-- **`bar.label`** — label config with distance, offset, position.
-- **`bar.hover`** — emphasis state with label and itemStyle sub-styles.
+-   **`bar.flipXY`** — swap X and Y axes (horizontal bars). No args.
+-   **`bar.gradientBg`** — gradient fill per bar series. No args.
+-   **`bar.votageLevelColor`** — color a single-series bar chart by resolving each category label through the Jam color registry. Args: `gradient` (default `false`) fades each resolved color toward transparency. The current API spelling is `votageLevelColor`.
+-   **`bar.tz`** — pre-styled bar with gradient colors, dashed splits, rounded corners. Args: `barWidth`, `barGap`, `barMinHeight`, `radius`, `itemWidth`, `itemHeight`, `top`.
+-   **`bar.floatingBar`** — floating bar with mark points. Args: `show`, `size`, `offset`, `iconColor`, `labelColor`.
+-   **`bar.maxHightLight`** — highlight max value per series, dim others. Args: `opacity` (default 0.3 for dimmed).
+-   **`bar.singleSwitchStyle`** — toggle-style single bar. Args: `color`, `width`, `radius`, `bgColor`.
+-   **`bar.stackBar`** — stacked bar with interval spacers. Args: `interval`, `radius`.
+-   **`bar.itemStyle`** — item color, opacity, border, shadow.
+-   **`bar.label`** — label config with distance, offset, position.
+-   **`bar.hover`** — emphasis state with label and itemStyle sub-styles.
 
 ```json jaml-playground
 [
@@ -198,18 +184,18 @@ Line chart. Args: `step`, `smooth`, `sampling`, `selectMode`, `stack`, `stackStr
 
 **Variants:**
 
-- **`line.jagged`** — disable smooth (sharp angles). No args.
-- **`line.gradientBg`** — gradient area fill. No args.
-- **`line.symbol`** — symbol config. Args: `symbol`, `show`, `size`, `offset`, `rotate`.
-- **`line.lineStyle`** — line style. Args: `width`, `type` (solid/dashed/dotted), `dashOffset`, `color`, `opacity`, `shadow`.
-- **`line.areaStyle`** — area fill under the line. Args: `color`, `opacity`, `shadow`, `orient`.
-- **`line.markLine`** — mark lines (average, min, max, custom). Args: `precision`, `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `lineStyle`, `hover`, `animation`, `avg`, `x`, `y`.
-- **`line.markPoint`** — mark points. Args: `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `itemStyle`, `hover`, `animation`, `min`, `max`.
-- **`line.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`.
-- **`line.parts`** — Y-axis region partitioning. Args: `part` (number of regions, default 5).
-- **`line.avgAMax`** — adds average markLine and max markPoint. Args: `size`.
-- **`line.bigSymbol`** — large symbols for sparse data. Args: `symbol`, `size`, `show`, `smooth`.
-- **`line.itemStyle`**, **`line.label`**, **`line.hover`** — standard styling sub-variants.
+-   **`line.jagged`** — disable smooth (sharp angles). No args.
+-   **`line.gradientBg`** — gradient area fill. No args.
+-   **`line.symbol`** — symbol config. Args: `symbol`, `show`, `size`, `offset`, `rotate`.
+-   **`line.lineStyle`** — line style. Args: `width`, `type` (solid/dashed/dotted), `dashOffset`, `color`, `opacity`, `shadow`.
+-   **`line.areaStyle`** — area fill under the line. Args: `color`, `opacity`, `shadow`, `orient`.
+-   **`line.markLine`** — mark lines (average, min, max, custom). Args: `precision`, `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `lineStyle`, `hover`, `animation`, `avg`, `x`, `y`.
+-   **`line.markPoint`** — mark points. Args: `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `itemStyle`, `hover`, `animation`, `min`, `max`.
+-   **`line.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`.
+-   **`line.parts`** — Y-axis region partitioning. Args: `part` (number of regions, default 5).
+-   **`line.avgAMax`** — adds average markLine and max markPoint. Args: `size`.
+-   **`line.bigSymbol`** — large symbols for sparse data. Args: `symbol`, `size`, `show`, `smooth`.
+-   **`line.itemStyle`**, **`line.label`**, **`line.hover`** — standard styling sub-variants.
 
 ```json jaml-playground
 [
@@ -238,14 +224,14 @@ Pie chart. Args: `selectOffset`, `clockwise`, `startAngle`, `endAngle`, `minAngl
 
 **Variants:**
 
-- **`pie.roseType`** — rose/nightingale chart. Args: `type` (`'radius'` / `'area'`).
-- **`pie.ring`** — donut/ring chart. No args.
-- **`pie.shadow`** — shadow on slices. Args: `shadow` (theme token or `'none'`), `offsetX`, `offsetY`, `blur`, `color`. Uses the large theme shadow when called without arguments.
-- **`pie.position`** — radius and center positioning. Args: `innerR`, `outerR`, `cX`, `cY`.
-- **`pie.tz`** — styled ring with center label. Args: `radius`, `center`, `padAngle`.
-- **`pie.doubleCircle`** — double-ring chart with segment coloring. Args: `top`.
-- **`pie.electronicScale`** — electronic scale/gauge using pie+polar. Args: `iconSize`, `pointerSize`.
-- **`pie.itemStyle`**, **`pie.label`**, **`pie.hover`** — standard styling sub-variants.
+-   **`pie.roseType`** — rose/nightingale chart. Args: `type` (`'radius'` / `'area'`).
+-   **`pie.ring`** — donut/ring chart. No args.
+-   **`pie.shadow`** — shadow on slices. Args: `shadow` (theme token or `'none'`), `offsetX`, `offsetY`, `blur`, `color`. Uses the large theme shadow when called without arguments.
+-   **`pie.position`** — radius and center positioning. Args: `innerR`, `outerR`, `cX`, `cY`.
+-   **`pie.tz`** — styled ring with center label. Args: `radius`, `center`, `padAngle`.
+-   **`pie.doubleCircle`** — double-ring chart with segment coloring. Args: `top`.
+-   **`pie.electronicScale`** — electronic scale/gauge using pie+polar. Args: `iconSize`, `pointerSize`.
+-   **`pie.itemStyle`**, **`pie.label`**, **`pie.hover`** — standard styling sub-variants.
 
 ```json jaml-playground
 [
@@ -296,26 +282,9 @@ Radar chart. No extended variants — the basic style handles indicator/series t
 
 Geographic map chart. `Styles.echarts.map()` updates the foreground map defaults; it does not create another geo layer.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `colors` | array | Foreground region palette | |
-| `tuner` | string \| function | Tune the region palette before use | Presets: `none`, `dopamine`, `neon`, `pastel`, `jewel`, `morandi`; JavaScript callbacks receive each normalized `chroma.Color` |
-| `z` | number | Foreground z order | |
-| `offsetX`, `offsetY` | number | Foreground pixel offsets | Positive values move the map right / down; defaults to `0` |
-| `shadow` | dictionary \| token \| `'none'` | Map shadow shorthand | `{color, blur, offsetX, offsetY}` or a theme shadow token |
-| `shadowColor` | string \| dictionary | Map shadow color | Overrides `shadow.color` |
-| `shadowBlur` | number | Map shadow blur | Overrides `shadow.blur` |
-| `shadowOffsetX`, `shadowOffsetY` | number | Map shadow offsets | Override `shadow.offsetX` / `shadow.offsetY` |
-| `border` | `'none'` | Remove the region border | Absolute reset |
-| `borderColor` | string \| dictionary | Region border color | |
-| `borderWidth` | number \| string | Region border width | |
-| `borderType` | string | Region border type | |
-| `borderCap`, `borderJoin` | string | Region border cap and join | |
-| `borderMiterLimit` | number | Region border miter limit | |
-| `opacity` | number | Region opacity | |
-| `showLabel` | boolean | Show foreground scatter labels | Visible when omitted |
-| `label` | dictionary | Foreground scatter-label style | Supports `show` and `textShadow: {color, blur, offsetX, offsetY}` |
-| `hover` | dictionary | Region emphasis style | |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map`.
+
+Positive offsets move the map right or down. Individual shadow fields override the corresponding shared shadow fields. JavaScript tuner callbacks receive each normalized `chroma.Color`.
 
 Map offsets are converted through each ECharts geo coordinate system, so they remain pixel-based after zooming or resizing.
 Either `showLabel: false` or `label.show: false` hides the corresponding labels. The global deferred-shadow precedence rules also apply to `label.textShadow`.
@@ -324,47 +293,25 @@ Either `showLabel: false` or `label.show: false` hides the corresponding labels.
 
 Styles the existing background layer with the same offset, palette, shadow, border, and opacity arguments as the foreground map. When omitted, `colors` is a ten-step low-chroma blue-gray ramp and `opacity` is `0.045`. Background colors are rendered with the `none` tuner; the foreground `tuner` argument is not applied to this layer.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `colors` | array | Background region palette | Default: ten-step ramp from `hsl(210, 15%, 15%)` to `hsl(210, 15%, 75%)` |
-| `opacity` | number | Background region opacity | Default: `0.045` |
-| `showLabel` | boolean | Show background scatter labels | Visible when omitted |
-| `label` | dictionary | Background scatter-label style | Supports the same `show` and `textShadow` forms as the foreground label |
-| Remaining foreground map styling args except `tuner`, `showLabel`, `label`, and `hover` | same as map | Background-layer styling | |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map.background`.
+
+Background labels support the same `show` and `textShadow` forms as foreground labels.
 
 #### `echarts.map.layer`
 
 Creates an explicit replicated geo layer at render time.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `merge` | boolean | Merge the currently colored regions into one geometry | Cached per source map and sorted region set |
-| All foreground map styling args except `showLabel`, `label`, and `hover` | same as map | Layer styling | Colors default to the map element's active color set |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map.layer`.
+
+Merged geometry is cached per source map and sorted region set. The layer uses the foreground map styling family, excluding `showLabel`, `label` and `hover`.
 
 #### `echarts.map.layer.image`
 
 Creates a raster-image geo layer. The image is loaded asynchronously, cached by source across map instances, and decoded into a canvas pattern before the current draw continues. SVG sources are rejected; use PNG, JPEG, WebP, or another browser-decodable raster format.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `image` | string | Raster image source | Required; shorthand argument |
-| `repeat` | string | Pattern repetition | `repeat`, `repeat-x`, `repeat-y`, or `no-repeat`; default: `repeat` |
-| `z` | number | Geo-layer z order | |
-| `zlevel` | number | ECharts canvas layer | Default: `1` |
-| `offsetX`, `offsetY` | number | Pattern offset relative to map size | Fractions of map height, not pixels; default: `0` |
-| `scaleX`, `scaleY` | number | Horizontal and vertical scale multipliers | Default: `1`; minimum: `0.01` |
-| `useZoom` | boolean | Couple pattern scale and geo bounds to map zoom | Defaults to `true` for `no-repeat` and `false` for repeating patterns |
-| `shadow` | dictionary \| token \| `'none'` | Layer shadow shorthand | `{color, blur, offsetX, offsetY}` or a theme shadow token |
-| `shadowColor` | string \| dictionary | Layer shadow color | Overrides `shadow.color` |
-| `shadowBlur` | number | Layer shadow blur | Overrides `shadow.blur` |
-| `shadowOffsetX`, `shadowOffsetY` | number | Layer shadow offsets | Override `shadow.offsetX` / `shadow.offsetY` |
-| `border` | `'none'` | Remove the region border | Absolute reset |
-| `borderColor` | string \| dictionary | Region border color | |
-| `borderWidth` | number \| string | Region border width | |
-| `borderType` | string | Region border type | |
-| `borderCap`, `borderJoin` | string | Region border cap and join | |
-| `borderMiterLimit` | number | Region border miter limit | |
-| `opacity` | number | Image-layer opacity | |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map.layer.image`.
+
+Image offsets are fractions of map height, not pixels. Individual shadow fields override the corresponding shared shadow fields.
 
 With `useZoom: true`, the image is initially normalized so its height matches the chart, then `scaleX` and `scaleY` are applied; the layer retains the configured map zoom and bounds. With `useZoom: false`, the pattern starts at its intrinsic canvas size, the layer zoom is fixed at `1`, and its bounding coordinates are scaled to the focused map frame. This makes the default mode suitable for repeating textures. Image layers keep their relative center and zoom synchronized with the other map geos during roam. A zoom-coupled image layer is rebuilt on chart resize so its chart-relative pattern stays aligned.
 
@@ -413,39 +360,15 @@ export default {
 
 Builds a foreground map plus middle and bottom replicated layers.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | string \| dictionary | Foreground region color | |
-| `borderColor` | string \| dictionary | Foreground border color | |
-| `borderWidth` | number | Foreground border width | |
-| `colorEmphasis` | string \| dictionary | Foreground emphasis color | |
-| `colorMid` | string \| dictionary | Middle-layer color | Supplying it enables merging unless `mergeMid` is set explicitly |
-| `borderColorMid` | string \| dictionary | Middle-layer border color | |
-| `borderWidthMid` | number | Middle-layer border width | |
-| `opacityMid` | number | Middle-layer opacity | Default: `0.4` |
-| `offsetXMid` | number | Middle-layer horizontal offset | Pixels |
-| `offsetYMid` | number | Middle-layer vertical offset | Default: `6 * jam.rem(0.2)` pixels |
-| `mergeMid` | boolean | Merge colored regions for the middle layer | Defaults to whether `colorMid` is supplied |
-| `shadowMid` | string \| dictionary | Middle-layer shadow | Default: `{}` |
-| `colorBottom` | string \| dictionary | Bottom-layer color | Supplying it enables merging unless `mergeBottom` is set explicitly |
-| `borderColorBottom` | string \| dictionary | Bottom-layer border color | |
-| `borderWidthBottom` | number | Bottom-layer border width | |
-| `opacityBottom` | number | Bottom-layer opacity | Default: `0.2` |
-| `offsetXBottom` | number | Bottom-layer horizontal offset | Pixels |
-| `offsetYBottom` | number | Bottom-layer vertical offset | Default: `8 * jam.rem(0.2)` pixels |
-| `mergeBottom` | boolean | Merge colored regions for the bottom layer | Defaults to whether `colorBottom` is supplied |
-| `shadowBottom` | string \| dictionary | Bottom-layer shadow | Default: `{}` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map.fake3D`.
+
+Supplying a middle or bottom color enables merging for that layer unless its merge setting is explicit.
 
 #### `echarts.map.dense`
 
 Computes density for map children with `jam-coord` after `childreposition`.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `gap` | number \| string | Dense-distance threshold | Defaults to `20px` |
-| `classMap` | dictionary | Density ranges mapped to class names | |
-| `asAttr` | boolean | Emit density as attributes | Defaults to `false` |
-| `asVar` | boolean | Emit density as variables | Defaults to `false` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.map.dense`.
 
 ```javascript jaml-playground
 export default {
@@ -527,27 +450,7 @@ Label config. Args: `align`, `verticalAlign`, `rotate`, `width`, `height`, `rich
 
 Visual map (color gradient legend).
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | string | Visual-map type | |
-| `min`, `max` | number | Mapped value bounds | |
-| `range` | array | Current handle range | |
-| `inRange` | dictionary | Visual encoding inside the selected range | |
-| `outRange` | dictionary | Visual encoding outside the selected range | |
-| `calculable` | boolean | Show draggable handles | |
-| `realtime` | boolean | Update while handles are dragged | |
-| `inverse` | boolean | Reverse the visual map | |
-| `precision` | number | Display precision | |
-| `itemWidth`, `itemHeight` | number | Visual-map item dimensions | |
-| `align` | string | Text/handle alignment | |
-| `text` | array | Labels at the two ends | |
-| `textGap` | number | Gap between text and the visual item | |
-| `hoverlink` | boolean | Link hover state to chart data | |
-| `dimension` | number | Data dimension to map | |
-| `seriesIndex` | number | Series to map | |
-| `unboundedRange` | boolean | Permit an unbounded selected range | |
-| `show` | boolean | Show the visual map | Default: `false` |
-| `left`, `top`, `right`, `bottom` | string \| number | Component position | |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style echarts.visualMap`.
 
 ### `echarts.geo`
 
@@ -567,8 +470,8 @@ The current built-in style emits top-level chart config that `CashewChart` does 
 
 ## Utility styles
 
-- **`echarts.shadow`** — shadow config. Sub-style: `shadow.item` (offsetX, offsetY, blur, color).
-- **`echarts.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`. Sub-style: `animation.scale`.
+-   **`echarts.shadow`** — shadow config. Sub-style: `shadow.item` (offsetX, offsetY, blur, color).
+-   **`echarts.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`. Sub-style: `animation.scale`.
 
 ---
 
@@ -578,8 +481,8 @@ Each chart initializes with an adaptive ECharts appearance theme built for that 
 
 Treat this layer as an appearance baseline. Data, visibility, layout, interaction, and chart behavior remain owned by the chart's explicit styles and ECharts options.
 
-- **`theme.light`** — force light mode on the chart element.
-- **`theme.dark`** — force dark mode on the chart element.
+-   **`theme.light`** — force light mode on the chart element.
+-   **`theme.dark`** — force dark mode on the chart element.
 
 ```json jaml-playground
 [

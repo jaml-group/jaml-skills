@@ -10,12 +10,7 @@
 
 Sets flexbox layout properties on a container element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `flex` | `string` | Flex shorthand (grow shrink basis) | e.g. `1 0 auto` |
-| `direction` | `string` | Flex direction | `row`, `column`, `row-reverse`, `column-reverse` |
-| `wrap` | `string` | Flex wrap | `nowrap`, `wrap`, `wrap-reverse` |
-| `gap` | `string` | Gap between items | e.g. `1rem` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style flex`.
 
 ```json jaml-playground
 [

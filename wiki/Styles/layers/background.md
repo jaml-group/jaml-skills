@@ -9,17 +9,10 @@ Wraps `common/background` options in a layer context. Supports all standard back
 ## Variants
 
 ### `background`
+
 Basic background with standard CSS background properties.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Background color | CSS `backgroundColor` |
-| `image` | `array \| string` | Background image | CSS `backgroundImage` |
-| `position` | `array \| string` | Background position | CSS `backgroundPosition` |
-| `size` | `array \| string` | Background size | CSS `backgroundSize` |
-| `repeat` | `array \| string` | Background repeat | CSS `backgroundRepeat` |
-| `attachment` | `string` | Background attachment | CSS `backgroundAttachment` |
-| `background` | `array \| string` | Shorthand background value | CSS `background` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background`.
 
 ```json jaml-playground
 [
@@ -37,11 +30,10 @@ Basic background with standard CSS background properties.
 ```
 
 ### `background.tint`
+
 Subtle color tint overlay.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `intense` | `number` | Tint intensity | Default: `0.015`. Shorthand arg |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.tint`.
 
 ```json jaml-playground
 [
@@ -54,6 +46,7 @@ Subtle color tint overlay.
 ```
 
 ### `background.crystal`
+
 Crystal/glass-like background effect. No args.
 
 ```json jaml-playground
@@ -67,6 +60,7 @@ Crystal/glass-like background effect. No args.
 ```
 
 ### `background.glassify`
+
 Frosted glass effect with blur and gradient.
 
 ```json jaml-playground
@@ -80,12 +74,10 @@ Frosted glass effect with blur and gradient.
 ```
 
 ### `background.gradient`
+
 Smooth multi-stop gradient background.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `deg` | `string` | Gradient direction | Default: `'to bottom'` |
-| `stops` | `array` | Gradient color stops | Default: 4-stop gradient |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.gradient`.
 
 ```json jaml-playground
 [
@@ -98,11 +90,10 @@ Smooth multi-stop gradient background.
 ```
 
 ### `background.gradient.corner`
+
 Corner gradient from transparent to accent color.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `deg` | `number` | Gradient angle | Default: `166deg` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.gradient.corner`.
 
 ```json jaml-playground
 [
@@ -115,11 +106,10 @@ Corner gradient from transparent to accent color.
 ```
 
 ### `background.gradient.aurora`
+
 Aurora-style gradient from transparent to accent.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `deg` | `number` | Gradient angle | Default: `-15deg` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.gradient.aurora`.
 
 ```json jaml-playground
 [
@@ -132,6 +122,7 @@ Aurora-style gradient from transparent to accent.
 ```
 
 ### `background.gradient.concave`
+
 Concave/depressed gradient effect. No args.
 
 ```json jaml-playground
@@ -145,16 +136,10 @@ Concave/depressed gradient effect. No args.
 ```
 
 ### `background.stripy`
+
 Diagonal stripe pattern.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `deg` | `number` | Stripe angle | Default: `135deg` |
-| `color` | `string` | Stripe color | Default: `ac(1, 1, lumiO(40), 0.25)` |
-| `width` | `string` | Stripe width | — |
-| `gap` | `string` | Stripe gap | — |
-| `stops` | `array` | Custom color stops | Default: 4-stop pattern |
-| `fixed` | `boolean` | Fixed background attachment | Default: `false` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.stripy`.
 
 ```json jaml-playground
 [
@@ -167,21 +152,10 @@ Diagonal stripe pattern.
 ```
 
 ### `background.bubbles`
+
 Bubble pattern overlay.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `bubbleSize` | `number \| string` | Base bubble size | Default: `1rem` |
-| `bubbleCount` | `number \| string` | Number of bubbles | — |
-| `countRange` | `array` | Bubble count range | — |
-| `sizeRange` | `array` | Bubble size range | — |
-| `blurRange` | `array` | Blur range | — |
-| `alphaRange` | `array` | Alpha range | — |
-| `hueRange` | `array` | Hue range | — |
-| `satuRange` | `array` | Saturation range | — |
-| `lumiRange` | `array` | Luminosity range | — |
-| `allowOverflowX` | `boolean` | Allow horizontal overflow | — |
-| `allowOverflowY` | `boolean` | Allow vertical overflow | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.bubbles`.
 
 ```json jaml-playground
 [
@@ -194,6 +168,7 @@ Bubble pattern overlay.
 ```
 
 ### `background.ribbon`
+
 Ribbon-shaped background with clip path. No args.
 
 ```json jaml-playground
@@ -207,17 +182,10 @@ Ribbon-shaped background with clip path. No args.
 ```
 
 ### `background.grid`
+
 Repeating grid pattern.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `deg` | `number \| string` | Grid angle | Default: `90deg` |
-| `color` | `string` | Grid line color | Default: `ac(1, 0.1, lumiO(10), 0.075)` |
-| `width` | `string` | Line width | Default: `'0.0625rem'` |
-| `gap` | `string` | Grid gap | Default: `'3.125rem'` |
-| `gapX` | `string` | Horizontal grid gap | Defaults to `gap` |
-| `gapY` | `string` | Vertical grid gap | Defaults to `gap` |
-| `size` | `string` | Grid cell size | Computes both gaps from size minus line width |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.grid`.
 
 ```json jaml-playground
 [
@@ -230,15 +198,10 @@ Repeating grid pattern.
 ```
 
 ### `background.chess`
+
 Checkerboard/chess pattern.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Primary color | Default: `ac(1, 0.5, 1, 0.05)` |
-| `color2` | `string` | Secondary color | Default: `'transparent'` |
-| `color3` | `string` | Third color | — |
-| `color4` | `string` | Fourth color | — |
-| `size` | `string` | Cell size | Default: `'25%'` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.background.chess`.
 
 ```json jaml-playground
 [

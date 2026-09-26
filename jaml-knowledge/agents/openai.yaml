@@ -1,0 +1,4 @@
+interface:
+    display_name: 'JAML Knowledge'
+    short_description: 'Maintain knowledge for JAML selection and composition'
+    default_prompt: 'Use $jaml-knowledge to build or update source-grounded skill resources for the requested JAML registry capabilities.'

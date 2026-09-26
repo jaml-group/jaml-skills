@@ -10,15 +10,9 @@
 
 Sets element width, height, and related dimension properties.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `width` | `string` | Element width CSS value | -- |
-| `height` | `string` | Element height CSS value | -- |
-| `minWidth` | `string` | Minimum width | -- |
-| `maxWidth` | `string` | Maximum width | -- |
-| `minHeight` | `string` | Minimum height | -- |
-| `maxHeight` | `string` | Maximum height | -- |
-| `size` | `string` | Shorthand for width/height. Single value (e.g. `"10rem"`) sets both equally. Comma or space-separated pair (e.g. `"10rem,20rem"`) sets width then height | Overrides individual width/height values |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style size`.
+
+The size shorthand overrides individual width and height values.
 
 ```json jaml-playground
 [

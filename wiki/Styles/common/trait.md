@@ -14,8 +14,8 @@ Adds an identity trait. Use it under an element or slot style namespace. `is(typ
 
 Element-scoped preset path:
 
-| Path | Class |
-|---|---|
+| Path               | Class         |
+| ------------------ | ------------- |
 | `label.is.subgrid` | `jam-subgrid` |
 
 ```json jaml-playground
@@ -32,10 +32,10 @@ Element-scoped preset path:
 
 Adds a positive treatment trait. Generic `with(type)` adds `jam-with-{type}`; preset paths use the framework treatment names.
 
-| Path | Class |
-|---|---|
-| `with.accent` | `jam-bg-accent` |
-| `with.tint` | `jam-bg-tint` |
+| Path             | Class             |
+| ---------------- | ----------------- |
+| `with.accent`    | `jam-bg-accent`   |
+| `with.tint`      | `jam-bg-tint`     |
 | `with.elevation` | `jam-bg-elevated` |
 
 ```json jaml-playground
@@ -53,9 +53,7 @@ Adds a positive treatment trait. Generic `with(type)` adds `jam-with-{type}`; pr
 
 Adds a negative trait as `jam-no-{type}`. It is available both as `Styles.no(type)` and through common element and slot style namespaces, for example `button.no(icon)` or `cap.no(wrap)`.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Trait name | Shorthand |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style no`.
 
 ```json jaml-playground
 [
@@ -71,15 +69,13 @@ Adds a negative trait as `jam-no-{type}`. It is available both as `Styles.no(typ
 
 Declares the surface context an element is rendered on. Generic `on(type)` adds `jam-on-{type}`; preset paths configure the framework's foreground color profile for common contexts.
 
-| Path | Class |
-|---|---|
+| Path        | Class           |
+| ----------- | --------------- |
 | `on.accent` | `jam-on-accent` |
-| `on.light` | `jam-on-light` |
-| `on.dark` | `jam-on-dark` |
+| `on.light`  | `jam-on-light`  |
+| `on.dark`   | `jam-on-dark`   |
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Surface context name | Shorthand for `on(type)` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style on`.
 
 ```json jaml-playground
 [

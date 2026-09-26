@@ -8,10 +8,7 @@ Adds a positioned overlay with optional content on top of the element.
 
 ## Args
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `content` | `any` | Overlay content (text or HTML) | Rendered inside the overlay |
-| `class` | `string` | Additional CSS class for the overlay | Default: `''`. Applied alongside internal classes |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.overlay`.
 
 Standard layer args also apply: `zIndex`, `opacity`, `mask`, `filter`, `padding`, `borderRadius`, `entryAnimation`, `exitAnimation`, etc.
 

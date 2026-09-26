@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { checkResources, filesUnder } from '../scripts/resources.mjs';
@@ -18,7 +18,7 @@ test('artifact installs independently and preserves learned corrections on repla
         const _artifact = JSON.parse(readFileSync(resolve(root, 'dist/artifact.json'), 'utf8'));
         const _unpacked = spawnSync('tar', ['-xzf', resolve(root, 'dist', _artifact.file), '-C', _temporary], { encoding: 'utf8' });
         assert.equal(_unpacked.status, 0, _unpacked.stderr);
-        assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8')).skills), ['jaml']);
+        assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8')).skills), ['jaml', 'jaml-knowledge']);
         assert.equal(existsSync(resolve(_bundle, 'scripts/check-docs.mjs')), false);
         const _destination = resolve(_temporary, 'client/skills');
         const _args = [resolve(_bundle, 'scripts/install.mjs'), '--destination', _destination];
@@ -28,6 +28,16 @@ test('artifact installs independently and preserves learned corrections on repla
             assert.deepEqual(checkResources(resolve(_destination, name)).issues, []);
             assert.ok(existsSync(resolve(_destination, name, 'references/Theme/tokens.md')));
         }
+        assert.equal(existsSync(resolve(_destination, 'jaml-knowledge')), false, 'Default install remains jaml-only');
+        const _lookup = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), 'show', 'style', 'layout.application', '--locale', 'zh'], { cwd: _temporary, encoding: 'utf8' });
+        assert.equal(_lookup.status, 0, _lookup.stderr);
+        const _profile = JSON.parse(_lookup.stdout);
+        const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
+        assert.equal(_profile.catalogDigest, _manifest.catalog.digest);
+        assert.equal(_profile.schemaDigest, _manifest.catalog.schemaDigest);
+        assert.equal(_profile.profile.desc, '有界应用布局');
+        assert.ok(existsSync(resolve(_destination, 'jaml/references/API', _profile.reference)));
+        assert.equal(readFileSync(resolve(_destination, 'jaml/catalog/LICENSE'), 'utf8'), readFileSync(resolve(root, 'jaml/catalog/LICENSE'), 'utf8'));
         const _learned = resolve(_destination, 'jaml/LEARNED.md');
         writeFileSync(_learned, 'A verified user correction.\n');
         writeFileSync(resolve(_destination, 'jaml/obsolete-resource.md'), 'stale');
@@ -35,7 +45,39 @@ test('artifact installs independently and preserves learned corrections on repla
         assert.equal(_updated.status, 0, _updated.stderr);
         assert.equal(readFileSync(_learned, 'utf8'), 'A verified user correction.\n');
         assert.equal(existsSync(resolve(_destination, 'jaml/obsolete-resource.md')), false);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
+});
+
+test('knowledge skill installs alone with self-contained references and leaves existing skills untouched', () => {
+    const _temporary = mkdtempSync(resolve(tmpdir(), 'jam-knowledge-install-'));
+    try {
+        const _destination = resolve(_temporary, 'skills');
+        const _existing = resolve(_destination, 'jaml/SKILL.md');
+        mkdirSync(resolve(_destination, 'jaml'), { recursive: true });
+        writeFileSync(_existing, 'Existing JAML installation');
+        const _result = spawnSync(process.execPath, [resolve(root, 'scripts/install.mjs'), '--destination', _destination, '--skill', 'jaml-knowledge'], { cwd: _temporary, encoding: 'utf8' });
+        assert.equal(_result.status, 0, _result.stderr);
+        const _installed = resolve(_destination, 'jaml-knowledge');
+        assert.deepEqual(checkResources(_installed).issues, []);
+        const _expected = filesUnder(resolve(root, 'jaml-knowledge'))
+            .map((file) => relative(resolve(root, 'jaml-knowledge'), file))
+            .sort();
+        const _actual = filesUnder(_installed)
+            .map((file) => relative(_installed, file))
+            .filter((name) => name !== 'version.json')
+            .sort();
+        assert.deepEqual(_actual, _expected);
+        for (const name of _expected) {
+            assert.equal(readFileSync(resolve(_installed, name), 'utf8'), readFileSync(resolve(root, 'jaml-knowledge', name), 'utf8'));
+        }
+        assert.equal(JSON.parse(readFileSync(resolve(_installed, 'version.json'), 'utf8')).name, 'jaml-knowledge');
+        assert.equal(existsSync(resolve(_installed, 'catalog')), false);
+        assert.equal(readFileSync(_existing, 'utf8'), 'Existing JAML installation');
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 test('modified artifact is rejected before an installed skill is changed', () => {
@@ -49,7 +91,9 @@ test('modified artifact is rejected before an installed skill is changed', () =>
         assert.notEqual(_result.status, 0);
         assert.match(_result.stderr, /Invalid artifact resource/);
         assert.equal(existsSync(_destination), false);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 for (const metadata of [
@@ -68,7 +112,9 @@ for (const metadata of [
             const _result = spawnSync(process.execPath, [resolve(root, 'scripts/install.mjs'), '--skill', 'jaml', '--destination', _destination], { encoding: 'utf8' });
             assert.notEqual(_result.status, 0);
             assert.equal(readFileSync(_version, 'utf8'), _original);
-        } finally { rmSync(_temporary, { recursive: true, force: true }); }
+        } finally {
+            rmSync(_temporary, { recursive: true, force: true });
+        }
     });
 }
 
@@ -85,7 +131,9 @@ test('resource collection rejects directory and file links outside its boundary'
         rmSync(resolve(_source, 'leaked.txt'));
         symlinkSync(_temporary, resolve(_source, 'outside'));
         assert.throws(() => filesUnder(_source), /External resource link/);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 test('resource collection excludes cloud-sync staging files at every depth', () => {
@@ -98,5 +146,7 @@ test('resource collection excludes cloud-sync staging files at every depth', () 
         const _resource = resolve(_temporary, 'references/guide.md');
         writeFileSync(_resource, '# Reference');
         assert.deepEqual(filesUnder(_temporary), [_resource]);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });

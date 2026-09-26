@@ -7,20 +7,10 @@
 ## Variants
 
 ### `check.frame`
+
 Frame locator around the checked option.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `size` | `number` | Locator corner size | Unit: `px` |
-| `width` | `number \| string` | Border width | Default: `'0.25rem'` |
-| `bias` | `number` | Offset from the option edge | Default: `0`, unit: `px` |
-| `glow` | `number \| false` | Glow blur radius. Set to `false` to fully disable | Default: `false` |
-| `radius` | `number \| string` | Border radius. `'auto'` matches the option's radius | Default: `'0.25rem'` |
-| `delay` | `number` | Delay before showing | Default: `200`, unit: `ms` |
-| `breathe` | `boolean` | Enable breathing pulse animation | Default: `false` |
-| `easing` | `string` | CSS easing function | Default: `'bouncing'` |
-| `duration` | `number` | Transition duration | Default: `400`, unit: `ms` |
-| `css` | `dictionary \| string` | Additional CSS properties applied directly to the checked option DOM element | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style check.frame`.
 
 ```json jaml-playground
 [
@@ -46,6 +36,7 @@ Frame locator around the checked option.
 ```
 
 ### `check.shade`
+
 Shaded background behind the checked option. Same args as `frame`, with `bias` default `'0.25rem'`.
 
 ```json jaml-playground
@@ -64,6 +55,7 @@ Shaded background behind the checked option. Same args as `frame`, with `bias` d
 ```
 
 ### `check.underscore`
+
 Underline below the checked option. Same args as `frame`, with `width` default `'0.25rem'`.
 
 ```json jaml-playground
@@ -82,6 +74,7 @@ Underline below the checked option. Same args as `frame`, with `width` default `
 ```
 
 ### `check.pipe`
+
 Side pipe indicator on the checked option. Same args as `frame`, with `width` default `'0.25rem'`, `bias` default `'0.25rem'`.
 
 ```json jaml-playground

@@ -27,6 +27,7 @@ Auto-recalculates the table layout (column widths, row sizes) when the container
 ```
 
 ### `table.stretchrow`
+
 Stretches table rows to fill the available container height, distributing empty space evenly.
 
 ```json jaml-playground
@@ -43,12 +44,10 @@ Stretches table rows to fill the available container height, distributing empty 
 ```
 
 ### `table.stripy`
+
 Applies zebra-stripe alternating background colors to rows for improved readability.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `odd` | `string` | Background color for odd rows | — |
-| `even` | `string` | Background color for even rows | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.stripy`.
 
 ```json jaml-playground
 [
@@ -65,16 +64,10 @@ Applies zebra-stripe alternating background colors to rows for improved readabil
 ```
 
 ### `table.gridline`
+
 Adds grid lines between rows and/or columns.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `rowWidth` | `number \| string` | Grid line width for rows | Unit: px |
-| `colWidth` | `number \| string` | Grid line width for columns | Unit: px |
-| `color` | `string` | Grid line color | — |
-| `outlineWidth` | `number \| string` | Outer border width around the grid | Unit: px |
-| `outlineColor` | `string` | Outer border color | Defaults to `color` |
-| `neck` | `string` | Corner/neck style | Default: `'small'`. Options: `auto`, `small`, `none`, or a CSS length |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.gridline`.
 
 ```json jaml-playground
 [
@@ -93,10 +86,7 @@ Adds grid lines between rows and/or columns.
 
 Separates table cells into rounded bento-style blocks.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `margin` | `number \| string` | Space around each cell | Numbers use `rem`; default: `var(--jam-space-xs)` |
-| `borderRaidus` | `number \| string` | Cell border radius | Numbers use `rem`; default: `var(--jam-border-radius-s)` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.bento`.
 
 ```json jaml-playground
 [
@@ -112,6 +102,7 @@ Separates table cells into rounded bento-style blocks.
 ```
 
 ### `table.headless`
+
 Renders the table without a visible header row. Header cells are hidden while data remains intact.
 
 ```json jaml-playground
@@ -128,12 +119,10 @@ Renders the table without a visible header row. Header cells are hidden while da
 ```
 
 ### `table.xscrollable`
+
 Enables horizontal scrolling for wide tables with support for frozen (locked) columns on either side.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `freezeLeft` | `number` | Number of columns to freeze on the left | — |
-| `freezeRight` | `number` | Number of columns to freeze on the right | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.xscrollable`.
 
 ```json jaml-playground
 [
@@ -149,18 +138,10 @@ Enables horizontal scrolling for wide tables with support for frozen (locked) co
 ```
 
 ### `table.fixedrowheight`
+
 Enables virtual scrolling for large datasets by fixing row heights to a specific value. Supports animated entry effects.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `height` | `number \| string` | Fixed row height | Default: `2.5rem`. Shorthand. |
-| `padding` | `number` | Extra padding rows rendered offscreen | Default: `10` (or `0` when animation is on) |
-| `animation` | `boolean \| string` | Enable entry animation | Default: `'fade-in-'` |
-| `easing` | `string` | CSS easing for animations | Default: `'ease'` |
-| `duration` | `number` | Animation duration in ms | Default: depends on threshold |
-| `tileduration` | `number` | Tile-style staggered animation delay | Default: `0` |
-| `tilerandom` | `boolean` | Randomize tile animation order | Default: `false` |
-| `defaultDirection` | `string` | Default entry direction | Default: `'up'`. Options: `up`, `down`, `right`, `left` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.fixedrowheight`.
 
 ```json jaml-playground
 [
@@ -176,20 +157,10 @@ Enables virtual scrolling for large datasets by fixing row heights to a specific
 ```
 
 ### `table.hovermarker`
+
 Highlights the hovered row, column, or cell with a locator outline.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Marker type | Default: `'row'`. Options: `row`, `column`, `td` |
-| `size` | `number` | Locator corner size in px | — |
-| `width` | `number \| string` | Border width | Default: `'auto'` |
-| `bias` | `number` | Offset inward from edge in px | Default: `0` |
-| `glow` | `number` | Glow blur radius in px | Default: `0` |
-| `radius` | `number \| string` | Border radius | Default: `'auto'` |
-| `delay` | `number` | Delay before showing in ms | Default: `0` |
-| `breathe` | `boolean` | Enable breathing pulse | Default: `false` |
-| `easing` | `string` | CSS easing for transitions | — |
-| `duration` | `number` | Transition duration in ms | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.hovermarker`.
 
 ```json jaml-playground
 [
@@ -205,14 +176,10 @@ Highlights the hovered row, column, or cell with a locator outline.
 ```
 
 ### `table.hoverhighlight`
+
 Applies a highlight background color to the hovered row and optionally to the hovered column.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Highlight background color | Shorthand. Default: computed accent |
-| `active` | `string` | Active/clicked background color | — |
-| `overlay` | `boolean` | Render highlight as overlay | Default: `true` |
-| `column` | `boolean` | Also highlight the column | Default: `false` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.hoverhighlight`.
 
 ```json jaml-playground
 [
@@ -228,12 +195,10 @@ Applies a highlight background color to the hovered row and optionally to the ho
 ```
 
 ### `table.showrownum`
+
 Displays automatic row numbers in a dedicated column before the data columns.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `padding` | `number \| string` | Left padding for the row number column | Unit: em |
-| `style` | `string` | Visual style of the row number | Default: `'pill'`. Options: `pill`, `plain`, `stroke` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.showrownum`.
 
 ```json jaml-playground
 [
@@ -249,12 +214,10 @@ Displays automatic row numbers in a dedicated column before the data columns.
 ```
 
 ### `table.showscrollprogress`
+
 Shows a progress bar at the top of the table body that tracks vertical scroll position.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `height` | `number \| string` | Progress bar height | Default: `0.1`. Unit: rem |
-| `color` | `string` | Progress bar color | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.showscrollprogress`.
 
 ```json jaml-playground
 [
@@ -270,6 +233,7 @@ Shows a progress bar at the top of the table body that tracks vertical scroll po
 ```
 
 ### `table.showpageinfo`
+
 Shows pagination page information. Currently a placeholder with no args. Behavior pending implementation.
 
 ```json jaml-playground
@@ -286,6 +250,7 @@ Shows pagination page information. Currently a placeholder with no args. Behavio
 ```
 
 ### `table.markdown`
+
 Applies markdown-friendly styling to the table, adapting header and cell appearance for markdown-rendered content.
 
 ```json jaml-playground
@@ -302,19 +267,19 @@ Applies markdown-friendly styling to the table, adapting header and cell appeara
 ```
 
 ### `table.thead`
+
 Customizes table header background color or image. Sub-variants provide preset header tinting.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Header background color | Also computes readable header text and hover/active colors |
-| `image` | `string` | Header background image | CSS image value |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.thead`.
+
+The header treatment also computes readable text and hover/active colors.
 
 Sub-variants:
 
-- **`table.thead.hide`** — hides the table header
-- **`table.thead.tint`** — tinted header preset
-- **`table.thead.accent`** — accent-colored header preset
-- **`table.thead.elevated`** — elevated header preset
+-   **`table.thead.hide`** — hides the table header
+-   **`table.thead.tint`** — tinted header preset
+-   **`table.thead.accent`** — accent-colored header preset
+-   **`table.thead.elevated`** — elevated header preset
 
 ```json jaml-playground
 [
@@ -330,11 +295,10 @@ Sub-variants:
 ```
 
 ### `table.autopercent`
+
 Automatically converts cells containing percentage-like text into progress bar indicators.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `matcher` | `string` | Regex pattern to detect percentage columns | Default: `'(占比\|百分比\|%)'` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style table.autopercent`.
 
 ```json jaml-playground
 [

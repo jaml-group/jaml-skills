@@ -6,12 +6,11 @@
 
 Observes direct child elements being added or removed using `MutationObserver`. It does not watch nested descendants: `observeChild()` uses `{ childList: true }` without `subtree`. For content whose descendants render asynchronously, use a lifecycle-owned observer with `subtree: true` when the direct-child contract is insufficient; disconnect it when unplugged.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `childAdded` | `(el: HTMLElement) => void` | Called when a child is added | — |
-| `childRemoved` | `(el: HTMLElement) => void` | Called when a child is removed | — |
-| `childChanged` | `(added: Node[], removed: Node[]) => void` | Called on any child mutation | Receives arrays of added and removed nodes |
-| `filter` | `(node: Node) => boolean` | Filter which nodes to observe | Default: `node instanceof HTMLElement` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin observe.child`.
+
+`childAdded(child)` and `childRemoved(child)` receive the changed element. `childChanged(addedNodes, removedNodes)` receives both arrays. The node filter controls which mutations are observed; without a custom filter, only HTML elements are accepted.
+
+The child-change callback receives arrays of added and removed nodes.
 
 ```javascript jaml-playground
 export default {
@@ -34,14 +33,11 @@ export default {
 
 Observes child elements entering or leaving the viewport using `IntersectionObserver`. Automatically observes new children as they are added via an internal `MutationObserver`.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `showing` | `(el: HTMLElement) => void` | Called when a child becomes visible | — |
-| `hiding` | `(el: HTMLElement) => void` | Called when a child leaves the viewport | — |
-| `adding` | `(el: HTMLElement, io: IntersectionObserver) => void` | Custom observe hook when a child is added | If omitted, calls `io.observe(el)` |
-| `removing` | `(el: HTMLElement, io: IntersectionObserver) => void` | Custom unobserve hook when a child is removed | If omitted, calls `io.unobserve(el)` |
-| `option` | `IntersectionObserverInit` | Standard IntersectionObserver options | e.g. `{ threshold: 0.5 }` |
-| `filter` | `(node: Node) => boolean` | Filter which nodes to observe | Default: `node instanceof HTMLElement` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin observe.intersection`.
+
+`showing(child)` and `hiding(child)` receive the affected element. Custom `adding(child, observer)` and `removing(child, observer)` hooks receive the child and the `IntersectionObserver` and own its registration. The node filter selects observed mutations; without a custom filter, only HTML elements are accepted.
+
+Without custom adding/removing callbacks, the plugin observes added elements and unobserves removed elements.
 
 ```javascript jaml-playground
 export default {

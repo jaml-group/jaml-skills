@@ -8,12 +8,7 @@ Supports applying any CSS properties as a positioned layer. Use for custom backg
 
 ## Args
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `cssText` | `string \| function` | CSS content as string or function returning style dict/string | Shorthand arg |
-| `selector` | `string` | CSS selector applied to the layer | Auto-generated from path if not set |
-| `method` | `string` | Application method | Options: `'vars'`, `'rule'`, `'props'` |
-| `direct` | `boolean` | Apply only to direct children (default: all descendants) | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.css`.
 
 All CSS properties are also accepted as individual args (background, color, margin, padding, etc.).
 

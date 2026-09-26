@@ -6,32 +6,22 @@
 
 ## Slots
 
-| Slot | Type | Description |
-|---|---|---|
-| `icon` | slotted | Icon content |
-| `cap` | slotted | Title label text |
-| `label` slot | slot | The `<slot name="label">` element |
-| `body` slot | slot | The `<slot class="body">` default slot |
+| Slot         | Type    | Description                            |
+| ------------ | ------- | -------------------------------------- |
+| `icon`       | slotted | Icon content                           |
+| `cap`        | slotted | Title label text                       |
+| `label` slot | slot    | The `<slot name="label">` element      |
+| `body` slot  | slot    | The `<slot class="body">` default slot |
 
 ---
 
 ## Style variants
 
 ### `card.floating`
+
 Floating card — movable, resizable, closable, zoomable, click-to-front panel. The card can be dragged by its label slot, resized from any edge, closed via the close button, and brought to front on click.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `top` | `string` | Initial top position (e.g. `'100px'`) | — |
-| `left` | `string` | Initial left position (e.g. `'100px'`) | — |
-| `bias` | `number` | Offset from the current front panel | Default: `30` |
-| `width` | `string` | Card width (e.g. `'300px'`) | — |
-| `height` | `string` | Card height (e.g. `'200px'`) | — |
-| `minWidth` | `string` | Minimum width | Default: `200` |
-| `maxWidth` | `string` | Maximum width | — |
-| `minHeight` | `string` | Minimum height | Default: `200` |
-| `maxHeight` | `string` | Maximum height | — |
-| `size` | `string` | Shorthand — sets both width and height to the same value | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style card.floating`.
 
 ```json jaml-playground
 [

@@ -7,21 +7,10 @@
 ## Variants
 
 ### `hover.frame`
+
 Shows a frame locator around the element on mouseenter. The locator matches the target's border-radius and can glow, breathe, or animate with custom easing.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `size` | `number` | Locator corner size in px | — |
-| `width` | `number \| string` | Border width in px | Default: `'auto'` (matches target's border-width) |
-| `bias` | `number` | Offset inward from the target edge in px | Default: `0` |
-| `glow` | `number` | Glow blur radius in px | Default: `5`. Set to `0` to disable |
-| `radius` | `number \| string` | Border radius | Default: `'auto'` (matches target's radius). Pass a number for px |
-| `delay` | `number` | Delay before showing in ms | Default: `0` |
-| `breathe` | `boolean` | Enable breathing pulse animation | Default: `false` |
-| `container` | `Element` | Container to append the locator into | — |
-| `clipTarget` | `Element` | Element to clip the locator against | — |
-| `easing` | `string` | CSS easing for transitions | Options: `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `bouncing`, `smooth`, `crisp` |
-| `duration` | `number` | Transition duration in ms | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style hover.frame`.
 
 ```json jaml-playground
 [
@@ -39,6 +28,7 @@ Shows a frame locator around the element on mouseenter. The locator matches the 
 ```
 
 ### `hover.shade`
+
 Shows a shaded locator behind the element on mouseenter. Same args as `frame`.
 
 ```json jaml-playground
@@ -52,6 +42,7 @@ Shows a shaded locator behind the element on mouseenter. Same args as `frame`.
 ```
 
 ### `hover.crosshair`
+
 Shows a crosshair corner-bracket locator on mouseenter. Same args as `frame` with `breathe` default `true`, `easing` default `'ease-in-out'`.
 
 ```json jaml-playground
@@ -65,15 +56,10 @@ Shows a crosshair corner-bracket locator on mouseenter. Same args as `frame` wit
 ```
 
 ### `hover.parallax`
+
 3D parallax tilt effect on mouse move. Add `pp-depth` attributes to children to control depth layers.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `intensity` | `number` | Tilt intensity multiplier | Default: `3` |
-| `maxDepth` | `number` | Accepted configuration field | Default: `3`; the current engine derives depth from the tree and does not enforce this as a cap |
-| `inward` | `boolean` | Tilt inward instead of outward | Default: `false` |
-| `pan` | `boolean` | Use translation instead of rotation | Default: `false` |
-| `startAngles` | `array` | Initial rotation angles `[x, y]` in degrees | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style hover.parallax`.
 
 ```json jaml-playground
 [
@@ -91,6 +77,7 @@ Shows a crosshair corner-bracket locator on mouseenter. Same args as `frame` wit
 ```
 
 ### `hover.dynamicbg`
+
 Shows an animated dynamic background on hover. No args.
 
 ```json jaml-playground
@@ -104,6 +91,7 @@ Shows an animated dynamic background on hover. No args.
 ```
 
 ### `hover.withbg`
+
 Shows a solid background on hover. No args.
 
 ```json jaml-playground
@@ -117,6 +105,7 @@ Shows a solid background on hover. No args.
 ```
 
 ### `hover.highlightcap`
+
 Highlights the `cap` slot text on hover by inserting a background layer behind it. Does not apply to `BananaButton` elements. No args.
 
 ```json jaml-playground
@@ -130,12 +119,10 @@ Highlights the `cap` slot text on hover by inserting a background layer behind i
 ```
 
 ### `hover.brighter`
+
 Brightness and saturation boost on hover.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `b` | `number` | Brightness multiplier | Default: `1.04` |
-| `s` | `number` | Saturation multiplier | Default: `1.1` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style hover.brighter`.
 
 ```json jaml-playground
 [
@@ -153,12 +140,10 @@ Brightness and saturation boost on hover.
 ```
 
 ### `hover.toShowAll`
+
 Shows a floating label clone of truncated text on hover. Useful for table cells or labels with `overflow: hidden` / `text-overflow: ellipsis`.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `selector` | `string` | CSS selector to target specific overflowing children | Defaults to the element itself |
-| `align` | `string` | Where the floating label appears | Default: `'center'`. Options: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top`, `bottom`, `left`, `center`, `right` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style hover.toShowAll`.
 
 ```json jaml-playground
 [
@@ -171,6 +156,7 @@ Shows a floating label clone of truncated text on hover. Useful for table cells 
 ```
 
 ### `hover.bouncing`
+
 Bounce animation on hover. No args.
 
 ```json jaml-playground

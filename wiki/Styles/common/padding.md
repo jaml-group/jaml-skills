@@ -10,13 +10,9 @@
 
 Sets padding spacing on individual sides of an element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `top` | `string` | Top padding | — |
-| `right` | `string` | Right padding | — |
-| `bottom` | `string` | Bottom padding | — |
-| `left` | `string` | Left padding | — |
-| `padding` | `string` | Shorthand for all sides | Overrides individual side values |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style padding`.
+
+The padding shorthand overrides individual side values.
 
 ```json jaml-playground
 [

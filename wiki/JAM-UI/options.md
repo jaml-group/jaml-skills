@@ -2,7 +2,7 @@
 
 **Class:** `OliveOptions` · **Types:** `"radio"`, `"checkbox"` · **Extends:** `AbstractOptionElement`
 
-An inline radio or checkbox option list. Renders each option as a styled `<input>` + label pair. Supports "select all", option groups, and auto-tip.
+An inline radio or checkbox option list. Renders each option as a styled `<input>` + label pair. Supports "select all", option groups, and auto-tip. See [generated-option listener and CSP boundaries](./JAM-UI.md#generated-options-and-csp) for the built-in input behavior.
 
 ---
 
@@ -28,24 +28,24 @@ An inline radio or checkbox option list. Renders each option as a styled `<input
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement), including `data`, `dataUrl`, `value`, `defaultValue`, `allKeys`, `perGroup`, `template`, and `keyword`.
 
-| Param | Type | Default | Description |
-|---|---|---|---|
-| `type` | `'radio' \| 'checkbox'` | — | Selection mode. Use `"radio"` or `"checkbox"` as the JAML type directly. |
-| `chooseAll` | `boolean` | `true` for checkbox | Show a "select all" option at the top. |
-| `rootConf` | `GroupConfig` | auto | Root group configuration. Override to customize the root group. |
-| `autoTip` | `boolean` | `false` | Auto-generate tooltip with name and value for each option. |
+| Param       | Type                    | Default             | Description                                                              |
+| ----------- | ----------------------- | ------------------- | ------------------------------------------------------------------------ |
+| `type`      | `'radio' \| 'checkbox'` | —                   | Selection mode. Use `"radio"` or `"checkbox"` as the JAML type directly. |
+| `chooseAll` | `boolean`               | `true` for checkbox | Show a "select all" option at the top.                                   |
+| `rootConf`  | `GroupConfig`           | auto                | Root group configuration. Override to customize the root group.          |
+| `autoTip`   | `boolean`               | `false`             | Auto-generate tooltip with name and value for each option.               |
 
 ---
 
 ## `rootConf` fields
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `string` | Root group ID |
-| `name` | `string` | "Select all" option name |
-| `tip` | `string` | "Select all" tooltip |
-| `hide` | `boolean` | Hide the root group option |
-| `checkType` | `'radio' \| 'checkbox'` | Selection type |
+| Field       | Type                    | Description                |
+| ----------- | ----------------------- | -------------------------- |
+| `id`        | `string`                | Root group ID              |
+| `name`      | `string`                | "Select all" option name   |
+| `tip`       | `string`                | "Select all" tooltip       |
+| `hide`      | `boolean`               | Hide the root group option |
+| `checkType` | `'radio' \| 'checkbox'` | Selection type             |
 
 ---
 
@@ -231,6 +231,6 @@ export default {
 
 ## Notes
 
-- Use `keyword` param to filter options by text match in real time.
-- Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
-- The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).
+-   Use `keyword` param to filter options by text match in real time.
+-   Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
+-   The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).

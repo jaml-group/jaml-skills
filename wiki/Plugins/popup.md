@@ -8,22 +8,9 @@ Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. 
 
 Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Supports sub-tips: when hovering over a child with a `jam-sub-tip` attribute, the popup content updates without closing.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `tipAttr` | `string` | Attribute name to read tooltip content from | Default: `'jam-tip'` |
-| `subTip` | `boolean` | Enable sub-tip handling | — |
-| `subTipAttr` | `string` | Attribute name for sub-tip content | Default: `'jam-sub-tip'` |
-| `selector` | `string` | CSS selector for elements with tooltips | Default: `'[jam-tip]'` |
-| `content` | `string \| Function` | Static tooltip content (overrides attribute reading) | — |
-| `showDelay` | `number` | Delay in ms before showing | — |
-| `hideDelay` | `number` | Delay in ms before hiding | — |
-| `type` | `string` | Popup profile type | Default: `PopupType.tip` |
-| `onshow` | `Function` | Called when popup shows | Receives event detail |
-| `dynamic` | `boolean` | Keep popup content and position dynamic | — |
-| `position` | `string` | Popup position | — |
-| `bias` | `number \| string` | Popup position bias | — |
-| `snapTo` | `string` | Target used for popup snapping | Options: `cursor`, `target` |
-| `autoFlip` | `boolean` | Allow automatic position flipping | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin popup.tip`.
+
+The show callback receives the event detail.
 
 ```json jaml-playground
 {
@@ -73,9 +60,7 @@ export default {
 
 Replaces native HTML `title` attributes with styled popups. Intercepts `mouseenter` on child elements, reads their `title` attribute, clears it temporarily, and shows a styled popup instead. Restores the `title` on mouseleave.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `showDelay` | `number` | Delay before showing | Default: `2000` (longer than tip for less intrusive feel) |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin popup.title`.
 
 ```javascript jaml-playground
 export default {
@@ -97,14 +82,7 @@ export default {
 
 Shows help content on click. Listens for clicks on `[jam-help] > [slot="cap"]` elements and displays the `jam-help` attribute content in a popup. Accepts additional `PapayaPopup` configuration args.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `showDelay` | `number` | Delay in ms before showing | — |
-| `hideDelay` | `number` | Delay in ms before hiding | — |
-| `position` | `string` | Popup position | — |
-| `bias` | `number \| string` | Popup position bias | — |
-| `autoFlip` | `boolean` | Allow automatic position flipping | — |
-| `container` | `string \| Function` | Popup container resolver | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin popup.helper`.
 
 ```json jaml-playground
 {

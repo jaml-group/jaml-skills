@@ -9,6 +9,7 @@ Element (`EndiveElement`) is a generic container used for representers (`divider
 ## Style variants
 
 ### `element.placeholder`
+
 Placeholder visibility — hides the element by default (sets `visibility: hidden`). Useful for representers that should not be visible. No args.
 
 ```json jaml-playground
@@ -21,11 +22,10 @@ Placeholder visibility — hides the element by default (sets `visibility: hidde
 ```
 
 ### `element.header`
+
 Heading-style layout.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `level` | `number` | Heading level | Default: `1` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style element.header`.
 
 ```json jaml-playground
 [
@@ -38,11 +38,10 @@ Heading-style layout.
 ```
 
 ### `element.para`
+
 Paragraph text layout.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `indent` | `number` | Paragraph indent level | Default: `0` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style element.para`.
 
 ```json jaml-playground
 [
@@ -55,11 +54,10 @@ Paragraph text layout.
 ```
 
 ### `element.quote`
+
 Blockquote style.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `indent` | `number` | Quote indent level | Default: `0` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style element.quote`.
 
 ```json jaml-playground
 [
@@ -72,14 +70,10 @@ Blockquote style.
 ```
 
 ### `element.list`
+
 List item with optional order number or todo checkbox.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `indent` | `number` | List indent level | Default: `0` |
-| `order` | `number` | Ordered list number | — |
-| `todo` | `boolean` | Show as todo item with checkbox | Default: `false` |
-| `checked` | `boolean` | Checkbox checked state | Default: `false`. Only applies when `todo` is `true` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style element.list`.
 
 ```json jaml-playground
 [
@@ -92,12 +86,10 @@ List item with optional order number or todo checkbox.
 ```
 
 ### `element.image`
+
 Image display — renders an `<img>` element inside the element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `src` | `string` | Image URL | — |
-| `alt` | `string` | Alternate text | — |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style element.image`.
 
 ```json jaml-playground
 [

@@ -7,21 +7,12 @@
 ## Variants
 
 ### `watermark`
+
 Text watermark overlay. Renders translucent text over the element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `text` | `string \| function` | Watermark text content | Default: `'watermark'`. Shorthand arg |
-| `color` | `string` | Text color | Default: `ac(1, 0.15, lumiO(5))` |
-| `font` | `string` | Font family | — |
-| `size` | `string` | Font size | — |
-| `weight` | `string` | Font weight | Options: `'normal'`, `'bold'` |
-| `style` | `Dictionary` | CSS declarations for the watermark text span | For example `{ transform: "rotate(-15deg)" }` in JavaScript |
-| `decoration` | `string` | Text decoration | Options: `'none'`, `'underline'` |
-| `spacing` | `string` | Letter spacing | — |
-| `shadow` | `string` | Text shadow | — |
-| `align` | `string` | Text alignment | Options: `'left'`, `'center'`, `'right'` |
-| `opacity` | `number` | Layer opacity | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.watermark`.
+
+Use the `style` dictionary for CSS on the watermark text span, for example `{ opacity: 0.2 }` in JavaScript.
 
 ```json jaml-playground
 [
@@ -39,16 +30,10 @@ Text watermark overlay. Renders translucent text over the element.
 ```
 
 ### `watermark.icon`
+
 Icon/emoji watermark with gradient and inversion options. Copies the host element's `icon` slot into a decorative layer; set the host `icon` param to an icon name or emoji.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `style` | `string` | Font Awesome style | Options: `'fas'`, `'far'`, `'fad'`, `'fal'`. Default: `'fas'` |
-| `size` | `string` | Icon size | Default: `'6em'` |
-| `bottom` | `number \| string` | Bottom offset | — |
-| `right` | `number \| string` | Right offset | — |
-| `invert` | `boolean` | Invert for dark mode | Default: auto-detected |
-| `gradient` | `boolean \| string` | Apply gradient to icon | Pass a string for custom gradient |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.watermark.icon`.
 
 ```json jaml-playground
 [

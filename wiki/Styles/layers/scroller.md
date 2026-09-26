@@ -7,20 +7,10 @@
 ## Variants
 
 ### `scroller`
+
 Auto-scrolling background. Two background copies (primary and secondary) cycle to create a seamless scroll effect.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Scroll direction | Options: `'up'`, `'down'`, `'left'`, `'right'`. Default: `'down'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `fromStart` | `boolean` | Start from beginning | Default: `false` |
-| `duration` | `number \| string` | Scroll animation duration in ms | Default: `10000` |
-| `easing` | `string` | CSS easing function | Default: `'linear'` |
-| `color` | `string` | Background color | — |
-| `image` | `array \| string` | Background image | — |
-| `position` | `array \| string` | Background position | — |
-| `size` | `array \| string` | Background size | — |
-| `repeat` | `array \| string` | Background repeat | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller`.
 
 ```json jaml-playground
 [
@@ -38,16 +28,10 @@ Auto-scrolling background. Two background copies (primary and secondary) cycle t
 ```
 
 ### `scroller.text`
+
 Scrolling text content. Splits text characters and scrolls them across the background.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `content` | `string` | Text content to scroll | Default: `'Hello World'` |
-| `direction` | `string` | Scroll direction | Options: `'up'`, `'down'`, `'left'`, `'right'`. Default: `'down'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `fromStart` | `boolean` | Start from beginning | Default: `false` |
-| `duration` | `number \| string` | Duration in ms (or `'auto'` to calculate from content length) | Default: `'auto'` |
-| `easing` | `string` | CSS easing | Default: `'linear'` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller.text`.
 
 ```json jaml-playground
 [
@@ -60,21 +44,10 @@ Scrolling text content. Splits text characters and scrolls them across the backg
 ```
 
 ### `scroller.particles`
+
 Scrolling particle system. Configurable particles that animate across the background.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Scroll direction | Options: `'up'`, `'down'`, `'left'`, `'right'`. Default: `'down'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `duration` | `number \| string` | Duration in ms | Default: `10000` |
-| `countRange` | `array` | Particle count range | — |
-| `sizeRange` | `array` | Particle size range | — |
-| `shape` | `string \| function` | Particle shape | — |
-| `distribution` | `string` | Distribution method | Options: `'random'`, `'halton'`, `'gaussian'`, `'fill'` |
-| `hueRange` | `array` | Hue range | — |
-| `satuRange` | `array` | Saturation range | — |
-| `lumiRange` | `array` | Luminosity range | — |
-| `alphaRange` | `array` | Alpha range | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller.particles`.
 
 ```json jaml-playground
 [
@@ -87,18 +60,10 @@ Scrolling particle system. Configurable particles that animate across the backgr
 ```
 
 ### `scroller.bubbles`
+
 Scrolling bubble particles. A preset particle system with bubble-shaped particles drifting upward.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Scroll direction | Default: `'up'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `duration` | `number \| string` | Duration in ms | Default: `10000` |
-| `shape` | `string` | Particle shape | Default: `'bubble'` |
-| `alphaRange` | `array` | Alpha range | Default: `[0, 0.5]` |
-| `sizeRange` | `array` | Size range | Default: `['5%', '10%']` |
-| `blurRange` | `array` | Blur range | Default: `[0, '5%']` |
-| `factorRange` | `array` | Size factor range for bubble variation | Default: `[0.9, 1]` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller.bubbles`.
 
 ```json jaml-playground
 [
@@ -111,20 +76,10 @@ Scrolling bubble particles. A preset particle system with bubble-shaped particle
 ```
 
 ### `scroller.stripy`
+
 Scrolling stripy (striped) background. Alternating colored stripes that scroll seamlessly.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Scroll direction | Options: `'up'`, `'down'`, `'left'`, `'right'`. Default: `'down'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `duration` | `number \| string` | Duration in ms | Default: `10000` |
-| `alignStripy` | `boolean` | Auto-align stripes to element dimensions | Default: `true` |
-| `convertWidth` | `boolean` | Convert width units automatically | Default: `true` |
-| `deg` | `number` | Stripe angle in deg | Default: `135` |
-| `color` | `string` | Stripe color | Default: `ac()` |
-| `width` | `string` | Stripe width | Default: `'5%'` |
-| `gap` | `string` | Stripe gap | — |
-| `stops` | `array` | Custom stripe stops | Default: `['transparent', '0.15rem', ac(...), '0.15rem']` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller.stripy`.
 
 ```json jaml-playground
 [
@@ -137,18 +92,10 @@ Scrolling stripy (striped) background. Alternating colored stripes that scroll s
 ```
 
 ### `scroller.grid`
+
 Scrolling grid background. A repeating grid pattern that scrolls.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `direction` | `string` | Scroll direction | Options: `'up'`, `'down'`, `'left'`, `'right'`. Default: `'down'` |
-| `scroll` | `boolean` | Enable scrolling | Default: `false` |
-| `duration` | `number \| string` | Duration in ms | Default: `10000` |
-| `deg` | `number \| string` | Grid angle | Default: `90deg` |
-| `color` | `string` | Grid line color | Default: `ac()` |
-| `width` | `string` | Grid line width | Default: `'0.0625rem'` |
-| `gap` | `string` | Grid gap | Default: `'3.125rem'` |
-| `size` | `string` | Grid size (overrides width) | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.scroller.grid`.
 
 ```json jaml-playground
 [

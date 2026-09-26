@@ -7,16 +7,12 @@
 ## Variants
 
 ### `combo.spinner.roulette`
+
 Roulette-style spinner combining frets, comet, and orbit spinners.
 
 Combines `spinner.frets` (reversed, mid:80), `spinner.comet` (mid:80, normal direction), and `spinner.orbit` (single sphere, mid:80).
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| Inherits from `spinner.frets` | — | Fret width, gap, colors, background | `fretWidth` default: `1.5`, `fretGap` default: `10.5` |
-| Inherits from `spinner.comet` | — | Comet length, colors, blur, round head/tail | `cometBlur` default: `'1px'` |
-| `spin` | `boolean \| string` | Overall spin direction | Options: `false`, `'normal'`, `'reverse'` |
-| `duration` | `number` | Animation duration in ms | Default: `10000` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.combo.spinner.roulette`.
 
 ```json jaml-playground
 [
@@ -29,13 +25,12 @@ Combines `spinner.frets` (reversed, mid:80), `spinner.comet` (mid:80, normal dir
 ```
 
 ### `combo.spinner.radar`
+
 Radar-style spinner combining comet and multiple frets layers.
 
 Creates a radar sweep with concentric rings. Uses `spinner.comet` for the sweep line and multiple `spinner.frets` for concentric circles.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| Inherits from `spinner.comet` | — | Comet length, colors, blur | Overrides: `roundHead: false`, `outer: 92`, `inner: 0` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.combo.spinner.radar`.
 
 ```json jaml-playground
 [
@@ -48,13 +43,12 @@ Creates a radar sweep with concentric rings. Uses `spinner.comet` for the sweep 
 ```
 
 ### `combo.spinner.reddit`
+
 Multi-layered Reddit-style spinner.
 
 Combines two pairs of frets + orbit layers at different radii and a central background dot.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| Inherits from `spinner.comet` | — | Base args for the layered spinners | — |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.combo.spinner.reddit`.
 
 ```json jaml-playground
 [
@@ -67,6 +61,7 @@ Combines two pairs of frets + orbit layers at different radii and a central back
 ```
 
 ### `combo.masked`
+
 Masked background layer. Wraps `layerBackgrounds()` with mask support.
 
 ```json jaml-playground
@@ -80,11 +75,10 @@ Masked background layer. Wraps `layerBackgrounds()` with mask support.
 ```
 
 ### `combo.masked.stripy`
+
 Stripy background with a gradient mask. The stripes are masked by a linear gradient for a fade effect.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| Inherits from `background.stripy` | — | Stripe angle, color, width, gap | Overrides: `color`, `width: '0.5rem'` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.combo.masked.stripy`.
 
 ```json jaml-playground
 [

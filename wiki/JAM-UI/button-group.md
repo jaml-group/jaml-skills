@@ -2,7 +2,7 @@
 
 **Class:** `BlackberryButtonGroup` · **Type:** `"buttongroup"` · **Extends:** `OliveOptions` (`AbstractOptionElement`)
 
-A row of buttons that acts as a single-select or multi-select input. Each option is rendered as a `BananaButton`. Supports radio (single-select), checkbox/multi (multi-select), and combined subtypes. Use composite shorthand like `"buttongroup-checkbox"`, `"buttongroup-ghost"`, or `"buttongroup-outline"` to set the mode and style.
+A row of buttons, with each option rendered as a `BananaButton`. Plain `"buttongroup"` defaults to `checkType: "none"`; use `"buttongroup-radio"` for exclusive single selection or `"buttongroup-checkbox"` for multiple selection. Visual subtypes such as `"buttongroup-ghost"` and `"buttongroup-outline"` do not enable selection by themselves; combine style and mode with `"buttongroup-ghostradio"` or `"buttongroup-outlineradio"` when needed.
 
 ---
 
@@ -10,7 +10,7 @@ A row of buttons that acts as a single-select or multi-select input. Each option
 
 ```json jaml-playground
 {
-  "type": "buttongroup",
+  "type": "buttongroup-radio",
   "cap": "View Mode",
   "data": [
     { "name": "List",  "value": "list",  "icon": "☰" },
@@ -28,30 +28,30 @@ A row of buttons that acts as a single-select or multi-select input. Each option
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
-| Param | Type | Default | Description |
-|---|---|---|---|
-| `data` | `ElementOption[]` | `[]` | Button options. Each entry becomes a button. |
-| `value` | `any \| any[]` | — | Selected value(s). |
-| `defaultValue` | `any \| any[]` | — | Pre-selected value(s). |
-| `chooseAll` | `boolean` | `true` (checkbox) | Show a "select all" toggle. Auto-enabled in checkbox mode. |
-| `autoTip` | `boolean` | `false` | Auto-generate tooltip text for each option from its name and value. |
+| Param          | Type              | Default           | Description                                                         |
+| -------------- | ----------------- | ----------------- | ------------------------------------------------------------------- |
+| `data`         | `ElementOption[]` | `[]`              | Button options. Each entry becomes a button.                        |
+| `value`        | `any \| any[]`    | —                 | Selected value(s).                                                  |
+| `defaultValue` | `any \| any[]`    | —                 | Pre-selected value(s).                                              |
+| `chooseAll`    | `boolean`         | `true` (checkbox) | Show a "select all" toggle. Auto-enabled in checkbox mode.          |
+| `autoTip`      | `boolean`         | `false`           | Auto-generate tooltip text for each option from its name and value. |
 
-**Available subtypes:** `radio` (default, single-select), `checkbox` / `multi` (multi-select), `ghost` / `outline` (transparent or bordered style), `ghostcheckbox` / `ghostradio` / `outlinecheckbox` / `outlineradio` (combined style and mode).
+**Available subtypes:** `radio` (explicit single-select), `checkbox` / `multi` (multi-select), `ghost` / `outline` (transparent or bordered style), `ghostcheckbox` / `ghostradio` / `outlinecheckbox` / `outlineradio` (combined style and mode).
 
 ---
 
 ## ElementOption fields
 
-| Field | Description |
-|---|---|
-| `name` | Button label text |
-| `value` | Selection value |
-| `icon` | Button icon |
-| `color` | Button accent color |
-| `styles` | Additional styles for this button |
-| `attrs` | Extra attributes on the button DOM |
-| `tip` | Tooltip text |
-| `hide` | Hide this option |
+| Field    | Description                        |
+| -------- | ---------------------------------- |
+| `name`   | Button label text                  |
+| `value`  | Selection value                    |
+| `icon`   | Button icon                        |
+| `color`  | Button accent color                |
+| `styles` | Additional styles for this button  |
+| `attrs`  | Extra attributes on the button DOM |
+| `tip`    | Tooltip text                       |
+| `hide`   | Hide this option                   |
 
 ---
 
@@ -61,7 +61,7 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup",
+  "type": "buttongroup-radio",
   "cap": "Size",
   "data": [
     { "name": "S",  "value": "s"  },
@@ -90,11 +90,11 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 }
 ```
 
-### Ghost style buttons
+### Ghost style single-select buttons
 
 ```json jaml-playground
 {
-  "type": "buttongroup-ghost",
+  "type": "buttongroup-ghostradio",
   "cap": "Platform",
   "data": [
     { "name": "Windows", "value": "win", "icon": "⊞" },
@@ -110,7 +110,7 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup",
+  "type": "buttongroup-radio",
   "data": [
     { "name": "Success", "value": "success", "color": "green" },
     { "name": "Warning", "value": "warning", "color": "orange" },
@@ -125,6 +125,8 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ## Notes
 
-- In `radio` mode the selected button has a checked input element rendered inside it.
-- In `checkbox` / `multi` mode each button has a checkbox input.
-- The `chooseAll` param adds a master toggle option at the top of the list for checkbox mode.
+-   Set the selection subtype explicitly. A `defaultValue` or `valueKey` does not change plain `buttongroup` into radio mode.
+-   In `radio` mode the selected button has a checked input element rendered inside it.
+-   In `checkbox` / `multi` mode each button has a checkbox input.
+-   The `chooseAll` param adds a master toggle option at the top of the list for checkbox mode.
+-   Generated native inputs use the [shared option listener/CSP contract](./JAM-UI.md#generated-options-and-csp). Button-host keyboard behavior is described in [button](./button.md#focused-keyboard-activation); it does not add a complete group navigation or ARIA pattern.

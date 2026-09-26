@@ -10,11 +10,7 @@
 
 Sets the CSS gap between rows and columns.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `gap` | `string` | Row and column gap shorthand | Shorthand arg |
-| `row` | `string` | Row gap | Maps to `row-gap` |
-| `col` | `string` | Column gap | Maps to `column-gap` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style gap`.
 
 ```json jaml-playground
 [
@@ -50,6 +46,4 @@ Sets the CSS gap between rows and columns.
 
 The atomic paths `gap.row(value)` and `gap.col(value)` set one axis only.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `value` | `string` | Gap CSS value | Shorthand |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style gap.row`. Catalog lookup: `style gap.col`.

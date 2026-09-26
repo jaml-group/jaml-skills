@@ -8,14 +8,7 @@ Tracks the scroll progress of a target element and publishes it to the messenger
 
 Progress is broadcast on a messenger key derived from the element's identity, and the last above anchor (if `anchorSelector` is set) is broadcast on a companion `-anchor` key. Both keys are cleaned up on unplug.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `key` | `string` | Messenger key for publishing progress | Default: `'{id}-scroll-prog'` |
-| `broker` | `string` | Broker to publish to | Default: `'mango'` |
-| `target` | `HTMLElement \| string` | Target scroll container | Default: the element itself |
-| `throttle` | `number` | Throttle interval in ms | Default: `20` |
-| `anchorSelector` | `string` | CSS selector for anchor elements | — |
-| `gap` | `number` | Gap in px for anchor detection | Default: `50` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin event.scrollProgress`.
 
 ```javascript jaml-playground
 export default {

@@ -6,17 +6,18 @@
 
 ## Slots
 
-| Slot | Type | Description |
-|---|---|---|
-| `icon` | slotted | Icon content |
-| `cap` | slotted | Label text |
-| `agent` | agent | The native `<input>` / `<textarea>` element |
+| Slot    | Type    | Description                                 |
+| ------- | ------- | ------------------------------------------- |
+| `icon`  | slotted | Icon content                                |
+| `cap`   | slotted | Label text                                  |
+| `agent` | agent   | The native `<input>` / `<textarea>` element |
 
 ---
 
 ## Style variants
 
 ### `input.showColorName`
+
 Shows a color name overlay on color picker inputs — displays the human-readable color name above the input value. No args.
 
 ```json jaml-playground
@@ -30,6 +31,7 @@ Shows a color name overlay on color picker inputs — displays the human-readabl
 ```
 
 ### `input.chocolate`
+
 Chocolate-style input — a distinct visual theme for input fields. No args.
 
 ```json jaml-playground
@@ -44,14 +46,10 @@ Chocolate-style input — a distinct visual theme for input fields. No args.
 ```
 
 ### `input.code`
+
 Code editor with Prettier formatting — applies automatic code formatting to the input value.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `semi` | `boolean` | Print semicolons | Default: `true` |
-| `singleQuote` | `boolean` | Use single quotes | Default: `true` |
-| `trailingComma` | `string` | Trailing comma style | Default: `'none'` |
-| `printWidth` | `number` | Line wrap width | Default: `999` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style input.code`.
 
 ```json jaml-playground
 [
@@ -69,11 +67,10 @@ Code editor with Prettier formatting — applies automatic code formatting to th
 ```
 
 ### `input.code.withPadding`
+
 Code editor with inner padding — adds padding inside the code editor area.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `padding` | `string` | Inner padding value | Default: `'0.25rem'` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style input.code.withPadding`.
 
 ```json jaml-playground
 [
@@ -91,12 +88,10 @@ Code editor with inner padding — adds padding inside the code editor area.
 ```
 
 ### `input.autoRows`
+
 Auto-resize textarea rows — dynamically adjusts the number of rows to fit the content.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `minRows` | `number` | Minimum number of rows | Default: `1` |
-| `maxRows` | `number` | Maximum number of rows | Default: `10` |
+Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style input.autoRows`.
 
 ```json jaml-playground
 [

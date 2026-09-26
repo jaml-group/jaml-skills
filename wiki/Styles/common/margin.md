@@ -10,13 +10,9 @@
 
 Sets margin spacing on individual sides of an element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `top` | `string` | Top margin | -- |
-| `right` | `string` | Right margin | -- |
-| `bottom` | `string` | Bottom margin | -- |
-| `left` | `string` | Left margin | -- |
-| `margin` | `string` | Shorthand for all sides | Overrides individual side values |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style margin`.
+
+The margin shorthand overrides individual side values.
 
 ```json jaml-playground
 [
@@ -46,30 +42,22 @@ Sets margin spacing on individual sides of an element.
 
 Sets only the top margin.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `value` | `string` | Top margin CSS value | -- |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style margin.top`.
 
 ### `right`
 
 Sets only the right margin.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `value` | `string` | Right margin CSS value | -- |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style margin.right`.
 
 ### `bottom`
 
 Sets only the bottom margin.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `value` | `string` | Bottom margin CSS value | -- |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style margin.bottom`.
 
 ### `left`
 
 Sets only the left margin.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `value` | `string` | Left margin CSS value | -- |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style margin.left`.

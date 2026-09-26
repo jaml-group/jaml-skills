@@ -10,13 +10,7 @@
 
 Adjusts an element's color via hue shift, saturation, lightness, and alpha multipliers.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `h` | `number\|string` | Hue shift in degrees | — |
-| `s` | `number\|string` | Saturation multiplier | e.g. `1.2` |
-| `l` | `number\|string` | Lightness multiplier | e.g. `1.1` |
-| `a` | `number\|string` | Alpha multiplier | e.g. `0.8` |
-| `color` | `string` | Direct CSS color value | Shorthand; maps to CSS `color` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style color`.
 
 ```json jaml-playground
 [
@@ -32,16 +26,16 @@ Adjusts an element's color via hue shift, saturation, lightness, and alpha multi
 
 These no-argument paths set `color` from the active theme rather than binding the element to a literal color.
 
-| Path | Color token | Description |
-|---|---|---|
-| `color.default` | `--jam-color-fg-default` | Default foreground |
-| `color.strong` | `--jam-color-fg-strong` | Strong foreground |
-| `color.subtle` | `--jam-color-fg-subtle` | Subtle foreground |
-| `color.muted` | `--jam-color-fg-muted` | Muted foreground |
-| `color.faint` | `--jam-color-fg-faint` | Faint foreground |
-| `color.primary` | `--jam-color-fg-primary` | Primary semantic foreground |
-| `color.secondary` | `--jam-color-fg-secondary` | Secondary semantic foreground |
-| `color.tertiary` | `--jam-color-fg-tertiary` | Tertiary semantic foreground |
+| Path               | Color token                 | Description                    |
+| ------------------ | --------------------------- | ------------------------------ |
+| `color.default`    | `--jam-color-fg-default`    | Default foreground             |
+| `color.strong`     | `--jam-color-fg-strong`     | Strong foreground              |
+| `color.subtle`     | `--jam-color-fg-subtle`     | Subtle foreground              |
+| `color.muted`      | `--jam-color-fg-muted`      | Muted foreground               |
+| `color.faint`      | `--jam-color-fg-faint`      | Faint foreground               |
+| `color.primary`    | `--jam-color-fg-primary`    | Primary semantic foreground    |
+| `color.secondary`  | `--jam-color-fg-secondary`  | Secondary semantic foreground  |
+| `color.tertiary`   | `--jam-color-fg-tertiary`   | Tertiary semantic foreground   |
 | `color.quaternary` | `--jam-color-fg-quaternary` | Quaternary semantic foreground |
 
 `color.primary`, `color.secondary`, `color.tertiary`, and `color.quaternary` also add the `.jam-colored` marker so parent role recipes do not overwrite the explicit semantic foreground.
@@ -60,11 +54,11 @@ These no-argument paths set `color` from the active theme rather than binding th
 
 The `color.on.*` namespace supplies foregrounds designed for the matching colored background. These are distinct from `color.primary|secondary|tertiary|quaternary`, which use the `fg.*` family on ordinary surfaces. `color.on` itself is a namespace and is not callable.
 
-| Path | Color token | Intended background |
-|---|---|---|
-| `color.on.primary` | `--jam-color-on-primary` | `background.primary` |
-| `color.on.secondary` | `--jam-color-on-secondary` | `background.secondary` |
-| `color.on.tertiary` | `--jam-color-on-tertiary` | `background.tertiary` |
+| Path                  | Color token                 | Intended background     |
+| --------------------- | --------------------------- | ----------------------- |
+| `color.on.primary`    | `--jam-color-on-primary`    | `background.primary`    |
+| `color.on.secondary`  | `--jam-color-on-secondary`  | `background.secondary`  |
+| `color.on.tertiary`   | `--jam-color-on-tertiary`   | `background.tertiary`   |
 | `color.on.quaternary` | `--jam-color-on-quaternary` | `background.quaternary` |
 
 These dotted names are native style paths. Inside compact CSS, use the corresponding undotted values: `css(color:onprimary)`, `css(color:onsecondary)`, `css(color:ontertiary)`, and `css(color:onquaternary)`.
@@ -83,15 +77,7 @@ These dotted names are native style paths. Inside compact CSS, use the correspon
 
 Sets the accent color on an element (supports AbstractElement color system).
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `color` | `string` | Accent color value | Shorthand |
-| `h` | `number` | Hue for random color generation | — |
-| `s` | `number` | Saturation for random color gen | — |
-| `l` | `number` | Lightness for random color gen | — |
-| `temp` | `string` | Color temperature | `warm`, `cool` |
-| `bias` | `number` | Color bias | — |
-| `seq` | `boolean` | Sequential color mode | Default: `false` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style color.accent`.
 
 ```json jaml-playground
 [
@@ -111,11 +97,7 @@ Synchronizes the element's accent color with its map region. After the nearest p
 
 Maps input values to colors on a scale.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `valueRange` | `array` | Input value range | Default: `[0, 100]` |
-| `colorRange` | `array` | Color scale range | Default: `['red', 'green']` |
-| `mode` | `string` | Color interpolation mode | `rgb`, `lch`, `hsl`, `lab`, `lrgb` (default: `lch`) |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style color.valueMap`.
 
 ```json jaml-playground
 [
@@ -131,10 +113,7 @@ Maps input values to colors on a scale.
 
 Maps element state to accent colors.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `colors` | `dictionary` | State-to-color mapping | Shorthand; e.g. `{ active: 'red', inactive: 'gray' }` |
-| `harmony` | `boolean` | Apply harmony adjustments | Default: `true` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style color.stateMap`.
 
 ```json jaml-playground
 {

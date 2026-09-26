@@ -10,22 +10,7 @@
 
 Applies font and text CSS properties to an element.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `font` | `string` | Font family CSS value | Shorthand arg |
-| `size` | `string` | Font size CSS value | CSS value or `xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`, `3xl`, `4xl` |
-| `weight` | `string` | Font weight | Options: `normal`, `bold` |
-| `style` | `string` | Font style | Options: `normal`, `italic` |
-| `decoration` | `string` | Text decoration | Options: `none`, `underline` |
-| `spacing` | `string` | Letter spacing | -- |
-| `shadow` | `string` | Text shadow CSS value | -- |
-| `align` | `string` | Text alignment | Options: `left`, `center`, `right` |
-| `whitespace` | `string` | White space handling | Options: `normal`, `nowrap`, `pre` |
-| `lineheight` | `string` | Line height | Options: `normal`, `1` (compact), `1.5` (loose) |
-| `userselect` | `string` | User select behavior | Options: `auto`, `none` |
-| `indent` | `string` | Text indent CSS value | -- |
-| `caretColor` | `string` | Caret / cursor color | -- |
-| `color` | `string` | Text color | Any CSS color value |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style text`.
 
 ```json jaml-playground
 [
@@ -67,19 +52,19 @@ The root API is intentionally different: `text.size` is the single-value atom, n
 
 Each `text` arg is also available as a standalone style. For example:
 
-- `text.font(value:monospace)` -- sets font family
-- `text.size(value:1.5rem)` or `text.size(value:xs)` -- sets font size
-- `text.weight(value:bold)` -- sets font weight
-- `text.style(value:italic)` -- sets font style
-- `text.decoration(value:underline)` -- sets text decoration
-- `text.spacing(value:0.1em)` -- sets letter spacing
-- `text.shadow(value:1px 1px 2px black)` -- sets text shadow
-- `text.align(value:center)` -- sets text alignment
-- `text.whitespace(value:nowrap)` -- sets white-space handling
-- `text.lineheight(value:1.5)` -- sets line height
-- `text.userselect(value:none)` -- sets user select
-- `text.indent(value:2em)` -- sets text indent
-- `text.caretColor(value:red)` -- sets caret color
-- `text.color(value:red)` -- sets text color
+-   `text.font(value:monospace)` -- sets font family
+-   `text.size(value:1.5rem)` or `text.size(value:xs)` -- sets font size
+-   `text.weight(value:bold)` -- sets font weight
+-   `text.style(value:italic)` -- sets font style
+-   `text.decoration(value:underline)` -- sets text decoration
+-   `text.spacing(value:0.1em)` -- sets letter spacing
+-   `text.shadow(value:1px 1px 2px black)` -- sets text shadow
+-   `text.align(value:center)` -- sets text alignment
+-   `text.whitespace(value:nowrap)` -- sets white-space handling
+-   `text.lineheight(value:1.5)` -- sets line height
+-   `text.userselect(value:none)` -- sets user select
+-   `text.indent(value:2em)` -- sets text indent
+-   `text.caretColor(value:red)` -- sets caret color
+-   `text.color(value:red)` -- sets text color
 
 Each atom variant accepts a single `value` argument.

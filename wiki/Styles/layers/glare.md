@@ -7,13 +7,10 @@
 ## Variants
 
 ### `glare.spot`
+
 Spotlight glare effect. A bright spot that follows the mouse cursor position.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `size` | `number \| string` | Glare size in px | Calculated from element diagonal if not set |
-| `position` | `string` | Glare position | Options: `'top'`, `'bottom'`. Default: `'top'` |
-| `glareDepth` | `number` | Depth factor for 3D parallax | Default: `40` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.spot`.
 
 ```json jaml-playground
 [
@@ -31,14 +28,10 @@ Spotlight glare effect. A bright spot that follows the mouse cursor position.
 ```
 
 ### `glare.reflect`
+
 Linear or radial reflection effect.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Reflection type | Options: `'linear'`, `'radial'`. Default: `'linear'` |
-| `size` | `number \| string` | Reflection size | Calculated from element diagonal if not set |
-| `position` | `string` | Reflection position | Options: `'top'`, `'bottom'`. Default: `'top'` |
-| `glareDepth` | `number` | Depth factor | Default: `5` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.reflect`.
 
 ```json jaml-playground
 [
@@ -56,13 +49,10 @@ Linear or radial reflection effect.
 ```
 
 ### `glare.gloss`
+
 Gloss/sheen effect. Uses a comet spinner internally to create a sweeping gloss highlight.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `size` | `number \| string` | Gloss size | Calculated from element diagonal if not set |
-| `position` | `string` | Gloss position | Options: `'top'`, `'bottom'`. Default: `'top'` |
-| `glareDepth` | `number` | Depth factor | Default: `0` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.gloss`.
 
 ```json jaml-playground
 [
@@ -75,14 +65,10 @@ Gloss/sheen effect. Uses a comet spinner internally to create a sweeping gloss h
 ```
 
 ### `glare.metal`
+
 Metallic glare with configurable streak count.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `count` | `number` | Number of metallic streaks | Default: `0` (auto-calculated) |
-| `size` | `number \| string` | Glare size | Calculated from element diagonal if not set |
-| `position` | `string` | Glare position | Options: `'top'`, `'bottom'`. Default: `'top'` |
-| `glareDepth` | `number` | Depth factor | Default: `0` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.metal`.
 
 ```json jaml-playground
 [
@@ -100,13 +86,10 @@ Metallic glare with configurable streak count.
 ```
 
 ### `glare.light`
+
 Tube light effect. A bright elongated light glow.
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `size` | `number \| string` | Light size | Calculated from element diagonal if not set |
-| `position` | `string` | Light position | Options: `'top'`, `'bottom'`. Default: `'top'` |
-| `glareDepth` | `number` | Depth factor | Default: `96` |
+Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.light`.
 
 ```json jaml-playground
 [
