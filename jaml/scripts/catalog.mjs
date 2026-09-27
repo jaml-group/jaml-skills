@@ -81,8 +81,10 @@ export function lookup(catalog, kind, path, locale = 'en') {
     if (!_entry) {
         throw new Error(`Unknown catalog path: ${kind}:${path}`);
     }
-    const _localized = catalog.reader.resolveAuthoringManifests(catalog.metadata, locale);
-    return { ..._entry, locale: _localized.locale, catalogDigest: catalog.pin.catalogDigest, schemaDigest: catalog.pin.schemaDigest, profile: _localized[kind === 'style' ? 'styles' : 'plugins'].argSchemas[path], reference: profilePath(_entry, _localized.locale) };
+    const _kind = kind === 'style' ? 'styles' : 'plugins';
+    // Resolve one profile through the publisher reader with its full translation context.
+    const _localized = catalog.reader.resolveAuthoringManifests({ catalog: catalog.metadata.catalog, [_kind]: { argSchemas: { [path]: catalog.metadata[_kind].schemaTable[_entry.schemaRef] } } }, locale);
+    return { ..._entry, locale: _localized.locale, catalogDigest: catalog.pin.catalogDigest, schemaDigest: catalog.pin.schemaDigest, profile: _localized[_kind].argSchemas[path], reference: profilePath(_entry, _localized.locale) };
 }
 
 export function contract(catalog, kind, path, locale = 'en', selectedArgs) {
