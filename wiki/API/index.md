@@ -22,6 +22,9 @@ Project-defined styles and custom-component prose belong to workspace-index meta
 Run the installed skill's offline reader; replace `<skill-root>` with its installation directory:
 
 ```sh
+node <skill-root>/scripts/catalog.mjs compose style layout.application --locale en
+node <skill-root>/scripts/catalog.mjs compose style layout.application --args scroll --locale en
+node <skill-root>/scripts/catalog.mjs compose plugin interact.droppable --locale zh
 node <skill-root>/scripts/catalog.mjs contract style layout.application --locale en
 node <skill-root>/scripts/catalog.mjs contract style layout.application --args scroll --locale en
 node <skill-root>/scripts/catalog.mjs choose container-layout-and-child-placement
@@ -31,7 +34,7 @@ node <skill-root>/scripts/catalog.mjs list style layout.
 node <skill-root>/scripts/catalog.mjs list plugin
 ```
 
-Use contract for a lossless compact view; --args focuses arguments while retaining dependency context. List is paged by default: narrow the prefix or follow nextOffset; --all is an explicit full expansion. Use sections FILE.md and read FILE.md#ANCHOR for focused curated guidance, or read FILE.md for a complete explanation.
+Use compose for ordinary composition; contract remains lossless text, and show includes all metadata and deferred hints. Known capabilities skip choose. In both text views, --args focuses arguments while retaining dependency context. List is paged by default: narrow the prefix or follow nextOffset; --all is an explicit full expansion. Use sections FILE.md and read FILE.md#ANCHOR for focused curated guidance, or read FILE.md for a complete explanation.
 
 The reader reports exact IDs, canonical IDs, argument order and values plus the corresponding generated reference path. It covers every exported path, including generated variants and aliases. Pages share a profile only when the packed catalog shares its schema. [Machine index and coverage](index.json) records profile coverage without repeating the full path inventory.
 

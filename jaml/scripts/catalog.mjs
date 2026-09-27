@@ -120,14 +120,61 @@ export function contract(catalog, kind, path, locale = 'en', selectedArgs) {
     return _lines.join('\n');
 }
 
+export function compose(catalog, kind, path, locale = 'en', selectedArgs) {
+    const _result = lookup(catalog, kind, path, locale);
+    const _schema = _result.profile;
+    const _args = Object.entries(_schema.args ?? {});
+    const _selected = selectedArgs === undefined ? undefined : new Set(selectedArgs);
+    if (_selected && (!_selected.size || [..._selected].some((key) => !Object.hasOwn(_schema.args ?? {}, key)))) {
+        throw new Error('Unknown or empty argument selection. Read compose ' + kind + ' ' + path + ' for the current argument names; open contracts require their owning reference.');
+    }
+    const _hints = [];
+    const _duplicates = [];
+    const _arguments = _args.map(([key, arg]) => {
+        const _arg = { ...arg };
+        // Only documented numeric editor hints can be deferred; unfamiliar metadata stays visible.
+        if (_arg.tuner && !Array.isArray(_arg.tuner) && typeof _arg.tuner === 'object' && Object.keys(_arg.tuner).length && Object.entries(_arg.tuner).every(([field, value]) => ['min', 'max', 'step'].includes(field) && typeof value === 'number' && Number.isFinite(value))) {
+            delete _arg.tuner;
+            _hints.push(key);
+        }
+        if (typeof _arg.desc === 'string' && _arg.desc && _arg.comment === _arg.desc) {
+            delete _arg.comment;
+            _duplicates.push(key);
+        }
+        return `${_selected?.has(key) ? '* ' : ''}${key}: ${JSON.stringify(_arg)}`;
+    });
+    const _lines = [`${_result.id}${_result.canonicalId !== _result.id ? ' → ' + _result.canonicalId : ''}`, `Framework: ${catalog.pin.frameworkVersion} · locale: ${_result.locale} · knowledge: ${_result.knowledge} · format: ${_result.format}`, `Catalog: ${catalog.pin.catalogDigest}`, 'Compose: all prose and arguments retained. Missing facts stay unknown; no default does not mean required.', ''];
+    for (const [field, value] of Object.entries(_schema)) {
+        if (field !== 'args' && !(field === 'documentationFormat' && ['messages', 'translations'].includes(value))) {
+            _lines.push(field + ': ' + (typeof value === 'string' ? value : JSON.stringify(value)));
+        }
+    }
+    if (_schema.argumentContract === 'passthrough') {
+        _lines.push('Open forwarding: argument inference is incomplete. Retrieve the argumentSource owner before supplying forwarded fields.');
+    }
+    if (Object.hasOwn(_schema, 'examples')) {
+        _lines.push('Resolve example references through their owner; this view loads no fixtures.');
+    }
+    _lines.push('', 'Arguments (source order' + (_selected ? '; * = focus, others retained for dependencies' : '') + '):', ...(_arguments.length ? _arguments : ['(none cataloged)']));
+    if (_hints.length) {
+        _lines.push('Deferred tuner UI hints: ' + _hints.join(', ') + ' (not runtime constraints; show to expand).');
+    }
+    if (_duplicates.length) {
+        _lines.push('Merged identical desc/comment: ' + _duplicates.join(', ') + '.');
+    }
+    _lines.push('', `Expand: catalog.mjs show ${kind} ${path} --locale ${_result.locale} | references/API/${_result.reference}`);
+    return _lines.join('\n');
+}
+
 const usage = `Usage:
-  catalog.mjs contract|show style|plugin PATH [--locale en|zh]
-  catalog.mjs contract style|plugin PATH --args NAME,NAME [--locale en|zh]
+  catalog.mjs compose|contract|show style|plugin PATH [--locale en|zh]
+  catalog.mjs compose|contract style|plugin PATH --args NAME,NAME [--locale en|zh]
   catalog.mjs list style|plugin [PREFIX] [--limit 20] [--offset 0] [--locale en|zh] [--all]
   catalog.mjs choose [SECTION_ANCHOR]
   catalog.mjs sections FILE.md [--limit 20] [--offset 0]
   catalog.mjs read FILE.md[#SECTION_ANCHOR]
-Contract is lossless; --args focuses named arguments but retains cross-argument context.
+Compose defers numeric editor hints and collapses exact duplicate prose; all other prose and arguments stay visible.
+Contract is lossless; --args focuses named arguments but retains cross-argument context in both views.
 Choose lists topics or reads one topic; read keeps ancestor introductions with a section.
 Show preserves the complete structured profile. List is paged; --all explicitly expands it.`;
 
@@ -176,6 +223,7 @@ async function main(args) {
     const _allowed = {
         show: ['--locale'],
         contract: ['--locale', '--args'],
+        compose: ['--locale', '--args'],
         list: ['--locale', '--limit', '--offset', '--all'],
         choose: [],
         sections: ['--limit', '--offset'],
@@ -213,6 +261,8 @@ async function main(args) {
     if (_command === 'list') {
         const _matches = _catalog.entries.filter((entry) => entry.kind === _kind && entry.path.startsWith(_path)).map((entry) => ({ ...entry, reference: profilePath(entry, _locale) }));
         console.log(JSON.stringify({ catalogDigest: _catalog.pin.catalogDigest, schemaDigest: _catalog.pin.schemaDigest, frameworkVersion: _catalog.pin.frameworkVersion, locale: _locale, ...page(_matches, options), scope: 'Identity discovery only; retrieve exact contracts before composing. Continue with --offset nextOffset, narrow PREFIX, or explicitly use --all.' }, null, 2));
+    } else if (_command === 'compose') {
+        console.log(compose(_catalog, _kind, _path, _locale, options['--args']?.split(',')));
     } else if (_command === 'contract') {
         console.log(contract(_catalog, _kind, _path, _locale, options['--args']?.split(',')));
     } else {

@@ -39,6 +39,8 @@ test('artifact installs independently and preserves learned corrections on repla
         assert.ok(existsSync(resolve(_destination, 'jaml/references/API', _profile.reference)));
         for (const [args, expected] of [
             [['contract', 'style', 'interact.sortable', '--args', 'change'], 'does not persist the application model'],
+            [['compose', 'style', 'interact.sortable', '--args', 'change'], 'does not persist the application model'],
+            [['compose', 'style', 'table.fixedrowheight'], 'current animation callback calls string methods on a truthy value'],
             [['choose', 'selection-and-hover'], 'complete tabs interaction'],
             [['read', 'Styles/check.md#checkunderscore'], 'native element owns selection']
         ]) {
@@ -46,6 +48,22 @@ test('artifact installs independently and preserves learned corrections on repla
             assert.equal(_focused.status, 0, _focused.stderr);
             assert.ok(_focused.stdout.includes(expected));
         }
+
+        const _runInstalled = (...args) => {
+            const _result = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), ...args], { cwd: _temporary, encoding: 'utf8' });
+            assert.equal(_result.status, 0, _result.stderr);
+            return _result.stdout;
+        };
+        const _choice = _runInstalled('choose', 'selection-and-hover');
+        assert.equal(_choice, _runInstalled('read', 'choosing-native-capabilities.md#selection-and-hover'));
+        const _recommendation = _choice.match(/`((?:compose|contract|show) style PATH --locale en)`/)?.[1];
+        assert.equal(_recommendation, 'compose style PATH --locale en');
+        const _composed = _runInstalled(..._recommendation.split(' ').map((argument) => (argument === 'PATH' ? 'check.underscore' : argument)));
+        assert.ok(_composed.includes('Use an option host exposing checked items'));
+        assert.ok(_composed.includes('It does not implement tabs keyboard navigation'));
+        const _apiGuide = _runInstalled('read', 'API/index.md#find-any-exported-path');
+        assert.ok(_apiGuide.includes('Use compose for ordinary composition'));
+        assert.ok(_apiGuide.includes('compose plugin interact.droppable --locale zh'));
 
         assert.equal(readFileSync(resolve(_destination, 'jaml/catalog/LICENSE'), 'utf8'), readFileSync(resolve(root, 'jaml/catalog/LICENSE'), 'utf8'));
         const _learned = resolve(_destination, 'jaml/LEARNED.md');

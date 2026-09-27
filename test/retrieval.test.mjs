@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { contract, loadCatalog, lookup } from '../jaml/scripts/catalog.mjs';
+import { compose, contract, loadCatalog, lookup } from '../jaml/scripts/catalog.mjs';
 import { readReference, referenceSections, selectSection } from '../jaml/scripts/references.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -70,7 +70,7 @@ test('open forwarding and locale/alias identity remain explicit', () => {
     assert.throws(() => contract(catalog, 'style', 'interact.movable', 'en', ['handle']), /open contracts require/);
 });
 
-test('choose supplies one decision topic and no-fit limits, then exact contracts', () => {
+test('choose and equivalent read recommend composition with inherited ownership and no-fit context', () => {
     const _topics = JSON.parse(run('choose'));
     assert.ok(_topics.entries.some((entry) => entry.anchor === 'selection-and-hover'));
     const _choice = run('choose', 'selection-and-hover');
@@ -78,12 +78,42 @@ test('choose supplies one decision topic and no-fit limits, then exact contracts
     assert.ok(_choice.includes('keyboard navigation, tab/panel semantics and panel switching'));
     assert.ok(!_choice.includes('## Charts and data transformations'));
     assert.ok(_choice.includes('other sections omitted'));
-    const _selected = run('contract', 'style', 'check.underscore');
+    const _read = run('read', 'choosing-native-capabilities.md#selection-and-hover');
+    assert.equal(_read, _choice);
+    const _recommendation = _choice.match(/`((?:compose|contract|show) style PATH --locale en)`/)?.[1];
+    assert.equal(_recommendation, 'compose style PATH --locale en');
+    assert.ok(_choice.includes('(or `plugin`, `zh`)'));
+    assert.ok(_choice.includes('`contract` is lossless text'));
+    assert.ok(_choice.includes('`show` includes all metadata and deferred hints'));
+    assert.ok(_choice.includes('Expand linked prerequisites'));
+    assert.ok(_choice.includes('Keep selection state with the native option owner'));
+    const _selected = run(..._recommendation.split(' ').map((argument) => (argument === 'PATH' ? 'check.underscore' : argument)));
+    assert.equal(_selected, compose(catalog, 'style', 'check.underscore', 'en') + '\n');
     assert.ok(_selected.includes('It does not implement tabs keyboard navigation'));
+    assert.ok(_selected.includes('Use an option host exposing checked items'));
+    assert.ok(_selected.includes('style does not change the selected value'));
     const _missing = spawnSync(process.execPath, [cli, 'contract', 'style', 'complete.tabs'], { encoding: 'utf8' });
     assert.notEqual(_missing.status, 0);
     assert.match(_missing.stderr, /Unknown catalog path/);
     assert.equal(_missing.stdout, '');
+});
+
+test('generated API discovery recommends compose while retaining lossless and explanation entry points', () => {
+    const _guide = run('read', 'API/index.md#find-any-exported-path');
+    const _commands = [..._guide.matchAll(/^node <skill-root>\/scripts\/catalog\.mjs (.+)$/gm)].map((match) => match[1].split(' '));
+    assert.equal(_commands[0]?.[0], 'compose');
+    assert.ok(_commands.some((args) => args[0] === 'contract'));
+    assert.ok(_commands.some((args) => args[0] === 'show'));
+    const _composeCommands = _commands.filter((args) => args[0] === 'compose');
+    assert.ok(_composeCommands.some((args) => args[1] === 'plugin' && args.includes('zh')));
+    assert.ok(_composeCommands.some((args) => args.includes('--args')));
+    for (const args of _composeCommands) {
+        const _result = run(...args);
+        assert.ok(_result.startsWith('@jam/jam-ui/' + args[1] + '/' + args[2] + '\n'));
+        assert.ok(_result.includes('locale: ' + args[args.indexOf('--locale') + 1]));
+    }
+    assert.ok(_guide.includes('Use compose for ordinary composition'));
+    assert.ok(_guide.includes('contract remains lossless text'));
 });
 
 test('rich show remains byte-compatible and complete guide explanations remain reachable', () => {

@@ -36,6 +36,8 @@ After publication, the repository install command can select `--skill jaml-knowl
 
 ## Reference and compatibility
 
+Use `compose` for a known style/plugin. It keeps all prose, argument meaning, defaults, constraints and dependencies while deferring documented numeric editor hints and collapsing identical argument descriptions. Unknown metadata stays visible. `--args` marks focus, not independent arguments. The catalog mixes explanations with obligations, so prose remains; this is a conservative projection, not an automatic summary. `contract` stays lossless and `show` retains the complete structured profile, including schema identity and editor metadata. For ambiguous intent, use `choose` before retrieving the selected capabilities.
+
 The [generated style/plugin catalog](wiki/API/index.md) owns exported API facts, with English and Chinese views from one pinned metadata digest. The [reference map](wiki/index.md) routes to language, elements, styles, plugins, themes and utilities. Hand-authored pages provide usage and composition guidance; their older argument tables are not a second source of truth. `wiki/` owns those guides; `wiki/API/` is generated and must not be edited by hand. `jaml/catalog/` pins the public metadata and shared reader; `jaml/references` points to it within this repository. Installers copy the references into the installed skill. Read only the topics needed for the task.
 
 [Compatibility metadata](compatibility.json) records the framework baseline. Skill distribution versions are independent of framework versions. The current artifact is a development version, not a new framework release. Verify behavior against your installed runtime when versions differ.
@@ -76,6 +78,7 @@ npm run catalog:check
 Use `--frozen` with the import only after the producer freezes that exact artifact. Import verifies the publisher file inventory and byte hashes; generation uses its shared identity, schema and i18n reader. It does not run code from a consuming project. Ordinary users need no framework checkout, extraction or network access to read the installed catalog:
 
 ```sh
+node <skill-root>/scripts/catalog.mjs compose style layout.application --locale zh
 node <skill-root>/scripts/catalog.mjs show style layout.application --locale zh
 node <skill-root>/scripts/catalog.mjs list plugin
 ```

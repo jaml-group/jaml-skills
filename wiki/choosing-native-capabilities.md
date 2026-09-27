@@ -2,7 +2,7 @@
 
 For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Appearance does not establish state ownership. This guide supplies selection context; the pinned catalog and linked curated owners supply current contracts.
 
-Use `node <skill-root>/scripts/catalog.mjs choose` for topic anchors, `choose ANCHOR` for one topic, and `contract style PATH --locale en` (or `plugin`, `zh`) for a selected identity. Expand linked prerequisites when relevant; `show` and complete guides remain available for explanation.
+Use `node <skill-root>/scripts/catalog.mjs choose` for topic anchors, `choose ANCHOR` for one topic, and `compose style PATH --locale en` (or `plugin`, `zh`) for ordinary composition. Expand linked prerequisites when relevant. `contract` is lossless text; `show` includes all metadata and deferred hints; guides explain usage.
 
 ## Selection and hover
 
