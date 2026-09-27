@@ -7,7 +7,8 @@
 ## Variants
 
 ### `click.toFront`
-Brings the element to the front (highest z-index) on click via `clickToFront`. No args.
+
+Raises the host immediately and on `mousedown` within its parent stacking context. Removing the style detaches its listener and prevents pending connection readiness from reinstalling it; prior inline z-index values are not restored. No args.
 
 ```json jaml-playground
 [
@@ -25,6 +26,7 @@ Brings the element to the front (highest z-index) on click via `clickToFront`. N
 ```
 
 ### `click.able`
+
 Makes the element appear clickable — adds `cursor: pointer` via `.jam-clickable` class and applies button stylize via the `stylize` attribute. No args.
 
 ```json jaml-playground
@@ -43,6 +45,7 @@ Makes the element appear clickable — adds `cursor: pointer` via `.jam-clickabl
 ```
 
 ### `click.bouncing`
+
 Adds a bounce animation on click. Adds both `.jam-hover-bouncing` and `.jam-active-bouncing` classes. No args.
 
 ```json jaml-playground

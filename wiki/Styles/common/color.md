@@ -91,7 +91,7 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 
 ### `syncWithMap`
 
-Synchronizes the element's accent color with its map region. After the nearest parent `jam-map` finishes drawing, the style matches the element's `jam-coord` attribute to a region name and applies that region's `itemStyle.areaColor` at full opacity. The accent override is removed when the style is unplugged. No args.
+After draw readiness resolves on the nearest parent `jam-map`, matches the element’s `jam-coord` to a region and applies its `itemStyle.areaColor` at full opacity. This is a lookup for each mount, not a subscription to recoloring. Unmount or teardown invalidates pending readiness work and removes the accent only if this setup applied one. No args.
 
 ### `valueMap`
 

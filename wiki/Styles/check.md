@@ -1,6 +1,6 @@
 # check
 
-`Styles.check.*` — visual indicators shown on the currently checked/selected option. Used with option-based elements (`radio`, `checkbox`, `select`, `table`). Each variant shows a locator around the checked option's DOM element when `valuechange` fires. If `delay` is set and no locator exists yet, waits before showing.
+`Styles.check.*` adds one visual locator for the first checked option reported by an option host. The native element owns selection; use an explicit radio/checkbox subtype when needed. On valuechange, the locator follows the first checked item and hides when no item is checked. Read the generated profile for timing and selection prerequisites. For owner selection and a single-choice composition, see [Choose native capabilities](../choosing-native-capabilities.md#selection-and-hover).
 
 ---
 

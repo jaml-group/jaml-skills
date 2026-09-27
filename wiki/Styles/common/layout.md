@@ -42,7 +42,7 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 
 ### `layout.autogrid`
 
-Auto-fill grid — columns auto-wrap based on available width.
+Auto-fill grid — columns auto-wrap based on available width. A numeric `repeat` selects a fixed column count instead.
 
 Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layout.autogrid`.
 
@@ -50,7 +50,7 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 [
     {
         "type": "container",
-        "styles": ["layout.autogrid(repeat:3;width:10rem)"]
+        "styles": ["layout.autogrid(width:10rem)"]
     }
 ]
 ```
@@ -84,7 +84,7 @@ Accepts all args from [flex](./flex.md) and [align](./align.md).
 
 ### `layout.autoalign`
 
-Auto-aligns child items with consistent spacing. Stacks vertically. If the container is a `wrapper`, also applies `alignlabel` for form-like label alignment.
+Measures wrapped rows and assigns shared grid tracks. Compose `layout.alignlabel` explicitly when field labels should align; use `layout.flex(direction:column)` for vertical stacking.
 
 Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layout.autoalign`.
 
@@ -95,7 +95,7 @@ Use `afterAlign` for work that depends on completed alignment.
     {
         "type": "wrapper",
         "cap": "Form",
-        "styles": ["layout.autoalign"],
+        "styles": ["layout.autoalign", "layout.alignlabel"],
         "components": [
             { "type": "input", "cap": "Name" },
             { "type": "input", "cap": "Email" }
@@ -110,34 +110,34 @@ Aligns labels with form inputs for consistent left edges. Listens to `resize` ev
 
 No args.
 
-> **Form pattern:** For forms, use `layout.autoalign` + `layout.alignlabel` together on the form wrapper. `autoalign` stacks fields vertically, `alignlabel` aligns their labels.
+> **Form pattern:** For forms, use `layout.autoalign` + `layout.alignlabel` together on the form wrapper. `autoalign` measures wrapped rows and assigns shared grid tracks; `alignlabel` aligns their labels. Choose `layout.flex` with an explicit column direction when vertical stacking is the requirement.
 
 ### `layout.autoheight`
 
-Auto-sets element height via `jam-autoheight` attribute. No args.
+Adds `jam-autoheight`. When a resize gesture ends, the native resize helper resets the resized element’s height to `auto` if the element or a descendant has this marker. It does not continuously measure content.
 
 ### `layout.takeupspace`
 
-Fills remaining space in a flex/grid layout via `layout-takeupspace` class. No args.
+Adds the legacy `jam-layout-takeupspace` marker. It does not implement remaining-space sizing in this baseline; use explicit flex/grid sizing.
 
 ### `layout.odd`
 
-Targets odd-indexed children with `.odd` class. No args.
+Styles descendants whose existing `jam-pos` markers contain `odd`. It does not create those render-position markers.
 
 ### `layout.even`
 
-Targets even-indexed children with `.even` class. No args.
+Styles descendants whose existing `jam-pos` markers contain `even`. It does not create those render-position markers.
 
 ### `layout.labelAtTop`
 
-Places the label above the content instead of inline via `child-label-attop` class. No args.
+Adds the legacy `jam-child-label-attop` marker without a native positioning consumer in this baseline. Apply `label.atTop` to the actual native field elements.
 
 ```json jaml-playground
 [
     {
         "type": "input",
         "cap": "Name",
-        "styles": ["layout.labelAtTop"]
+        "styles": ["label.atTop"]
     }
 ]
 ```
@@ -154,7 +154,7 @@ Overflow control with animation-aware delay.
 
 Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layout.overflow`.
 
-Keep the overflow animation delay at least as long as the child animation duration.
+`animaDelay` starts after a bubbling `animationend`, rather than measuring the animation from mount. Mount adds temporary clipping; each end event restarts the delay. Teardown removes its listeners and any clipping marker it introduced, preserves a pre-existing marker, and makes queued debounce work inert. Without an end event clipping can remain while the style is active.
 
 ```json jaml-playground
 [
@@ -227,7 +227,7 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 export default {
   type: 'wrapper',
   cap: 'Form',
-  styles: ['layout.autoalign'],
+  styles: ['layout.autoalign', 'layout.alignlabel'],
   components: [
     { type: 'input', cap: 'Name', defaultValue: '' },
     { type: 'input', cap: 'Email', defaultValue: '' },

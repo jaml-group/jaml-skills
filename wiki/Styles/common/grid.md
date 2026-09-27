@@ -8,7 +8,7 @@
 
 ### `grid`
 
-Sets CSS grid layout properties on a container element.
+The base helper maps track and area arguments to CSS grid properties. Set `display:grid` on the container separately; `grid.area` maps row/column placement on its items.
 
 Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style grid`.
 
@@ -16,7 +16,7 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 [
     {
         "type": "container",
-        "styles": ["grid(templateColumns:1fr 1fr 1fr;gap:1rem)"],
+        "styles": ["css(display:grid)", "grid(templateColumns:1fr 1fr 1fr;gap:1rem)"],
         "components": [
             { "type": "label", "cap": "A" },
             { "type": "label", "cap": "B" },

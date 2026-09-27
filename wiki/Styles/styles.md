@@ -393,15 +393,19 @@ See [common.trait](./common/trait.md) for element-scoped `*.is(...)` and the bui
 
 ### Custom style methods
 
-| Method                           | Description                                       | Notes                                                                                                                        |
-| -------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `Styles.func(plugFn, unplugFn?)` | Run arbitrary code on plug/unplug                 | The most flexible escape hatch                                                                                               |
-| `Styles.resize(fn)`              | Run code after stable mount and on element resize | Receives `(el, args, event?)`; the initial call has no event, resize events supply it, and the listener is removed on unplug |
-| `Styles.child(el)`               | Append a child element                            | Created on plug, removed on unplug                                                                                           |
-| `Styles.params({...})`           | Set element params via styles                     | Calls `setParams()` on plug                                                                                                  |
-| `Styles.opts({...})`             | Pass options to a parent plugin                   | Used internally by ECharts and layer builders                                                                                |
-| `Styles.expando({...})`          | Define expando properties on the element          | Read-only properties accessible as `el.key`                                                                                  |
-| `Styles.addChild(node)`          | Append a DOM node                                 | Alias for `child`                                                                                                            |
+| Method                           | Description                              | Notes                                                                                                                        |
+| -------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `Styles.func(plugFn, unplugFn?)` | Run arbitrary code on plug/unplug        | The most flexible escape hatch                                                                                               |
+| `Styles.resize(fn)`              | Run code initially and on element resize | Receives `(el, args, event?)`; the initial call has no event, resize events supply it, and the listener is removed on unplug |
+| `Styles.child(el)`               | Append a child element                   | Created on plug, removed on unplug                                                                                           |
+| `Styles.params({...})`           | Set element params via styles            | Calls `setParams()` on plug                                                                                                  |
+| `Styles.opts({...})`             | Pass options to a parent plugin          | Used internally by ECharts and layer builders                                                                                |
+| `Styles.expando({...})`          | Define expando properties on the element | Read-only properties accessible as `el.key`                                                                                  |
+| `Styles.addChild(node)`          | Append a DOM node                        | Alias for `child`                                                                                                            |
+
+`Styles.resize(fn)` installs its resize listener when applied. Its separate initial callback waits for the host connection-readiness hook when available, then host/child stability checks. The initial callback has no event; resize callbacks receive the event and need not wait for initial readiness. Ordinary elements without that hook do not wait for DOM connection. Unplug removes the listener and invalidates pending initial work; async work already started inside a callback must guard its own lifetime.
+
+`Styles.mount(setup, cleanup)` starts setup on mount, or immediately for an already-mounted framework host or connected ordinary element. Unmount cleans the active setup once and allows remount. Plugin teardown or host destruction detaches its handlers and cleans the active setup. Reentrant replacement setup waits for synchronous cleanup to finish; removal during cleanup cancels the pending replacement. Shared style ownership delays teardown until its final owner is removed. Cleanup is synchronous; promises returned by arbitrary setup or cleanup code are not a general cancellation mechanism.
 
 ### Registration & global styles
 

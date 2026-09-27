@@ -8,6 +8,8 @@
 
 ### `interact.movable`
 
+Movement and resize helpers are disabled on unmount, style teardown or host destruction. Resize disable removes its `passiveresize`, `resize` and `moveend` callbacks and invalidates old debounce/completion work. Shared passive-observer ownership is unchanged. Previous coordinates and dimensions are not restored; persistence and accessible alternatives remain application responsibilities.
+
 Makes the element draggable via `DamsonDragNDrop`. Use `handle` to restrict the drag start area; `contain` constrains movement to the parent bounds.
 
 Arguments are forwarded to `jam.makeMovable` through an open contract. [Generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style interact.movable`. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
@@ -168,6 +170,8 @@ Provide `getChildrenByRow(container, row)` to supply a row’s children and `get
 ```
 
 ### `interact.scrollWatcher`
+
+Scroll watching unbinds its resolved target and ignores obsolete delayed/throttled work on teardown. The declared `clazz` argument is unused, and the last scroll-state classes remain in place.
 
 Toggles CSS classes on the host element based on the scroll position of a target element. Adds `jam-x-scrolled` when scrolled horizontally and `jam-y-scrolled` when scrolled vertically. Use with `descStyles` to apply visual treatments to scrolled states.
 

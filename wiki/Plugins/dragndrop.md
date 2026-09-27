@@ -46,42 +46,42 @@ type DndEvent = {
 new DamsonDragNDrop(el: HTMLElement, option: Partial<DamsonDragNDrop>)
 ```
 
-| Arg | Type | Default | Description |
-|-----|------|---------|-------------|
-| `el` | `HTMLElement` | — | Target element for drag/resize. |
+| Arg           | Type                 | Default  | Description                                      |
+| ------------- | -------------------- | -------- | ------------------------------------------------ |
+| `el`          | `HTMLElement`        | —        | Target element for drag/resize.                  |
 | `option.type` | `'move' \| 'resize'` | `'move'` | Whether the instance handles moving or resizing. |
 
 ---
 
 ## Instance Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `target` | `HTMLElement` | — | The element being dragged/resized. |
-| `type` | `'move' \| 'resize'` | `'move'` | Behaviour mode. |
-| `state` | `DndState` | `'default'` | Current drag state. |
-| `delay` | `number` | `0` | Delay in ms before drag activates (mousedown threshold). |
-| `lockAxis` | `'x' \| 'y' \| 'none'` | `'none'` | Constrain movement to one axis. |
-| `snap` | `boolean` | `false` | Snap movable instances to nearby snap-enabled peers within 5 px. |
-| `snapShape` | `'rect' \| 'point'` | `'rect'` | Use edge/center anchors or a centroid anchor for snapping. |
-| `snapContainer` | `HTMLElement \| undefined` | parent element | Container whose movable descendants are snap candidates. |
-| `gap` | `number` | `12` | Edge detection radius in px (resize only). |
-| `scale` | `number` | `1` | Current zoom scale of the target element. |
-| `cursor` | `string` | `'move'` | CSS cursor when the element is draggable. |
-| `draggingCursor` | `string` | `'move'` | CSS cursor during active dragging. |
-| `handle` | `string \| undefined` | `undefined` | CSS selector for the drag handle element. |
-| `avoid` | `string \| undefined` | `undefined` | CSS selector for elements that should NOT initiate drag. |
-| `preventClick` | `boolean \| number` | `true` | Whether to suppress click events after dragging. When a number, acts as a pixel threshold. |
-| `contain` | `boolean` | `false` | Whether to constrain the element within its parent. |
-| `minWidth` | `number` | `0` | Minimum resize width. |
-| `minHeight` | `number` | `0` | Minimum resize height. |
-| `edges` | `{ [key in HandlePos]: boolean }` | `{ left: true, right: true, top: true, bottom: true }` | Which edges trigger resize. Decorated with `@mergable()`. |
-| `container` | `Rect \| Element \| string \| undefined` | — | Constrain container (setter accepts a `Rect`, `Element`, or CSS selector string). |
-| `last` | `Coord` | `{ x: 0, y: 0 }` | Last mouse position. |
-| `orig` | `Coord` | `{ x: 0, y: 0 }` | Mouse position at drag start. |
-| `lastRect` | `Rect` | — | Last bounding rect. |
-| `cursorBkp` | `string \| null` | `null` | Backup of the original cursor style. |
-| `currEdges` | `HandlePos[]` | `[]` | Currently active resize edges. |
+| Property         | Type                                     | Default                                                | Description                                                                                |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `target`         | `HTMLElement`                            | —                                                      | The element being dragged/resized.                                                         |
+| `type`           | `'move' \| 'resize'`                     | `'move'`                                               | Behaviour mode.                                                                            |
+| `state`          | `DndState`                               | `'default'`                                            | Current drag state.                                                                        |
+| `delay`          | `number`                                 | `0`                                                    | Delay in ms before drag activates (mousedown threshold).                                   |
+| `lockAxis`       | `'x' \| 'y' \| 'none'`                   | `'none'`                                               | Constrain movement to one axis.                                                            |
+| `snap`           | `boolean`                                | `false`                                                | Snap movable instances to nearby snap-enabled peers within 5 px.                           |
+| `snapShape`      | `'rect' \| 'point'`                      | `'rect'`                                               | Use edge/center anchors or a centroid anchor for snapping.                                 |
+| `snapContainer`  | `HTMLElement \| undefined`               | parent element                                         | Container whose movable descendants are snap candidates.                                   |
+| `gap`            | `number`                                 | `12`                                                   | Edge detection radius in px (resize only).                                                 |
+| `scale`          | `number`                                 | `1`                                                    | Current zoom scale of the target element.                                                  |
+| `cursor`         | `string`                                 | `'move'`                                               | CSS cursor when the element is draggable.                                                  |
+| `draggingCursor` | `string`                                 | `'move'`                                               | CSS cursor during active dragging.                                                         |
+| `handle`         | `string \| undefined`                    | `undefined`                                            | CSS selector for the drag handle element.                                                  |
+| `avoid`          | `string \| undefined`                    | `undefined`                                            | CSS selector for elements that should NOT initiate drag.                                   |
+| `preventClick`   | `boolean \| number`                      | `true`                                                 | Whether to suppress click events after dragging. When a number, acts as a pixel threshold. |
+| `contain`        | `boolean`                                | `false`                                                | Whether to constrain the element within its parent.                                        |
+| `minWidth`       | `number`                                 | `0`                                                    | Minimum resize width.                                                                      |
+| `minHeight`      | `number`                                 | `0`                                                    | Minimum resize height.                                                                     |
+| `edges`          | `{ [key in HandlePos]: boolean }`        | `{ left: true, right: true, top: true, bottom: true }` | Which edges trigger resize. Decorated with `@mergable()`.                                  |
+| `container`      | `Rect \| Element \| string \| undefined` | —                                                      | Constrain container (setter accepts a `Rect`, `Element`, or CSS selector string).          |
+| `last`           | `Coord`                                  | `{ x: 0, y: 0 }`                                       | Last mouse position.                                                                       |
+| `orig`           | `Coord`                                  | `{ x: 0, y: 0 }`                                       | Mouse position at drag start.                                                              |
+| `lastRect`       | `Rect`                                   | —                                                      | Last bounding rect.                                                                        |
+| `cursorBkp`      | `string \| null`                         | `null`                                                 | Backup of the original cursor style.                                                       |
+| `currEdges`      | `HandlePos[]`                            | `[]`                                                   | Currently active resize edges.                                                             |
 
 ---
 
@@ -89,13 +89,13 @@ new DamsonDragNDrop(el: HTMLElement, option: Partial<DamsonDragNDrop>)
 
 All receive a `DndEvent`:
 
-| Callback | Signature | Fires |
-|----------|-----------|-------|
-| `start` | `(e: DndEvent) => void` | Drag starts (after delay threshold, if any). |
-| `drag` | `(e: DndEvent) => void` | Mouse move during active drag. |
-| `end` | `(e: DndEvent) => void` | Mouse up after drag. |
-| `abort` | `(e: DndEvent) => void` | Mouse up without sufficient movement (resize only). |
-| `dblclick` | `(e: DndEvent) => void` | Double-click on a resize edge. |
+| Callback   | Signature               | Fires                                               |
+| ---------- | ----------------------- | --------------------------------------------------- |
+| `start`    | `(e: DndEvent) => void` | Drag starts (after delay threshold, if any).        |
+| `drag`     | `(e: DndEvent) => void` | Mouse move during active drag.                      |
+| `end`      | `(e: DndEvent) => void` | Mouse up after drag.                                |
+| `abort`    | `(e: DndEvent) => void` | Mouse up without sufficient movement (resize only). |
+| `dblclick` | `(e: DndEvent) => void` | Double-click on a resize edge.                      |
 
 ---
 
@@ -173,14 +173,14 @@ makeMovable(el: HTMLElement, option?: MovableOption): void
 
 #### MovableOption
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `contain` | `boolean` | `false` | Constrain within parent. |
-| `movestart` | `(e: DndEvent) => void` | — | Callback when movement starts. |
-| `moving` | `(e: { x, y, dx, dy }) => void \| boolean` | — | Callback during movement. Return `false` to prevent the move. |
-| `moveend` | `(e: DndEvent) => void` | — | Callback when movement ends. |
-| `useTransform` | `boolean \| 'auto'` | `true` | Use CSS transform vs. `left`/`top`. `'auto'` infers from existing styles. |
-| `manuallyApply` | `boolean` | `false` | When `true`, the caller is responsible for applying the position. |
+| Option          | Type                                       | Default | Description                                                               |
+| --------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------- |
+| `contain`       | `boolean`                                  | `false` | Constrain within parent.                                                  |
+| `movestart`     | `(e: DndEvent) => void`                    | —       | Callback when movement starts.                                            |
+| `moving`        | `(e: { x, y, dx, dy }) => void \| boolean` | —       | Callback during movement. Return `false` to prevent the move.             |
+| `moveend`       | `(e: DndEvent) => void`                    | —       | Callback when movement ends.                                              |
+| `useTransform`  | `boolean \| 'auto'`                        | `true`  | Use CSS transform vs. `left`/`top`. `'auto'` infers from existing styles. |
+| `manuallyApply` | `boolean`                                  | `false` | When `true`, the caller is responsible for applying the position.         |
 
 ### `makeUnmovable(el)`
 
@@ -198,23 +198,25 @@ makeResizable(el: HTMLElement, option?: ResizableOption): void
 
 #### ResizableOption
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `horizontalOnly` | `boolean` | `false` | Restrict resize to horizontal only (left/right edges). |
-| `verticalOnly` | `boolean` | `false` | Restrict resize to vertical only (top/bottom edges). |
-| `contain` | `boolean` | `false` | Constrain within parent. |
-| `resizestart` | `(e: DndEvent \| { width, height }) => void` | — | Callback when resize starts. |
-| `resizing` | `(e: DndEvent \| { width, height }) => void \| boolean` | — | Callback during resize. Return `false` to prevent the resize. |
-| `resizeend` | `(e: DndEvent \| { width, height, prevWidth, prevHeight }) => void` | — | Callback when resize ends. |
-| `reset` | `(e: DndEvent) => void` | — | Called on double-click (resets to original size). |
-| `useTransform` | `boolean \| 'auto'` | `true` | Use CSS transform vs. `left`/`top`. |
-| `edges` | `{ left, right, top, bottom }` | all `true` | Active resize edges. |
+| Option           | Type                                                                | Default    | Description                                                   |
+| ---------------- | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------- |
+| `horizontalOnly` | `boolean`                                                           | `false`    | Restrict resize to horizontal only (left/right edges).        |
+| `verticalOnly`   | `boolean`                                                           | `false`    | Restrict resize to vertical only (top/bottom edges).          |
+| `contain`        | `boolean`                                                           | `false`    | Constrain within parent.                                      |
+| `resizestart`    | `(e: DndEvent \| { width, height }) => void`                        | —          | Callback when resize starts.                                  |
+| `resizing`       | `(e: DndEvent \| { width, height }) => void \| boolean`             | —          | Callback during resize. Return `false` to prevent the resize. |
+| `resizeend`      | `(e: DndEvent \| { width, height, prevWidth, prevHeight }) => void` | —          | Callback when resize ends.                                    |
+| `reset`          | `(e: DndEvent) => void`                                             | —          | Called on double-click (resets to original size).             |
+| `useTransform`   | `boolean \| 'auto'`                                                 | `true`     | Use CSS transform vs. `left`/`top`.                           |
+| `edges`          | `{ left, right, top, bottom }`                                      | all `true` | Active resize edges.                                          |
 
 ### `makeUnresizable(el)`
 
 ```typescript signature
 makeUnresizable(el: HTMLElement): void
 ```
+
+`makeUnresizable` disables the resize instance and removes its `passiveresize`, `resize` and `moveend` callbacks. Pending debounce/animation-completion continuations are invalidated rather than universally cancelled. Shared passive `ResizeObserver` ownership is unchanged, so this does not unobserve a sole former target or promise active-drag cancellation. Previous dimensions are not restored.
 
 ### `makeDraggable(el, option?)`
 
@@ -226,11 +228,11 @@ makeDraggable(el: HTMLElement, option?: DraggableOption): void
 
 #### DraggableOption
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `data` | `Callable<any[], Dictionary>` | Data to attach to the drag event (set as `application/json`). |
-| `dragstart` | `(e: DragEvent) => void` | Native `dragstart` callback. |
-| `dragend` | `(e: DragEvent) => void` | Native `dragend` callback. |
+| Option      | Type                          | Description                                                   |
+| ----------- | ----------------------------- | ------------------------------------------------------------- |
+| `data`      | `Callable<any[], Dictionary>` | Data to attach to the drag event (set as `application/json`). |
+| `dragstart` | `(e: DragEvent) => void`      | Native `dragstart` callback.                                  |
+| `dragend`   | `(e: DragEvent) => void`      | Native `dragend` callback.                                    |
 
 ### `makeUndraggable(el)`
 
@@ -248,12 +250,12 @@ makeDroppable(target: HTMLElement | string, option?: DroppableOption): void
 
 #### DroppableOption
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `handler` | `EventHandler` | `() => {}` | Drop event handler. |
-| `dataHandler` | `(data: any) => void` | `() => {}` | Receives the parsed drop data. |
-| `prompt` | `string` | `'Drop here'` | Text shown in the drop overlay. |
-| `accept` | `string[] \| ((e: DragEvent) => boolean)` | `(e) => true` | Accepted MIME types or a validation function. |
+| Option        | Type                                      | Default       | Description                                   |
+| ------------- | ----------------------------------------- | ------------- | --------------------------------------------- |
+| `handler`     | `EventHandler`                            | `() => {}`    | Drop event handler.                           |
+| `dataHandler` | `(data: any) => void`                     | `() => {}`    | Receives the parsed drop data.                |
+| `prompt`      | `string`                                  | `'Drop here'` | Text shown in the drop overlay.               |
+| `accept`      | `string[] \| ((e: DragEvent) => boolean)` | `(e) => true` | Accepted MIME types or a validation function. |
 
 ### `makeUndroppable(target)`
 

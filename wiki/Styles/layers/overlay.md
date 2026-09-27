@@ -16,7 +16,7 @@ Standard layer args also apply: `zIndex`, `opacity`, `mask`, `filter`, `padding`
 [
     {
         "type": "card",
-        "cap": "Hover for overlay",
+        "cap": "Decorative overlay",
         "styles": ["layer.overlay(content:Hello World;opacity:0.8)"]
     },
     {

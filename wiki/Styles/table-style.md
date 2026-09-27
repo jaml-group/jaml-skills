@@ -234,20 +234,7 @@ Arguments, defaults and options: [generated catalog](../API/index.md#find-any-ex
 
 ### `table.showpageinfo`
 
-Shows pagination page information. Currently a placeholder with no args. Behavior pending implementation.
-
-```json jaml-playground
-[
-    {
-        "type": "table",
-        "styles": ["table.showpageinfo"],
-        "data": [
-            { "name": "Alice", "score": 95 },
-            { "name": "Bob", "score": 87 }
-        ]
-    }
-]
-```
+Reserved no-op in this version: it has no plugins and produces no page information. Compose status from the table's actual pagination state. Do not choose this marker as a working pagination feature.
 
 ### `table.markdown`
 

@@ -41,6 +41,8 @@ New applications normally follow Design → Compose → Validate. Existing imple
 
 For authorized creation or maintenance of reusable registry selection/composition resources, load the declared `jaml-knowledge` skill from the installed skill catalog, or `jaml-knowledge/SKILL.md` in an explicitly located authoritative `jaml-skills` checkout. Read that resolved file and its scoped resources. If unavailable, report the missing dependency and continue independent work without duplicating its methodology. Ordinary app composition uses the existing references below.
 
+When choosing controls, feedback, layout, scrolling, charts, decorative layers or shared behavior, read [Choose native capabilities](references/choosing-native-capabilities.md) before selecting a style by appearance. Follow its exact catalog identities for prerequisites and alternatives.
+
 For exported style/plugin arguments, defaults, options and available authoring prose, use the [generated catalog](references/API/index.md) or the offline `scripts/catalog.mjs` lookup. It shares the pinned digest with language tooling and reports legacy/missing coverage; guide pages supply complementary usage context. Compare the target runtime/catalog identity before relying on a changed contract.
 
 Other API facts live in [JAML Format](references/JAML/jaml-format.md), [Binders](references/JAML/binder.md), [Components and extensions](references/JAML/component.md), [Elements](references/JAM-UI/JAM-UI.md), [Styles](references/Styles/styles.md), [Plugins](references/Plugins/plugins.md), [Theme](references/Theme/theme.md), [Color](references/color.md) and [Utilities](references/utils.md).

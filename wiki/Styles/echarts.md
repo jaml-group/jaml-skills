@@ -73,7 +73,7 @@ Styles.efuncs((chart, args) => {
 
 ### `eseries(option)`
 
-Shorthand for passing series-level ECharts options. Wraps the argument in `{ series: [option] }`.
+Passes a Jam-UI chart configuration dictionary with an empty `option` member. Use `Styles.eseries({ series: { smooth: true } })` for shared series settings, or `Styles.eseries({ Revenue: { smooth: true } })` for a named series. It does not wrap arbitrary options in a one-element series array.
 
 ### Deferred chart shorthands
 
@@ -143,10 +143,10 @@ Bar chart. Args: `minHeight`, `width`, `minWidth`, `maxWidth`, `minAngle`, `gap`
 
 **Variants:**
 
--   **`bar.flipXY`** — swap X and Y axes (horizontal bars). No args.
+-   **`bar.flipXY`** — swaps the existing Cartesian or polar axis type/data pairing and moves bar labels inside. A default category-x/value-y chart becomes horizontal; the inverse pairing becomes vertical. No args.
 -   **`bar.gradientBg`** — gradient fill per bar series. No args.
 -   **`bar.votageLevelColor`** — color a single-series bar chart by resolving each category label through the Jam color registry. Args: `gradient` (default `false`) fades each resolved color toward transparency. The current API spelling is `votageLevelColor`.
--   **`bar.tz`** — pre-styled bar with gradient colors, dashed splits, rounded corners. Args: `barWidth`, `barGap`, `barMinHeight`, `radius`, `itemWidth`, `itemHeight`, `top`.
+-   **`bar.tz`** — legacy composite bar preset. Its `barWidth`, `barGap`, and `barMinHeight` names do not match the base bar argument keys in this baseline. Set `width`, `gap`, and `minHeight` on `echarts.bar` separately. Prefer explicit bar, border, split-line, legend and grid styles when these settings must be predictable.
 -   **`bar.floatingBar`** — floating bar with mark points. Args: `show`, `size`, `offset`, `iconColor`, `labelColor`.
 -   **`bar.maxHightLight`** — highlight max value per series, dim others. Args: `opacity` (default 0.3 for dimmed).
 -   **`bar.singleSwitchStyle`** — toggle-style single bar. Args: `color`, `width`, `radius`, `bgColor`.
@@ -191,10 +191,10 @@ Line chart. Args: `step`, `smooth`, `sampling`, `selectMode`, `stack`, `stackStr
 -   **`line.areaStyle`** — area fill under the line. Args: `color`, `opacity`, `shadow`, `orient`.
 -   **`line.markLine`** — mark lines (average, min, max, custom). Args: `precision`, `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `lineStyle`, `hover`, `animation`, `avg`, `x`, `y`.
 -   **`line.markPoint`** — mark points. Args: `data`, `silent`, `symbol`, `size`. Sub-styles: `label`, `itemStyle`, `hover`, `animation`, `min`, `max`.
--   **`line.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`.
+-   **`line.animation`** — animation config. Args: `animation`, `delay`, `duration`, `easing`.
 -   **`line.parts`** — Y-axis region partitioning. Args: `part` (number of regions, default 5).
 -   **`line.avgAMax`** — adds average markLine and max markPoint. Args: `size`.
--   **`line.bigSymbol`** — large symbols for sparse data. Args: `symbol`, `size`, `show`, `smooth`.
+-   **`line.bigSymbol`** — large symbols for sparse data. Args: `symbol`, `size`, `show`. Its declared `smooth` argument is not forwarded; set `smooth` on `echarts.line` separately.
 -   **`line.itemStyle`**, **`line.label`**, **`line.hover`** — standard styling sub-variants.
 
 ```json jaml-playground
@@ -426,7 +426,9 @@ Chart title. Args: `text`, `link`, `target`, `subtext`, `padding`, `backgroundCo
 
 ### `echarts.axis`
 
-Axis configuration (x, y, radius). Access as `axis.x`, `axis.y`, or `axis.radiusAxis`. Args: `type`, `name`, `nameLocation`, `nameGap`, `nameRotate`, `offset`, `inverse`, `min`, `max`, `scale`, `splitNumber`, `minInterval`, `maxInterval`, `interval`, `logBase`, `startValue`, `triggerEvent`, `boundaryGap`, `show`, `position`, `silent`.
+Cartesian axis configuration. Access as `axis.x` or `axis.y`. For polar axes, use explicit `Styles.eopts({ option: { radiusAxis: { type: 'value' }, angleAxis: { type: 'category' } } })`. The legacy `axis.radiusAxis` and `axis.angleAxis` helpers do not implement the following full builder contract in this baseline.
+
+Cartesian args: `type`, `name`, `nameLocation`, `nameGap`, `nameRotate`, `offset`, `inverse`, `min`, `max`, `scale`, `splitNumber`, `minInterval`, `maxInterval`, `interval`, `logBase`, `startValue`, `triggerEvent`, `boundaryGap`, `show`, `position`, `silent`.
 
 **Variants:** `axis.hide`, `axis.flipXY`, `axis.hideLine`, `axis.hideLabel`, `axis.hideTick`, `axis.hideSplitLine`, `axis.stripy.horizontal`, `axis.stripy.vertial`, `axis.polar`, `axis.shortenValueLabel`, `axis.rotateAxisLabel`, `axis.xAxisType`, `axis.yAxisType`, `axis.angleAxis`, `axis.radiusAxis`, `axis.xLabelFont`, `axis.yLabelFont`, `axis.yAxisName`, `axis.showYSplit`.
 
@@ -460,18 +462,16 @@ Geographic coordinate system. Args: `map`, `roam`, `center`, `aspectScale`, `zoo
 
 Calendar coordinate system. Args: `width`, `height`, `range`, `cellSize`, `orient`, `left`, `top`, `right`, `bottom`, `silent`. Sub-styles: `splitLine`, `itemStyle`, `dayLabel`, `monthLabel`, `yearLabel`.
 
-### `echarts.dataZoom`
+### Raw ECharts `dataZoom`
 
-Data zoom component. Args: `type`, `showDetaile` (current API spelling), `orient`, `show`, `left`, `top`, `right`, `bottom`.
-
-The current built-in style emits top-level chart config that `CashewChart` does not project into the final ECharts option. Until that runtime path is implemented, use the explicit `Styles.eopts({ option: { dataZoom: [...] } })` form above.
+`echarts.dataZoom` is not exported in this compatibility baseline. Use `Styles.eopts({ option: { dataZoom: [...] } })`; top-level Jam-UI chart config `dataZoom` is not projected into the final ECharts option.
 
 ---
 
 ## Utility styles
 
 -   **`echarts.shadow`** — shadow config. Sub-style: `shadow.item` (offsetX, offsetY, blur, color).
--   **`echarts.animation`** — animation config. Args: `animation`, `delay`, `duration`, `type`, `easing`. Sub-style: `animation.scale`.
+-   **`echarts.animation`** — shared series animation type, easing and index-based delay. Args: `delay`, `type`, `easing`. Sub-style: `animation.scale`.
 
 ---
 
@@ -480,6 +480,8 @@ The current built-in style emits top-level chart config that `CashewChart` does 
 Each chart initializes with an adaptive ECharts appearance theme built for that chart element. It takes the series palette from the active JAML color set and resolves `sys` tokens for shared typography, titles, axes and axis pointers, grids, line and radar drawing, candlesticks, graph styling, calendar marks, toolbox icons, legends, tooltips, timelines, and mark-point labels. Theme-authored `Tokens.chart` values are cooked against the element and deep-merged over that base.
 
 Treat this layer as an appearance baseline. Data, visibility, layout, interaction, and chart behavior remain owned by the chart's explicit styles and ECharts options.
+
+Both mode styles restore the remaining style owner or prior local/current inherited context when removed. They preserve distinguishable external mode and inline `color-scheme` changes, including priority. Same-value external writes are indistinguishable. Their cleanup preserves the shared document luminance sheet; it does not completely isolate every luminance context.
 
 -   **`theme.light`** — force light mode on the chart element.
 -   **`theme.dark`** — force dark mode on the chart element.
@@ -680,14 +682,14 @@ Maps to `series.itemStyle.borderRadius = [4, 4, 4, 4]`. Also available on `pie.i
 Pass a two-element array to `radius` to create a ring/donut chart directly without the `pie.ring` variant:
 
 ```javascript
-Styles.echarts.pie({ radius: ['0%', '100%'] })
+Styles.echarts.pie({ radius: ['40%', '75%'] })
 ```
 
 ```json
-"echarts.pie(radius:['0%','100%'])"
+"echarts.pie(radius:['40%','75%'])"
 ```
 
-Maps to `series.radius = ['0%', '100%']`. The string path form supports the same args as the JS form: `radius`, `center`, `startAngle`, `endAngle`, `roseType`, `padAngle`, etc.
+Maps to `series.radius = ['40%', '75%']`. The string path form supports the same args as the JS form: `radius`, `center`, `startAngle`, `endAngle`, `roseType`, `padAngle`, etc.
 
 ### Grid with positional args
 
@@ -766,7 +768,7 @@ Styles.echarts.axis.x.line.lineStyle({ color: '#eee' })
 #### Pie ring with per-item border radius
 
 ```javascript
-Styles.echarts.pie({ radius: ['0%', '100%'] }),
+Styles.echarts.pie({ radius: ['40%', '75%'] }),
 Styles.echarts.pie.itemStyle.border([4, 4, 4, 4])
 ```
 

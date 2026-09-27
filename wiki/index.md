@@ -18,6 +18,8 @@ For exported style/plugin signatures and metadata prose, start with the [generat
 | Theme stylesheet        | Selectors, layout, states, and visual recipes                      | [Theme](./Theme/theme.md), then [Stylesheets](./Theme/stylesheets.md)                                                                                   |
 | `jam.*` APIs            | Imperative rendering, utilities, and runtime operations            | [Utilities](./utils.md); [Color System](./color.md) for color functions                                                                                 |
 
+For controls, feedback, layout, scrolling, charts, decorative layers and shared behavior, use [Choose native capabilities](choosing-native-capabilities.md). It connects native state owners to conditional examples and the generated contracts.
+
 ## Choose the owner before the API
 
 1. Select the element that owns the behavior and check its inheritance. An input's `value` contract does not make `value` a parameter of every element.

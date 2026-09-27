@@ -94,18 +94,18 @@ Mutable properties (assign new values each frame to animate):
 
 Computed each frame from `jam.cursorPos` relative to the element's bounding rect:
 
-| Property | Type     | Description                                                        |
-| -------- | -------- | ------------------------------------------------------------------ |
-| `x`      | `number` | Cursor X relative to element (px from left edge)                   |
-| `y`      | `number` | Cursor Y relative to element (px from top edge)                    |
-| `dist`   | `number` | Distance from cursor to this particle (px)                         |
-| `deg`    | `number` | Angle from cursor to this particle (degrees, 0 = right, 90 = down) |
+| Property | Type     | Description                                                                |
+| -------- | -------- | -------------------------------------------------------------------------- |
+| `x`      | `number` | Cursor X relative to element (px from left edge)                           |
+| `y`      | `number` | Cursor Y relative to element (px from top edge)                            |
+| `dist`   | `number` | Distance from cursor to this particle (px)                                 |
+| `deg`    | `number` | Angle from this particle toward the cursor (degrees, 0 = right, 90 = down) |
 
 Cursor interaction is **always** computed when `onTick` is provided — no separate flag is needed.
 
 ### Per-property easing with `jam.easeProgress`
 
-The `progress` passed to `onTick` is already eased by the particle's `animaEasing` and `animaDirection`. To apply **different easing per property**, call `jam.easeProgress` directly — it re-eases the same raw progress with an independent curve:
+The `progress` passed to `onTick` is already transformed by `animaEasing` and `animaDirection`. Calling `jam.easeProgress` on it applies a second transformation. For independent per-property curves, set `animaEasing: 'linear'` and `animaDirection: 'normal'` on the particle style, then apply each desired curve inside `onTick`:
 
 ```
 jam.easeProgress(progress, iterator, easing, direction?, scale?)
@@ -333,7 +333,7 @@ export default jaml.wrapper({
 
 ### Floating flowers (shape: `'flower'`)
 
-Cursor-repel behavior — flowers scatter away from the mouse. Petals rotate with `overshoot` easing, cursor proximity controls the repel force:
+Flowers bloom with overshoot easing while alternating particles rotate in opposite directions. This example changes shape and rotation; it does not move particles in response to the cursor:
 
 ```javascript jaml-playground
 export default jaml.wrapper({

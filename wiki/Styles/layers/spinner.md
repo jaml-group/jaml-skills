@@ -1,6 +1,6 @@
 # layer.spinner
 
-`Styles.layer.spinner.*` — animated spinner/loader layer effects.
+`Styles.layer.spinner.*` provides decorative activity layers. Read [activity versus progress](../../choosing-native-capabilities.md#decorative-activity-and-actual-progress) before using them as loading UI; the generated profiles describe each variant’s activation and sizing requirements.
 
 ---
 

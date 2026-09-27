@@ -8,7 +8,7 @@
 
 ### `glare.spot`
 
-Spotlight glare effect. A bright spot that follows the mouse cursor position.
+Spotlight glare decoration positioned at the top or bottom. This style does not install mouse tracking. For pointer following use `layer.follower.spotlight(follow:true)`.
 
 Arguments, defaults and options: [generated catalog](../../API/index.md#find-any-exported-path). Catalog lookup: `style layer.glare.spot`.
 

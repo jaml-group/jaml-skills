@@ -1,6 +1,6 @@
 # layer.follower
 
-`Styles.layer.follower.*` — cursor-following decorative layer elements. Uses `MelonMove` for smooth trailing motion. Each variant adds a `<div class="outer"><div class="inner"></div></div>` to the layer slot.
+`Styles.layer.follower.*` provides decorative layers with optional pointer following. Enable `follow: true` for pointer tracking; read the generated profile for behavior and limitations. Compare [selection, hover and host decoration](../../choosing-native-capabilities.md#selection-and-hover) before choosing this family.
 
 ---
 

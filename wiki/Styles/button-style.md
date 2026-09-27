@@ -6,16 +6,17 @@
 
 ## Slots
 
-| Slot | Type | Description |
-|---|---|---|
-| `icon` | slotted | Icon content |
-| `cap` | slotted | Button label (default slot) |
+| Slot   | Type    | Description                 |
+| ------ | ------- | --------------------------- |
+| `icon` | slotted | Icon content                |
+| `cap`  | slotted | Button label (default slot) |
 
 ---
 
 ## Style variants
 
 ### Ghost button
+
 Use the `button-ghost` element type for a transparent button.
 
 ```json jaml-playground
@@ -28,19 +29,20 @@ Use the `button-ghost` element type for a transparent button.
 ```
 
 ### `button.cta`
-Call-to-action button with prominent styling. No args.
+
+This legacy style adds a class only. Select the native `button-cta` type for the call-to-action variant; bind the action separately.
 
 ```json jaml-playground
 [
     {
-        "type": "button",
-        "cap": "Submit",
-        "styles": ["button.cta"]
+        "type": "button-cta",
+        "cap": "Submit"
     }
 ]
 ```
 
 ### `button.close`
+
 Close button (X icon style). No args.
 
 ```json jaml-playground
@@ -54,6 +56,7 @@ Close button (X icon style). No args.
 ```
 
 ### `button.reset`
+
 Reset button style. No args.
 
 ```json jaml-playground
@@ -67,6 +70,7 @@ Reset button style. No args.
 ```
 
 ### `button.add`
+
 Add / create button with plus icon styling. No args.
 
 ```json jaml-playground
@@ -81,6 +85,7 @@ Add / create button with plus icon styling. No args.
 ```
 
 ### `button.check`
+
 Check / confirm button with checkmark styling. No args.
 
 ```json jaml-playground
@@ -95,6 +100,7 @@ Check / confirm button with checkmark styling. No args.
 ```
 
 ### `button.vertical`
+
 Vertical layout — stacks icon above the label. No args.
 
 ```json jaml-playground
@@ -109,6 +115,7 @@ Vertical layout — stacks icon above the label. No args.
 ```
 
 ### `button.pill`
+
 Pill / rounded capsule shape. No args.
 
 ```json jaml-playground
@@ -122,32 +129,35 @@ Pill / rounded capsule shape. No args.
 ```
 
 ### `button.fab`
-Floating action button — circular, elevated. No args.
+
+This legacy style adds a class only. Use the native `button-fab` type for the floating-action presentation and `button.round` when a circular shape is required.
 
 ```json jaml-playground
 [
     {
-        "type": "button",
+        "type": "button-fab",
         "icon": "✏",
-        "styles": ["button.fab"]
+        "cap": "Edit",
+        "styles": ["button.round"]
     }
 ]
 ```
 
 ### `button.link`
-Link-style button — appears as a hyperlink. No args.
+
+This legacy style adds a class only. Use the native `button-link` type for link presentation; navigation or command handling remains explicit.
 
 ```json jaml-playground
 [
     {
-        "type": "button",
-        "cap": "Learn more",
-        "styles": ["button.link"]
+        "type": "button-link",
+        "cap": "Learn more"
     }
 ]
 ```
 
 ### `button.blended`
+
 Blended button style. No args.
 
 ```json jaml-playground
@@ -161,6 +171,7 @@ Blended button style. No args.
 ```
 
 ### `button.round`
+
 Round button shape. No args.
 
 ```json jaml-playground
@@ -180,11 +191,12 @@ Round button shape. No args.
 ```javascript jaml-playground
 export default {
   type: 'wrapper',
-  styles: ['wrapper.buttonwrapper'],
+  stylize: 'actions',
+  styles: ['layout.flex'],
   components: [
-    { type: 'button', cap: 'Primary', styles: ['button.cta'] },
+    { type: 'button-cta', cap: 'Primary' },
     { type: 'button-ghost', cap: 'Ghost' },
-    { type: 'button', cap: 'Link', styles: ['button.link'] }
+    { type: 'button-link', cap: 'Link' }
   ]
 }
 ```

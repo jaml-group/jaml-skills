@@ -37,4 +37,20 @@ To mirror height, copy `getComputedStyle(source).height` into `target.style.heig
 
 ## Convenience variants
 
-`sync.size` declares width/height switches, and `sync.width` / `sync.height` are preconfigured style instances. In this compatibility baseline, use the explicit callback above when synchronizing dimensions between configured selectors; the convenience forms do not provide that behavior. Do not call `sync.width(...)` or `sync.height(...)` as parameterized factories.
+`sync.size` resolves configured selectors and copies computed width and/or height on the host’s resize trigger. It owns the copied inline sizing and restores its contribution on removal; queued updates from the removed application no longer run. Its built-in size callback replaces the `callback` argument. Use `sync` for custom synchronization; writes made by that callback remain caller-owned.
+
+```json jaml-playground
+{
+  "type": "wrapper",
+  "components": [
+    { "type": "label", "id": "size-source", "cap": "Width source", "styles": ["css(width:12rem)"] },
+    {
+      "type": "label",
+      "cap": "Mirrored width",
+      "styles": ["sync.size(source:#size-source;target:self;parent:parent;height:false)"]
+    }
+  ]
+}
+```
+
+`sync.width` and `sync.height` remain prebuilt style instances with captured values and unset source/target selectors. Use `sync.size` to select elements; do not call these presets as parameterized factories.

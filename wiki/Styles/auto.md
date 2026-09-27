@@ -69,6 +69,8 @@ Arguments, defaults and options: [generated catalog](../API/index.md#find-any-ex
 
 ### `auto.moveAlong`
 
+`auto.moveAlong` and `auto.scrollAlong` clean their active setup on unmount, style teardown or host destruction and can set up again on remount. Delayed setup ignores obsolete applications. Movement also guards pending move completions; scroll synchronization cancels its owned frame and timeout and removes only its own temporary marker. These guards do not cancel arbitrary promises.
+
 Makes the element follow another element's screen position. Uses `MelonMove` for smooth animation. Toggles `jam-at-front` class when passing certain angles for z-index management.
 
 Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `style auto.moveAlong`.

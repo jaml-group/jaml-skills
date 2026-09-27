@@ -6,7 +6,7 @@ Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. 
 
 ## `popup.tip`
 
-Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Supports sub-tips: when hovering over a child with a `jam-sub-tip` attribute, the popup content updates without closing.
+Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A sub-tip target with a `jam-sub-tip` attribute updates an already showing main popup without closing it. Returning to the main target restores its original content. Matching tests the event target itself, so a nested label or icon does not inherit a matching ancestor’s tip automatically.
 
 Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin popup.tip`.
 
@@ -58,19 +58,21 @@ export default {
 
 ## `popup.title`
 
-Replaces native HTML `title` attributes with styled popups. Intercepts `mouseenter` on child elements, reads their `title` attribute, clears it temporarily, and shows a styled popup instead. Restores the `title` on mouseleave.
+Replaces a target’s native `title` tooltip with a framework popup. It temporarily suppresses the title and restores it on leave, target unmount, target switch or plugin removal. A newer nonempty title or a removed title attribute is preserved. An external assignment of the same empty title cannot be distinguished from the plugin’s suppression.
+
+Removing the plugin detaches its listeners and destroys its popup, including pending display. Repeated application does not duplicate listeners. Use `popup.tip` for explicit tip content and provide keyboard/focus-accessible help when the product requires it.
 
 Arguments, defaults and options: [generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin popup.title`.
 
 ```javascript jaml-playground
 export default {
   type: 'container',
-  plugins: ['popup.title'],
+  plugins: ['popup.title(showDelay:200)'],
   components: [
     {
       type: 'button',
       cap: 'Save',
-      title: 'Save all changes to the server (Ctrl+S)'
+      attrs: { title: 'Save all changes to the server (Ctrl+S)' }
     }
   ]
 }

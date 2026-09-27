@@ -2,6 +2,8 @@
 
 `Styles.layer.combo.*` — composite layer effects combining multiple spinners or masked backgrounds.
 
+For `combo.spinner.roulette`, `.radar` and `.reddit`, omitted `spin` keeps the preset motion; `spin:false` stops rotation throughout the composite. This does not stop independent animation effects. Preset directions, geometry and fixed timings remain intentional; compose individual spinners when each layer needs independent control.
+
 ---
 
 ## Variants
@@ -62,13 +64,13 @@ Arguments, defaults and options: [generated catalog](../../API/index.md#find-any
 
 ### `combo.masked`
 
-Masked background layer. Wraps `layerBackgrounds()` with mask support.
+Background layer with an optional caller-supplied mask. Only `combo.masked.stripy` supplies a fade mask automatically. The base variant keeps combo-layer classes and needs explicit layer geometry; set the host position and the layer’s `css` as below. For a full-size background with native geometry, use `layer.background` with an explicit mask.
 
 ```json jaml-playground
 [
     {
         "type": "card",
-        "styles": ["layer.combo.masked(color:var(--jam-ac-color);opacity:0.15)"],
+        "styles": ["css(position:relative)", "layer.combo.masked(color:var(--jam-ac-color);opacity:0.15;mask:linear-gradient(90deg,hsl(0 0% 0%),transparent);css:{position:'absolute',inset:0,display:'block',pointerEvents:'none'})"],
         "components": [{ "type": "label", "cap": "Masked bg" }]
     }
 ]
