@@ -37,6 +37,16 @@ test('artifact installs independently and preserves learned corrections on repla
         assert.equal(_profile.schemaDigest, _manifest.catalog.schemaDigest);
         assert.equal(_profile.profile.desc, '有界应用布局');
         assert.ok(existsSync(resolve(_destination, 'jaml/references/API', _profile.reference)));
+        for (const [args, expected] of [
+            [['contract', 'style', 'interact.sortable', '--args', 'change'], 'does not persist the application model'],
+            [['choose', 'selection-and-hover'], 'complete tabs interaction'],
+            [['read', 'Styles/check.md#checkunderscore'], 'native element owns selection']
+        ]) {
+            const _focused = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), ...args], { cwd: _temporary, encoding: 'utf8' });
+            assert.equal(_focused.status, 0, _focused.stderr);
+            assert.ok(_focused.stdout.includes(expected));
+        }
+
         assert.equal(readFileSync(resolve(_destination, 'jaml/catalog/LICENSE'), 'utf8'), readFileSync(resolve(root, 'jaml/catalog/LICENSE'), 'utf8'));
         const _learned = resolve(_destination, 'jaml/LEARNED.md');
         writeFileSync(_learned, 'A verified user correction.\n');

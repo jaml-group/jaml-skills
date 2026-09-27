@@ -14,6 +14,8 @@ Callers such as documentation-maintenance or composition skills resolve the decl
 
 Carry the caller's target repository/package, requested knowledge change, consumer, evidence baseline and allowed actions into this workflow. A docs-only assignment changes authorized knowledge resources; it does not authorize runtime changes, new metadata schemas, registry migration or publication. The caller retains its incremental-update, generator, verification and baseline duties.
 
+Reason broadly within the authorized maintenance scope so consumers can retrieve narrowly. Keep Choose (selection), Compose (exact usable contracts), Explain (mechanisms/rationale) and Maintain (source evidence/corrections) as logical views of existing owners. A focused consumer view must retain critical prerequisites, state ownership, persistence, cleanup and uncertainty; it must not force normal composition through this maintenance workflow.
+
 ## Build and maintain knowledge
 
 1. **Find owners and consumers.** Inspect the target's registries, exports/registrations, definitions, usage sites and supported discovery tools. Identify affected capabilities, their package/version identities, current knowledge owners and consumer entry points. Include discovered registry extensions without assuming the framework catalog covers them. Read [registry contracts](references/registry-contracts.md) for the families in scope.

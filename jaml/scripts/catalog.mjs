@@ -85,16 +85,134 @@ export function lookup(catalog, kind, path, locale = 'en') {
     return { ..._entry, locale: _localized.locale, catalogDigest: catalog.pin.catalogDigest, schemaDigest: catalog.pin.schemaDigest, profile: _localized[kind === 'style' ? 'styles' : 'plugins'].argSchemas[path], reference: profilePath(_entry, _localized.locale) };
 }
 
+export function contract(catalog, kind, path, locale = 'en', selectedArgs) {
+    const _result = lookup(catalog, kind, path, locale);
+    const _schema = _result.profile;
+    const _args = Object.entries(_schema.args ?? {});
+    const _selected = selectedArgs === undefined ? undefined : new Set(selectedArgs);
+    if (_selected && (!_selected.size || [..._selected].some((key) => !Object.hasOwn(_schema.args ?? {}, key)))) {
+        throw new Error('Unknown or empty argument selection. Read contract ' + kind + ' ' + path + ' for the current argument names; open contracts require their owning reference.');
+    }
+    const _lines = [`${_result.id}${_result.canonicalId !== _result.id ? ' → ' + _result.canonicalId : ''}`, `Framework: ${catalog.pin.frameworkVersion} · locale: ${_result.locale} · knowledge: ${_result.knowledge} · format: ${_result.format}`, `Catalog: ${_result.catalogDigest} · schema: ${_result.schemaDigest}`, 'Scope: complete profile and argument context; no fields omitted. Missing facts remain unknown; no default does not mean required. Tuner hints are not runtime constraints.', ''];
+    for (const [field, value] of Object.entries(_schema)) {
+        if (field !== 'args') {
+            _lines.push(field + ': ' + (typeof value === 'string' ? value : JSON.stringify(value)));
+        }
+    }
+    if (_schema.argumentContract === 'passthrough') {
+        _lines.push('Open forwarding contract: field inference is incomplete, not an empty accepted-argument list. Retrieve the argumentSource owner before composing.');
+    }
+    _lines.push('', 'Argument order: ' + (_args.map(([key]) => key).join(', ') || '(none cataloged)'));
+    const _groups = _selected
+        ? [
+              ['Selected arguments', _args.filter(([key]) => _selected.has(key))],
+              ['Other arguments (dependency context retained)', _args.filter(([key]) => !_selected.has(key))]
+          ]
+        : [['Arguments', _args]];
+    for (const [title, args] of _groups) {
+        if (args.length) {
+            _lines.push(title + ':', ...args.map(([key, value]) => key + ': ' + JSON.stringify(value)));
+        }
+    }
+    _lines.push('', `Expand: catalog.mjs show ${kind} ${path} --locale ${_result.locale} | references/API/${_result.reference}`);
+    return _lines.join('\n');
+}
+
+const usage = `Usage:
+  catalog.mjs contract|show style|plugin PATH [--locale en|zh]
+  catalog.mjs contract style|plugin PATH --args NAME,NAME [--locale en|zh]
+  catalog.mjs list style|plugin [PREFIX] [--limit 20] [--offset 0] [--locale en|zh] [--all]
+  catalog.mjs choose [SECTION_ANCHOR]
+  catalog.mjs sections FILE.md [--limit 20] [--offset 0]
+  catalog.mjs read FILE.md[#SECTION_ANCHOR]
+Contract is lossless; --args focuses named arguments but retains cross-argument context.
+Choose lists topics or reads one topic; read keeps ancestor introductions with a section.
+Show preserves the complete structured profile. List is paged; --all explicitly expands it.`;
+
+function parseOptions(args) {
+    const _positionals = [];
+    const _options = {};
+    for (let index = 0; index < args.length; index++) {
+        const _value = args[index];
+        if (!_value.startsWith('--')) {
+            _positionals.push(_value);
+            continue;
+        }
+        if (!['--locale', '--args', '--limit', '--offset', '--all'].includes(_value) || Object.hasOwn(_options, _value)) {
+            throw new Error(usage);
+        }
+        if (_value === '--all') {
+            _options[_value] = true;
+        } else {
+            const _next = args[++index];
+            if (!_next || _next.startsWith('--')) {
+                throw new Error(usage);
+            }
+            _options[_value] = _next;
+        }
+    }
+    return { positionals: _positionals, options: _options };
+}
+
+function page(items, options) {
+    const _limit = options['--limit'] ?? '20';
+    const _offset = options['--offset'] ?? '0';
+    if (!/^\d+$/.test(_limit) || !/^\d+$/.test(_offset) || +_limit < 1 || +_limit > 100 || !Number.isSafeInteger(+_offset) || (options['--all'] && (options['--limit'] || options['--offset']))) {
+        throw new Error('Use --limit 1..100 and a nonnegative safe --offset; --all is a separate explicit expansion.');
+    }
+    const _end = options['--all'] ? items.length : +_offset + +_limit;
+    return { total: items.length, offset: +_offset, limit: options['--all'] ? items.length : +_limit, nextOffset: _end < items.length ? _end : null, entries: items.slice(+_offset, _end) };
+}
+
 async function main(args) {
-    const _localeAt = args.indexOf('--locale');
-    const _locale = _localeAt >= 0 ? args.splice(_localeAt, 2)[1] : 'en';
-    const [_command, _kind, _path = ''] = args;
-    if (!['show', 'list'].includes(_command) || !['style', 'plugin'].includes(_kind) || args.length > 3 || !['en', 'zh'].includes(_locale)) {
-        throw new Error('Usage: catalog.mjs show|list style|plugin PATH_OR_PREFIX [--locale en|zh]');
+    if (args.length === 1 && args[0] === '--help') {
+        console.log(usage);
+        return;
+    }
+    const { positionals, options } = parseOptions(args);
+    const [_command, _kind, _path = ''] = positionals;
+    const _allowed = {
+        show: ['--locale'],
+        contract: ['--locale', '--args'],
+        list: ['--locale', '--limit', '--offset', '--all'],
+        choose: [],
+        sections: ['--limit', '--offset'],
+        read: []
+    };
+    if (!_allowed[_command] || Object.keys(options).some((key) => !_allowed[_command].includes(key))) {
+        throw new Error(usage);
+    }
+    if (['choose', 'sections', 'read'].includes(_command)) {
+        if (positionals.length > 2 || (_command !== 'choose' && !_kind)) {
+            throw new Error(usage);
+        }
+        const { chooser, readReference, referenceSections, referenceOutput } = await import('./references.mjs');
+        if (_command === 'read' || (_command === 'choose' && _kind)) {
+            const [_name, _anchor, ..._extra] = (_command === 'choose' ? chooser + '#' + _kind : _kind).split('#');
+            if (_extra.length || _anchor === '') {
+                throw new Error(usage);
+            }
+            console.log(referenceOutput(readReference(_name), _anchor));
+        } else {
+            const _reference = readReference(_command === 'choose' ? chooser : _kind);
+            const _sections = referenceSections(_reference.text)
+                .filter((section) => _command !== 'choose' || section.level === 2)
+                .map(({ heading, anchor, level }) => ({ heading, anchor, level }));
+            const _page = page(_sections, options);
+            console.log(JSON.stringify({ reference: _reference.name, sha256: _reference.sha256, scope: 'Headings only; retrieve a section before making a choice.', ..._page, read: _command === 'choose' ? 'catalog.mjs choose SECTION_ANCHOR' : 'catalog.mjs read ' + _reference.name + '#SECTION_ANCHOR' }, null, 2));
+        }
+        return;
+    }
+    const _locale = options['--locale'] ?? 'en';
+    if (!['style', 'plugin'].includes(_kind) || positionals.length > 3 || !['en', 'zh'].includes(_locale) || (_command !== 'list' && !_path)) {
+        throw new Error(usage);
     }
     const _catalog = await loadCatalog();
     if (_command === 'list') {
-        console.log(JSON.stringify({ catalogDigest: _catalog.pin.catalogDigest, entries: _catalog.entries.filter((entry) => entry.kind === _kind && entry.path.startsWith(_path)).map((entry) => ({ ...entry, reference: profilePath(entry, _locale) })) }, null, 2));
+        const _matches = _catalog.entries.filter((entry) => entry.kind === _kind && entry.path.startsWith(_path)).map((entry) => ({ ...entry, reference: profilePath(entry, _locale) }));
+        console.log(JSON.stringify({ catalogDigest: _catalog.pin.catalogDigest, schemaDigest: _catalog.pin.schemaDigest, frameworkVersion: _catalog.pin.frameworkVersion, locale: _locale, ...page(_matches, options), scope: 'Identity discovery only; retrieve exact contracts before composing. Continue with --offset nextOffset, narrow PREFIX, or explicitly use --all.' }, null, 2));
+    } else if (_command === 'contract') {
+        console.log(contract(_catalog, _kind, _path, _locale, options['--args']?.split(',')));
     } else {
         console.log(JSON.stringify(lookup(_catalog, _kind, _path, _locale), null, 2));
     }

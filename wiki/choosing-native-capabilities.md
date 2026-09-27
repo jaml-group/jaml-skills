@@ -1,13 +1,8 @@
 # Choose native capabilities
 
-Read this when selecting native styles/plugins for controls, feedback, layout, scrolling, charts, decoration or shared behavior. Start with the state or operation the user needs; appearance is a separate choice. This guide routes those decisions to the [generated English/Chinese facts](API/index.md#find-any-exported-path), including prerequisites, composition and caveats. Choose a family here, then query the exact exported path; shared generated families can contain variants with different targets and prerequisites.
+For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Appearance does not establish state ownership. This guide supplies selection context; the pinned catalog and linked curated owners supply current contracts.
 
-Use the installed skill's offline reader for each exact identity below:
-
-```sh
-node <skill-root>/scripts/catalog.mjs show style check.underscore --locale en
-node <skill-root>/scripts/catalog.mjs show plugin interact.droppable --locale zh
-```
+Use `node <skill-root>/scripts/catalog.mjs choose` for topic anchors, `choose ANCHOR` for one topic, and `contract style PATH --locale en` (or `plugin`, `zh`) for a selected identity. Expand linked prerequisites when relevant; `show` and complete guides remain available for explanation.
 
 ## Selection and hover
 

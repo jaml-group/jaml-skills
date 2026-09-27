@@ -147,7 +147,31 @@ export function renderReferences(catalog) {
     for (const [locale, coverage] of Object.entries(_coverage.translations)) {
         _lines.push(`| ${escape(locale)} | ${coverage.translated} | ${coverage.fallback?.length ? coverage.fallback.map(escape).join(', ') : '0'} | ${coverage.missing.length ? coverage.missing.map(escape).join(', ') : '0'} |`);
     }
-    _lines.push('', '## Find any exported path', '', "Run the installed skill's offline reader; replace `<skill-root>` with its installation directory:", '', '```sh', 'node <skill-root>/scripts/catalog.mjs show style layout.application --locale en', 'node <skill-root>/scripts/catalog.mjs show style layout.application --locale zh', 'node <skill-root>/scripts/catalog.mjs list style layout.', 'node <skill-root>/scripts/catalog.mjs list plugin', '```', '', 'The reader reports exact IDs, canonical IDs, argument order and values plus the corresponding generated reference path. It covers every exported path, including generated variants and aliases. Pages share a profile only when the packed catalog shares its schema. [Machine index and coverage](index.json) records profile coverage without repeating the full path inventory.', '', '## Profiles', '', '| Kind | Representative path | Exported paths | Format / knowledge | English | 中文 |', '| --- | --- | --- | --- | --- | --- |');
+    _lines.push(
+        '',
+        '## Find any exported path',
+        '',
+        "Run the installed skill's offline reader; replace `<skill-root>` with its installation directory:",
+        '',
+        '```sh',
+        'node <skill-root>/scripts/catalog.mjs contract style layout.application --locale en',
+        'node <skill-root>/scripts/catalog.mjs contract style layout.application --args scroll --locale en',
+        'node <skill-root>/scripts/catalog.mjs choose container-layout-and-child-placement',
+        'node <skill-root>/scripts/catalog.mjs show style layout.application --locale en',
+        'node <skill-root>/scripts/catalog.mjs show style layout.application --locale zh',
+        'node <skill-root>/scripts/catalog.mjs list style layout.',
+        'node <skill-root>/scripts/catalog.mjs list plugin',
+        '```',
+        '',
+        'Use contract for a lossless compact view; --args focuses arguments while retaining dependency context. List is paged by default: narrow the prefix or follow nextOffset; --all is an explicit full expansion. Use sections FILE.md and read FILE.md#ANCHOR for focused curated guidance, or read FILE.md for a complete explanation.',
+        '',
+        'The reader reports exact IDs, canonical IDs, argument order and values plus the corresponding generated reference path. It covers every exported path, including generated variants and aliases. Pages share a profile only when the packed catalog shares its schema. [Machine index and coverage](index.json) records profile coverage without repeating the full path inventory.',
+        '',
+        '## Profiles',
+        '',
+        '| Kind | Representative path | Exported paths | Format / knowledge | English | 中文 |',
+        '| --- | --- | --- | --- | --- | --- |'
+    );
     for (const profile of _profiles) {
         _lines.push(`| ${profile.kind} | ${escape(profile.representative)} | ${profile.paths} | ${profile.format} / ${profile.knowledge} | [API](${profilePath(profile, 'en')}) | [API](${profilePath(profile, 'zh')}) |`);
     }
