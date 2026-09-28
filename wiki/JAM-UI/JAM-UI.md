@@ -59,7 +59,7 @@ Representers are lightweight elements that represent a data shape or HTML primit
 | ------------- | --------------- | ------------------------------------------------------------------------------------------------- |
 | `checkbox`    | —               | Checkbox input. Extends `AbstractInputElement`.                                                   |
 | `code`        | —               | Syntax-highlighted code block.                                                                    |
-| `data`        | —               | Invisible data carrier (virtual element, no DOM output).                                          |
+| `data`        | —               | Invisible data carrier; see [shared data ownership](../JAML/state-and-data.md#shared-data-owner). |
 | `divider`     | `EndiveElement` | Visual divider; optional label is supplied through inherited `value` from `AbstractInputElement`. |
 | `hr`          | —               | Horizontal rule (`<hr>`).                                                                         |
 | `placeholder` | —               | Placeholder element.                                                                              |
@@ -101,9 +101,9 @@ Use a stable descriptive value when it makes the alternate purpose clear:
 
 ```json jaml-playground
 {
-  "type": "container",
-  "stylize": "list",
-  "variant": "legend"
+    "type": "container",
+    "stylize": "list",
+    "variant": "legend"
 }
 ```
 
@@ -131,17 +131,17 @@ Numeric values remain valid when they are the clearer contract. Because the valu
 
 ```javascript jaml-playground
 export default {
-  type: 'indicator',
-  states: {
-    pass:    { color: 'green' },
-    fail:    { color: 'red' },
-    warning: { color: 'orange' }
-  },
-  onstatechange: function(state, old) {
-    // this = the indicator element
-    console.log(`State: ${old} → ${state}`)
-  }
-}
+    type: 'indicator',
+    states: {
+        pass: { color: 'green' },
+        fail: { color: 'red' },
+        warning: { color: 'orange' }
+    },
+    onstatechange: function (state, old) {
+        // this = the indicator element
+        console.log(`State: ${old} → ${state}`);
+    }
+};
 ```
 
 **Instance methods:**
@@ -163,8 +163,8 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "input",
-  "disabled": "<b>This field is locked</b> — contact an admin to change it"
+    "type": "input",
+    "disabled": "<b>This field is locked</b> — contact an admin to change it"
 }
 ```
 
@@ -181,9 +181,9 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Danger",
-  "color": "red"
+    "type": "button",
+    "cap": "Danger",
+    "color": "red"
 }
 ```
 
@@ -200,10 +200,10 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Primary",
-  "class": "my-button jam-primary",
-  "style": { "marginTop": "1rem" }
+    "type": "button",
+    "cap": "Primary",
+    "class": "my-button jam-primary",
+    "style": { "marginTop": "1rem" }
 }
 ```
 
@@ -219,10 +219,10 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Email",
-  "tip": "Enter your work email address",
-  "help": "We use your email for account recovery only. It will not be shared."
+    "type": "input",
+    "cap": "Email",
+    "tip": "Enter your work email address",
+    "help": "We use your email for account recovery only. It will not be shared."
 }
 ```
 
@@ -285,22 +285,22 @@ This example marks whether the input has caption text on mount and whenever capt
 
 ```javascript jaml-playground
 function syncCaptionState(element, assigned) {
-  const _hasCaption = assigned.some(node => (node.textContent ?? '').trim() !== '');
-  element.toggleAttribute('data-has-caption', _hasCaption);
+    const _hasCaption = assigned.some((node) => (node.textContent ?? '').trim() !== '');
+    element.toggleAttribute('data-has-caption', _hasCaption);
 }
 
 export default {
-  type: 'input',
-  cap: 'Account',
-  onmount() {
-    syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
-  },
-  on: {
-    capslotchange(event) {
-      const { assigned } = event.detail;
-      syncCaptionState(this, assigned);
+    type: 'input',
+    cap: 'Account',
+    onmount() {
+        syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
+    },
+    on: {
+        capslotchange(event) {
+            const { assigned } = event.detail;
+            syncCaptionState(this, assigned);
+        }
     }
-  }
 };
 ```
 
@@ -326,20 +326,20 @@ The hooks listed below can be passed as JAML params or set directly on the eleme
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  oninit: function() {
-    // this = the container element
-    // Fires ONCE — setup that should only run the first time
-    console.log('initialized')
-  },
-  onmount: function() {
-    // Fires on every connection
-    console.log('mounted')
-  },
-  ondestroy: function() {
-    console.log('container destroyed')
-  }
-}
+    type: 'container',
+    oninit: function () {
+        // this = the container element
+        // Fires ONCE — setup that should only run the first time
+        console.log('initialized');
+    },
+    onmount: function () {
+        // Fires on every connection
+        console.log('mounted');
+    },
+    ondestroy: function () {
+        console.log('container destroyed');
+    }
+};
 ```
 
 ---
@@ -388,9 +388,9 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Name",
-  "defaultValue": "Alice"
+    "type": "input",
+    "cap": "Name",
+    "defaultValue": "Alice"
 }
 ```
 
@@ -414,13 +414,13 @@ Define validation constraints. `getFormData()` throws if any fail.
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Email",
-  "rules": {
-    "required": true,
-    "pattern": "^[^@]+@[^@]+\\.[^@]+$",
-    "triggers": ["blur", "valuechange"]
-  }
+    "type": "input",
+    "cap": "Email",
+    "rules": {
+        "required": true,
+        "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+        "triggers": ["blur", "valuechange"]
+    }
 }
 ```
 
@@ -428,13 +428,13 @@ Rules can carry a custom `message`:
 
 ```javascript jaml-playground
 export default {
-  type: 'input-number',
-  cap: 'Score',
-  rules: {
-    min: { limit: 0,   message: 'Must be positive' },
-    max: { limit: 100, message: 'Cannot exceed 100' }
-  }
-}
+    type: 'input-number',
+    cap: 'Score',
+    rules: {
+        min: { limit: 0, message: 'Must be positive' },
+        max: { limit: 100, message: 'Cannot exceed 100' }
+    }
+};
 ```
 
 ---
@@ -451,12 +451,12 @@ Values flow through: `modifier` (normalize on set) → stored → `accessor` (tr
 
 ```javascript jaml-playground
 export default {
-  type: 'input',
-  cap: 'Price',
-  modifier: (v) => parseFloat(v),          // store as number
-  formatter: (v) => `$${v?.toFixed(2)}`,   // display as "$1.23"
-  accessor: (v) => v                        // read as stored
-}
+    type: 'input',
+    cap: 'Price',
+    modifier: (v) => parseFloat(v), // store as number
+    formatter: (v) => `$${v?.toFixed(2)}`, // display as "$1.23"
+    accessor: (v) => v // read as stored
+};
 ```
 
 ---
@@ -478,19 +478,19 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: 'indicator',
-  cap: 'Score',
-  value: '{{score}}',
-  valueStates: {
-    pass: (value) => value >= 60,
-    failed: (value) => value < 60
-  },
-  descStyles: {
-    ':scope[state=pass]': ['color(green)'],
-    ':scope[state=failed]': ['color(red)']
-  },
-  vars: { score: 43 }
-}
+    type: 'indicator',
+    cap: 'Score',
+    value: '{{score}}',
+    valueStates: {
+        pass: (value) => value >= 60,
+        failed: (value) => value < 60
+    },
+    descStyles: {
+        ':scope[state=pass]': ['color(green)'],
+        ':scope[state=failed]': ['color(red)']
+    },
+    vars: { score: 43 }
+};
 ```
 
 `valueStates` derives the element's `state`; it does not add a visual treatment by itself. In the example, `descStyles` belongs to the stateful indicator, so `:scope[state=...]` targets that indicator's host. A plain selector is descendant-scoped; use `indicator[state=...]` only from an ancestor's `descStyles`. For state-to-accent-color mapping on the same element, `color.stateMap` is the purpose-built alternative.
@@ -551,13 +551,13 @@ Extends `AbstractInputElement`. Elements where the value is selected from a list
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Category",
-  "data": [
-    { "name": "Electronics", "value": "electronics", "group": "Products" },
-    { "name": "Clothing",    "value": "clothing",    "group": "Products" },
-    { "name": "Books",       "value": "books",        "group": "Media"   }
-  ]
+    "type": "select",
+    "cap": "Category",
+    "data": [
+        { "name": "Electronics", "value": "electronics", "group": "Products" },
+        { "name": "Clothing", "value": "clothing", "group": "Products" },
+        { "name": "Books", "value": "books", "group": "Media" }
+    ]
 }
 ```
 
@@ -574,12 +574,12 @@ Use a composite select type to choose single- or multi-selection.
 
 ```json jaml-playground
 {
-  "type": "select-checkbox",
-  "cap": "Toppings",
-  "data": [
-    { "name": "Cheese",   "value": "cheese" },
-    { "name": "Mushrooms","value": "mushrooms" }
-  ]
+    "type": "select-checkbox",
+    "cap": "Toppings",
+    "data": [
+        { "name": "Cheese", "value": "cheese" },
+        { "name": "Mushrooms", "value": "mushrooms" }
+    ]
 }
 ```
 
@@ -633,6 +633,6 @@ This is a boundary for the generated native-input listener, not a whole-framewor
 
 ```javascript
 // Imperative usage (outside JAML playground)
-await el.optionReady
-console.log('Options are ready:', el.getCheckedValue())
+await el.optionReady;
+console.log('Options are ready:', el.getCheckedValue());
 ```

@@ -40,6 +40,8 @@ On uncertainty, contradiction, failure or no fit, report the gap and expand the 
 
 ## Application philosophy
 
+Ask who owns, publishes and consumes state. Prefer native semantic owners and state-consuming peers over unnecessary cross-component orchestration; direct event-driven control remains supported. Renderers may own private requests; prefer a dedicated `data` owner for a shared logical dataset. Plain `buttongroup-radio` already shows checked selection; `check.*` is optional presentation. Load [state/data composition](references/JAML/state-and-data.md) only when those relationships or request/refresh behavior matter.
+
 Use native behavior owners, theme tokens and semantic roles. During app/theme design, read [roles](references/Theme/stylize.md) and [token consumption](references/Theme/tokens.md#consuming-tokens). For shell changes, preserve [layout-owned stylize profiles](references/Theme/stylize.md#layout-owned-stylize-profiles), region geometry and scrolling; use the existing `stylize: frame` / `jam-frame-style` contract after checking target support.
 
 For presentation changes, use [style ownership](references/Styles/styles.md#style-ownership-and-composition): existing native styles/plugins first, local `css()` through `styles`, `childStyles` or `descStyles` for plain CSS, a registered style for shared presentation, and a builder/CC/usage for reusable composition. Follow [CSS/token rules](references/Styles/common/css.md) for declarations. Consider theme ownership before shared app CSS; theme design is separately scoped.

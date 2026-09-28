@@ -54,16 +54,15 @@ npm test
 npm run build
 ```
 
-The versioned archive under `dist/` includes the complete `jaml` and `jaml-knowledge` skills, license/provenance notices, the pinned offline catalog reader and content inventory. Build, check and source-export commands reject stale generated catalog files. No application workspace modules are loaded. `dist/artifact.json` records its SHA-512 integrity. Generated content lives under `dist/.build/` so recursive skill discovery ignores it.
+The versioned archive under `dist/` includes only the complete `jaml` authoring skill and its wiki, license/provenance notices, the pinned offline catalog reader and content inventory. Build, check and source-export commands reject stale generated catalog files. No application workspace modules are loaded. `dist/artifact.json` records its SHA-512 integrity. Generated content lives under `dist/.build/` so recursive skill discovery ignores it.
 
 For an explicit offline destination after building:
 
 ```sh
 node scripts/install.mjs --destination /path/to/client/skills --skill jaml
-node scripts/install.mjs --destination /path/to/client/skills --skill jaml-knowledge
 ```
 
-With no `--skill`, the repository installer continues to select only `jaml`. This repository installer preserves installed `LEARNED.md` and refuses unknown distributions or newer versions. Those protections describe this installer, not the third-party skills CLI. Resource and packaging checks do not establish runtime correctness; check meaningful interactions in your application.
+The archive installer accepts only `jaml`; `jaml-knowledge` stays in the source checkout and is used through a separate agent-skill installation/link. This repository installer preserves installed `LEARNED.md` and refuses unknown distributions or newer versions. Those protections describe this installer, not the third-party skills CLI. Resource and packaging checks do not establish runtime correctness; check meaningful interactions in your application.
 
 ## Refresh the generated reference
 
@@ -86,3 +85,9 @@ node <skill-root>/scripts/catalog.mjs list plugin
 Generated pages cover every exported path via shared schemas, including aliases and generated variants. The [catalog index](wiki/API/index.md) explains literal prose, explicit translation references, legacy message-key compatibility and knowledge coverage; coverage does not claim that all behaviors or translations are documented. Check the catalog digest when comparing with editor metadata. Guide-only behavior details still require verified source/runtime evidence.
 
 The [MIT license](LICENSE) covers authored documentation, examples and repository tooling. The narrow generated catalog reader and synchronous i18n engine include framework-derived code under the publisher's [MIT license](jaml/catalog/LICENSE), preserved byte-for-byte with the export. See [the provenance notice](jaml/catalog/NOTICE.md) and the license declaration and checksums in `jaml/catalog/artifact.json`.
+
+## Linked local documentation builds
+
+Register this checkout with `npm link`, then link `@jam/skills` from the consuming Jam-UI checkout. The local consumer reads `wiki/`, `LICENSE` and `compatibility.json` directly; editing documentation does not require `npm run build` or copying a vendor archive before the next consumer build. This package link is separate from agent skill-folder links. In an existing dependency tree, preview npm's changes before linking and avoid unrelated dependency rewrites.
+
+Jam-UI requires `node_modules/@jam/skills` to link to this source checkout in every build environment. A missing or broken link raises a setup error; there is no lock/vendor/cache fallback. CI and release setup must provide a reviewed documentation revision and link it before building. Final outputs copy public wiki assets, so shipped packages do not depend on that local link. The maintenance skill remains outside consumer artifacts and MCP output.

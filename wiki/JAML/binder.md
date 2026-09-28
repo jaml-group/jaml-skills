@@ -288,7 +288,7 @@ export default {
 
 **Type:** `string`
 
-Shorthand watchers that automatically set the element's `value`, `state`, or `data` when a key changes. Supports the `key@broker` syntax.
+Shorthand watchers that automatically set the element's `value`, `state`, or `data` when a key changes. Supports the `key@broker` syntax. `dataWatcher` targets native option/data consumers (including table and chart); it is not a generic assignment to every element. See the [shared `data` owner](state-and-data.md#shared-data-owner) for one producer and multiple consumers.
 
 ```json
 {
@@ -398,6 +398,7 @@ export default {
 
 This is the most common binder form — it handles comparisons, method calls, concatenation, and fallbacks:
 
+<!-- prettier-ignore -->
 ```javascript
 buildIf: '{{showMode}} === 3'                    // comparison
 cap: '{{node.branches}}.length + "branches"'         // method call + concatenation
@@ -772,6 +773,7 @@ export default {
 
 Two-way binding on the `value` param only activates for a **single** variable binder (`'{{key}}'`). Placeholder binders, expression binders, and `jaml.var()` with a transform function are **one-way** — the element displays the computed value but does not publish back on change.
 
+<!-- prettier-ignore -->
 ```javascript
 // Two-way: element reads AND writes back to "name"
 value: '{{name}}'
@@ -784,6 +786,7 @@ value: '{{ firstName + " " + lastName }}'
 
 Inside an expression binder `'{{ expression }}'`, the parser scans for identifier names and checks them against top-level `vars` keys. Dot-paths like `user.name` are treated as `user` (the top-level key) with a `.name` property access — only `user` is subscribed. Changing a nested property without replacing the parent object reference may not trigger re-evaluation.
 
+<!-- prettier-ignore -->
 ```javascript
 vars: { user: { name: 'Alice' } }
 
@@ -813,6 +816,7 @@ For a subscribed parameter, when a leaf dependency publishes a change, the **ent
 
 Template literals with embedded expressions work inside binders. Use backtick syntax `` `{{ ... }}` `` for string interpolation with expressions:
 
+<!-- prettier-ignore -->
 ```javascript
 // Embed a reactive value inside a template literal
 value: '{{ `User ${user.name} has score ${score}` }}'
@@ -825,6 +829,7 @@ cap: '{{ `Total: $${(price * quantity).toFixed(2)}` }}'
 
 Use `||` or ternary operators for fallback values when a key might be undefined:
 
+<!-- prettier-ignore -->
 ```javascript
 // Fallback to another key
 cap: '{{name || fallbackName}}'
@@ -840,6 +845,7 @@ state: '{{score > 50 ? "pass" : "fail"}}'
 
 Brackets `[n]` and dot notation `.n` both work for array index access:
 
+<!-- prettier-ignore -->
 ```javascript
 // Dot notation (numeric index)
 value: '{{items.0}}'        // first element
@@ -857,16 +863,16 @@ A `vars` value can itself be a binder string referencing another key. This creat
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  vars: {
-    primary: '{{theme.accent}}',    // aliases theme.accent
-    theme: { accent: 'blue' }
-  },
-  components: [
-    { type: 'input-color', cap: 'Accent', value: '{{theme.accent}}' },
-    { type: 'indicator', cap: 'Primary', value: '{{primary}}' }
-  ]
-}
+    type: 'container',
+    vars: {
+        primary: '{{theme.accent}}', // aliases theme.accent
+        theme: { accent: 'blue' }
+    },
+    components: [
+        { type: 'input-color', cap: 'Accent', value: '{{theme.accent}}' },
+        { type: 'indicator', cap: 'Primary', value: '{{primary}}' }
+    ]
+};
 ```
 
 > **Note:** Be careful with circular references — a key referencing itself causes an infinite loop.

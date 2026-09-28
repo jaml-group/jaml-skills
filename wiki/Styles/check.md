@@ -1,6 +1,6 @@
 # check
 
-`Styles.check.*` adds one visual locator for the first checked option reported by an option host. The native element owns selection; use an explicit radio/checkbox subtype when needed. On valuechange, the locator follows the first checked item and hides when no item is checked. Read the generated profile for timing and selection prerequisites. For owner selection and a single-choice composition, see [Choose native capabilities](../choosing-native-capabilities.md#selection-and-hover).
+`Styles.check.*` optionally adds one visual locator for the first checked option reported by an option host. Native radio/button-group selection is already visible without these styles. Use `check.*` only for a different checked-state treatment. The native element owns selection; use an explicit radio/checkbox subtype when needed. On valuechange, the locator follows the first checked item and hides when no item is checked. Read the generated profile for timing and selection prerequisites. For owner selection and a single-choice composition, see [Choose native capabilities](../choosing-native-capabilities.md#selection-and-hover).
 
 ---
 
@@ -56,13 +56,13 @@ Shaded background behind the checked option. Same args as `frame`, with `bias` d
 
 ### `check.underscore`
 
-Underline below the checked option. Same args as `frame`, with `width` default `'0.25rem'`.
+Optional underline below the checked option. Same args as `frame`, with `width` default `'0.25rem'`. This is a visual treatment, not a tab/panel or keyboard contract.
 
 ```json jaml-playground
 [
     {
         "type": "radio",
-        "cap": "Pick a tab",
+        "cap": "Pick one",
         "styles": ["check.underscore(duration:300;easing:ease-in-out)"],
         "data": [
             { "name": "Tab 1", "value": "1" },
@@ -97,14 +97,14 @@ Side pipe indicator on the checked option. Same args as `frame`, with `width` de
 
 ```javascript jaml-playground
 export default {
-  type: 'radio',
-  cap: 'Select one',
-  styles: ['check.frame(glow:4;duration:300)'],
-  data: [
-    { name: 'Option A', value: 'a' },
-    { name: 'Option B', value: 'b' }
-  ]
-}
+    type: 'radio',
+    cap: 'Select one',
+    styles: ['check.frame(glow:4;duration:300)'],
+    data: [
+        { name: 'Option A', value: 'a' },
+        { name: 'Option B', value: 'b' }
+    ]
+};
 ```
 
 ---
@@ -114,33 +114,30 @@ export default {
 Multiple check styles (shade, underscore, pipe) with icons in a single component tree:
 
 ```javascript jaml-playground
-export default jaml.wrapper(
-  { styles: ['wrapper.vertical', 'group.gridline', 'layout.alignlabel'], optionsStyles: ['options.hidebox'] },
-  [
+export default jaml.wrapper({ styles: ['wrapper.vertical', 'group.gridline', 'layout.alignlabel'], optionsStyles: ['options.hidebox'] }, [
     jaml.radio('Themes', {
-      styles: ['check.shade'],
-      data: [
-        { name: 'Light', icon: '☀️' },
-        { name: 'Dark', icon: '🌙' },
-        { name: 'System', icon: '💻' }
-      ]
+        styles: ['check.shade'],
+        data: [
+            { name: 'Light', icon: '☀️' },
+            { name: 'Dark', icon: '🌙' },
+            { name: 'System', icon: '💻' }
+        ]
     }),
     jaml.radio('Tab', {
-      styles: ['check.underscore'],
-      data: [
-        { name: 'Overview', icon: '🏠' },
-        { name: 'Activity', icon: '📈' },
-        { name: 'Settings', icon: '⚙️' }
-      ]
+        styles: ['check.underscore'],
+        data: [
+            { name: 'Overview', icon: '🏠' },
+            { name: 'Activity', icon: '📈' },
+            { name: 'Settings', icon: '⚙️' }
+        ]
     }),
     jaml.radio('Priority', {
-      styles: ['check.pipe', 'options.vertical'],
-      data: [
-        { name: 'Low', icon: '🟢' },
-        { name: 'Medium', icon: '🟡' },
-        { name: 'High', icon: '🔴' }
-      ]
+        styles: ['check.pipe', 'options.vertical'],
+        data: [
+            { name: 'Low', icon: '🟢' },
+            { name: 'Medium', icon: '🟡' },
+            { name: 'High', icon: '🔴' }
+        ]
     })
-  ]
-);
+]);
 ```

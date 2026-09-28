@@ -4,21 +4,23 @@
 
 A row of buttons, with each option rendered as a `BananaButton`. Plain `"buttongroup"` defaults to `checkType: "none"`; use `"buttongroup-radio"` for exclusive single selection or `"buttongroup-checkbox"` for multiple selection. Visual subtypes such as `"buttongroup-ghost"` and `"buttongroup-outline"` do not enable selection by themselves; combine style and mode with `"buttongroup-ghostradio"` or `"buttongroup-outlineradio"` when needed.
 
+`buttongroup-radio` owns mutually exclusive selection, the selected value and checked state. Its native button styles already make the checked button visibly selected. A `check.*` style is optional alternative or enhanced presentation; it neither creates selection nor makes an underline a complete tabs interaction. See [selection and content](../JAML/state-and-data.md#selection-and-content) for publishing selection to a listening content owner.
+
 ---
 
 ## JAML usage
 
 ```json jaml-playground
 {
-  "type": "buttongroup-radio",
-  "cap": "View Mode",
-  "data": [
-    { "name": "List",  "value": "list",  "icon": "☰" },
-    { "name": "Grid",  "value": "grid",  "icon": "⊞" },
-    { "name": "Chart", "value": "chart", "icon": "📊" }
-  ],
-  "defaultValue": "list",
-  "valueKey": "viewMode"
+    "type": "buttongroup-radio",
+    "cap": "View Mode",
+    "data": [
+        { "name": "List", "value": "list", "icon": "☰" },
+        { "name": "Grid", "value": "grid", "icon": "⊞" },
+        { "name": "Chart", "value": "chart", "icon": "📊" }
+    ],
+    "defaultValue": "list",
+    "valueKey": "viewMode"
 }
 ```
 
@@ -61,16 +63,16 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup-radio",
-  "cap": "Size",
-  "data": [
-    { "name": "S",  "value": "s"  },
-    { "name": "M",  "value": "m"  },
-    { "name": "L",  "value": "l"  },
-    { "name": "XL", "value": "xl" }
-  ],
-  "defaultValue": "m",
-  "valueKey": "size"
+    "type": "buttongroup-radio",
+    "cap": "Size",
+    "data": [
+        { "name": "S", "value": "s" },
+        { "name": "M", "value": "m" },
+        { "name": "L", "value": "l" },
+        { "name": "XL", "value": "xl" }
+    ],
+    "defaultValue": "m",
+    "valueKey": "size"
 }
 ```
 
@@ -78,15 +80,15 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup-checkbox",
-  "cap": "Tags",
-  "chooseAll": true,
-  "data": [
-    { "name": "New",     "value": "new"     },
-    { "name": "Popular", "value": "popular" },
-    { "name": "On Sale", "value": "sale"    }
-  ],
-  "valueKey": "filters"
+    "type": "buttongroup-checkbox",
+    "cap": "Tags",
+    "chooseAll": true,
+    "data": [
+        { "name": "New", "value": "new" },
+        { "name": "Popular", "value": "popular" },
+        { "name": "On Sale", "value": "sale" }
+    ],
+    "valueKey": "filters"
 }
 ```
 
@@ -94,15 +96,15 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup-ghostradio",
-  "cap": "Platform",
-  "data": [
-    { "name": "Windows", "value": "win", "icon": "⊞" },
-    { "name": "macOS",   "value": "mac", "icon": "🍎" },
-    { "name": "Linux",   "value": "nix", "icon": "🐧" }
-  ],
-  "defaultValue": "mac",
-  "valueKey": "platform"
+    "type": "buttongroup-ghostradio",
+    "cap": "Platform",
+    "data": [
+        { "name": "Windows", "value": "win", "icon": "⊞" },
+        { "name": "macOS", "value": "mac", "icon": "🍎" },
+        { "name": "Linux", "value": "nix", "icon": "🐧" }
+    ],
+    "defaultValue": "mac",
+    "valueKey": "platform"
 }
 ```
 
@@ -110,14 +112,14 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ```json jaml-playground
 {
-  "type": "buttongroup-radio",
-  "data": [
-    { "name": "Success", "value": "success", "color": "green" },
-    { "name": "Warning", "value": "warning", "color": "orange" },
-    { "name": "Error",   "value": "error",   "color": "red"   }
-  ],
-  "defaultValue": "warning",
-  "valueKey": "alertLevel"
+    "type": "buttongroup-radio",
+    "data": [
+        { "name": "Success", "value": "success", "color": "green" },
+        { "name": "Warning", "value": "warning", "color": "orange" },
+        { "name": "Error", "value": "error", "color": "red" }
+    ],
+    "defaultValue": "warning",
+    "valueKey": "alertLevel"
 }
 ```
 

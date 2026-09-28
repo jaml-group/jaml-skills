@@ -64,7 +64,7 @@ verifyInventory(bundle, manifest.inventory);
 const selected = option('--skill');
 const names = selected ? [selected] : ['jaml'];
 for (const name of names) {
-    if (!['jaml', 'jaml-knowledge'].includes(name) || manifest.skills[name] !== 'skills/' + name) {
+    if (name !== 'jaml' || manifest.skills[name] !== 'skills/' + name) {
         throw new Error('Unknown skill: ' + name);
     }
     const _check = checkResources(resolve(bundle, manifest.skills[name]));

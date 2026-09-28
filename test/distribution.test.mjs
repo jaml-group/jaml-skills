@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { relative, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { checkResources, filesUnder } from '../scripts/resources.mjs';
@@ -18,7 +18,8 @@ test('artifact installs independently and preserves learned corrections on repla
         const _artifact = JSON.parse(readFileSync(resolve(root, 'dist/artifact.json'), 'utf8'));
         const _unpacked = spawnSync('tar', ['-xzf', resolve(root, 'dist', _artifact.file), '-C', _temporary], { encoding: 'utf8' });
         assert.equal(_unpacked.status, 0, _unpacked.stderr);
-        assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8')).skills), ['jaml', 'jaml-knowledge']);
+        assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8')).skills), ['jaml']);
+        assert.equal(existsSync(resolve(_bundle, 'skills/jaml-knowledge')), false);
         assert.equal(existsSync(resolve(_bundle, 'scripts/check-docs.mjs')), false);
         const _destination = resolve(_temporary, 'client/skills');
         const _args = [resolve(_bundle, 'scripts/install.mjs'), '--destination', _destination];
@@ -78,31 +79,18 @@ test('artifact installs independently and preserves learned corrections on repla
     }
 });
 
-test('knowledge skill installs alone with self-contained references and leaves existing skills untouched', () => {
-    const _temporary = mkdtempSync(resolve(tmpdir(), 'jam-knowledge-install-'));
+test('consumer installer rejects the maintenance skill without changing existing agent skills', () => {
+    const _temporary = mkdtempSync(resolve(tmpdir(), 'jam-knowledge-boundary-'));
     try {
         const _destination = resolve(_temporary, 'skills');
-        const _existing = resolve(_destination, 'jaml/SKILL.md');
-        mkdirSync(resolve(_destination, 'jaml'), { recursive: true });
-        writeFileSync(_existing, 'Existing JAML installation');
+        mkdirSync(resolve(_destination, 'jaml-knowledge'), { recursive: true });
+        const _existing = resolve(_destination, 'jaml-knowledge/SKILL.md');
+        writeFileSync(_existing, 'User maintenance skill');
         const _result = spawnSync(process.execPath, [resolve(root, 'scripts/install.mjs'), '--destination', _destination, '--skill', 'jaml-knowledge'], { cwd: _temporary, encoding: 'utf8' });
-        assert.equal(_result.status, 0, _result.stderr);
-        const _installed = resolve(_destination, 'jaml-knowledge');
-        assert.deepEqual(checkResources(_installed).issues, []);
-        const _expected = filesUnder(resolve(root, 'jaml-knowledge'))
-            .map((file) => relative(resolve(root, 'jaml-knowledge'), file))
-            .sort();
-        const _actual = filesUnder(_installed)
-            .map((file) => relative(_installed, file))
-            .filter((name) => name !== 'version.json')
-            .sort();
-        assert.deepEqual(_actual, _expected);
-        for (const name of _expected) {
-            assert.equal(readFileSync(resolve(_installed, name), 'utf8'), readFileSync(resolve(root, 'jaml-knowledge', name), 'utf8'));
-        }
-        assert.equal(JSON.parse(readFileSync(resolve(_installed, 'version.json'), 'utf8')).name, 'jaml-knowledge');
-        assert.equal(existsSync(resolve(_installed, 'catalog')), false);
-        assert.equal(readFileSync(_existing, 'utf8'), 'Existing JAML installation');
+        assert.notEqual(_result.status, 0);
+        assert.match(_result.stderr, /Unknown skill: jaml-knowledge/);
+        assert.equal(readFileSync(_existing, 'utf8'), 'User maintenance skill');
+        assert.equal(existsSync(resolve(_destination, 'jaml')), false);
     } finally {
         rmSync(_temporary, { recursive: true, force: true });
     }

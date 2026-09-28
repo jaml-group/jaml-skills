@@ -8,20 +8,19 @@ Use `node <skill-root>/scripts/catalog.mjs choose` for topic anchors, `choose AN
 
 | Need                                    | Start with                                                                       | Read next                                                                         |
 | --------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| A selected value                        | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)    |
-| A visual marker for that value          | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check examples](Styles/check.md) and the chosen catalog profile                  |
+| A visibly selected value                | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)    |
+| An alternative checked-state treatment  | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check examples](Styles/check.md) and the chosen catalog profile                  |
 | Temporary highlight of the hovered item | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | The chosen catalog profile's shared-locator caveats                               |
 | Brackets that stay around one host      | `style layer.crosshair`                                                          | [Host decoration](Styles/layers/crosshair.md)                                     |
 | Decorative pointer motion               | `style layer.follower.spotlight`, `layer.follower.edge`, `layer.follower.shadow` | [Follower examples](Styles/layers/follower.md) and their activation prerequisites |
 
-Keep selection state with the native option owner. Apply one check marker to it; do not recreate selection using decorative containers. Plain `buttongroup` does not become radio through an underline, a default value or a theme. For a complete tabs interaction, separately establish keyboard navigation, tab/panel semantics and panel switching; an underline is only its visual treatment.
+Keep selection state with the native option owner. Plain `buttongroup-radio` owns the selected value and checked state, and already presents checked state visually. Use a `check.*` style only when a different checked-state treatment is desired; do not recreate selection using decorative containers. Plain `buttongroup` does not become radio through an underline, a default value or a theme. For a complete tabs interaction, separately establish keyboard navigation, tab/panel semantics and panel switching; an underline is only its visual treatment.
 
 ```javascript jaml-playground
 export default {
     type: 'buttongroup-radio',
     cap: 'View',
     defaultValue: 'overview',
-    styles: ['check.underscore'],
     data: [
         { name: 'Overview', value: 'overview' },
         { name: 'Details', value: 'details' }
@@ -29,7 +28,7 @@ export default {
 };
 ```
 
-Bind the selected value using the [existing binding contract](JAML/binder.md) when it controls application content. For multiple selection, preserve the checkbox owner's feedback: the generated check contract describes a single locator, not one marker for every selected item.
+For tab-like navigation, start with plain `buttongroup-radio`; `check.underscore` is an optional visual treatment. Prefer publishing the selected value and letting content consume it through [state bindings and visibility](JAML/state-and-data.md#selection-and-content). Direct event-driven control remains supported. For multiple selection, preserve the checkbox owner's feedback: the generated check contract describes a single locator, not one marker for every selected item.
 
 ## Decorative activity and actual progress
 
@@ -107,6 +106,12 @@ See [popup composition](Plugins/popup.md), [observers](Plugins/observe.md), [not
 Choose the content model before the visual treatment. Component child-rendering styles require a component-owned container and one rendering owner per container. Use a bounded viewport, verify the actual scroll target, and preserve identity/state across updates. Deferred rendering does not itself fetch data. Do not combine two virtualization strategies on one container or use fixed-height row math for arbitrary variable-height layouts.
 
 See [layout](Styles/common/layout.md), [grid](Styles/common/grid.md), [scrolling](Plugins/scroll.md), [table styles](Styles/table-style.md) and [tree styles](Styles/tree-style.md). Compose native `table.stripy`, `table.gridline`, `table.bento`, `table.hoverhighlight` or `table.hovermarker` after choosing the row owner. Hover markers do not select rows. Header presets `table.thead.accent`, `.tint` and `.elevated` consume semantic colors; custom headers belong to `table.thead`. `table.showpageinfo` is a reserved no-op, so compose page status from actual pagination state.
+
+## Runtime and shared data
+
+A renderer may own a reactive `dataUrl` request. When a table and chart share one logical dataset, prefer a hidden `data` owner with `valueUrl` and `valueKey`; compatible consumers use `dataWatcher` or a bound projection. Keep the producer and consumers in the intended broker scope. See [runtime requests](JAML/state-and-data.md#private-runtime-data) and [shared data](JAML/state-and-data.md#shared-data-owner).
+
+Independent fetchers remain supported. Request-promise sharing is conditional, and ordinary component URL requests bypass it by default; it does not replace shared ownership. Read [request sharing](JAML/state-and-data.md#request-sharing-and-cache-limits) only when request duplication or refresh matters.
 
 ## Charts and data transformations
 

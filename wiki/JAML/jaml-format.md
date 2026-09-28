@@ -39,19 +39,13 @@ export default {
 The element type to create. Maps to a registered JAM-UI element.
 
 ```json
-[
-    { "type": "button" },
-    { "type": "indicator" }
-]
+[{ "type": "button" }, { "type": "indicator" }]
 ```
 
 Select an element specialization with a composite type.
 
 ```json
-[
-    { "type": "input-number" },
-    { "type": "button-cta" }
-]
+[{ "type": "input-number" }, { "type": "button-cta" }]
 ```
 
 ---
@@ -254,9 +248,9 @@ export default {
         {
             type: 'scoreCard',
             props: {
-                name: '{{data.username}}',          // alias
-                points: '{{data.score}}',            // alias
-                pct: '{{data.score}} / {{data.maxScore}} * 100'  // binder expression
+                name: '{{data.username}}', // alias
+                points: '{{data.score}}', // alias
+                pct: '{{data.score}} / {{data.maxScore}} * 100' // binder expression
             }
         },
         { type: 'input', cap: 'Name', value: '{{data.username}}' },
@@ -392,14 +386,17 @@ When a `keyMap` is set on the root component (model), child `buildFor` loops aut
 export default {
     type: 'wrapper',
     keyMap: {
-        users: 'id'  // every "users" loop uses "id" as the key
+        users: 'id' // every "users" loop uses "id" as the key
     },
     vars: {
-        users: [{ id: 'a', name: 'Alice' }, { id: 'b', name: 'Bob' }]
+        users: [
+            { id: 'a', name: 'Alice' },
+            { id: 'b', name: 'Bob' }
+        ]
     },
     components: [
         {
-            buildFor: 'user in users',  // no explicit 'key' — inherits 'id' from keyMap
+            buildFor: 'user in users', // no explicit 'key' — inherits 'id' from keyMap
             type: 'badge',
             cap: '{{user.name}}'
         }
@@ -476,11 +473,11 @@ Any element param key ending with a registered suffix is intercepted by the `Suf
 ```javascript
 // Register a custom suffix that transforms a value before setting
 jaml.registerSuffix('ff', (el, key, value) => {
-  // el: the element
-  // key: the param name with suffix stripped (e.g. 'value' from 'valueff')
-  // value: the raw value assigned to the suffixed key
-  const result = (value.s * 20 + value.b) / 10000;
-  jam.setParam(el, key, result);
+    // el: the element
+    // key: the param name with suffix stripped (e.g. 'value' from 'valueff')
+    // value: the raw value assigned to the suffixed key
+    const result = (value.s * 20 + value.b) / 10000;
+    jam.setParam(el, key, result);
 });
 ```
 
@@ -493,6 +490,8 @@ Once registered, any param ending in `ff` triggers the processor:
   valueff: { s: '{{salary}}', b: '{{balance}}' }  // → processor runs, sets 'value'
 }
 ```
+
+For request ownership, option-object refresh and conditional request sharing, see [State and data composition](state-and-data.md#private-runtime-data).
 
 **Reactive fetching:** Like `vars`, the URL value can contain binders (`{{key}}`). When the referenced variables change, the URL is automatically requested again with the new values, and the element updates.
 
@@ -586,22 +585,22 @@ export default {
 
 **Request option fields:**
 
-| Field       | Type               | Description                                                         |
-| ----------- | ------------------ | ------------------------------------------------------------------- |
-| `url`       | `string`           | Request URL                                                         |
-| `method`    | `MethodType`       | HTTP method: `'GET'` (default), `'POST'`, `'PUT'`, `'DELETE'`, etc. |
-| `data`      | `any`              | Request body or query params                                        |
-| `headers`   | `Dictionary`       | Additional HTTP headers                                             |
-| `transform` | `(data) => any`    | Transform the response before applying to the param                 |
-| `onsuccess` | `(data) => void`   | Called on success                                                   |
-| `onerror`   | `(err) => void`    | Called on error                                                     |
-| `onaborted` | `() => void`       | Called when request is aborted                                      |
-| `interval`  | `number`           | Polling interval in ms. When set, `cacheTime` is forced to `0`      |
-| `debounce`  | `number`           | Debounce delay in ms before sending                                 |
-| `cacheTime` | `number`           | Cache response duration in ms (default: ~400ms)                     |
-| `mock`      | `string \| object` | Mock URL or object to use as fallback on 404 / network error        |
-| `useForm`   | `boolean`          | Serialize `data` as `FormData` (auto-sets method to `POST`)         |
-| `urls`      | `array`            | Multiple sequential/parallel requests                               |
+| Field       | Type               | Description                                                                                                                          |
+| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`       | `string`           | Request URL                                                                                                                          |
+| `method`    | `MethodType`       | HTTP method: `'GET'` (default), `'POST'`, `'PUT'`, `'DELETE'`, etc.                                                                  |
+| `data`      | `any`              | Request body or query params                                                                                                         |
+| `headers`   | `Dictionary`       | Additional HTTP headers                                                                                                              |
+| `transform` | `(data) => any`    | Transform the response before applying to the param                                                                                  |
+| `onsuccess` | `(data) => void`   | Called on success                                                                                                                    |
+| `onerror`   | `(err) => void`    | Called on error                                                                                                                      |
+| `onaborted` | `() => void`       | Called when request is aborted                                                                                                       |
+| `interval`  | `number`           | Polling interval in ms. When set, `cacheTime` is forced to `0`                                                                       |
+| `debounce`  | `number`           | Debounce delay in ms before sending                                                                                                  |
+| `cacheTime` | `number`           | Shared-promise retention after completion (default: 400ms); see [sharing limits](state-and-data.md#request-sharing-and-cache-limits) |
+| `mock`      | `string \| object` | Mock URL or object to use as fallback on 404 / network error                                                                         |
+| `useForm`   | `boolean`          | Serialize `data` as `FormData` (auto-sets method to `POST`)                                                                          |
+| `urls`      | `array`            | Multiple sequential/parallel requests                                                                                                |
 
 ---
 
@@ -969,8 +968,8 @@ export default {
     type: 'button',
     cap: 'Styled',
     styles: [
-        Styles.hover.brighter({ b: 1.05 }),           // with args — call the builder
-        Styles.hover.withbg,                            // no args — pass the builder reference directly
+        Styles.hover.brighter({ b: 1.05 }), // with args — call the builder
+        Styles.hover.withbg, // no args — pass the builder reference directly
         Styles.animation.entry.frombottom({ delay: 100, easing: 'bouncing' })
     ]
 };
@@ -1065,7 +1064,7 @@ Simple selector refinement is limited to JavaScript selector dictionaries such a
 
     // ".fooStyles" → targets ".foo" within the element's scope (any custom class)
     '.fooStyles': ['text.bold']
-})
+});
 ```
 
 **`stateStyles`** — map state names to style arrays. Merged into `states` so the styles activate whenever the component transitions to that state:

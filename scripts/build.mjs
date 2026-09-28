@@ -13,7 +13,8 @@ const output = resolve(root, 'dist');
 // Keep generated skill copies out of recursive client discovery.
 const staging = resolve(output, '.build');
 const bundle = resolve(staging, 'package');
-const skills = ['jaml', 'jaml-knowledge'];
+// Maintenance skills stay in their source checkout, outside consumer artifacts.
+const skills = ['jaml'];
 const catalog = await generateReferences(root, { check: true });
 const sourceCheck = checkResources(root);
 if (sourceCheck.issues.length) {
