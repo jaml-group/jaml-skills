@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "catalogDigest": "1dfde3948145b3d32f24d0c6d8f5df4c9c54679f38d34c7c24b71bd9ed0a68b4",
+  "catalogDigest": "5fbee937061c3a28ae5c44b20d7868b4c5ee4f68b8c604993f865398b41d92e2",
   "schemaDigest": "37def985abb82cfda5f799ec0b7ab5db34250982619a11ffddc5e98283c3c63d",
   "frameworkVersion": "1.6.0",
   "locales": [
@@ -16,12 +16,12 @@
     "undocumented": 0,
     "translations": {
       "en": {
-        "translated": 3846,
+        "translated": 3849,
         "fallback": [],
         "missing": []
       },
       "zh": {
-        "translated": 3846,
+        "translated": 3849,
         "fallback": [],
         "missing": []
       }

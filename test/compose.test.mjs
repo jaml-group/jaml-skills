@@ -86,7 +86,7 @@ test('known failures, no-fit, state ownership and open-contract uncertainty stay
     assert.match(_table, /current animation callback calls string methods on a truthy value/);
     assert.match(_table, /Expanded detail rows disable the fixed virtual path/);
     const _drop = run('compose', 'plugin', 'interact.droppable');
-    assert.match(_drop, /non-function accept values currently fall back to accepting drags/);
+    assert.match(_drop, /[Nn]on-function accept values currently fall back to accepting drags/);
     assert.match(_drop, /not a file importer or a security boundary/);
     assert.match(_drop, /Unplug removes the drop-zone registration; document drag listeners remain shared/);
     assert.match(run('compose', 'style', 'interact.sortable'), /does not persist the application model/);

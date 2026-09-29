@@ -162,9 +162,9 @@ test('reference retrieval rejects traversal and external resource links', () => 
         // An installed reference root may itself be linked; a nested link outside it cannot escape.
         const _root = resolve(root, 'jaml/references');
         assert.ok(readReference('Styles/check.md', _root).text.startsWith('# check'));
-        const _nested = resolve(_temporary, 'references');
+        const _nested = resolve(_temporary, 'linked-directory');
         symlinkSync(resolve(root, 'wiki'), _nested);
-        assert.throws(() => readReference('references/Styles/check.md', _temporary), /escapes/);
+        assert.throws(() => readReference('linked-directory/Styles/check.md', _temporary), /escapes/);
     } finally {
         rmSync(_temporary, { recursive: true, force: true });
     }
@@ -195,4 +195,24 @@ test('discovery is bounded, navigable, complete across pages and rejects malform
         assert.notEqual(_result.status, 0, _args.join(' '));
         assert.equal(_result.stdout, '');
     }
+});
+
+test('reference prefixes and emitted commands work from an unrelated working directory', () => {
+    assert.equal(run('read', 'references/Styles/check.md#checkunderscore'), run('read', 'Styles/check.md#checkunderscore'));
+    assert.equal(run('sections', 'references/Styles/check.md'), run('sections', 'Styles/check.md'));
+    const _commands = run('compose', 'style', 'check.underscore').split('Expand: ')[1].trim().split(' | ');
+    for (const command of _commands) {
+        const _result = spawnSync('/bin/sh', ['-c', command], { cwd: tmpdir(), encoding: 'utf8' });
+        assert.equal(_result.status, 0, _result.stderr);
+        assert.match(_result.stdout, /check.underscore/);
+    }
+    const _badAnchor = spawnSync(process.execPath, [cli, 'read', 'references/Styles/check.md#check.underscore'], { cwd: tmpdir(), encoding: 'utf8' });
+    assert.notEqual(_badAnchor.status, 0);
+    assert.match(_badAnchor.stderr, /Styles\/check.md#checkunderscore/);
+    assert.equal(_badAnchor.stdout, '');
+    const _badPath = spawnSync(process.execPath, [cli, 'read', 'Styles/missing.md'], { cwd: tmpdir(), encoding: 'utf8' });
+    assert.notEqual(_badPath.status, 0);
+    assert.match(_badPath.stderr, /Paths are relative to the installed references directory/);
+    assert.doesNotMatch(_badPath.stderr, /ENOENT/);
+    assert.throws(() => readReference('references/../SKILL.md'), /relative Markdown/);
 });

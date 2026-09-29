@@ -365,6 +365,52 @@ Inside `userCard`, `{{name}}` behaves identically to `{{data.username}}` in the 
 
 > Props with literal primitive values (`{ foo: 1 }`) are writable local values that do not publish reactive updates by themselves. A single-key binder (`{ foo: '{{key}}' }`) creates an alias: setting the exposed prop writes to the target key rather than changing the alias declaration. See [props](./jaml-format.md#props) for automatic element-property binding, expression/object reads and lifecycle timing.
 
+For a record edited by nested controls, follow the [two-instance record example](#one-caller-owned-record-per-cc-instance), including nested mutation and whole-record replacement.
+
+### One caller-owned record per CC instance
+
+A single-key record alias preserves the owning model's reactive proxy. It supports nested writes and whole-record replacement; separate leaf aliases are unnecessary. This differs from a computed expression or an object assembled from several binders, whose returned object is derived data rather than a write-back target.
+
+```javascript jaml-playground
+jaml.register('recordEditor', {
+    type: 'container',
+    share: true,
+    props: { record: null },
+    components: [
+        { type: 'input', cap: 'Name', value: '{{record.name}}' },
+        {
+            type: 'button',
+            cap: 'Rename',
+            on: {
+                click() {
+                    this.shared.record.name = 'Renamed';
+                }
+            }
+        },
+        {
+            type: 'button',
+            cap: 'Replace record',
+            on: {
+                click() {
+                    this.shared.record = { name: 'Replacement' };
+                }
+            }
+        }
+    ]
+});
+export default {
+    type: 'container',
+    vars: { left: { name: 'Left' }, right: { name: 'Right' } },
+    components: [
+        { type: 'recordEditor', props: { record: '{{left}}' } },
+        { type: 'recordEditor', props: { record: '{{right}}' } },
+        { type: 'label', cap: '{{left.name}} + " / " + {{right.name}}' }
+    ]
+};
+```
+
+The first editor writes only `left`; the second writes only `right`. Descendants use the nearest `share: true` owner through `this.shared.record`. Replacing `left` through the caller's model API also updates its editor; immutable replacement through the alias is equally valid. A CC keeps stable internal names and does not depend on its caller's `vars` names. Creating a nested model scope is a separate isolation decision, not a requirement for sharing a caller record. Literal primitive props remain writable local values, but their assignment alone does not publish a reactive update. See [prop value categories and timing](./jaml-format.md#props) for collisions, derived values and literal-data boundaries.
+
 ### CC state ownership
 
 A CC should not define its own `vars` or refer to the caller's future `vars` names. The registered CC owns stable internal prop names; each caller decides which outer `vars` those props alias to.
@@ -556,29 +602,29 @@ JAM-UI ships a small built-in component registry. These names can be used direct
 | Type                | Description                                                                             | Props                                   |
 | ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------- |
 | `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                       |
-| `themepanel`        | Theme and color-scheme configuration panel                                              | —                                       |
+| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                       |
 | `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath` |
 | `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`        |
 | `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                         |
 
 ```javascript jaml-playground
 export default {
-  type: 'wrapper',
-  styles: ['layout.autoalign'],
-  components: [
-    { type: 'breadcrumb', props: { separator: '/', scoped: false } },
-    {
-      type: 'dropdown',
-      props: {
-        value: ['read'],
-        data: [
-          { name: 'Read', value: 'read' },
-          { name: 'Write', value: 'write' }
-        ]
-      }
-    }
-  ]
-}
+    type: 'wrapper',
+    styles: ['layout.autoalign'],
+    components: [
+        { type: 'breadcrumb', props: { separator: '/', scoped: false } },
+        {
+            type: 'dropdown',
+            props: {
+                value: ['read'],
+                data: [
+                    { name: 'Read', value: 'read' },
+                    { name: 'Write', value: 'write' }
+                ]
+            }
+        }
+    ]
+};
 ```
 
 ---
@@ -645,39 +691,53 @@ Use `jaml.bunch()` to render a data array with entry animations, parallax hover,
 
 ```javascript jaml-playground
 jaml.registerCustomColors({
-  '220kv': '#800080',
-  '110kv': '#F04155',
-  '35kv': '#FFFF00',
-  '10kv': '#B94842'
+    '220kv': '#800080',
+    '110kv': '#F04155',
+    '35kv': '#FFFF00',
+    '10kv': '#B94842'
 });
 
 export default jaml.wrapper(
-  {
-    styles: ['layout.autogrid(minHeight:15rem)', 'size.fullsize', 'css(padding:1rem;gap:1rem)'],
-    vars: {
-      items: [
-        { name: '220kV', color: '#800080' },
-        { name: '110kV', color: '#F04155' },
-        { name: '35kV', color: '#FFFF00' },
-        { name: '10kV', color: '#B94842' }
-      ]
-    }
-  },
-  [
-    jaml.bunch('items', (item, idx) => ({
-      type: 'indicator',
-      icon: ['🏭', '⚡', '💡', '🔧'][idx % 4],
-      cap: jam.getColorName(item.color),
-      value: item.name,
-      unit: 'kV',
-      color: item.name,
-      styles: [
-        'background.crystal',
-        'hover.parallax(inward:true)',
-        'layer.glare.light',
-        'animation.entry.zoom(scale:0.9;delay:random(0,400);duration:random(400,600))'
-      ]
-    }))
-  ]
+    {
+        styles: ['layout.autogrid(minHeight:15rem)', 'size.fullsize', 'css(padding:1rem;gap:1rem)'],
+        vars: {
+            items: [
+                { name: '220kV', color: '#800080' },
+                { name: '110kV', color: '#F04155' },
+                { name: '35kV', color: '#FFFF00' },
+                { name: '10kV', color: '#B94842' }
+            ]
+        }
+    },
+    [
+        jaml.bunch('items', (item, idx) => ({
+            type: 'indicator',
+            icon: ['🏭', '⚡', '💡', '🔧'][idx % 4],
+            cap: jam.getColorName(item.color),
+            value: item.name,
+            unit: 'kV',
+            color: item.name,
+            styles: ['background.crystal', 'hover.parallax(inward:true)', 'layer.glare.light', 'animation.entry.zoom(scale:0.9;delay:random(0,400);duration:random(400,600))']
+        }))
+    ]
 );
 ```
+
+### Theme panel composition and readiness
+
+`themepanel` is a registered composition backed by a factory, not an already-expanded element definition. Prefer `{ type: 'themepanel' }` and let the registry expand it when the application builds. The factory reads current theme state, including the body color context, at invocation time; obtaining or calling it during module initialization can be too early. `jaml.registry.entry('themepanel')` returns the registered factory; `jaml.registry.get('themepanel')` invokes it immediately. Neither call is a readiness barrier.
+
+Build the composition after the application's normal framework startup and theme readiness. In the standard browser entry, theme initialization begins at `DOMContentLoaded`; await `jam.themeReady` after that initialization has started. Awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
+
+The built-in panel defaults to `build: false` for popup use. Set `build: true` for an inline panel. This runnable example assumes the playground's already-initialized runtime:
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [{ type: 'themepanel', build: true }]
+};
+```
+
+The panel reads and publishes the framework's saved theme choices, including `jam-darkmode@milo` (`true`, `false`, or `'auto'`). Integrate it with the application's existing preference owner; opening it is not a reason to overwrite saved light/dark or system choices with a second default. See [system theme and saved choices](../color.md#system-theme-and-saved-choices). Full-page mounting still follows the [standalone application root](#standalone-application-root); embedded surfaces retain their [host boundary](#embedded-application-hosts).
+
+For a packaged runtime, confirm its artifact identity and registration (for example `jaml.registry.has('themepanel')`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.

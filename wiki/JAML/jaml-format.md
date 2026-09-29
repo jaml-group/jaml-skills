@@ -207,7 +207,7 @@ In the updated development runtime, literal-prop reads and writes use the same n
 
 Outside a [`noBinder`](./binder.md#nobinder) subtree, props are authored declarations: a newly assigned `{{key}}` string can become an alias. Writing through an existing authored alias reaches its data key; use the [runtime model-data path](./binder.md#runtime-data-and-authored-definitions) for external records. Inside a disabled subtree, prop values and implicit aliases remain literal, including inherited declarations.
 
-For reactive edits, write through an alias or the owning model/shared-state API. A nested mutation or a newly resolved object does not guarantee that another consumer, such as an option group's selected value, reconciles automatically. In a CC, preserve its internal prop names and use the [shared-state ownership pattern](./component.md#cc-state-ownership).
+For reactive edits, write through an alias or the owning model/shared-state API. A [single-record alias](./component.md#one-caller-owned-record-per-cc-instance) retains model reactivity for nested writes and record replacement. A literal or compound/computed object result has no such write-back guarantee. A consumer with its own selection/reconciliation contract still follows that contract. In a CC, preserve its internal prop names and use the [shared-state ownership pattern](./component.md#cc-state-ownership).
 
 Here `recordData` and `request` are automatically available on the button. No property descriptor or build hook is needed:
 

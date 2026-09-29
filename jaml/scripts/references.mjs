@@ -5,13 +5,24 @@ import { fileURLToPath } from 'node:url';
 
 const referencesRoot = fileURLToPath(new URL('../references', import.meta.url));
 export const chooser = 'choosing-native-capabilities.md';
+export const readerCommand = 'node ' + "'" + fileURLToPath(new URL('./catalog.mjs', import.meta.url)).replaceAll("'", "'\\''") + "'";
 
 export function readReference(name, root = referencesRoot) {
     if (!name || isAbsolute(name) || name.split(/[\\/]/).includes('..') || !name.endsWith('.md')) {
         throw new Error('Use a relative Markdown path within references, such as Styles/interact.md');
     }
+    // Accept the prefix copied from skill links, still relative to this root.
+    name = name.replace(/^references\//, '');
     const _root = realpathSync(root);
-    const _path = realpathSync(resolve(root, name));
+    let _path;
+    try {
+        _path = realpathSync(resolve(root, name));
+    } catch (error) {
+        if (error.code !== 'ENOENT' && error.code !== 'ENOTDIR') {
+            throw error;
+        }
+        throw new Error('Reference not found: ' + name + '. Paths are relative to the installed references directory, independent of cwd; for example: ' + readerCommand + ' read Styles/check.md');
+    }
     const _relative = relative(_root, _path);
     if (_relative.startsWith('..') || isAbsolute(_relative)) {
         throw new Error('Reference escapes the installed reference boundary');
@@ -58,7 +69,15 @@ export function selectSection(reference, anchor) {
     const _sections = referenceSections(reference.text);
     const _selected = _sections.find((section) => section.anchor === anchor);
     if (!_selected) {
-        throw new Error('Unknown section. Use sections ' + reference.name + ' to discover exact anchors.');
+        const _normalized = anchor.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+        const _suggestions = _sections
+            .filter((section) => {
+                const _candidate = section.anchor.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+                return _candidate === _normalized || (_normalized.length >= 3 && (_candidate.includes(_normalized) || _normalized.includes(_candidate)));
+            })
+            .slice(0, 3);
+        const _hint = _suggestions.length ? ' Nearby anchors: ' + _suggestions.map((section) => reference.name + '#' + section.anchor).join(', ') + '.' : '';
+        throw new Error('Unknown section: ' + anchor + '.' + _hint + ' Use ' + readerCommand + ' sections ' + reference.name + ' to discover exact anchors.');
     }
     const _ancestors = [];
     for (const section of _sections) {
@@ -76,5 +95,5 @@ export function selectSection(reference, anchor) {
 
 export function referenceOutput(reference, anchor) {
     const _view = anchor ? selectSection(reference, anchor) : reference;
-    return [`Reference: ${reference.name}${anchor ? '#' + anchor : ''} · SHA256: ${reference.sha256}`, anchor ? `Scope: selected subtree plus ancestor introductions; ${_view.omittedSections} other sections omitted. Follow relevant linked contracts; this is not the whole guide.` : 'Scope: complete guide, including explanations and examples.', `Expand: catalog.mjs sections ${reference.name} | catalog.mjs read ${reference.name}`, '', _view.text.trimEnd()].join('\n');
+    return [`Reference: ${reference.name}${anchor ? '#' + anchor : ''} · SHA256: ${reference.sha256}`, anchor ? `Scope: selected subtree plus ancestor introductions; ${_view.omittedSections} other sections omitted. Follow relevant linked contracts; this is not the whole guide.` : 'Scope: complete guide, including explanations and examples.', `Expand: ${readerCommand} sections ${reference.name} | ${readerCommand} read ${reference.name}`, '', _view.text.trimEnd()].join('\n');
 }

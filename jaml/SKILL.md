@@ -25,7 +25,7 @@ Load the workflow for the requested work. New apps normally use Design → Compo
 
 ## Retrieve for the current decision
 
-These are logical views of existing knowledge, not separate registries. Run commands with `node <skill-root>/scripts/catalog.mjs`; see `--help` for paging and locale options.
+These are logical views of existing knowledge, not separate registries. Resolve `<skill-root>` to the real directory containing this `SKILL.md`, then run `node "<skill-root>/scripts/catalog.mjs"` from any working directory. Reference arguments are relative to this skill's `references/`, for example `read Styles/check.md`; use `sections Styles/check.md` for exact anchors. See `--help` for paging and locale options.
 
 -   **Choose — ambiguous intent.** `choose` lists topic anchors; `choose selection-and-hover` retrieves that topic with its introductory context. Compare candidates, prerequisites, alternatives and no-fit conditions there, then retrieve the selected exact contracts. A known capability skips Choose.
 -   **Compose — current contract.** `compose style check.underscore --locale en` retains all mixed prose and arguments, defers numeric editor hints, and shows exact duplicate descriptions once. `--args width,glow` marks focus while preserving source order and other arguments; it proves no independence. Read each participating capability. Compare catalog/framework identity with the target runtime and resolve mismatches from current evidence.
@@ -36,7 +36,7 @@ These are logical views of existing knowledge, not separate registries. Run comm
 
 Elements, builders, CCs, usages and suffixes are not all in this style/plugin catalog. Retrieve their existing curated sections via `sections`/`read`: [elements](references/JAM-UI/JAM-UI.md), [components/extensions](references/JAML/component.md), [JAML and suffixes](references/JAML/jaml-format.md), [binders](references/JAML/binder.md). Use the [reference map](references/index.md) only when the owning topic is unclear. Linked prerequisites still apply to a selected section.
 
-On uncertainty, contradiction, failure or no fit, report the gap and expand the relevant contract, guide or current source/runtime evidence. A visual underline does not establish a complete tabs interaction. Investigate the affected capability without converting an ordinary task into a whole-library audit.
+Stop retrieval once the selected contract answers the task's inputs, owner, prerequisites and relevant cleanup. Expand only a specific unresolved fact; a missing callback input requires its exact contract or a precise gap report before executable code. A structural no-fit such as server authorization belongs to the application/backend and does not require a whole-catalog search. On contradiction or failure, expand the affected guide or current source/runtime evidence. A visual underline does not establish a complete tabs interaction. Investigate the affected capability without converting an ordinary task into a whole-library audit.
 
 ## Application philosophy
 

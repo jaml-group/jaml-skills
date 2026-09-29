@@ -42,6 +42,8 @@ For ordinary success, warning and error states, reuse native [semantic colors](.
 
 Token shorthand is [property-aware](./common/css.md#property-aware-token-values): singular `style` and supported style helpers resolve it, while compiled CSS/SCSS requires explicit `var(--jam-...)` references. Respect the [state cascade](./common/css.md#state-overrides-and-methodrule): singular `style` and plain `css(...)` write inline values; use `css(method:rule;...)` for a base property that scoped state rules must override. Keep breakpoint-controlled properties in stylesheet rules too.
 
+For a settings/workspace refactor, assign each declaration before moving it: header/sidebar sizing and scroll boundaries stay with the shell; repeated card presentation uses a registered recipe; repeated editor structure uses a CC/builder/usage; theme-wide surface and state appearance follows the theme; editor-owned DOM keeps a scoped adapter. A native status badge consumes `success`, `warn` or `error` before considering a domain palette. If changing themes changes decorative margins, verify the shell's intended usable width, click targets and focus at its relevant breakpoints; a semantic role alone does not promise equal geometry. Keep the [layout-owned frame contract](../Theme/stylize.md#layout-owned-stylize-profiles) with the layout owner.
+
 A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds. Token substitution alone does not meet that criterion.
 
 ## The `style` param
@@ -403,9 +405,26 @@ See [common.trait](./common/trait.md) for element-scoped `*.is(...)` and the bui
 | `Styles.expando({...})`          | Define expando properties on the element | Read-only properties accessible as `el.key`                                                                                  |
 | `Styles.addChild(node)`          | Append a DOM node                        | Alias for `child`                                                                                                            |
 
+For attachment-bound effects or shared style owners, read [mount and shared application lifetime](#mount-and-shared-application-lifetime).
+
 `Styles.resize(fn)` installs its resize listener when applied. Its separate initial callback waits for the host connection-readiness hook when available, then host/child stability checks. The initial callback has no event; resize callbacks receive the event and need not wait for initial readiness. Ordinary elements without that hook do not wait for DOM connection. Unplug removes the listener and invalidates pending initial work; async work already started inside a callback must guard its own lifetime.
 
+### Mount and shared application lifetime
+
 `Styles.mount(setup, cleanup)` starts setup on mount, or immediately for an already-mounted framework host or connected ordinary element. Unmount cleans the active setup once and allows remount. Plugin teardown or host destruction detaches its handlers and cleans the active setup. Reentrant replacement setup waits for synchronous cleanup to finish; removal during cleanup cancels the pending replacement. Shared style ownership delays teardown until its final owner is removed. Cleanup is synchronous; promises returned by arbitrary setup or cleanup code are not a general cancellation mechanism.
+
+Sharing means **the same plugin instance on the same host**, retained by distinct style application owners. Equal path strings, equal arguments or separately constructed plugins do not establish that identity.
+
+| Transition on an already-mounted host           | Effect                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------ |
+| First owner acquires the plugin                 | Setup once                                                         |
+| Second owner acquires that same plugin instance | Retain the active setup; no second setup                           |
+| One owner releases it while another remains     | Keep the effect and mount handlers                                 |
+| Final owner releases it                         | Clean the active setup once and remove its handlers                |
+| Host unmounts while an owner remains            | Clean the active setup; retained ownership allows setup on remount |
+| Host is destroyed                               | Clean active work and detach handlers                              |
+
+A different host has its own setup and cleanup. Ordinary `Styles.func` or plugin `unplug` cleanup follows plugin removal, not every DOM detach; use `Styles.mount` when the effect must follow mount/unmount. Async callbacks remain responsible for cancelling or ignoring stale work and retaining the identity of the setup that started it. See the [plugin lifecycle](../Plugins/plugins.md#lifecycle-and-ownership) for ordinary behavior plugins.
 
 ### Registration & global styles
 

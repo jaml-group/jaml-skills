@@ -182,7 +182,11 @@ test('native source documentation retains locator inputs and localized captions 
     for (const locale of ['en', 'zh']) {
         for (const path of ['check.frame', 'check.shade', 'check.underscore', 'check.pipe', 'hover.frame', 'hover.shade', 'hover.crosshair', 'layer.crosshair', 'table.hovermarker']) {
             const _result = lookup(catalog, 'style', path, locale);
-            const _widthDescription = locale === 'zh' ? '边框宽度' : 'Border width';
+            const _widthDescription = path === 'check.underscore' ? _result.profile.args.width.desc : locale === 'zh' ? '边框宽度' : 'Border width';
+            if (path === 'check.underscore') {
+                assert.match(_widthDescription, /px/);
+                assert.match(_widthDescription, /0.25 rem/);
+            }
             const _radiusComment = locale === 'zh' ? 'auto：自动适配元素；数值表示半径，单位为 px。' : 'auto: fit the element automatically; a numeric value specifies the radius in px.';
             assert.equal(_result.profile.args.width.desc, _widthDescription, path);
             assert.equal(_result.profile.args.radius.comment, _radiusComment, path);

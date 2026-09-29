@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, realpathSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readerCommand } from './references.mjs';
 
 const skillRoot = fileURLToPath(new URL('..', import.meta.url));
 export const publicFiles = ['catalog.json', 'authoringView.mjs', 'authoringCatalog.mjs', 'catalogSchema.mjs', 'generated/sharedI18n.mjs', 'LICENSE'];
@@ -116,7 +117,7 @@ export function contract(catalog, kind, path, locale = 'en', selectedArgs) {
             _lines.push(title + ':', ...args.map(([key, value]) => key + ': ' + JSON.stringify(value)));
         }
     }
-    _lines.push('', `Expand: catalog.mjs show ${kind} ${path} --locale ${_result.locale} | references/API/${_result.reference}`);
+    _lines.push('', `Expand: ${readerCommand} show ${kind} ${path} --locale ${_result.locale} | ${readerCommand} read references/API/${_result.reference}`);
     return _lines.join('\n');
 }
 
@@ -162,11 +163,14 @@ export function compose(catalog, kind, path, locale = 'en', selectedArgs) {
     if (_duplicates.length) {
         _lines.push('Merged identical desc/comment: ' + _duplicates.join(', ') + '.');
     }
-    _lines.push('', `Expand: catalog.mjs show ${kind} ${path} --locale ${_result.locale} | references/API/${_result.reference}`);
+    _lines.push('', `Expand: ${readerCommand} show ${kind} ${path} --locale ${_result.locale} | ${readerCommand} read references/API/${_result.reference}`);
     return _lines.join('\n');
 }
 
-const usage = `Usage:
+const usage = `Run from any directory: ${readerCommand} COMMAND
+Reference paths are relative to the installed references directory; a leading references/ is accepted.
+Use sections FILE.md for exact anchors (check.underscore has anchor checkunderscore).
+Usage:
   catalog.mjs compose|contract|show style|plugin PATH [--locale en|zh]
   catalog.mjs compose|contract style|plugin PATH --args NAME,NAME [--locale en|zh]
   catalog.mjs list style|plugin [PREFIX] [--limit 20] [--offset 0] [--locale en|zh] [--all]
@@ -249,7 +253,7 @@ async function main(args) {
                 .filter((section) => _command !== 'choose' || section.level === 2)
                 .map(({ heading, anchor, level }) => ({ heading, anchor, level }));
             const _page = page(_sections, options);
-            console.log(JSON.stringify({ reference: _reference.name, sha256: _reference.sha256, scope: 'Headings only; retrieve a section before making a choice.', ..._page, read: _command === 'choose' ? 'catalog.mjs choose SECTION_ANCHOR' : 'catalog.mjs read ' + _reference.name + '#SECTION_ANCHOR' }, null, 2));
+            console.log(JSON.stringify({ reference: _reference.name, sha256: _reference.sha256, scope: 'Headings only; retrieve a section before making a choice.', ..._page, read: _command === 'choose' ? readerCommand + ' choose SECTION_ANCHOR' : readerCommand + ' read ' + _reference.name + '#SECTION_ANCHOR' }, null, 2));
         }
         return;
     }

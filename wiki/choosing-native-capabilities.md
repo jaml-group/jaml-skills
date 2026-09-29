@@ -47,7 +47,7 @@ Decide whether the requirement is decoration, unknown-duration activity or measu
 
 Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/interact-plugins.md) for examples. Do not install two competing gesture owners on the same drag handle. Consult the catalog's forwarded-contract warning for movable/resizable rather than inventing a closed argument list. Native data transfer is not free positioning, and a rendered reordering is not durable model persistence. Preserve an alternate accessible operation when the product requires one.
 
-For drop filtering, use the documented `accept` function contract and validate received data in the application handler. Do not infer filtering support merely because the argument can hold other values.
+For drop filtering, retrieve `compose plugin interact.droppable`: its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin, not a reason to search every catalog entry.
 
 ## Container layout and child placement
 
@@ -135,7 +135,7 @@ Use [animation styles](Styles/animation.md) for framework entry/exit behavior or
 
 Use [theme roles](Theme/stylize.md) and [tokens](Theme/tokens.md) before local cosmetic overrides. The layout owns its shell regions, including `stylize: 'frame'` and the `jam-frame-style` class where supported; theme recipes own their appearance. A style plugin is not another role declaration key.
 
-For shared semantic meaning, inspect native foreground/background/border role presets and [color mapping](Styles/common/color.md). Use `color.stateMap` for discrete state accents and `color.valueMap` for a numeric scale only when those mappings fit the domain. A day/night switch style changes its appearance; the application must still connect its value to the theme controller. Business palettes belong in the existing color registry, not a new set of ad hoc theme tokens.
+For theme settings, follow [theme-panel composition and readiness](JAML/component.md#theme-panel-composition-and-readiness). For styling placement, use the [style ownership decision](Styles/styles.md#style-ownership-and-composition). For shared semantic meaning, inspect native foreground/background/border role presets and [color mapping](Styles/common/color.md). Use `color.stateMap` for discrete state accents and `color.valueMap` for a numeric scale only when those mappings fit the domain. A day/night switch style changes its appearance; the application must still connect its value to the theme controller. Business palettes belong in the existing color registry, not a new set of ad hoc theme tokens.
 
 For plain CSS, use [css()](Styles/common/css.md) with `styles`, `childStyles` or `descStyles` according to the target. Query a full generated style path: host, slotted content, slot wrapper and agent variables have different consumers, and a suffix such as `m` can denote spacing, type size, border width or shadow in different families. Use a registered style for a repeated complex presentation contract. Keep explicit geometry with the layout and avoid modifying theme-owned shell structure to achieve a cosmetic result.
 
