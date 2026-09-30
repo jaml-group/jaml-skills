@@ -30,43 +30,24 @@ test('artifact installs independently and preserves learned corrections on repla
             assert.ok(existsSync(resolve(_destination, name, 'references/Theme/tokens.md')));
         }
         assert.equal(existsSync(resolve(_destination, 'jaml-knowledge')), false, 'Default install remains jaml-only');
-        const _lookup = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), 'show', 'style', 'layout.application', '--locale', 'zh'], { cwd: _temporary, encoding: 'utf8' });
-        assert.equal(_lookup.status, 0, _lookup.stderr);
-        const _profile = JSON.parse(_lookup.stdout);
-        const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
-        assert.equal(_profile.catalogDigest, _manifest.catalog.digest);
-        assert.equal(_profile.schemaDigest, _manifest.catalog.schemaDigest);
-        assert.equal(_profile.profile.desc, '有界应用布局');
-        assert.ok(existsSync(resolve(_destination, 'jaml/references/API', _profile.reference)));
-        for (const [args, expected] of [
-            [['contract', 'style', 'interact.sortable', '--args', 'change'], 'does not persist the application model'],
-            [['compose', 'style', 'interact.sortable', '--args', 'change'], 'does not persist the application model'],
-            [['compose', 'style', 'table.fixedrowheight'], 'current animation callback calls string methods on a truthy value'],
-            [['choose', 'selection-and-hover'], 'complete tabs interaction'],
-            [['read', 'Styles/check.md#checkunderscore'], 'native element owns selection']
-        ]) {
-            const _focused = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), ...args], { cwd: _temporary, encoding: 'utf8' });
-            assert.equal(_focused.status, 0, _focused.stderr);
-            assert.ok(_focused.stdout.includes(expected));
+        const _skillRoot = resolve(_destination, 'jaml');
+        for (const path of ['catalog', 'scripts', 'references/API']) {
+            assert.equal(existsSync(resolve(_skillRoot, path)), false, 'Consumer artifact must contain direct documentation only: ' + path);
         }
-
-        const _runInstalled = (...args) => {
-            const _result = spawnSync(process.execPath, [resolve(_destination, 'jaml/scripts/catalog.mjs'), ...args], { cwd: _temporary, encoding: 'utf8' });
-            assert.equal(_result.status, 0, _result.stderr);
-            return _result.stdout;
-        };
-        const _choice = _runInstalled('choose', 'selection-and-hover');
-        assert.equal(_choice, _runInstalled('read', 'choosing-native-capabilities.md#selection-and-hover'));
-        const _recommendation = _choice.match(/`((?:compose|contract|show) style PATH --locale en)`/)?.[1];
-        assert.equal(_recommendation, 'compose style PATH --locale en');
-        const _composed = _runInstalled(..._recommendation.split(' ').map((argument) => (argument === 'PATH' ? 'check.underscore' : argument)));
-        assert.ok(_composed.includes('Use an option host exposing checked items'));
-        assert.ok(_composed.includes('It does not implement tabs keyboard navigation'));
-        const _apiGuide = _runInstalled('read', 'API/index.md#find-any-exported-path');
-        assert.ok(_apiGuide.includes('Use compose for ordinary composition'));
-        assert.ok(_apiGuide.includes('compose plugin interact.droppable --locale zh'));
-
-        assert.equal(readFileSync(resolve(_destination, 'jaml/catalog/LICENSE'), 'utf8'), readFileSync(resolve(root, 'jaml/catalog/LICENSE'), 'utf8'));
+        const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
+        assert.equal(_manifest.catalog?.path, undefined, 'Build provenance must not advertise an installed catalog');
+        for (const [path, expected] of [
+            ['Styles/common/layout.zh.md', '有界应用布局'],
+            ['Styles/interact.md', 'does not persist the application model'],
+            ['Styles/table-style.md', 'current animation callback calls string methods on a truthy value'],
+            ['choosing-native-capabilities.md', 'complete tabs interaction'],
+            ['Styles/check.md', 'native element owns selection']
+        ]) {
+            assert.ok(readFileSync(resolve(_skillRoot, 'references', path), 'utf8').includes(expected), path);
+        }
+        const _skill = readFileSync(resolve(_skillRoot, 'SKILL.md'), 'utf8');
+        assert.doesNotMatch(_skill, /scripts\/catalog\.mjs|references\/API/);
+        assert.ok(existsSync(resolve(_bundle, 'LICENSE')));
         const _learned = resolve(_destination, 'jaml/LEARNED.md');
         writeFileSync(_learned, 'A verified user correction.\n');
         writeFileSync(resolve(_destination, 'jaml/obsolete-resource.md'), 'stale');

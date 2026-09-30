@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { contract, loadCatalog, lookup, profilePath } from '../jaml/scripts/catalog.mjs';
+import { loadCatalog, lookup } from '../scripts/authoring/catalog.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const catalog = await loadCatalog();
@@ -58,20 +58,11 @@ test('exact lookup never reads unrelated schemas and keeps the full publisher tr
     }
 });
 
-test('exact show and contract outputs match full-manifest resolution in both locales', () => {
+test('maintainer lookup matches complete publisher resolution in both locales', () => {
     for (const locale of ['en', 'zh']) {
         const _full = catalog.reader.resolveAuthoringManifests(catalog.metadata, locale);
-        const _oracle = { ...catalog, reader: { ...catalog.reader, resolveAuthoringManifests: () => _full } };
         for (const [kind, path] of cases) {
-            const _entry = catalog.entries.find((entry) => entry.kind === kind && entry.path === path);
-            const _profile = _full[kind === 'style' ? 'styles' : 'plugins'].argSchemas[path];
-            const _expected = { ..._entry, locale: _full.locale, catalogDigest: catalog.pin.catalogDigest, schemaDigest: catalog.pin.schemaDigest, profile: _profile, reference: profilePath(_entry, _full.locale) };
-            assert.equal(JSON.stringify(lookup(catalog, kind, path, locale), null, 2), JSON.stringify(_expected, null, 2), kind + ':' + path + ':' + locale);
-            assert.equal(contract(catalog, kind, path, locale), contract(_oracle, kind, path, locale));
-            const _args = Object.keys(_profile.args ?? {});
-            if (_args.length) {
-                assert.equal(contract(catalog, kind, path, locale, [_args[0]]), contract(_oracle, kind, path, locale, [_args[0]]));
-            }
+            assert.deepEqual(lookup(catalog, kind, path, locale).profile, _full[kind === 'style' ? 'styles' : 'plugins'].argSchemas[path], kind + ':' + path + ':' + locale);
         }
     }
 });
@@ -97,7 +88,7 @@ test('exact lookups preserve publisher translation errors and do not cache stale
 test('exact retrieval still rejects tampering outside the requested schema during catalog loading', async () => {
     const _temporary = mkdtempSync(resolve(tmpdir(), 'jaml-lookup-integrity-'));
     try {
-        cpSync(resolve(root, 'jaml/catalog'), _temporary, { recursive: true });
+        cpSync(resolve(root, 'scripts/authoring/catalog'), _temporary, { recursive: true });
         const _file = resolve(_temporary, 'catalog.json');
         const _metadata = JSON.parse(readFileSync(_file, 'utf8'));
         const _unrelated = _metadata.plugins.argSchemaRefs['interact.droppable'];

@@ -1,16 +1,16 @@
 # Choose native capabilities
 
-For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Appearance does not establish state ownership. This guide supplies selection context; the pinned catalog and linked curated owners supply current contracts.
+For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Appearance does not establish state ownership. This guide supplies selection context; the linked family guides and curated owners supply current contracts.
 
-Use `node <skill-root>/scripts/catalog.mjs choose` for topic anchors, `choose ANCHOR` for one topic, and `compose style PATH --locale en` (or `plugin`, `zh`) for ordinary composition. Expand linked prerequisites when relevant. `contract` is lossless text; `show` includes all metadata and deferred hints; guides explain usage.
+Read the relevant section below, then follow its owning guide. Use the [style index](Styles/index.md) and [plugin index](Plugins/index.md) to locate a known capability directly. Keep shared family context, argument tables and linked prerequisites with the selected entry; expand the guide when its examples or explanations matter.
 
 ## Selection and hover
 
 | Need                                    | Start with                                                                       | Read next                                                                         |
 | --------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | A visibly selected value                | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)    |
-| An alternative checked-state treatment  | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check examples](Styles/check.md) and the chosen catalog profile                  |
-| Temporary highlight of the hovered item | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | The chosen catalog profile's shared-locator caveats                               |
+| An alternative checked-state treatment  | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check styles and examples](Styles/check.md)                                      |
+| Temporary highlight of the hovered item | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | [Hover styles and shared-locator caveats](Styles/hover.md)                        |
 | Brackets that stay around one host      | `style layer.crosshair`                                                          | [Host decoration](Styles/layers/crosshair.md)                                     |
 | Decorative pointer motion               | `style layer.follower.spotlight`, `layer.follower.edge`, `layer.follower.shadow` | [Follower examples](Styles/layers/follower.md) and their activation prerequisites |
 
@@ -32,26 +32,26 @@ For tab-like navigation, start with plain `buttongroup-radio`; `check.underscore
 
 ## Decorative activity and actual progress
 
-For an ornamental ring, arc, orbit, repeated object or particle effect, inspect `style layer.spinner.background`, `.frets`, `.comet`, `.orbit`, `.object` or `.particles`. [Spinner examples](Styles/layers/spinner.md) show composition; the catalog owns variant behavior, sizing and animation prerequisites.
+For an ornamental ring, arc, orbit, repeated object or particle effect, inspect `style layer.spinner.background`, `.frets`, `.comet`, `.orbit`, `.object` or `.particles`. [Spinner styles](Styles/layers/spinner.md) describe variant behavior, sizing, animation prerequisites and composition examples.
 
 Decide whether the requirement is decoration, unknown-duration activity or measured progress before choosing the visual. Use the [progress element](JAM-UI/progress.md) when a progress value is part of the contract. Let application state control whether busy decoration is present and provide meaningful status text. A spinner neither detects pending work nor prevents interaction. Standalone spinner rotation requires `spin`; composite roulette, radar and reddit presets rotate when it is omitted. `spin:false` stops their rotation, while independent animation effects keep their own controls.
 
 ## Move, resize, reorder or transfer data
 
-| Operation                  | Catalog identity                                          | Composition owner                                              |
+| Operation                  | Capability                                                | Composition owner                                              |
 | -------------------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
 | Reposition a host          | `style interact.movable`                                  | Host geometry, containment and persistence                     |
 | Resize a host              | `style interact.resizable`                                | Size constraints and application state                         |
 | Reorder peer children      | `style interact.sortable`                                 | Container items and a `change` handler that updates data order |
 | Transfer browser drag data | `plugin interact.draggable` + `plugin interact.droppable` | Payload producer, acceptance policy and receiving handler      |
 
-Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/interact-plugins.md) for examples. Do not install two competing gesture owners on the same drag handle. Consult the catalog's forwarded-contract warning for movable/resizable rather than inventing a closed argument list. Native data transfer is not free positioning, and a rendered reordering is not durable model persistence. Preserve an alternate accessible operation when the product requires one.
+Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/interact-plugins.md) for examples. Do not install two competing gesture owners on the same drag handle. Consult the interaction guide's forwarding caveat for movable/resizable rather than inventing a closed argument list. Native data transfer is not free positioning, and a rendered reordering is not durable model persistence. Preserve an alternate accessible operation when the product requires one.
 
-For drop filtering, retrieve `compose plugin interact.droppable`: its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin, not a reason to search every catalog entry.
+For drop filtering, read `interact.droppable` in the [drag/drop guide](Plugins/interact-plugins.md): its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin, not a reason to search unrelated families.
 
 ## Container layout and child placement
 
-| Decision                                      | Inspect these style profiles        |
+| Decision                                      | Inspect these styles                |
 | --------------------------------------------- | ----------------------------------- |
 | Content-led page or bounded application shell | `layout.page`, `layout.application` |
 | Explicit rows and columns                     | `layout.grid`                       |
@@ -61,7 +61,7 @@ For drop filtering, retrieve `compose plugin interact.droppable`: its `accept` i
 | Existing button-group overflow fallback       | `layout.navigator`                  |
 | Local clipping/scroll policy                  | `layout.overflow`                   |
 
-Read [layout examples](Styles/common/layout.md) and the selected catalog profile before combining these layers. Put container geometry on the container and grid placement on its children. Repeated tiles can use autogrid; numeric repeat is a fixed count, not a responsive promise. For explicit placement, pair a grid parent with gridpos/gridsize children.
+Read [layout contracts and examples](Styles/common/layout.md) before combining these layers. Put container geometry on the container and grid placement on its children. Repeated tiles can use autogrid; numeric repeat is a fixed count, not a responsive promise. For explicit placement, pair a grid parent with gridpos/gridsize children.
 
 Keep the shell's regions and scroll ownership with its [layout-owned roles](Theme/stylize.md#layout-owned-stylize-profiles). The navigator helper requires an existing button group; the `buttongroup.tilted` appearance style is not an overflow implementation. If the verified owners do not meet the required interaction, retain the gap and choose an appropriate [extension](JAML/component.md) instead of assuming a style name supplies it.
 
@@ -77,11 +77,11 @@ Keep the shell's regions and scroll ownership with its [layout-owned roles](Them
 | Display time               | `style indicator.clock`, `indicator.datetime`                                        | Supply the correct value/type and an update source; a clock display does not create a timer.                           |
 | Show icons                 | `style icon.solid`, `icon.regular`, `icon.emoji`, `icon.arrow`                       | Check slot shape, font assets and whether state/value changes actually drive the chosen variant.                       |
 
-Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [icon styles](Styles/common/icon.md) and [interaction styles](Styles/interact.md) for the relevant composition. Keep an element's slots distinct from the wrappers that distribute them: a caption, caption slot and internal input agent are different styling targets. A familiar style name is not proof that it implements an action or has a current stylesheet consumer; read the catalog's behavior and caveats before adopting legacy markers.
+Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [icon styles](Styles/common/icon.md) and [interaction styles](Styles/interact.md) for the relevant composition. Keep an element's slots distinct from the wrappers that distribute them: a caption, caption slot and internal input agent are different styling targets. A familiar style name is not proof that it implements an action or has a current stylesheet consumer; read the selected guide's behavior and caveats before adopting legacy markers.
 
 ## Popups, notifications and observers
 
-| Need                          | Catalog identity                        | Ownership boundary                                                                                   |
+| Need                          | Capability                              | Ownership boundary                                                                                   |
 | ----------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Delegated hover explanation   | `plugin popup.tip`, `popup.floatingTip` | Annotated target/content and popup lifetime; inspect target-matching behavior.                       |
 | Help beside a native caption  | `plugin popup.helper`                   | Choose caption activation or a separate focusable help label.                                        |

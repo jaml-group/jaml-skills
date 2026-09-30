@@ -2,7 +2,7 @@
 
 Start here when writing, explaining, or diagnosing JAML. These documents are shared by people, the documentation viewer, and the `jaml` skill. Each contract has an owning page; topic indexes point to it.
 
-For exported style/plugin signatures and metadata prose, start with the [generated API catalog](API/index.md). It provides English/Chinese views from one pinned digest and lookup for every exported path. Its argument types, order, defaults and option values are authoritative for that snapshot; hand-authored guides provide composition and usage context. Coverage records legacy prose and missing fields explicitly.
+For style/plugin contracts, use the [style index](Styles/index.md) or [plugin index](Plugins/index.md) and read the selected family guide directly. Each guide combines usage, prerequisites and examples with generated argument types, order, defaults and option values. Check the documented framework baseline against the target runtime; missing facts remain unknown.
 
 ## What the layers do
 

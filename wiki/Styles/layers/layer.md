@@ -1,5 +1,9 @@
 # Layer styles
 
+<!-- Generated from native authoring; do not edit. -->
+
+[中文](layer.zh.md)
+
 Layer styles append children to the host element, usually with `slot="layer"`, and project them through its shadow layer slot. Geometry and stacking depend on the variant and `zIndex`; the slot alone does not place every layer behind foreground content.
 
 ---
@@ -89,3 +93,64 @@ Layer styles and loading guidance:
 | `layer.css`         | [css](./css.md)               | Arbitrary CSS layer                                           |
 | `layer.crosshair`   | [crosshair](./crosshair.md)   | Crosshair locator anchored to the host                        |
 | `layer.overlay`     | [overlay](./overlay.md)       | Content overlay layer                                         |
+
+## `layer.progress`
+
+<a id="entry-layer-progress"></a>
+
+Progress layer
+
+Show actual progress as a translucent fill over a host.
+
+Creates a native progress element in the layer slot with the configured value and indeterminate mode. The base form uses the configured inset to cover the host. A vertical style can change the fill direction.
+
+Provide a host with usable geometry and update value or indeterminate from application state. Values follow the progress element contract: numeric fractions or percentage strings.
+
+Stores the created progress child and destroys it on plugin teardown, clearing both host and child plugin data.
+
+Use for measured or indeterminate progress tied to application work; choose decorative spinner layers when no progress value is represented. styles customizes the created progress child.
+
+The layer does not discover pending work or update its own value. Indeterminate mode preserves the stored value for use when determinate mode resumes.
+
+Positional order: `value` → `indeterminate` → `vertical` → `inset` → `opacity` → `color` → `styles`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `value` | `numberOrString` | `0` | Progress |
+| `indeterminate` | `boolean` | `false` | Indeterminate progress |
+| `vertical` | `boolean` | `false` | Vertical |
+| `inset` | `string` | `0` | Inset |
+| `opacity` | `number` | `0.25` | Opacity |
+| `color` | `string` | Not supplied | Color |
+| `styles` | `array` | `[]` | Progress bar styles |
+
+## `layer.progress.bar`
+
+<a id="entry-layer-progress-bar"></a>
+
+Bottom progress bar
+
+Show actual progress as a thin bar along the bottom of a host.
+
+Creates a native progress element in the layer slot with the configured value and indeterminate mode. The bar form sets a fixed height and bottom alignment. A vertical style can change the fill direction.
+
+Provide a host with usable geometry and update value or indeterminate from application state. Values follow the progress element contract: numeric fractions or percentage strings.
+
+Stores the created progress child and destroys it on plugin teardown, clearing both host and child plugin data.
+
+Use for measured or indeterminate progress tied to application work; choose decorative spinner layers when no progress value is represented. styles customizes the created progress child.
+
+The layer does not discover pending work or update its own value. Indeterminate mode preserves the stored value for use when determinate mode resumes.
+
+Positional order: `value` → `indeterminate` → `vertical` → `inset` → `opacity` → `color` → `styles` → `height`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `value` | `numberOrString` | `0` | Progress |
+| `indeterminate` | `boolean` | `false` | Indeterminate progress |
+| `vertical` | `boolean` | `false` | Vertical |
+| `inset` | `string` | `0` | Inset |
+| `opacity` | `number` | `1` | Opacity |
+| `color` | `string` | Not supplied | Color |
+| `styles` | `array` | `[]` | Progress bar styles |
+| `height` | `string` | `0.25rem` | Height |

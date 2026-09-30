@@ -1,32 +1,68 @@
 import assert from 'node:assert/strict';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
+import { posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { hash, inspectPublicData, loadCatalog, lookup, profilePath } from '../jaml/scripts/catalog.mjs';
+import { hash, inspectPublicData, loadCatalog, lookup } from '../scripts/authoring/catalog.mjs';
 import { generateReferences, renderReferences } from '../scripts/catalog-reference.mjs';
+import { projectGuides } from '../scripts/family-guides.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const catalog = await loadCatalog(resolve(root, 'jaml/catalog'));
+const catalog = await loadCatalog(resolve(root, 'scripts/authoring/catalog'));
+const projections = new WeakMap();
+function entryText(sample, kind, path, locale = 'en') {
+    if (!projections.has(sample)) {
+        projections.set(sample, new Map());
+    }
+    const _locales = projections.get(sample);
+    if (!_locales.has(locale)) {
+        _locales.set(locale, projectGuides(sample, locale));
+    }
+    const _projection = _locales.get(locale);
+    const _target = _projection.targets.get(kind + ':' + path);
+    assert.ok(_target, kind + ':' + path);
+    const _source = _projection.files.get(_target.file);
+    const _entry = _source.split(`<a id="${_target.anchor}"></a>`)[1];
+    assert.ok(_entry, _target.file + '#' + _target.anchor);
+    return _entry.split('<a id="entry-')[0];
+}
 
-test('every exported path maps to a generated profile with identical runtime values and source order in both languages', () => {
-    const _files = renderReferences(catalog);
-    const _index = JSON.parse(_files.get('index.json'));
-    assert.equal(
-        _index.profiles.reduce((count, profile) => count + profile.paths, 0),
-        catalog.entries.length
-    );
-    assert.equal(_index.catalogDigest, catalog.metadata.catalog.digest);
-    assert.equal(_index.schemaDigest, catalog.metadata.catalog.schemaDigest);
-    assert.equal(_index.aliases.length, catalog.entries.filter((entry) => entry.id !== entry.canonicalId).length);
+function contractText(sample, kind, path, locale) {
+    const _entry = entryText(sample, kind, path, locale);
+    const _projection = projections.get(sample).get(locale);
+    const _target = _projection.targets.get(kind + ':' + path);
+    const _visited = new Set();
+    const _expand = (text, file) => {
+        let _result = text;
+        for (const match of text.matchAll(/^(?:Common arguments|公共参数): \[[^\]]+\]\(([^)]+)\)\./gm)) {
+            const [relative, anchor] = match[1].split('#');
+            const _file = relative ? posix.normalize(posix.join(posix.dirname(file), relative)) : file;
+            const _identity = _file + '#' + anchor;
+            assert.ok(!_visited.has(_identity), 'Shared argument cycle: ' + _identity);
+            _visited.add(_identity);
+            const _source = _projection.files.get(_file);
+            assert.ok(_source, 'Missing shared argument page: ' + _file);
+            const _section = _source.split(`<a id="${anchor}"></a>`)[1];
+            assert.ok(_section, 'Missing shared argument anchor: ' + _identity);
+            _result += '\n' + _expand(_section.split('<a id="')[0], _file);
+        }
+        return _result;
+    };
+    return _expand(_entry, _target.file);
+}
+
+test('every exported path preserves runtime values and source argument order in both languages', () => {
     for (const locale of ['en', 'zh']) {
         const _view = catalog.reader.resolveAuthoringManifests(catalog.metadata, locale);
+        const _projection = projectGuides(catalog, locale);
+        assert.equal(_projection.targets.size, catalog.entries.length);
         for (const entry of catalog.entries) {
             const _kind = entry.kind === 'style' ? 'styles' : 'plugins';
             const _raw = catalog.metadata[_kind].schemaTable[entry.schemaRef];
             const _resolved = _view[_kind].argSchemas[entry.path];
-            assert.ok(_files.has(profilePath(entry, locale)), entry.id);
+            const _target = _projection.targets.get(entry.kind + ':' + entry.path);
+            assert.ok(_projection.files.has(_target.file), entry.id);
             assert.deepEqual(Object.keys(_resolved.args), Object.keys(_raw.args), entry.id);
             for (const [key, value] of Object.entries(_raw)) {
                 if (key !== 'args' && !catalog.authoringFields.includes(key)) {
@@ -60,20 +96,18 @@ test('every exported path maps to a generated profile with identical runtime val
     }
 });
 
-test('shared translation resolves prose and option labels while fallback and canonical identities stay intact', () => {
+test('translations preserve option values, fallback and canonical identities', () => {
     const _english = lookup(catalog, 'style', 'layout.application', 'en');
     const _chinese = lookup(catalog, 'style', 'layout.application', 'zh');
     assert.equal(_english.profile.desc, 'Bounded application layout');
     assert.equal(_chinese.profile.desc, '有界应用布局');
-    const _enOptions = _english.profile.args.scroll.options;
-    const _zhOptions = _chinese.profile.args.scroll.options;
     assert.deepEqual(
-        _enOptions.map((option) => option.value),
-        _zhOptions.map((option) => option.value)
+        _english.profile.args.scroll.options.map((option) => option.value),
+        _chinese.profile.args.scroll.options.map((option) => option.value)
     );
     assert.notDeepEqual(
-        _enOptions.map((option) => option.name),
-        _zhOptions.map((option) => option.name)
+        _english.profile.args.scroll.options.map((option) => option.name),
+        _chinese.profile.args.scroll.options.map((option) => option.name)
     );
     const _messages = structuredClone(catalog.metadata.catalog);
     const _key = 'style.layout.application.desc';
@@ -86,7 +120,7 @@ test('shared translation resolves prose and option labels while fallback and can
     assert.throws(() => lookup(catalog, 'style', 'not-an-exported-path'), /Unknown catalog path/);
 });
 
-test('mixed literal and explicit translation prose renders through the shared reader in current and legacy schemas', () => {
+test('literal prose, explicit translations and compatibility keys retain distinct semantics', () => {
     const _entry = catalog.entries.find((entry) => entry.kind === 'style' && entry.path === 'layout.application');
     for (const format of ['translations', undefined]) {
         const _metadata = structuredClone(catalog.metadata);
@@ -117,12 +151,9 @@ test('mixed literal and explicit translation prose renders through the shared re
         };
         _metadata.styles.schemaTable[_entry.schemaRef] = _schema;
         const _sample = { ...catalog, metadata: _metadata, entries: [...catalog.reader.catalogEntries(_metadata)] };
-        const _files = renderReferences(_sample);
         for (const locale of ['en', 'zh']) {
-            const _result = lookup(_sample, 'style', _entry.path, locale);
-            const _profile = _result.profile;
+            const _profile = lookup(_sample, 'style', _entry.path, locale).profile;
             const _title = locale === 'zh' ? '标题' : 'Title';
-            assert.equal(_result.format, format ?? 'legacy');
             assert.equal(_profile.desc, 'fixture.title');
             assert.equal(_profile.comment, locale === 'zh' ? '你好 Ada' : 'Hello Ada');
             assert.equal(_profile.purpose, _title);
@@ -138,36 +169,36 @@ test('mixed literal and explicit translation prose renders through the shared re
                 { value: '@tr(fixture.title)', name: _title, desc: 'Runtime option description' },
                 { value: false, name: 'fixture.title' }
             ]);
-            const _page = _files.get(profilePath(_entry, locale));
-            assert.ok(_page.includes(_profile.comment));
-            assert.ok(_page.includes(_profile.behavior));
-            assert.ok(_page.includes(locale === 'zh' ? '显式 @tr(...) 引用' : 'explicit @tr(...) references'));
+            const _page = entryText(_sample, 'style', _entry.path, locale);
+            for (const field of ['desc', 'comment', 'purpose', 'behavior', 'lifecycle', 'caveats']) {
+                assert.ok(_page.includes(_profile[field]), format + ':' + locale + ':' + field);
+            }
+            assert.ok(_page.includes('Runtime option description'));
             assert.ok(!_page.includes('undefined'));
         }
-        assert.ok(_files.get('index.md').includes('does not automatically discover external catalogs'));
     }
 });
 
-test('compatibility messages artifacts still resolve bare keys and render the compatibility label', () => {
+test('compatibility message-key artifacts still resolve bare prose and option labels', () => {
     const _metadata = structuredClone(catalog.metadata);
     const _entry = catalog.entries.find((entry) => entry.kind === 'style' && entry.path === 'layout.application');
-    _metadata.styles.schemaTable[_entry.schemaRef] = { documentationFormat: 'messages', desc: 'style.layout.application.desc', args: { mode: { desc: 'style.layout.application.desc', options: [{ value: 'raw-value', name: 'style.layout.application.desc' }] } } };
+    _metadata.styles.schemaTable[_entry.schemaRef] = {
+        documentationFormat: 'messages',
+        desc: 'style.layout.application.desc',
+        args: { mode: { desc: 'style.layout.application.desc', options: [{ value: 'raw-value', name: 'style.layout.application.desc' }] } }
+    };
     const _sample = { ...catalog, metadata: _metadata, entries: [...catalog.reader.catalogEntries(_metadata)] };
-    const _files = renderReferences(_sample);
     for (const locale of ['en', 'zh']) {
         const _result = lookup(_sample, 'style', _entry.path, locale);
         const _expected = _metadata.catalog.messages[locale]['style.layout.application.desc'];
-        assert.equal(_result.format, 'messages');
         assert.equal(_result.profile.desc, _expected);
         assert.equal(_result.profile.args.mode.desc, _expected);
         assert.deepEqual(_result.profile.args.mode.options, [{ value: 'raw-value', name: _expected }]);
-        const _page = _files.get(profilePath(_entry, locale));
-        assert.ok(_page.includes(_expected));
-        assert.ok(_page.includes(locale === 'zh' ? '兼容消息键元数据' : 'Compatibility message-key metadata'));
+        assert.ok(entryText(_sample, 'style', _entry.path, locale).includes(_expected));
     }
 });
 
-test('offline translation rejects binding context and invalid wrappers through the publisher reader', () => {
+test('offline projection rejects binding context and invalid translation wrappers', () => {
     const _metadata = structuredClone(catalog.metadata);
     const _entry = catalog.entries.find((entry) => entry.kind === 'style' && entry.path === 'layout.application');
     const _schema = _metadata.styles.schemaTable[_entry.schemaRef];
@@ -177,67 +208,47 @@ test('offline translation rejects binding context and invalid wrappers through t
     assert.throws(() => renderReferences({ ...catalog, metadata: _metadata }), /Nested @tr wrappers/);
 });
 
-test('native source documentation retains locator inputs and localized captions without changing option values', () => {
-    const _files = renderReferences(catalog);
+test('locator inputs and localized captions remain distinct from option values', () => {
     for (const locale of ['en', 'zh']) {
         for (const path of ['check.frame', 'check.shade', 'check.underscore', 'check.pipe', 'hover.frame', 'hover.shade', 'hover.crosshair', 'layer.crosshair', 'table.hovermarker']) {
-            const _result = lookup(catalog, 'style', path, locale);
-            const _widthDescription = path === 'check.underscore' ? _result.profile.args.width.desc : locale === 'zh' ? '边框宽度' : 'Border width';
-            if (path === 'check.underscore') {
-                assert.match(_widthDescription, /px/);
-                assert.match(_widthDescription, /0.25 rem/);
-            }
+            const _profile = lookup(catalog, 'style', path, locale).profile;
             const _radiusComment = locale === 'zh' ? 'auto：自动适配元素；数值表示半径，单位为 px。' : 'auto: fit the element automatically; a numeric value specifies the radius in px.';
-            assert.equal(_result.profile.args.width.desc, _widthDescription, path);
-            assert.equal(_result.profile.args.radius.comment, _radiusComment, path);
-            const _page = _files.get(profilePath(_result, locale));
-            assert.ok(_page.includes(_widthDescription), path);
+            assert.equal(_profile.args.radius.comment, _radiusComment, path);
+            const _page = contractText(catalog, 'style', path, locale);
+            assert.ok(_page.includes(_profile.args.width.desc), path);
             assert.ok(_page.includes(_radiusComment), path);
         }
-        for (const role of ['frame', 'shade', 'underscore', 'pipe']) {
-            const _result = lookup(catalog, 'style', 'check.' + role, locale);
-            assert.equal(_result.profile.desc, catalog.metadata.catalog.messages[locale]['native.check.' + role + '.desc']);
-            assert.ok(_files.get(profilePath(_result, locale)).includes(_result.profile.desc));
-        }
-        const _i18n = lookup(catalog, 'plugin', 'i18n', locale);
-        assert.equal(_i18n.profile.desc, locale === 'zh' ? '加载翻译目录' : 'Load translation catalogs');
-        assert.equal(_i18n.profile.args.file.desc, locale === 'zh' ? '翻译目录' : 'Translation catalogs');
-        assert.equal(_i18n.profile.args.file.default, 'common');
-        assert.equal(_i18n.profile.args.file.shorthand, true);
-        assert.ok(_files.get(profilePath(_i18n, locale)).includes(_i18n.profile.args.file.desc));
-        const _table = lookup(catalog, 'style', 'table.hovermarker', locale);
+        const _i18n = lookup(catalog, 'plugin', 'i18n', locale).profile;
+        assert.equal(_i18n.desc, locale === 'zh' ? '加载翻译目录' : 'Load translation catalogs');
+        assert.equal(_i18n.args.file.default, 'common');
+        assert.equal(_i18n.args.file.shorthand, true);
+        assert.ok(entryText(catalog, 'plugin', 'i18n', locale).includes(_i18n.args.file.desc));
+        const _table = lookup(catalog, 'style', 'table.hovermarker', locale).profile;
         assert.deepEqual(
-            _table.profile.args.type.options.map((option) => option.value),
+            _table.args.type.options.map((option) => option.value),
             ['row', 'column', 'td']
         );
         assert.deepEqual(
-            _table.profile.args.type.options.map((option) => option.name),
+            _table.args.type.options.map((option) => option.name),
             locale === 'zh' ? ['行', '列', '单元格'] : ['Row', 'Column', 'Cell']
         );
-        const _page = _files.get(profilePath(_table, locale));
-        for (const option of _table.profile.args.type.options) {
-            assert.ok(_page.includes('`' + JSON.stringify(option.value) + '` | ' + option.name));
+        const _page = entryText(catalog, 'style', 'table.hovermarker', locale);
+        for (const option of _table.args.type.options) {
+            assert.ok(_page.includes(option.name));
         }
     }
 });
 
-test('tuner hints retain source values and are labeled as UI guidance separately from runtime constraints', () => {
-    const _files = renderReferences(catalog);
+test('UI tuner hints retain their source values without becoming runtime constraints', () => {
     let _hinted = 0;
-    for (const locale of ['en', 'zh']) {
-        const _view = catalog.reader.resolveAuthoringManifests(catalog.metadata, locale);
-        for (const entry of catalog.entries) {
-            const _kind = entry.kind === 'style' ? 'styles' : 'plugins';
-            const _schema = catalog.metadata[_kind].schemaTable[entry.schemaRef];
-            const _profile = _view[_kind].argSchemas[entry.path];
-            const _hints = Object.entries(_schema.args).filter(([, arg]) => Object.hasOwn(arg, 'tuner'));
-            const _page = _files.get(profilePath(entry, locale));
-            const _note = locale === 'zh' ? '不是运行时校验约束' : 'not runtime validation constraints';
-            assert.equal(_page.includes(_note), _hints.length > 0, entry.path);
-            for (const [key, arg] of _hints) {
+    const _view = catalog.reader.resolveAuthoringManifests(catalog.metadata, 'en');
+    for (const entry of catalog.entries) {
+        const _schema = catalog.metadata[entry.kind === 'style' ? 'styles' : 'plugins'].schemaTable[entry.schemaRef];
+        const _profile = _view[entry.kind === 'style' ? 'styles' : 'plugins'].argSchemas[entry.path];
+        for (const [key, arg] of Object.entries(_schema.args)) {
+            if (Object.hasOwn(arg, 'tuner')) {
                 _hinted++;
                 assert.deepEqual(_profile.args[key].tuner, arg.tuner);
-                assert.ok(_page.includes(JSON.stringify(arg.tuner)));
                 for (const field of ['min', 'max', 'step']) {
                     assert.equal(Object.hasOwn(_profile.args[key], field), Object.hasOwn(arg, field));
                 }
@@ -245,95 +256,73 @@ test('tuner hints retain source values and are labeled as UI guidance separately
         }
     }
     assert.ok(_hinted > 0);
+    for (const locale of ['en', 'zh']) {
+        const _page = contractText(catalog, 'style', 'layer.background', locale);
+        assert.ok(_page.includes(JSON.stringify(lookup(catalog, 'style', 'layer.background', locale).profile.args.opacity.tuner)));
+        assert.match(_page, locale === 'zh' ? /非运行时/ : /not runtime/);
+    }
     for (const path of ['layer.css', 'layer.progress', 'layer.progress.bar']) {
         assert.equal(lookup(catalog, 'style', path).profile.args.opacity.tuner, undefined, path);
     }
-    const _metadata = structuredClone(catalog.metadata);
-    const _entry = catalog.entries.find((entry) => entry.kind === 'style' && entry.path === 'layer.background');
-    _metadata.styles.schemaTable[_entry.schemaRef].args.opacity.tuner = { min: 0, max: 1, step: 0.2 };
-    const _fixture = { ...catalog, metadata: _metadata };
-    const _page = renderReferences(_fixture).get(profilePath(_entry));
-    assert.ok(_page.includes('"tuner":{"min":0,"max":1,"step":0.2}'));
-    assert.ok(_page.includes('not runtime validation constraints'));
-    const _arg = lookup(_fixture, 'style', _entry.path).profile.args.opacity;
-    assert.equal(Object.hasOwn(_arg, 'min'), false);
-    assert.equal(Object.hasOwn(_arg, 'max'), false);
 });
 
-test('generated tables include raw defaults, option order, constraints and explicit missing/legacy coverage', () => {
-    const _files = renderReferences(catalog);
-    const _entry = catalog.entries.find((entry) => entry.path === 'layout.application' && entry.kind === 'style');
-    const _page = _files.get(profilePath(_entry));
-    const _schema = lookup(catalog, 'style', 'layout.application').profile;
-    assert.ok(_page.includes('`' + JSON.stringify(_schema.args.frame.default) + '`'));
-    const _options = _page.split('### scroll')[1];
-    assert.ok(_options.indexOf('"content"') < _options.indexOf('"regions"'));
-    assert.ok(_page.includes('Content scrolls'));
-    assert.ok(_files.get(profilePath(_entry, 'zh')).includes('内容滚动'));
-    assert.ok(_files.get('index.md').includes(`**${catalog.metadata.catalog.coverage.compatibility} paths**`));
-    assert.ok(_files.get('index.md').includes('Plain prose stays literal'));
-    assert.ok(_files.get('index.json').includes('missingFields'));
+test('raw defaults and option ordering remain visible in localized family pages', () => {
+    for (const locale of ['en', 'zh']) {
+        const _schema = lookup(catalog, 'style', 'layout.application', locale).profile;
+        const _page = entryText(catalog, 'style', 'layout.application', locale);
+        assert.ok(_page.includes(JSON.stringify(_schema.args.frame.default)));
+        const _row = _page.split('\n').find((line) => line.startsWith('| `scroll` |'));
+        assert.ok(_row.indexOf('content') < _row.indexOf('regions'));
+        assert.ok(_row.includes(locale === 'zh' ? '内容滚动' : 'Content scrolls'));
+    }
 });
 
-test('rendered tables preserve raw objects, wrapped objects, null and opaque values in both languages', () => {
+test('raw objects, wrapped objects, null, opaque values and option metadata survive projection', () => {
     const _metadata = structuredClone(catalog.metadata);
     const _entry = catalog.entries.find((entry) => entry.path === 'layout.application' && entry.kind === 'style');
     const _rawObject = { mode: 'compact', name: 'literal runtime name', desc: 'literal runtime payload' };
     const _legacyRecord = { name: 'legacy name', desc: 'legacy description' };
     _metadata.styles.schemaTable[_entry.schemaRef].args = {
-        mode: { type: 'any', defaultMetadata: { kind: 'opaque', valueType: 'function' }, options: [_rawObject, { value: { mode: 'wide' }, name: 'Object wrapper' }, _legacyRecord, null, { valueMetadata: { kind: 'opaque', valueType: 'object' } }, { value: 'later', name: 'Later option' }] }
+        mode: { type: 'any', defaultMetadata: { kind: 'opaque', valueType: 'function' }, options: [_rawObject, { value: { mode: 'wide' }, name: 'Object wrapper', desc: 'Wrapper caption', requires: 'owner' }, _legacyRecord, null, { valueMetadata: { kind: 'opaque', valueType: 'object' } }, { value: 'later', name: 'Later option' }] },
+        numeric: { type: 'any', defaultMetadata: { kind: 'opaque', valueType: 'number' } }
     };
-    _metadata.catalog.coverage.translations.zh.fallback = ['fixture.fallback'];
-    _metadata.catalog.coverage.translations.zh.missing = ['fixture.missing'];
-    const _files = renderReferences({ ...catalog, metadata: _metadata });
     for (const locale of ['en', 'zh']) {
-        const _page = _files.get(profilePath(_entry, locale));
-        const _rows = _page.split('\n').filter((line) => /^\| \d+ \|/.test(line));
-        assert.equal(_rows.length, 6);
-        assert.equal(_rows[0], '| 0 | `' + JSON.stringify(_rawObject) + '` | — | — | — |');
-        assert.equal(_rows[1], '| 1 | `{"mode":"wide"}` | Object wrapper | — | — |');
-        assert.equal(_rows[2], '| 2 | `' + JSON.stringify(_legacyRecord) + '` | — | — | — |');
-        assert.equal(_rows[3], '| 3 | `null` | — | — | — |');
-        const _opaque = locale === 'zh' ? '运行时决定 / 不透明值' : 'Runtime-determined / opaque';
-        assert.ok(_rows[4].includes(_opaque + ' (object)'));
-        assert.equal(_rows[5], '| 5 | `"later"` | Later option | — | — |');
-        assert.ok(_page.includes(_opaque + ' (function)'));
+        const _page = entryText({ ...catalog, metadata: _metadata }, 'style', _entry.path, locale);
+        for (const token of [JSON.stringify(_rawObject), '{"mode":"wide"}', 'Object wrapper', 'Wrapper caption', 'requires', 'owner', JSON.stringify(_legacyRecord), 'null', 'object', 'function', 'Later option']) {
+            assert.ok(_page.includes(token), locale + ':' + token);
+        }
+        assert.ok(_page.indexOf('compact') < _page.indexOf('wide'));
+        assert.ok(_page.indexOf('wide') < _page.indexOf('legacy name'));
+        assert.ok(_page.indexOf('legacy name') < _page.indexOf('Later option'));
         assert.ok(!_page.includes('`undefined`'));
+        const _numeric = _page.split('\n').find((line) => line.startsWith('| `numeric` |'));
+        assert.match(_numeric, /number/);
+        assert.doesNotMatch(_numeric, /function/);
     }
-    assert.ok(_files.get('index.md').includes('Fallback keys | Missing keys'));
-    assert.ok(_files.get('index.md').includes('fixture.fallback | fixture.missing'));
 });
 
-test('open forwarding contracts identify their public owner without inventing argument fields', () => {
-    for (const [kind, path, owner, guide] of [
-        ['style', 'interact.movable', 'jam.makeMovable', 'Styles/interact.md'],
-        ['style', 'interact.resizable', 'jam.makeResizable', 'Styles/interact.md'],
-        ['plugin', 'router', 'jam.AbstractRouter', 'Plugins/router.md'],
-        ['plugin', 'subRouter', 'jam.AbstractRouter', 'Plugins/router.md']
+test('open forwarding identifies the owner and retains uncertainty without inventing arguments', () => {
+    for (const [kind, path, owner] of [
+        ['style', 'interact.movable', 'jam.makeMovable'],
+        ['style', 'interact.resizable', 'jam.makeResizable'],
+        ['plugin', 'router', 'jam.AbstractRouter'],
+        ['plugin', 'subRouter', 'jam.AbstractRouter']
     ]) {
         const _actual = lookup(catalog, kind, path).profile;
         assert.equal(_actual.argumentContract, 'passthrough');
         assert.equal(_actual.argumentSource, owner);
         assert.equal(_actual.allowUnknown, true);
         assert.deepEqual(_actual.args, {});
-        const _metadata = structuredClone(catalog.metadata);
-        const _entry = catalog.entries.find((entry) => entry.kind === kind && entry.path === path);
-        const _schema = _metadata[kind === 'style' ? 'styles' : 'plugins'].schemaTable[_entry.schemaRef];
-        Object.assign(_schema, { args: {}, argumentContract: 'passthrough', argumentSource: owner, allowUnknown: true });
-        const _files = renderReferences({ ...catalog, metadata: _metadata });
         for (const locale of ['en', 'zh']) {
-            const _page = _files.get(profilePath(_entry, locale));
+            const _page = entryText(catalog, kind, path, locale);
             assert.ok(_page.includes(owner));
-            assert.ok(_page.includes('../../../' + guide));
-            assert.ok(_page.includes(locale === 'zh' ? '开放参数契约' : 'open contract'));
-            assert.ok(!_page.includes(locale === 'zh' ? '未声明参数。' : 'No arguments declared.'));
+            assert.match(_page, locale === 'zh' ? /未声明字段.*类型、默认值和补全尚不可用/ : /Undeclared fields have no inferred types, defaults or completion/);
             assert.ok(!_page.includes(locale === 'zh' ? '| 参数 | 类型 |' : '| Argument | Type |'));
         }
     }
 });
 
-test('source example references preserve IDs, host/state metadata and routes across locales without executing fixtures', () => {
-    const _files = renderReferences(catalog);
+test('source fixture references retain IDs and metadata while invalid IDs remain inert', () => {
     const _seen = new Set();
     const _fixtureIds = new Set();
     for (const entry of catalog.entries) {
@@ -348,63 +337,60 @@ test('source example references preserve IDs, host/state metadata and routes acr
         }
         for (const locale of ['en', 'zh']) {
             const _profile = lookup(catalog, entry.kind, entry.path, locale).profile;
-            const _page = _files.get(profilePath(entry, locale));
+            const _page = entryText(catalog, entry.kind, entry.path, locale);
             for (const field of ['examples', 'hosts', 'states']) {
                 assert.deepEqual(_profile[field], _schema[field]);
             }
             for (const example of _schema.examples) {
                 _fixtureIds.add(example);
                 assert.match(example, /^[a-zA-Z0-9_-]+$/);
-                assert.ok(_page.includes(`\`${example}\` — \`#/testground?jaml=${example}\``));
+                assert.ok(_page.includes(`#/testground?jaml=${example}`));
             }
-            assert.ok(_page.includes(locale === 'zh' ? '不包含或执行示例代码' : 'does not include or execute fixture code'));
             assert.ok(!_page.includes('](#/testground'), 'Wiki hash links are not testground navigation links');
         }
     }
-    assert.ok(_fixtureIds.size > 0, 'Pinned source must supply example references');
+    assert.ok(_fixtureIds.size > 0);
     const _metadata = structuredClone(catalog.metadata);
     const _entry = catalog.entries.find((entry) => entry.kind === 'style' && entry.path === 'layout.application');
     _metadata.styles.schemaTable[_entry.schemaRef].examples = ['../outside', 'https://example.invalid/run', 'name?run=1'];
-    const _invalidPage = renderReferences({ ...catalog, metadata: _metadata }).get(profilePath(_entry));
-    assert.ok(!_invalidPage.includes('#/testground?jaml='));
+    const _page = entryText({ ...catalog, metadata: _metadata }, 'style', _entry.path);
+    assert.ok(!_page.includes('#/testground?jaml='));
     for (const example of _metadata.styles.schemaTable[_entry.schemaRef].examples) {
-        assert.ok(_invalidPage.includes(JSON.stringify(example)));
+        assert.ok(_page.includes(example));
     }
 });
 
-test('generation is deterministic and freshness rejects modified or extra generated files', async () => {
+test('generation is deterministic and freshness rejects hand edits and obsolete generated pages', async () => {
     assert.deepEqual(renderReferences(catalog), renderReferences(catalog));
-    const _temporary = mkdtempSync(resolve(tmpdir(), 'jaml-catalog-freshness-'));
+    const _temporary = mkdtempSync(resolve(tmpdir(), 'jaml-family-freshness-'));
     try {
-        cpSync(resolve(root, 'jaml/catalog'), resolve(_temporary, 'jaml/catalog'), { recursive: true });
+        cpSync(resolve(root, 'scripts/authoring/catalog'), resolve(_temporary, 'scripts/authoring/catalog'), { recursive: true });
         await generateReferences(_temporary);
         await generateReferences(_temporary, { check: true });
-        const _guide = resolve(_temporary, 'wiki/guide.md');
-        writeFileSync(_guide, 'Catalog lookup: `style layout.application`.\n');
+        const _guide = resolve(_temporary, 'wiki/curated.md');
+        writeFileSync(_guide, '# Curated guide\n\nPreserved unrelated prose.\n');
         await generateReferences(_temporary, { check: true });
-        writeFileSync(_guide, 'Catalog lookup: `style unknown-path`.\n');
-        await assert.rejects(generateReferences(_temporary, { check: true }), /Unknown guide catalog lookup/);
-        rmSync(_guide);
-        const _target = resolve(_temporary, 'wiki/API/index.md');
+        const _target = resolve(_temporary, 'wiki/Styles/check.md');
         writeFileSync(_target, readFileSync(_target, 'utf8') + '\nhand edit\n');
-        await assert.rejects(generateReferences(_temporary, { check: true }), /Generated catalog is stale/);
+        await assert.rejects(generateReferences(_temporary, { check: true }), /stale/);
         await generateReferences(_temporary);
-        writeFileSync(resolve(_temporary, 'wiki/API/obsolete.md'), 'old');
-        await assert.rejects(generateReferences(_temporary, { check: true }), /inventory is stale/);
+        assert.equal(readFileSync(_guide, 'utf8'), '# Curated guide\n\nPreserved unrelated prose.\n');
+        writeFileSync(resolve(_temporary, 'wiki/Styles/obsolete.md'), '# Obsolete\n\n<!-- Generated from native authoring; do not edit. -->\n');
+        await assert.rejects(generateReferences(_temporary, { check: true }), /Unexpected generated guide/);
     } finally {
         rmSync(_temporary, { recursive: true, force: true });
     }
 });
 
-test('pinned readers reject altered code before import and shared verifier rejects stale signed catalog claims', async () => {
+test('pinned publisher code is verified before import and signed data rejects stale claims', async () => {
     const _temporary = mkdtempSync(resolve(tmpdir(), 'jaml-catalog-integrity-'));
     try {
-        cpSync(resolve(root, 'jaml/catalog'), _temporary, { recursive: true });
+        cpSync(resolve(root, 'scripts/authoring/catalog'), _temporary, { recursive: true });
         const _reader = resolve(_temporary, 'authoringView.mjs');
         writeFileSync(_reader, readFileSync(_reader, 'utf8') + '\nglobalThis.catalogShouldNotExecute = true;\n');
         await assert.rejects(loadCatalog(_temporary), /Catalog integrity mismatch/);
         assert.equal(globalThis.catalogShouldNotExecute, undefined);
-        cpSync(resolve(root, 'jaml/catalog'), _temporary, { recursive: true });
+        cpSync(resolve(root, 'scripts/authoring/catalog'), _temporary, { recursive: true });
         const _dataFile = resolve(_temporary, 'catalog.json');
         const _data = JSON.parse(readFileSync(_dataFile, 'utf8'));
         _data.catalog.messages.en['style.layout.application.desc'] = 'changed';
@@ -423,9 +409,12 @@ test('pinned readers reject altered code before import and shared verifier rejec
     }
 });
 
-test('only public manifests are accepted; consumers do not gain framework registries or source signatures', () => {
+test('public data rejects framework registries, private paths and source signatures', () => {
     assert.throws(() => inspectPublicData({ ...catalog.metadata, registries: {} }), /Unsupported public/);
     const _private = structuredClone(catalog.metadata);
     _private.styles.sourceSignature = 'private-source';
     assert.throws(() => inspectPublicData(_private), /Unsupported public/);
+    const _path = structuredClone(catalog.metadata);
+    _path.styles.schemaTable[0].desc = '/Users/private/source';
+    assert.throws(() => inspectPublicData(_path), /Private provenance/);
 });

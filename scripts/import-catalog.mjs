@@ -1,7 +1,7 @@
 import { lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { publicFiles, inspectPublicData, hash } from '../jaml/scripts/catalog.mjs';
+import { publicFiles, inspectPublicData, hash } from './authoring/catalog.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const source = process.argv[2];
@@ -38,7 +38,7 @@ const files = Object.fromEntries(
 // bytes are checked. No modules from a consuming app are imported.
 const { verifyAuthoringArtifact } = await import(pathToFileURL(resolve(source, 'authoringCatalog.mjs')).href);
 verifyAuthoringArtifact(metadata);
-const destination = resolve(root, 'jaml/catalog');
+const destination = resolve(root, 'scripts/authoring/catalog');
 for (const [name, bytes] of Object.entries(files)) {
     const _file = resolve(destination, name);
     mkdirSync(dirname(_file), { recursive: true });

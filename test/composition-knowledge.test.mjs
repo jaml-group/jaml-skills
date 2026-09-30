@@ -1,15 +1,29 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-const cli = fileURLToPath(new URL('../jaml/scripts/catalog.mjs', import.meta.url));
 const cases = JSON.parse(readFileSync(new URL('./fixtures/composition-cases.json', import.meta.url), 'utf8'));
-const read = (path) => execFileSync(process.execPath, [cli, 'read', path], { cwd: tmpdir(), encoding: 'utf8' });
+function read(path) {
+    const [file, anchor] = path.split('#');
+    const _text = readFileSync(new URL(`../jaml/references/${file}`, import.meta.url), 'utf8');
+    if (!anchor) {
+        return _text;
+    }
+    const _headings = [..._text.matchAll(/^(#{1,6}) +(.+)$/gm)];
+    const _index = _headings.findIndex(
+        (heading) =>
+            heading[2]
+                .toLowerCase()
+                .replace(/[^\w -]/g, '')
+                .replace(/ /g, '-') === anchor
+    );
+    assert.notEqual(_index, -1, path);
+    const _heading = _headings[_index];
+    const _end = _headings.slice(_index + 1).find((heading) => heading[1].length <= _heading[1].length)?.index ?? _text.length;
+    return _text.slice(_heading.index, _end);
+}
 
-test('composition eval cases retain portable focused retrieval paths', () => {
+test('composition cases resolve direct Markdown files and focused sections', () => {
     assert.deepEqual(
         cases.map((entry) => entry.id),
         ['A', 'B', 'C', 'D', 'E', 'F']
@@ -45,4 +59,12 @@ test('shared-data and refresh contracts remain reachable without loading the ent
     const refresh = read('JAML/state-and-data.md#refresh-unchanged-logical-arguments');
     assert.match(refresh, /not reserved JAML refresh APIs/);
     assert.match(refresh, /forcing a new backend call are different/);
+});
+
+test('direct retrieval keeps permissive event control and deliberate dataset ownership', () => {
+    const _selection = read('JAML/state-and-data.md#selection-and-content');
+    assert.match(_selection, /an `onclick` handler may call a documented method/);
+    const _requests = read('JAML/state-and-data.md#request-sharing-and-cache-limits');
+    assert.match(_requests, /use a shared `data` owner for a shared logical dataset/);
+    assert.match(_requests, /conditional request sharing/);
 });

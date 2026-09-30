@@ -61,7 +61,6 @@ const manifest = {
     framework: source.framework,
     skills: Object.fromEntries(skills.map((name) => [name, 'skills/' + name])),
     wiki: 'skills/jaml/references',
-    catalog: { path: 'skills/jaml/catalog', digest: catalog.catalogDigest, schemaDigest: catalog.schemaDigest },
     inventory: Object.fromEntries(filesUnder(bundle).map((file) => [relative(bundle, file).replaceAll('\\', '/'), sha256(file)]))
 };
 writeFileSync(resolve(bundle, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');

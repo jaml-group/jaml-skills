@@ -1,6 +1,6 @@
 # JAML skills
 
-Two complementary skills: `jaml` designs, builds, refactors, validates, explains and debugs Jam-UI applications and themes; `jaml-knowledge` builds and maintains source-grounded resources for choosing and composing JAML registry capabilities.
+The `jaml` skill designs, builds, refactors, validates, explains and debugs Jam-UI applications and themes.
 
 Start with native elements and existing styles/plugins, semantic roles and theme tokens. Add reusable builders, components, styles and plugins when a requirement needs an extension. Project refactoring and theme refactoring have separate workflows.
 
@@ -22,23 +22,15 @@ Add `--global` to install for your user instead of the current project. Restart 
 
 Examples: “Use jaml to design an app with theme roles and tokens”, “Refactor this page to reuse native elements”, or “Validate this JAML and explain the plugin choices”.
 
-## Knowledge maintenance skill
+## Knowledge maintenance
 
-[jaml-knowledge](jaml-knowledge/SKILL.md) is shared methodology for plugins, styles, CCs, usages, suffixes, builders and other discovered registries. Documentation callers load its installed name or the actual file in an explicitly located authoritative checkout. It is self-contained and does not require the `jaml` catalog for discovery; using it against private implementations still requires authorized source access.
-
-Before this addition is published, install from an explicitly located local checkout with the skills CLI:
-
-```sh
-npx skills add /path/to/jaml-skills --skill jaml-knowledge --agent codex
-```
-
-After publication, the repository install command can select `--skill jaml-knowledge`. Installing `jaml` alone does not automatically install this optional maintenance skill. Reload the agent's skill catalog after installation.
+Framework knowledge maintenance lives with the private Jam-UI source in its repository-local `jamldoc` and `jaml-knowledge` skills. This public repository distributes the consuming `jaml` skill. Reading and using its references requires no private source access or maintenance-skill installation.
 
 ## Reference and compatibility
 
-Use `compose` for a known style/plugin. It keeps all prose, argument meaning, defaults, constraints and dependencies while deferring documented numeric editor hints and collapsing identical argument descriptions. Unknown metadata stays visible. `--args` marks focus, not independent arguments. The catalog mixes explanations with obligations, so prose remains; this is a conservative projection, not an automatic summary. `contract` stays lossless and `show` retains the complete structured profile, including schema identity and editor metadata. For ambiguous intent, use `choose` before retrieving the selected capabilities.
+Read the [style index](wiki/Styles/index.md) or [plugin index](wiki/Plugins/index.md), then the selected family guide. The guide keeps behavior, argument meaning, defaults, constraints, shared prerequisites and examples together. For ambiguous intent, start with [Choose native capabilities](wiki/choosing-native-capabilities.md). Expand related sections only when they affect the task; a selected argument still depends on the rest of its contract.
 
-The [generated style/plugin catalog](wiki/API/index.md) owns exported API facts, with English and Chinese views from one pinned metadata digest. The [reference map](wiki/index.md) routes to language, elements, styles, plugins, themes and utilities. Hand-authored pages provide usage and composition guidance; their older argument tables are not a second source of truth. `wiki/` owns those guides; `wiki/API/` is generated and must not be edited by hand. `jaml/catalog/` pins the public metadata and shared reader; `jaml/references` points to it within this repository. Installers copy the references into the installed skill. Read only the topics needed for the task.
+The [reference map](wiki/index.md) routes to language, elements, styles, plugins, themes and utilities. Generated family guides combine runtime facts with authored knowledge; other curated pages retain their own ownership. `jaml/references` points to `wiki/` within this repository, and installers copy those references into the installed skill. Read the Markdown directly with normal file tools or use a scoped text search to locate the relevant heading. Missing facts remain unknown; forwarding behavior requires the named owner's contract.
 
 [Compatibility metadata](compatibility.json) records the framework baseline. Skill distribution versions are independent of framework versions. The current artifact is a development version, not a new framework release. Verify behavior against your installed runtime when versions differ.
 
@@ -54,7 +46,7 @@ npm test
 npm run build
 ```
 
-The versioned archive under `dist/` includes only the complete `jaml` authoring skill and its wiki, license/provenance notices, the pinned offline catalog reader and content inventory. Build, check and source-export commands reject stale generated catalog files. No application workspace modules are loaded. `dist/artifact.json` records its SHA-512 integrity. Generated content lives under `dist/.build/` so recursive skill discovery ignores it.
+The versioned archive under `dist/` includes the complete `jaml` authoring skill, its Markdown references, example assets, license/provenance notices and content inventory. Trusted authoring inputs and generation tools stay in the repository. Build, check and source-export commands reject stale generated references. No application workspace modules are loaded. `dist/artifact.json` records its SHA-512 integrity. Generated content lives under `dist/.build/` so recursive skill discovery ignores it.
 
 For an explicit offline destination after building:
 
@@ -62,7 +54,7 @@ For an explicit offline destination after building:
 node scripts/install.mjs --destination /path/to/client/skills --skill jaml
 ```
 
-The archive installer accepts only `jaml`; `jaml-knowledge` stays in the source checkout and is used through a separate agent-skill installation/link. This repository installer preserves installed `LEARNED.md` and refuses unknown distributions or newer versions. Those protections describe this installer, not the third-party skills CLI. Resource and packaging checks do not establish runtime correctness; check meaningful interactions in your application.
+The archive installer accepts only `jaml`; private framework maintenance skills are not part of this distribution. This repository installer preserves installed `LEARNED.md` and refuses unknown distributions or newer versions. Those protections describe this installer, not the third-party skills CLI. Resource and packaging checks do not establish runtime correctness; check meaningful interactions in your application.
 
 ## Refresh the generated reference
 
@@ -74,17 +66,11 @@ npm run catalog:generate
 npm run catalog:check
 ```
 
-Use `--frozen` with the import only after the producer freezes that exact artifact. Import verifies the publisher file inventory and byte hashes; generation uses its shared identity, schema and i18n reader. It does not run code from a consuming project. Ordinary users need no framework checkout, extraction or network access to read the installed catalog:
+Use `--frozen` with the import only after the producer freezes that exact artifact. Import verifies the publisher file inventory and byte hashes. Trusted generation inputs live under `scripts/authoring/`, outside the installed skill. Generation uses the supplied runtime facts and authored content without loading modules from a consuming application. Correct generated guidance at its source, regenerate it and verify the affected family and its links.
 
-```sh
-node <skill-root>/scripts/catalog.mjs compose style layout.application --locale zh
-node <skill-root>/scripts/catalog.mjs show style layout.application --locale zh
-node <skill-root>/scripts/catalog.mjs list plugin
-```
+Ordinary users need no framework checkout, extraction or network access to read the installed references. For example, open `<skill-root>/references/Styles/common/layout.md` for layout or follow `<skill-root>/references/Plugins/index.md` to the relevant plugin guide. English and Chinese views preserve executable names, argument order and option values. Examples and behavior claims still require meaningful runtime verification when used against a different framework baseline.
 
-Generated pages cover every exported path via shared schemas, including aliases and generated variants. The [catalog index](wiki/API/index.md) explains literal prose, explicit translation references, legacy message-key compatibility and knowledge coverage; coverage does not claim that all behaviors or translations are documented. Check the catalog digest when comparing with editor metadata. Guide-only behavior details still require verified source/runtime evidence.
-
-The [MIT license](LICENSE) covers authored documentation, examples and repository tooling. The narrow generated catalog reader and synchronous i18n engine include framework-derived code under the publisher's [MIT license](jaml/catalog/LICENSE), preserved byte-for-byte with the export. See [the provenance notice](jaml/catalog/NOTICE.md) and the license declaration and checksums in `jaml/catalog/artifact.json`.
+The [MIT license](LICENSE) covers authored documentation, examples and repository tooling. Trusted generation dependencies retain the publisher's [MIT license](scripts/authoring/catalog/LICENSE) and [provenance notice](scripts/authoring/catalog/NOTICE.md); their artifact manifest records checksums.
 
 ## Linked local documentation builds
 

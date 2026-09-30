@@ -1,18 +1,50 @@
 # `Plugins.router` / `Plugins.subRouter`
 
+<!-- Generated from native authoring; do not edit. -->
+
+[中文](router-plugins.zh.md)
+
 Full client-side SPA routing for top-level and nested route outlets. `Plugins.router` installs a root router on an element. `Plugins.subRouter` installs a passive child router under the nearest `.jam-router-installed` ancestor or the global `rambutan`.
 
 ---
 
 ## Router args
 
-Arguments are forwarded to `jam.AbstractRouter` through an open contract. [Generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin router`. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
+<a id="entry-router"></a>
+
+Element router
+
+Attach URL-driven route resolution to an author-supplied content host.
+
+Uses the supplied type when present, otherwise the shared AbstractRouter type. hash selects hash routing and other values select history; a supplied type changes that shared default. It forwards remaining options, assigns the host, marks it and initializes the router.
+
+Route content defines the visuals; the plugin itself does not create a navigation bar or page design.
+
+Provide a suitable content host, route/content configuration and URL mode. History-based deployments need compatible server fallback behavior.
+
+On unplug destroys the owned router and clears the host router reference, marker and plugin data. Router destruction removes its route/load listeners and owned child-router state.
+
+Supply routes and loading policies through the underlying jam.AbstractRouter contract. Keep navigation controls and nested content ownership explicit; this metadata is an open forwarding schema.
+
+Teardown does not restore the shared route type, browser URL/history or previous host content. Open-key acceptance does not validate every route field or promise cancellation of all application work.
+
+Arguments are forwarded to `jam.AbstractRouter`. Undeclared fields have no inferred types, defaults or completion; an empty argument table does not reject arguments.
+
+hosts: `HTMLElement`.
+
+states: `plug`, `unplug`.
+
+Developer examples require a matching Playground that serves these fixtures:
+
+- `#/testground?jaml=intent-router`
+
+Arguments are forwarded to `jam.AbstractRouter` through an open contract. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
 
 See the [routing guide](./router.md) for route definitions and navigation behavior.
 
 ## `Plugins.subRouter` args
 
-Arguments are forwarded to `jam.AbstractRouter` through an open contract. [Generated catalog](../API/index.md#find-any-exported-path). Catalog lookup: `plugin subRouter`. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
+Arguments are forwarded to `jam.AbstractRouter` through an open contract. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
 
 See the [routing guide](./router.md) for route definitions and navigation behavior.
 

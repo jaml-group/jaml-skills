@@ -2,7 +2,7 @@
 
 This repository owns the public `jaml` authoring skill and wiki.
 
--   Generated style/plugin API facts come from `jaml/catalog/` through the shared offline reader; refresh `wiki/API/` with `npm run catalog:generate`, never hand-edit it. `wiki/` guides explain usage and composition; decision workflows belong to `jaml/workflows/`. Preserve publisher bytes and their declared license provenance.
+-   Generated style/plugin family guides combine runtime facts and authored knowledge from the trusted build input under `scripts/authoring/`; refresh them with `npm run catalog:generate`. Correct generated content at its authoring owner, then regenerate. Other curated `wiki/` pages remain their own owners; decision workflows belong to `jaml/workflows/`. Preserve publisher bytes and their declared license provenance. Installed consumers read the Markdown guides directly.
 -   Keep installed resources self-contained. Resolve references relative to the skill and preserve the application-versus-framework distinction.
 -   Public content contains usage contracts, examples and compatibility versions. Keep proprietary implementation, internal source locations, revision identifiers, maintenance evidence and project/task records in their private owner.
 -   Verify API claims against an explicitly identified runtime or authorized source. Keep private evidence outside this repository; publish only the resulting usage contract.

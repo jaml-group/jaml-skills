@@ -1,6 +1,6 @@
 # JAML Plugins
 
-Use the [generated API catalog](../API/index.md) for exported signatures, defaults, option values and localized metadata. This page and its topic guides explain ownership, composition and usage; older hand-maintained argument tables do not override the pinned catalog. Check its legacy/missing-knowledge coverage and target runtime before treating absent prose as a behavior guarantee.
+Use the [plugin index](index.md) to find the complete family guide for an exported capability. Read its signatures, defaults, option values, prerequisites and examples together. This page explains ownership and composition across families. Check the documented framework baseline against the target runtime; absent prose is not a behavior guarantee.
 
 Plugins attach behavior to an element through `plug(el)` and release their owned resources through `unplug(el)`. Public `Styles.*` recipes often compose plugins internally. The `styles` key resolves style entries through `Styles`; the `plugins` key resolves behavior entries through `Plugins`.
 
