@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { checkResources, filesUnder } from '../scripts/resources.mjs';
@@ -19,6 +19,7 @@ test('artifact installs independently and preserves learned corrections on repla
         const _unpacked = spawnSync('tar', ['-xzf', resolve(root, 'dist', _artifact.file), '-C', _temporary], { encoding: 'utf8' });
         assert.equal(_unpacked.status, 0, _unpacked.stderr);
         assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8')).skills), ['jaml']);
+        assert.equal(existsSync(resolve(_bundle, 'skills/jaml-knowledge')), false);
         assert.equal(existsSync(resolve(_bundle, 'scripts/check-docs.mjs')), false);
         const _destination = resolve(_temporary, 'client/skills');
         const _args = [resolve(_bundle, 'scripts/install.mjs'), '--destination', _destination];
@@ -28,6 +29,25 @@ test('artifact installs independently and preserves learned corrections on repla
             assert.deepEqual(checkResources(resolve(_destination, name)).issues, []);
             assert.ok(existsSync(resolve(_destination, name, 'references/Theme/tokens.md')));
         }
+        assert.equal(existsSync(resolve(_destination, 'jaml-knowledge')), false, 'Default install remains jaml-only');
+        const _skillRoot = resolve(_destination, 'jaml');
+        for (const path of ['catalog', 'scripts', 'references/API']) {
+            assert.equal(existsSync(resolve(_skillRoot, path)), false, 'Consumer artifact must contain direct documentation only: ' + path);
+        }
+        const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
+        assert.equal(_manifest.catalog?.path, undefined, 'Build provenance must not advertise an installed catalog');
+        for (const [path, expected] of [
+            ['Styles/common/layout.zh.md', '有界应用布局'],
+            ['Styles/interact.md', 'does not persist the application model'],
+            ['Styles/table-style.md', 'current animation callback calls string methods on a truthy value'],
+            ['choosing-native-capabilities.md', 'complete tabs interaction'],
+            ['Styles/check.md', 'native element owns selection']
+        ]) {
+            assert.ok(readFileSync(resolve(_skillRoot, 'references', path), 'utf8').includes(expected), path);
+        }
+        const _skill = readFileSync(resolve(_skillRoot, 'SKILL.md'), 'utf8');
+        assert.doesNotMatch(_skill, /scripts\/catalog\.mjs|references\/API/);
+        assert.ok(existsSync(resolve(_bundle, 'LICENSE')));
         const _learned = resolve(_destination, 'jaml/LEARNED.md');
         writeFileSync(_learned, 'A verified user correction.\n');
         writeFileSync(resolve(_destination, 'jaml/obsolete-resource.md'), 'stale');
@@ -35,7 +55,26 @@ test('artifact installs independently and preserves learned corrections on repla
         assert.equal(_updated.status, 0, _updated.stderr);
         assert.equal(readFileSync(_learned, 'utf8'), 'A verified user correction.\n');
         assert.equal(existsSync(resolve(_destination, 'jaml/obsolete-resource.md')), false);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
+});
+
+test('consumer installer rejects the maintenance skill without changing existing agent skills', () => {
+    const _temporary = mkdtempSync(resolve(tmpdir(), 'jam-knowledge-boundary-'));
+    try {
+        const _destination = resolve(_temporary, 'skills');
+        mkdirSync(resolve(_destination, 'jaml-knowledge'), { recursive: true });
+        const _existing = resolve(_destination, 'jaml-knowledge/SKILL.md');
+        writeFileSync(_existing, 'User maintenance skill');
+        const _result = spawnSync(process.execPath, [resolve(root, 'scripts/install.mjs'), '--destination', _destination, '--skill', 'jaml-knowledge'], { cwd: _temporary, encoding: 'utf8' });
+        assert.notEqual(_result.status, 0);
+        assert.match(_result.stderr, /Unknown skill: jaml-knowledge/);
+        assert.equal(readFileSync(_existing, 'utf8'), 'User maintenance skill');
+        assert.equal(existsSync(resolve(_destination, 'jaml')), false);
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 test('modified artifact is rejected before an installed skill is changed', () => {
@@ -49,7 +88,9 @@ test('modified artifact is rejected before an installed skill is changed', () =>
         assert.notEqual(_result.status, 0);
         assert.match(_result.stderr, /Invalid artifact resource/);
         assert.equal(existsSync(_destination), false);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 for (const metadata of [
@@ -68,7 +109,9 @@ for (const metadata of [
             const _result = spawnSync(process.execPath, [resolve(root, 'scripts/install.mjs'), '--skill', 'jaml', '--destination', _destination], { encoding: 'utf8' });
             assert.notEqual(_result.status, 0);
             assert.equal(readFileSync(_version, 'utf8'), _original);
-        } finally { rmSync(_temporary, { recursive: true, force: true }); }
+        } finally {
+            rmSync(_temporary, { recursive: true, force: true });
+        }
     });
 }
 
@@ -85,7 +128,9 @@ test('resource collection rejects directory and file links outside its boundary'
         rmSync(resolve(_source, 'leaked.txt'));
         symlinkSync(_temporary, resolve(_source, 'outside'));
         assert.throws(() => filesUnder(_source), /External resource link/);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });
 
 test('resource collection excludes cloud-sync staging files at every depth', () => {
@@ -98,5 +143,7 @@ test('resource collection excludes cloud-sync staging files at every depth', () 
         const _resource = resolve(_temporary, 'references/guide.md');
         writeFileSync(_resource, '# Reference');
         assert.deepEqual(filesUnder(_temporary), [_resource]);
-    } finally { rmSync(_temporary, { recursive: true, force: true }); }
+    } finally {
+        rmSync(_temporary, { recursive: true, force: true });
+    }
 });

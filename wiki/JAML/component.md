@@ -26,33 +26,50 @@ Three globals are registered at startup:
 
 ### Core `jaml.*` API
 
-| Method | Description | See |
-|---|---|---|
-| `jaml(container, option)` | Render a reactive JAML UI | Below |
-| `jaml.<type>(...)` | Easy builder for any element type | [Easy Builders](#easy-builders--jamltype) |
-| `jaml.json(data)` | Convert any JS object into a component tree | [`jaml.json()`](#jamljson--render-json-as-jaml) |
-| `jaml.md(content, option?)` | Parse Markdown into a component option | [`jaml.md()`](#jamlmd--markdown-as-component-option) |
-| `jaml.register(name, option)` | Register a custom component (CC) | [Custom Components](#custom-components-cc) |
-| `jaml.register(definition)` | Register a complete CC Definition and its variant styles | [CC Definitions](#cc-definitions) |
-| `jaml.cc.*(...)` | Build conventional title, subtitle, and indicator nodes for CC Definitions | [CC builders](#cc-builders) |
-| `jaml.registerUsage(name, option)` | Register a reusable action preset | [`jaml.registerUsage()`](#jamlregisterusage--custom-usages) |
-| `jaml.var(key, cb?)` | JS-first reactive binder builder | [Binder syntax](./binder.md#jamlvar-programmatic-binder) |
-| `jaml.bunch(target, builder)` | JS-first loop builder (equivalent of `buildFor`) | [`buildFor`](./jaml-format.md#buildfor) |
-| `jaml.res(fn)` | Mark a function as a lazy param resolver | [Element params](./jaml-format.md#jamlres--lazy-param-resolver) |
-| `jaml.pre(value)` | Preserve a value from binder evaluation | [Binder syntax](./binder.md#jamlpre--preserve-a-value-from-binding) |
+| Method                             | Description                                                                | See                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `jaml(container, option)`          | Render a reactive JAML UI                                                  | Below                                                               |
+| `jaml.<type>(...)`                 | Easy builder for any element type                                          | [Easy Builders](#easy-builders--jamltype)                           |
+| `jaml.json(data)`                  | Convert any JS object into a component tree                                | [`jaml.json()`](#jamljson--render-json-as-jaml)                     |
+| `jaml.md(content, option?)`        | Parse Markdown into a component option                                     | [`jaml.md()`](#jamlmd--markdown-as-component-option)                |
+| `jaml.register(name, option)`      | Register a custom component (CC)                                           | [Custom Components](#custom-components-cc)                          |
+| `jaml.register(definition)`        | Register a complete CC Definition and its variant styles                   | [CC Definitions](#cc-definitions)                                   |
+| `jaml.cc.*(...)`                   | Build conventional title, subtitle, and indicator nodes for CC Definitions | [CC builders](#cc-builders)                                         |
+| `jaml.registerUsage(name, option)` | Register a reusable action preset                                          | [`jaml.registerUsage()`](#jamlregisterusage--custom-usages)         |
+| `jaml.var(key, cb?)`               | JS-first reactive binder builder                                           | [Binder syntax](./binder.md#jamlvar-programmatic-binder)            |
+| `jaml.bunch(target, builder)`      | JS-first loop builder (equivalent of `buildFor`)                           | [`buildFor`](./jaml-format.md#buildfor)                             |
+| `jaml.res(fn)`                     | Mark a function as a lazy param resolver                                   | [Element params](./jaml-format.md#jamlres--lazy-param-resolver)     |
+| `jaml.pre(value)`                  | Preserve a value from binder evaluation                                    | [Binder syntax](./binder.md#jamlpre--preserve-a-value-from-binding) |
 
 ---
 
 ## `jaml` — render JAML UI
 
-`jaml(container, option)` is the primary entry point. It parses the JAML option, builds the element tree, renders into `container`, and returns the `Model` instance.
+`jaml(container, option)` is the primary entry point. It parses the JAML option, builds the element tree, renders into `container`, and synchronously returns the `Model` instance. `await jaml(...)` or `await jam.render(...)` does not provide a readiness promise. See [render completion](./binder.md#binding-lifecycle) and [limited stability waits](../utils.md#jambasicallystableel). To supply external initial data before rendering, use the [construct → vars-write → render pattern](./binder.md#runtime-data-and-authored-definitions).
+
+`container` accepts an element ID string, a CSS selector, or an `HTMLElement`.
+
+### Standalone application root
+
+For a standalone full-page Jam application, render one framework-created application root directly into `document.body`. Define it as `type: 'container', stylize: 'app'`. Where the target runtime supports `jaml.application(...)`, that builder already creates the application root; mount its result directly rather than wrapping it in another `app`.
 
 ```javascript
-const model = jaml('#app', { type: 'container', vars: { title: 'Hello' }, components: [{ type: 'label', cap: '{{title}}' }] });
+const model = jaml(document.body, {
+    type: 'container',
+    stylize: 'app',
+    vars: { title: 'Hello' },
+    components: [{ type: 'container', stylize: 'main', components: [{ type: 'label', cap: '{{title}}' }] }]
+});
 model.vars.title = 'Updated'; // reactive — updates all bound {{title}} elements
 ```
 
-`container` accepts an element ID string, a CSS selector, or an `HTMLElement`.
+`jam.render(document.body, view)` follows the same mounting contract. Avoid gratuitous static `<main id="app">` or `<div id="app">` wrappers around a standalone app: theme recipes may target `body > .jam-app-style`, and an extra host breaks that boundary. `main` describes the primary semantic content inside the app; Electron does not require a static `<main>` mounting element. A splash or other intentionally separate body sibling does not require a wrapper around the app.
+
+Set `stylize` in the JAML definition so the framework processes it and supplies `.jam-app-style`. A raw HTML `stylize="app"` attribute on a static element is not equivalent to rendering that JAML definition. Keep one app role for the standalone shell and retain content roles beneath it; see [layout-owned profiles](../Theme/stylize.md#layout-owned-stylize-profiles).
+
+### Embedded application hosts
+
+An embedded widget, preview, or Jam application inside another page can intentionally render into an existing host, for example `jaml('#widget-host', view)`. Preserve that host's sizing, lifecycle and ownership boundary, and check theme selectors against the actual embedding structure. Direct-body shell recipes do not automatically apply there. This is an explicit integration choice; ordinary JAML containers remain appropriate for content composition.
 
 ---
 
@@ -346,7 +363,53 @@ export default {
 
 Inside `userCard`, `{{name}}` behaves identically to `{{data.username}}` in the outer scope. The CC stays completely decoupled from the outer `vars` shape.
 
-> Props with primitive values (`{ foo: 1 }`) are static constants. Props with binder-string values (`{ foo: '{{key}}' }`) create a live alias that forwards reactivity to the named key. The alias target cannot be reassigned after build, but setting the prop value writes through to the aliased `vars` key.
+> Props with literal primitive values (`{ foo: 1 }`) are writable local values that do not publish reactive updates by themselves. A single-key binder (`{ foo: '{{key}}' }`) creates an alias: setting the exposed prop writes to the target key rather than changing the alias declaration. See [props](./jaml-format.md#props) for automatic element-property binding, expression/object reads and lifecycle timing.
+
+For a record edited by nested controls, follow the [two-instance record example](#one-caller-owned-record-per-cc-instance), including nested mutation and whole-record replacement.
+
+### One caller-owned record per CC instance
+
+A single-key record alias preserves the owning model's reactive proxy. It supports nested writes and whole-record replacement; separate leaf aliases are unnecessary. This differs from a computed expression or an object assembled from several binders, whose returned object is derived data rather than a write-back target.
+
+```javascript jaml-playground
+jaml.register('recordEditor', {
+    type: 'container',
+    share: true,
+    props: { record: null },
+    components: [
+        { type: 'input', cap: 'Name', value: '{{record.name}}' },
+        {
+            type: 'button',
+            cap: 'Rename',
+            on: {
+                click() {
+                    this.shared.record.name = 'Renamed';
+                }
+            }
+        },
+        {
+            type: 'button',
+            cap: 'Replace record',
+            on: {
+                click() {
+                    this.shared.record = { name: 'Replacement' };
+                }
+            }
+        }
+    ]
+});
+export default {
+    type: 'container',
+    vars: { left: { name: 'Left' }, right: { name: 'Right' } },
+    components: [
+        { type: 'recordEditor', props: { record: '{{left}}' } },
+        { type: 'recordEditor', props: { record: '{{right}}' } },
+        { type: 'label', cap: '{{left.name}} + " / " + {{right.name}}' }
+    ]
+};
+```
+
+The first editor writes only `left`; the second writes only `right`. Descendants use the nearest `share: true` owner through `this.shared.record`. Replacing `left` through the caller's model API also updates its editor; immutable replacement through the alias is equally valid. A CC keeps stable internal names and does not depend on its caller's `vars` names. Creating a nested model scope is a separate isolation decision, not a requirement for sharing a caller record. Literal primitive props remain writable local values, but their assignment alone does not publish a reactive update. See [prop value categories and timing](./jaml-format.md#props) for collisions, derived values and literal-data boundaries.
 
 ### CC state ownership
 
@@ -354,8 +417,8 @@ A CC should not define its own `vars` or refer to the caller's future `vars` nam
 
 Use `props` for the CC's public inputs and local state handles:
 
-- Static constants: `props: { step: 2 }`
-- Reactive aliases: `props: { count: '{{firstCount}}' }`
+-   Literal configuration: `props: { step: 2 }`
+-   Reactive aliases: `props: { count: '{{firstCount}}' }`
 
 When nested children need to read or write the CC root props, set `share: true` on the CC root and use `this.shared` from child hooks. This keeps event handlers pointed at the CC contract instead of the root model's `vars`.
 
@@ -441,17 +504,17 @@ type CCDefinition = {
 };
 ```
 
-| Field | Description |
-|---|---|
-| `type` | camelCase registered component name without underscores |
-| `desc` | Human-readable component description |
-| `showType` | Preview category |
-| `size` | Default preview size as positive `[columns, rows]` factors |
-| `variants` | Non-empty array of named presentation variants |
-| `jaml` | Component body registered under `type` |
-| `props` | Declared public prop shape and default values used by the preview |
-| `vars` | Default sample mutable data used by the preview |
-| `tag`, `number`, `propsDesc` | Optional catalogue metadata |
+| Field                        | Description                                                       |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `type`                       | camelCase registered component name without underscores           |
+| `desc`                       | Human-readable component description                              |
+| `showType`                   | Preview category                                                  |
+| `size`                       | Default preview size as positive `[columns, rows]` factors        |
+| `variants`                   | Non-empty array of named presentation variants                    |
+| `jaml`                       | Component body registered under `type`                            |
+| `props`                      | Declared public prop shape and default values used by the preview |
+| `vars`                       | Default sample mutable data used by the preview                   |
+| `tag`, `number`, `propsDesc` | Optional catalogue metadata                                       |
 
 Each variant requires `name` and may provide `desc`, `size`, `styles`, `descStyles`, `props`, and `vars`. For previews, variant `props` merge over the definition defaults while variant `vars` replace the default preview vars. Callers of the registered component still pass their own runtime `props` and `vars`. When a multi-variant definition contains a variant named `basic`, its styles become the shared style layer and it is not shown as a separate preview choice. The old top-level `styles` field is invalid; native JAML style descriptors remain under each variant's `styles` field.
 
@@ -497,26 +560,26 @@ const registration = jaml.register(definition);
 
 `jaml.cc` exposes small builders for the conventional CC property contract:
 
-| Builder | Output |
-|---|---|
-| `jaml.cc.title(option?, classOrStyles?, jamlOption?)` | Title `label` bound to `title`, `icon`, and `overwrite` |
-| `jaml.cc.subtitle(option?, classOrStyles?, jamlOption?)` | Optional subtitle `label` bound to `hasSubtitle`, `subtitle`, and `overwrite` |
+| Builder                                                   | Output                                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `jaml.cc.title(option?, classOrStyles?, jamlOption?)`     | Title `label` bound to `title`, `icon`, and `overwrite`                        |
+| `jaml.cc.subtitle(option?, classOrStyles?, jamlOption?)`  | Optional subtitle `label` bound to `hasSubtitle`, `subtitle`, and `overwrite`  |
 | `jaml.cc.indicator(option?, classOrStyles?, jamlOption?)` | Indicator bound to `data`, formatting fields, `unit`, `color`, and `overwrite` |
 
 The first argument may be a numeric `dataDef` index or an option object with `dataDef`, `capType`, `valueType`, `hasCap`, `hasIcon`, and `hasUnit`. A string second argument contributes classes; an array contributes styles. The final JAML option is merged last for slots, additional styles, event handlers, and other component parameters.
 
 Lower-level helpers are available through `jam` for tooling and custom hosts:
 
-| Method | Purpose |
-|---|---|
-| `jam.isCCDefinitionCandidate(value)` | Content-first recognition using `jaml` plus a CC marker field |
-| `jam.getCCDefinitionIssues(value)` | Return structured validation issues without throwing |
-| `jam.validateCCDefinition(value)` | Throw when a strict CC Definition is invalid |
-| `jam.isCCDefinition(value)` | Test the complete strict definition contract |
-| `jam.prepareCCDefinition(value)` | Normalize and compile a definition without registering it |
-| `jam.registerCCDefinition(value)` | Register the component and variant styles and return a disposable handle |
-| `jam.buildCCPreview(registration)` | Build the variant-preview JAML option |
-| `jam.renderCCDefinition(container, value)` | Register temporarily and render the complete preview |
+| Method                                     | Purpose                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| `jam.isCCDefinitionCandidate(value)`       | Content-first recognition using `jaml` plus a CC marker field            |
+| `jam.getCCDefinitionIssues(value)`         | Return structured validation issues without throwing                     |
+| `jam.validateCCDefinition(value)`          | Throw when a strict CC Definition is invalid                             |
+| `jam.isCCDefinition(value)`                | Test the complete strict definition contract                             |
+| `jam.prepareCCDefinition(value)`           | Normalize and compile a definition without registering it                |
+| `jam.registerCCDefinition(value)`          | Register the component and variant styles and return a disposable handle |
+| `jam.buildCCPreview(registration)`         | Build the variant-preview JAML option                                    |
+| `jam.renderCCDefinition(container, value)` | Register temporarily and render the complete preview                     |
 
 ### Inspecting the registry
 
@@ -536,32 +599,32 @@ jaml.registry.entry('userCard'); // → current registered option or factory
 
 JAM-UI ships a small built-in component registry. These names can be used directly as the JAML `type` value.
 
-| Type | Description | Props |
-|---|---|---|
-| `notifycntr` | Notification container that applies `NutmegNotify.config()` before build | — |
-| `themepanel` | Theme and color-scheme configuration panel | — |
-| `composablebuttons` | Toolbar actions for composable dashboards | `addPageModalPath`, `registerModalPath` |
-| `breadcrumb` | Router breadcrumb built from the nearest installed router or `rambutan` | `separator`, `subpath`, `scoped` |
-| `dropdown` | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data` |
+| Type                | Description                                                                             | Props                                   |
+| ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------- |
+| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                       |
+| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                       |
+| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath` |
+| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`        |
+| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                         |
 
 ```javascript jaml-playground
 export default {
-  type: 'wrapper',
-  styles: ['layout.autoalign'],
-  components: [
-    { type: 'breadcrumb', props: { separator: '/', scoped: false } },
-    {
-      type: 'dropdown',
-      props: {
-        value: ['read'],
-        data: [
-          { name: 'Read', value: 'read' },
-          { name: 'Write', value: 'write' }
-        ]
-      }
-    }
-  ]
-}
+    type: 'wrapper',
+    styles: ['layout.autoalign'],
+    components: [
+        { type: 'breadcrumb', props: { separator: '/', scoped: false } },
+        {
+            type: 'dropdown',
+            props: {
+                value: ['read'],
+                data: [
+                    { name: 'Read', value: 'read' },
+                    { name: 'Write', value: 'write' }
+                ]
+            }
+        }
+    ]
+};
 ```
 
 ---
@@ -606,12 +669,12 @@ jaml.registerUsage('notify', (msg, level = 'info') => ({
 
 **Built-in usages:**
 
-| Value               | Effect                                                         |
-| ------------------- | -------------------------------------------------------------- |
-| `"reset"`           | Calls `model.resetAll()` — resets all inputs to `defaultValue` |
-| `"clear"`           | Calls `model.clearAll()` — clears all inputs to `null`         |
-| `"cancel"`          | Closes the nearest `.jam-closable` ancestor                    |
-| `"dateBadge(year?)"`| Formats a date-like value as a date caption plus `HH:mm:ss`; invalid values render empty. `year`: `true`, `false`, or `'auto'` |
+| Value                | Effect                                                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `"reset"`            | Calls `model.resetAll()` — resets all inputs to `defaultValue`                                                                 |
+| `"clear"`            | Calls `model.clearAll()` — clears all inputs to `null`                                                                         |
+| `"cancel"`           | Closes the nearest `.jam-closable` ancestor                                                                                    |
+| `"dateBadge(year?)"` | Formats a date-like value as a date caption plus `HH:mm:ss`; invalid values render empty. `year`: `true`, `false`, or `'auto'` |
 
 **Inspecting the usage registry:**
 
@@ -628,39 +691,53 @@ Use `jaml.bunch()` to render a data array with entry animations, parallax hover,
 
 ```javascript jaml-playground
 jaml.registerCustomColors({
-  '220kv': '#800080',
-  '110kv': '#F04155',
-  '35kv': '#FFFF00',
-  '10kv': '#B94842'
+    '220kv': '#800080',
+    '110kv': '#F04155',
+    '35kv': '#FFFF00',
+    '10kv': '#B94842'
 });
 
 export default jaml.wrapper(
-  {
-    styles: ['layout.autogrid(minHeight:15rem)', 'size.fullsize', 'css(padding:1rem;gap:1rem)'],
-    vars: {
-      items: [
-        { name: '220kV', color: '#800080' },
-        { name: '110kV', color: '#F04155' },
-        { name: '35kV', color: '#FFFF00' },
-        { name: '10kV', color: '#B94842' }
-      ]
-    }
-  },
-  [
-    jaml.bunch('items', (item, idx) => ({
-      type: 'indicator',
-      icon: ['🏭', '⚡', '💡', '🔧'][idx % 4],
-      cap: jam.getColorName(item.color),
-      value: item.name,
-      unit: 'kV',
-      color: item.name,
-      styles: [
-        'background.crystal',
-        'hover.parallax(inward:true)',
-        'layer.glare.light',
-        'animation.entry.zoom(scale:0.9;delay:random(0,400);duration:random(400,600))'
-      ]
-    }))
-  ]
+    {
+        styles: ['layout.autogrid(minHeight:15rem)', 'size.fullsize', 'css(padding:1rem;gap:1rem)'],
+        vars: {
+            items: [
+                { name: '220kV', color: '#800080' },
+                { name: '110kV', color: '#F04155' },
+                { name: '35kV', color: '#FFFF00' },
+                { name: '10kV', color: '#B94842' }
+            ]
+        }
+    },
+    [
+        jaml.bunch('items', (item, idx) => ({
+            type: 'indicator',
+            icon: ['🏭', '⚡', '💡', '🔧'][idx % 4],
+            cap: jam.getColorName(item.color),
+            value: item.name,
+            unit: 'kV',
+            color: item.name,
+            styles: ['background.crystal', 'hover.parallax(inward:true)', 'layer.glare.light', 'animation.entry.zoom(scale:0.9;delay:random(0,400);duration:random(400,600))']
+        }))
+    ]
 );
 ```
+
+### Theme panel composition and readiness
+
+`themepanel` is a registered composition backed by a factory, not an already-expanded element definition. Prefer `{ type: 'themepanel' }` and let the registry expand it when the application builds. The factory reads current theme state, including the body color context, at invocation time; obtaining or calling it during module initialization can be too early. `jaml.registry.entry('themepanel')` returns the registered factory; `jaml.registry.get('themepanel')` invokes it immediately. Neither call is a readiness barrier.
+
+Build the composition after the application's normal framework startup and theme readiness. In the standard browser entry, theme initialization begins at `DOMContentLoaded`; await `jam.themeReady` after that initialization has started. Awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
+
+The built-in panel defaults to `build: false` for popup use. Set `build: true` for an inline panel. This runnable example assumes the playground's already-initialized runtime:
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [{ type: 'themepanel', build: true }]
+};
+```
+
+The panel reads and publishes the framework's saved theme choices, including `jam-darkmode@milo` (`true`, `false`, or `'auto'`). Integrate it with the application's existing preference owner; opening it is not a reason to overwrite saved light/dark or system choices with a second default. See [system theme and saved choices](../color.md#system-theme-and-saved-choices). Full-page mounting still follows the [standalone application root](#standalone-application-root); embedded surfaces retain their [host boundary](#embedded-application-hosts).
+
+For a packaged runtime, confirm its artifact identity and registration (for example `jaml.registry.has('themepanel')`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.

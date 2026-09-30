@@ -4,18 +4,20 @@
 
 ---
 
+For the design-to-verification path and scenario choices, see [Building a JAML UI](building-ui.md). This tutorial introduces the language pieces used by that workflow.
+
 ## JAML at a glance
 
 Read a JAML object as a UI tree: each object creates one element, and `components` contains its children.
 
-| Piece | Example | What it does |
-|---|---|---|
-| Element type | `"type": "button"` | Chooses which JAM-UI element to create |
-| Element params | `"cap": "Save"`, `"data": [...]`, `"stylize": "panel"` | Configure that element directly |
-| Child tree | `"components": [...]` | Nests elements in render order |
-| Local state | `"vars": { "count": 0 }` and `"{{count}}"` | Makes values reactive |
-| Runtime control | `buildFor`, `showIf`, `watchers`, `timers` | Loops, conditionals, reactions, and scheduled work |
-| Behavior layers | `on`, `styles`, `plugins` | Events, reusable styles, and mount/unmount behavior |
+| Piece           | Example                                                | What it does                                        |
+| --------------- | ------------------------------------------------------ | --------------------------------------------------- |
+| Element type    | `"type": "button"`                                     | Chooses which JAM-UI element to create              |
+| Element params  | `"cap": "Save"`, `"data": [...]`, `"stylize": "panel"` | Configure that element directly                     |
+| Child tree      | `"components": [...]`                                  | Nests elements in render order                      |
+| Local state     | `"vars": { "count": 0 }` and `"{{count}}"`             | Makes values reactive                               |
+| Runtime control | `buildFor`, `showIf`, `watchers`, `timers`             | Loops, conditionals, reactions, and scheduled work  |
+| Behavior layers | `on`, `styles`, `plugins`                              | Events, reusable styles, and mount/unmount behavior |
 
 For app, panel, form, or list scale JAML, give structural nodes semantic `stylize` roles such as `app`, `header`, `main`, `panel`, `form`, `field`, `actions`, `list`, and `item`. Then the active theme can style the structure automatically, while `styles` and `plugins` stay focused on explicit treatments and behavior.
 

@@ -1,23 +1,50 @@
 # JAML Styles
 
+Use the [style index](index.md) to find the complete family guide for an exported capability. Read its signatures, defaults, option values, prerequisites and examples together. This page explains ownership and composition across families. Check the documented framework baseline against the target runtime; absent prose is not a behavior guarantee.
+
 The style system in JAM-UI is a plugin-based declarative styling layer. Styles are applied as an ordered array — the order matters, and styles can be reverted or toggled.
 
 Styles are resolved against the global `Styles` object using dot-path strings. A style is a named, revertable set of plugins that mutate the DOM: setting CSS properties, inserting stylesheet rules, adding classes, creating layers, or running arbitrary logic.
 
 ## Choose a styling entry point
 
-| Intent | Entry point |
-|---|---|
-| Name a region's semantic responsibility | [`stylize`](../Theme/stylize.md) |
-| Select a theme's alternate recipe | [`variant`](../Theme/stylesheets.md#variant-selectors) |
-| Set a few local CSS declarations | Singular `style` or [`css(...)`](./common/css.md) |
-| Add a reusable treatment or interaction | A documented entry in `styles`, such as `with.tint`, `group.bento`, or `interact.sortable` |
-| Style descendants or theme role contexts | `descStyles` or the theme `styles` map |
-| Attach behavior through `Plugins` | [Plugin selection](../Plugins/plugins.md#choose-an-entry-point) |
+| Intent                                   | Entry point                                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Name a region's semantic responsibility  | [`stylize`](../Theme/stylize.md)                                                           |
+| Select a theme's alternate recipe        | [`variant`](../Theme/stylesheets.md#variant-selectors)                                     |
+| Set a few local CSS declarations         | Singular `style` or [`css(...)`](./common/css.md)                                          |
+| Add a reusable treatment or interaction  | A documented entry in `styles`, such as `with.tint`, `group.bento`, or `interact.sortable` |
+| Style descendants or theme role contexts | `descStyles` or the theme `styles` map                                                     |
+| Attach behavior through `Plugins`        | [Plugin selection](../Plugins/plugins.md#choose-an-entry-point)                            |
 
 Styles can own behavior, listeners, and layers as well as CSS. Use the public style that owns the feature before constructing its internal engine. Arguments and cleanup belong to that style's detail page. For theme-dependent values, follow [token consumption](../Theme/tokens.md#consuming-tokens).
 
 ---
+
+## Style ownership and composition
+
+Start with the native element, semantic role and public style/plugin that already owns the requirement. Extra CSS should express a remaining requirement, with an explicit owner and the smallest scope that fits. Before adding shared app CSS, consider whether the visual language, generic control/state recipe or semantic appearance belongs to the existing theme contract. The application selects meaning and consumes that appearance; component-specific structure and behavior keep their composition owner.
+
+| Concern                                                           | Owner and placement                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One component's local presentation                                | Keep declarations with its JAML definition: singular `style` or token-aware `css(...)` in `styles`; use `childStyles` for direct children and `descStyles` for the owning subtree/context.                                          |
+| Theme-level visual language or generic control/state appearance   | Use the existing theme roles, tokens and recipes. Identify a theme-owned extension when warranted; keep its design/implementation in the separately scoped theme workflow.                                                          |
+| Presentation reused by multiple components                        | Give the shared recipe a named owner; reuse a public style or register a shared style plugin. Shared CSS should express actual cross-component concerns, not collect unrelated component rules.                                     |
+| Repeated structure, behavior and presentation                     | Extract the smallest suitable [CC, builder or usage](../JAML/component.md), with its styling beside that composition. Moving repeated selectors into a shared stylesheet alone does not remove duplicated component responsibility. |
+| Local selectors, media queries or other stylesheet-only mechanics | Keep a scoped stylesheet/recipe with the owning component or adapter; follow the [stylesheet scoping contract](#stylesstylesheet--inject-css-rules). File format does not turn local behavior into a global responsibility.         |
+| External or early-startup integration                             | Retain a bounded adapter for editor-owned DOM, OS/window chrome, print output or pre-framework startup as needed. Record the exact rules/files, owner and reason; app ownership alone is not an exception for an entire stylesheet. |
+
+Apply [scoped style params](#scoped-style-params) at the component that owns the affected children. Putting every descendant override on the application root recreates global coupling. Keep shared theme definitions in the [theme-authoring workflow](../Theme/authoring.md); application style refactoring should consume that contract rather than silently redesign it.
+
+Prefer existing semantic tokens for UI spacing, typography, radii and other supported dimensions. Use deliberate `rem`/`em` values for scalable custom dimensions when no suitable token exists. Retain `px` for a justified pixel-based or external contract, such as measured coordinates, a raster/canvas boundary or an integration API; record the reason and conversion boundary. A stylesheet's length or pixel count locates review candidates, not proven defects. Do not mechanically convert every pixel value or replace a meaningful dimension with an arbitrary token.
+
+For ordinary success, warning and error states, reuse native [semantic colors](../color.md#semantic-colors): `success`, `warn` (`warning` is an alias), and `error`. Use them in supported JAML color parameters or color-capable style declarations, such as `color: 'success'` or `css(color:warn)`, matching the actual state. These names come from `ColorSet`; they are not automatically `sys.color` token families or invented `--jam-error` variables. Keep foreground/background contrast and light/dark behavior correct. Ordinary status UI is not a business-color exception: custom domain colors require a real domain contract. Any literal palette needed before Jam initializes belongs to a bounded startup adapter.
+
+Token shorthand is [property-aware](./common/css.md#property-aware-token-values): singular `style` and supported style helpers resolve it, while compiled CSS/SCSS requires explicit `var(--jam-...)` references. Respect the [state cascade](./common/css.md#state-overrides-and-methodrule): singular `style` and plain `css(...)` write inline values; use `css(method:rule;...)` for a base property that scoped state rules must override. Keep breakpoint-controlled properties in stylesheet rules too.
+
+For a settings/workspace refactor, assign each declaration before moving it: header/sidebar sizing and scroll boundaries stay with the shell; repeated card presentation uses a registered recipe; repeated editor structure uses a CC/builder/usage; theme-wide surface and state appearance follows the theme; editor-owned DOM keeps a scoped adapter. A native status badge consumes `success`, `warn` or `error` before considering a domain palette. If changing themes changes decorative margins, verify the shell's intended usable width, click targets and focus at its relevant breakpoints; a semantic role alone does not promise equal geometry. Keep the [layout-owned frame contract](../Theme/stylize.md#layout-owned-stylize-profiles) with the layout owner.
+
+A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds. Token substitution alone does not meet that criterion.
 
 ## The `style` param
 
@@ -27,23 +54,23 @@ The singular `style` param applies native inline CSS directly to the element. It
 
 ```javascript jaml-playground
 export default {
-  type: 'wrapper',
-  components: [
-    {
-      type: 'label',
-      cap: 'CSS string',
-      style: 'font-size:1.5rem;font-weight:700'
-    },
-    {
-      type: 'label',
-      cap: 'CSS dictionary',
-      style: {
-        fontSize: '1.25rem',
-        fontWeight: 600
-      }
-    }
-  ]
-}
+    type: 'wrapper',
+    components: [
+        {
+            type: 'label',
+            cap: 'CSS string',
+            style: 'font-size:1.5rem;font-weight:700'
+        },
+        {
+            type: 'label',
+            cap: 'CSS dictionary',
+            style: {
+                fontSize: '1.25rem',
+                fontWeight: 600
+            }
+        }
+    ]
+};
 ```
 
 Because `style` writes inline declarations, a scoped state rule such as `hover(...)` cannot override the same property. When the base value needs a state override, put it in the `styles` array with `css(method:rule;...)`; see [State overrides and `method:rule`](./common/css.md#state-overrides-and-methodrule).
@@ -56,12 +83,9 @@ Every JAM-UI element and JAML component accepts a `styles` array. Each entry is 
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Styled",
-  "styles": [
-    "hover.brighter",
-    "animation.entry.frombottom(delay:100;duration:300)"
-  ]
+    "type": "button",
+    "cap": "Styled",
+    "styles": ["hover.brighter", "animation.entry.frombottom(delay:100;duration:300)"]
 }
 ```
 
@@ -71,28 +95,28 @@ Every JAM-UI element and JAML component accepts a `styles` array. Each entry is 
 
 Each entry in the `styles` array can be written in any of these forms. Use string paths in JSON; JavaScript additionally supports factory calls, builder references, functions, `IStyle` values, and object literals for custom one-off styles.
 
-| Format | Type | Description | Notes |
-|---|---|---|---|
-| String path | `string` | Dot-path to a style on the `Styles` global | Leading `Styles.` prefix can be omitted. No args |
-| String path with args | `string` | Dot-path with semicolon-separated args in parentheses | `"path.to.style(key:val;key2:val2)"`. Args auto-cast to declared types |
-| Literal object string | `string` | Dot-path with a JS object literal as args | `"path.to.style({key:\"val\"})"`. Parsed at runtime |
-| `IStyle` object | `IStyle` | A pre-built `Style` instance | Returned by `Styles.path.to.style(args)` |
-| Factory call | `Function` | A style builder called with args | `Styles.hover.brighter({ b: 1.05 })` — JS only |
-| Builder reference | `Function` | A style builder passed directly (no call) | `Styles.hover.brighter` — when no args needed, JS only |
-| Plain function | `Function` | `(el) => void` | Called with the element during apply |
-| Object literal | `object` | `{ desc, plugins }` | JS only. Inline anonymous style descriptor; not a CSS declaration dictionary |
+| Format                | Type       | Description                                           | Notes                                                                        |
+| --------------------- | ---------- | ----------------------------------------------------- | ---------------------------------------------------------------------------- |
+| String path           | `string`   | Dot-path to a style on the `Styles` global            | Leading `Styles.` prefix can be omitted. No args                             |
+| String path with args | `string`   | Dot-path with semicolon-separated args in parentheses | `"path.to.style(key:val;key2:val2)"`. Args auto-cast to declared types       |
+| Literal object string | `string`   | Dot-path with a JS object literal as args             | `"path.to.style({key:\"val\"})"`. Parsed at runtime                          |
+| `IStyle` object       | `IStyle`   | A pre-built `Style` instance                          | Returned by `Styles.path.to.style(args)`                                     |
+| Factory call          | `Function` | A style builder called with args                      | `Styles.hover.brighter({ b: 1.05 })` — JS only                               |
+| Builder reference     | `Function` | A style builder passed directly (no call)             | `Styles.hover.brighter` — when no args needed, JS only                       |
+| Plain function        | `Function` | `(el) => void`                                        | Called with the element during apply                                         |
+| Object literal        | `object`   | `{ desc, plugins }`                                   | JS only. Inline anonymous style descriptor; not a CSS declaration dictionary |
 
 The `{ desc, plugins }` form describes an anonymous plugin-backed style for the `StyleStack`. It is not a native CSS dictionary such as `{ fontSize: '1.5rem' }`; put that dictionary in singular `style`.
 
 ```javascript jaml-playground
 export default {
-  type: 'button',
-  styles: [
-    'hover.brighter',                                      // string path
-    Styles.animation.entry.frombottom({ delay: 100 }),    // factory call
-    { desc: 'Custom', plugins: [Styles.css({ letterSpacing: '0.05em' })] } // object literal
-  ]
-}
+    type: 'button',
+    styles: [
+        'hover.brighter', // string path
+        Styles.animation.entry.frombottom({ delay: 100 }), // factory call
+        { desc: 'Custom', plugins: [Styles.css({ letterSpacing: '0.05em' })] } // object literal
+    ]
+};
 ```
 
 ---
@@ -108,13 +132,9 @@ Arguments are semicolon-separated key-value pairs inside parentheses. Types are 
 
 ```json jaml-playground
 {
-  "type": "label",
-  "cap": "Animated label",
-  "styles": [
-    "size.fullwidth",
-    "layout.overflow(animaDelay:400)",
-    "animation.entry.frombottom(delay:seq(25,100);easing:bouncing;distance:5rem;duration:400)"
-  ]
+    "type": "label",
+    "cap": "Animated label",
+    "styles": ["size.fullwidth", "layout.overflow(animaDelay:400)", "animation.entry.frombottom(delay:seq(25,100);easing:bouncing;distance:5rem;duration:400)"]
 }
 ```
 
@@ -132,52 +152,48 @@ Apply arbitrary CSS properties directly to the element. Accepts a semicolon-sepa
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Custom CSS",
-  "styles": ["css(padding:1rem 2rem;border-radius:12px;font-weight:bold)"]
+    "type": "button",
+    "cap": "Custom CSS",
+    "styles": ["css(padding:s l;border-radius:m;font-weight:bold)"]
 }
 ```
 
 ```javascript jaml-playground
 export default {
-  type: 'wrapper',
-  styles: [
-    Styles.css({
-      padding: '1.5rem',
-      backgroundColor: 'hsl(0 0% 96%)',
-      borderRadius: '0.5rem'
-    })
-  ]
-}
+    type: 'wrapper',
+    styles: [
+        Styles.css({
+            padding: '1.5rem',
+            backgroundColor: 'hsl(0 0% 96%)',
+            borderRadius: '0.5rem'
+        })
+    ]
+};
 ```
 
 ### State-prefixed CSS
 
 Each is a standalone function (not nested under `css`). They accept arbitrary CSS key-value pairs and apply only when the element matches the corresponding state.
 
-| Function | Type | Description | Notes |
-|---|---|---|---|
-| `css(key:val;...)` | `string` | Always applied | Base element styling |
-| `hover(key:val;...)` | `string` | Applied on `:hover` | — |
-| `active(key:val;...)` | `string` | Applied on `:active` | — |
-| `focus(key:val;...)` | `string` | Applied on `:focus` | — |
-| `disabled(key:val;...)` | `string` | Applied when `:disabled` or `[disabled]` | — |
-| `checked(key:val;...)` | `string` | Applied when `:checked` or `[checked]` | — |
-| `indeterminate(key:val;...)` | `string` | Applied when `:indeterminate` | — |
-| `before(key:val;...)` | `string` | Applied to `::before` pseudo-element | — |
-| `after(key:val;...)` | `string` | Applied to `::after` pseudo-element | — |
+| Function                     | Type     | Description                              | Notes                |
+| ---------------------------- | -------- | ---------------------------------------- | -------------------- |
+| `css(key:val;...)`           | `string` | Always applied                           | Base element styling |
+| `hover(key:val;...)`         | `string` | Applied on `:hover`                      | —                    |
+| `active(key:val;...)`        | `string` | Applied on `:active`                     | —                    |
+| `focus(key:val;...)`         | `string` | Applied on `:focus`                      | —                    |
+| `disabled(key:val;...)`      | `string` | Applied when `:disabled` or `[disabled]` | —                    |
+| `checked(key:val;...)`       | `string` | Applied when `:checked` or `[checked]`   | —                    |
+| `indeterminate(key:val;...)` | `string` | Applied when `:indeterminate`            | —                    |
+| `before(key:val;...)`        | `string` | Applied to `::before` pseudo-element     | —                    |
+| `after(key:val;...)`         | `string` | Applied to `::after` pseudo-element      | —                    |
 
 Plain `css(...)` writes inline declarations too. If a state variant sets the same property, use `method:rule` on the base style so both declarations are scoped rules and the state selector can win.
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Interactive",
-  "styles": [
-    "css(method:rule;background:hsl(0 0% 93%);transition:all 0.2s)",
-    "hover(background:hsl(0 0% 87%);transform:scale(1.02))",
-    "active(background:hsl(0 0% 80%);transform:scale(0.98))"
-  ]
+    "type": "button",
+    "cap": "Interactive",
+    "styles": ["css(method:rule;background:hsl(0 0% 93%);transition:all 0.2s)", "hover(background:hsl(0 0% 87%);transform:scale(1.02))", "active(background:hsl(0 0% 80%);transform:scale(0.98))"]
 }
 ```
 
@@ -187,15 +203,15 @@ For cases where `css()` inline styles aren't enough, `Styles.stylesheet` injects
 
 ```javascript jaml-playground
 export default {
-  type: 'button',
-  cap: 'Animated',
-  styles: [
-    Styles.stylesheet({
-      '&::after': { content: '" →"', transition: 'opacity 0.3s' },
-      '&:hover::after': { opacity: 1 }
-    })
-  ]
-}
+    type: 'button',
+    cap: 'Animated',
+    styles: [
+        Styles.stylesheet({
+            '&::after': { content: '" →"', transition: 'opacity 0.3s' },
+            '&:hover::after': { opacity: 1 }
+        })
+    ]
+};
 ```
 
 Use `css()` for simple inline properties. Use `Styles.stylesheet` when you need `::before`/`::after`, animations, or nested selectors. For media queries, use compiled CSS text with concrete selectors inside the at-rule: dictionary conversion flattens nested selectors, and scoping does not rewrite a nested `&` inside an at-rule. Keep properties that must change at a breakpoint in stylesheet rules rather than overriding them with inline `css()` declarations.
@@ -208,32 +224,32 @@ Common styles are CSS-property wrappers accessible under their namespace on the 
 
 See the individual docs for full args and examples:
 
-| Category | Doc |
-|---|---|
-| Layout | [common/layout](./common/layout.md) |
-| Size | [common/size](./common/size.md) |
-| Flex | [common/flex](./common/flex.md) |
-| Grid | [common/grid](./common/grid.md) |
-| Align | [common/align](./common/align.md) |
-| Margin | [common/margin](./common/margin.md) |
-| Padding | [common/padding](./common/padding.md) |
-| Gap | [common/gap](./common/gap.md) |
-| Background | [common/background](./common/background.md) |
-| Border | [common/border](./common/border.md) |
-| Text | [common/text](./common/text.md) |
-| Shadow | [common/shadow](./common/shadow.md) |
-| Color | [common/color](./common/color.md) |
-| Filter | [common/filter](./common/filter.md) |
-| Hide / Show | [common/hide](./common/hide.md) |
-| Icon | [common/icon](./common/icon.md) |
-| Mask | [common/mask](./common/mask.md) |
-| Outline | [common/outline](./common/outline.md) |
-| Agent | [common/agent](./common/agent.md) |
-| Clazz | [common/clazz](./common/clazz.md) |
-| Trait | [common/trait](./common/trait.md) |
-| Cap | [common/cap](./common/cap.md) |
-| Value | [common/value](./common/value.md) |
-| Attrs | [common/attrs](./common/attrs.md) |
+| Category    | Doc                                         |
+| ----------- | ------------------------------------------- |
+| Layout      | [common/layout](./common/layout.md)         |
+| Size        | [common/size](./common/size.md)             |
+| Flex        | [common/flex](./common/flex.md)             |
+| Grid        | [common/grid](./common/grid.md)             |
+| Align       | [common/align](./common/align.md)           |
+| Margin      | [common/margin](./common/margin.md)         |
+| Padding     | [common/padding](./common/padding.md)       |
+| Gap         | [common/gap](./common/gap.md)               |
+| Background  | [common/background](./common/background.md) |
+| Border      | [common/border](./common/border.md)         |
+| Text        | [common/text](./common/text.md)             |
+| Shadow      | [common/shadow](./common/shadow.md)         |
+| Color       | [common/color](./common/color.md)           |
+| Filter      | [common/filter](./common/filter.md)         |
+| Hide / Show | [common/hide](./common/hide.md)             |
+| Icon        | [common/icon](./common/icon.md)             |
+| Mask        | [common/mask](./common/mask.md)             |
+| Outline     | [common/outline](./common/outline.md)       |
+| Agent       | [common/agent](./common/agent.md)           |
+| Clazz       | [common/clazz](./common/clazz.md)           |
+| Trait       | [common/trait](./common/trait.md)           |
+| Cap         | [common/cap](./common/cap.md)               |
+| Value       | [common/value](./common/value.md)           |
+| Attrs       | [common/attrs](./common/attrs.md)           |
 
 ---
 
@@ -241,13 +257,13 @@ See the individual docs for full args and examples:
 
 Interaction styles add behavior on hover, click, check, or mount. See the individual docs for full args and examples:
 
-| Category | Doc | Description |
-|---|---|---|
-| `hover.*` | [hover](./hover.md) | Frame, shade, crosshair, parallax, brighter, spotlight, etc. |
-| `check.*` | [check](./check.md) | Checked-state visual indicators (frame, shade, underscore, pipe) |
-| `interact.*` | [interact](./interact.md) | Movable, resizable, closable, zoomable, panNZoom, etc. |
-| `click.*` | [click](./click.md) | toFront, able, bouncing |
-| `auto.*` | [auto](./auto.md) | adjustFont, focus, badge, moveAlong, hideIf, etc. |
+| Category     | Doc                       | Description                                                      |
+| ------------ | ------------------------- | ---------------------------------------------------------------- |
+| `hover.*`    | [hover](./hover.md)       | Frame, shade, crosshair, parallax, brighter, spotlight, etc.     |
+| `check.*`    | [check](./check.md)       | Checked-state visual indicators (frame, shade, underscore, pipe) |
+| `interact.*` | [interact](./interact.md) | Movable, resizable, closable, zoomable, panNZoom, etc.           |
+| `click.*`    | [click](./click.md)       | toFront, able, bouncing                                          |
+| `auto.*`     | [auto](./auto.md)         | adjustFont, focus, badge, moveAlong, hideIf, etc.                |
 
 ---
 
@@ -276,27 +292,28 @@ Theme styles (`theme.light`, `theme.dark`) and full ECharts chart/component styl
 ### Element-specific styles
 
 Each element has its own style variants (e.g. `button.cta`, `indicator.tweening`, `table.stripy`). See the [element-style docs](#element-specific-styles) in the reference below.
+
 ## Scoped style params
 
 Beyond the `styles` array (which targets the element itself), JAML provides scoped params whose selectors are resolved relative to an element. Most target its subtree; dictionary `descStyles` can also target the owning element with `:scope`. All are resolved at mount time and scoped to the component's unique selector so they don't leak.
 
-| Param | Type | Description | Notes |
-|---|---|---|---|
-| `childStyles` | `StyleOption[] \| { [selector]: StyleOption[] }` | Styles applied to direct children | Array form targets `:scope > *`. Dict form: keys are child selectors |
-| `descStyles` | `StyleOption[] \| { [selector]: StyleOption[] }` | Scoped styles for descendants or the owning element | Array form targets `*`. Dict form: plain selectors target descendants; `:scope` targets the owner |
-| `optionStyles` | `StyleOption[]` | Styles applied to option children | Targets `:scope > .jam-option` |
-| `[name]Styles` | `StyleOption[]` | Custom selector derived from the key name | e.g. `buttonStyles` targets `button`, `.fooStyles` targets `.foo` |
-| `globalStyles` | `{ [selector]: StyleOption[] }` | Styles registered globally | No element scope — applies to every matching element in the document |
-| `stateStyles` | `{ [state]: StyleOption[] }` | Styles applied when element is in that state | Merged into `states` |
+| Param          | Type                                             | Description                                         | Notes                                                                                             |
+| -------------- | ------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `childStyles`  | `StyleOption[] \| { [selector]: StyleOption[] }` | Styles applied to direct children                   | Array form targets `:scope > *`. Dict form: keys are child selectors                              |
+| `descStyles`   | `StyleOption[] \| { [selector]: StyleOption[] }` | Scoped styles for descendants or the owning element | Array form targets `*`. Dict form: plain selectors target descendants; `:scope` targets the owner |
+| `optionStyles` | `StyleOption[]`                                  | Styles applied to option children                   | Targets `:scope > .jam-option`                                                                    |
+| `[name]Styles` | `StyleOption[]`                                  | Custom selector derived from the key name           | e.g. `buttonStyles` targets `button`, `.fooStyles` targets `.foo`                                 |
+| `globalStyles` | `{ [selector]: StyleOption[] }`                  | Styles registered globally                          | No element scope — applies to every matching element in the document                              |
+| `stateStyles`  | `{ [state]: StyleOption[] }`                     | Styles applied when element is in that state        | Merged into `states`                                                                              |
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  descStyles: {
-    'wrapper': ['layout.alignlabel'],
-    'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
-  }
-}
+    type: 'container',
+    descStyles: {
+        wrapper: ['layout.alignlabel'],
+        'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
+    }
+};
 ```
 
 **Selector patterns for `descStyles`:** Dictionary keys support CSS-like selectors targeting JAML element types, attributes, and pseudo-elements. They pass through `Styles.refineSelector()`, so a key such as `list-legend > item` resolves to the role/variant selector `.jam-list-style[jam-variant="legend"] > .jam-item-style` relative to the owning element. Plain selectors target descendants of the element that owns `descStyles`; prefix the selector with `:scope` to target the owning element itself.
@@ -305,25 +322,25 @@ This shorthand belongs to the `descStyles` dictionary and theme `index.mjs` `sty
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  state: 'active',
-  descStyles: {
-    // :scope — targets this container host
-    ':scope[state=active]': ['color.primary'],
-    // Bare element name — targets all wrappers
-    'wrapper': ['layout.alignlabel'],
-    // Element type selector — targets jam-input inside .branch-item
-    '.branch-item jam-input': ['agent.css(borderRadius:0.4rem)'],
-    // Attribute selector — specific input subtype
-    '.branch-item jam-input[type=textarea]': ['agent.css(minHeight:4rem)'],
-    // Pseudo-element
-    '.branch::after': ['css(content:"";display:block;width:100%;height:1px)'],
-    // Class selector
-    '.port.in': ['css(backgroundColor:green)'],
-    // Compound selector
-    'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
-  }
-}
+    type: 'container',
+    state: 'active',
+    descStyles: {
+        // :scope — targets this container host
+        ':scope[state=active]': ['color.primary'],
+        // Bare element name — targets all wrappers
+        wrapper: ['layout.alignlabel'],
+        // Element type selector — targets jam-input inside .branch-item
+        '.branch-item jam-input': ['agent.css(borderRadius:0.4rem)'],
+        // Attribute selector — specific input subtype
+        '.branch-item jam-input[type=textarea]': ['agent.css(minHeight:4rem)'],
+        // Pseudo-element
+        '.branch::after': ['css(content:"";display:block;width:100%;height:1px)'],
+        // Class selector
+        '.port.in': ['css(backgroundColor:green)'],
+        // Compound selector
+        'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
+    }
+};
 ```
 
 > **Performance tip:** `childStyles`, `descStyles`, and `[name]Styles` use CSS rules injected into a scoped stylesheet — they're more performant than inline `css()` on each element. Prefer these for bulk child styling, especially with animation delays (`seq()`).
@@ -336,14 +353,10 @@ Target named slots on an element using dot-path notation. Works with any style f
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Styled",
-  "icon": "★",
-  "styles": [
-    "icon.css(size:1.5rem;color:gold)",
-    "cap.css(font-weight:bold)",
-    "cap.hover(text-decoration:underline)"
-  ]
+    "type": "button",
+    "cap": "Styled",
+    "icon": "★",
+    "styles": ["icon.css(size:1.5rem;color:gold)", "cap.css(font-weight:bold)", "cap.hover(text-decoration:underline)"]
 }
 ```
 
@@ -357,50 +370,71 @@ Direct style builder functions available on the `Styles` global. These are the b
 
 ### Inline style methods
 
-| Method | Description | Notes |
-|---|---|---|
-| `Styles.css({...})` | Set inline CSS properties | Accepts a JS object. String form: `"css(key:val;...)"` |
-| `Styles.props({...})` | Set inline CSS properties | Uses the same property-aware token and color resolution as `css()` |
-| `Styles.vars({...})` | Set CSS custom properties | Keys auto-prefixed with `--jam-*` based on the style path |
-| `Styles.attrs({...})` | Set HTML attributes | `{ 'data-testid': 'foo' }` |
-| `Styles.clazz(name)` | Add a raw class | Adds `jam-{name}` unless the name already starts with `jam-` |
-| `Styles.with(type)` | Add a positive trait class | Adds `jam-with-{type}` |
-| `Styles.no(type)` | Add a negative trait class | Adds `jam-no-{type}` |
-| `Styles.on(type)` | Add a surface-context trait class | Adds `jam-on-{type}` |
-| `Styles.rule({...})` | Inject a CSS rule into the element's scoped stylesheet | Supports full CSS selectors, pseudo-elements |
-| `Styles.stylesheet(css)` | Inject a `<style>` block | For `@keyframes`, media queries, complex selectors. JS only |
+| Method                   | Description                                            | Notes                                                              |
+| ------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------ |
+| `Styles.css({...})`      | Set inline CSS properties                              | Accepts a JS object. String form: `"css(key:val;...)"`             |
+| `Styles.props({...})`    | Set inline CSS properties                              | Uses the same property-aware token and color resolution as `css()` |
+| `Styles.vars({...})`     | Set CSS custom properties                              | Keys auto-prefixed with `--jam-*` based on the style path          |
+| `Styles.attrs({...})`    | Set HTML attributes                                    | `{ 'data-testid': 'foo' }`                                         |
+| `Styles.clazz(name)`     | Add a raw class                                        | Adds `jam-{name}` unless the name already starts with `jam-`       |
+| `Styles.with(type)`      | Add a positive trait class                             | Adds `jam-with-{type}`                                             |
+| `Styles.no(type)`        | Add a negative trait class                             | Adds `jam-no-{type}`                                               |
+| `Styles.on(type)`        | Add a surface-context trait class                      | Adds `jam-on-{type}`                                               |
+| `Styles.rule({...})`     | Inject a CSS rule into the element's scoped stylesheet | Supports full CSS selectors, pseudo-elements                       |
+| `Styles.stylesheet(css)` | Inject a `<style>` block                               | For `@keyframes`, media queries, complex selectors. JS only        |
 
 See [common.trait](./common/trait.md) for element-scoped `*.is(...)` and the built-in `with.*` and `on.*` treatments.
 
 ### ECharts methods
 
-| Method | Description | Notes |
-|---|---|---|
-| `Styles.eopts({...})` | Pass raw ECharts option objects | Merged into chart options before `setOption()` |
-| `Styles.eseries([...])` | Pass series-level ECharts options | Shorthand wrapping `option.series` |
-| `Styles.efuncs(fn)` | Run a function before `setOption()` | Receives `(chart, args)`. Installs one stable callback and removes it from chart config on unplug; a normal function receives the plugin as `this` |
+| Method                  | Description                         | Notes                                                                                                                                              |
+| ----------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Styles.eopts({...})`   | Pass raw ECharts option objects     | Merged into chart options before `setOption()`                                                                                                     |
+| `Styles.eseries([...])` | Pass series-level ECharts options   | Shorthand wrapping `option.series`                                                                                                                 |
+| `Styles.efuncs(fn)`     | Run a function before `setOption()` | Receives `(chart, args)`. Installs one stable callback and removes it from chart config on unplug; a normal function receives the plugin as `this` |
 
 ### Custom style methods
 
-| Method | Description | Notes |
-|---|---|---|
-| `Styles.func(plugFn, unplugFn?)` | Run arbitrary code on plug/unplug | The most flexible escape hatch |
-| `Styles.resize(fn)` | Run code after stable mount and on element resize | Receives `(el, args, event?)`; the initial call has no event, resize events supply it, and the listener is removed on unplug |
-| `Styles.child(el)` | Append a child element | Created on plug, removed on unplug |
-| `Styles.params({...})` | Set element params via styles | Calls `setParams()` on plug |
-| `Styles.opts({...})` | Pass options to a parent plugin | Used internally by ECharts and layer builders |
-| `Styles.expando({...})` | Define expando properties on the element | Read-only properties accessible as `el.key` |
-| `Styles.addChild(node)` | Append a DOM node | Alias for `child` |
+| Method                           | Description                              | Notes                                                                                                                        |
+| -------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `Styles.func(plugFn, unplugFn?)` | Run arbitrary code on plug/unplug        | The most flexible escape hatch                                                                                               |
+| `Styles.resize(fn)`              | Run code initially and on element resize | Receives `(el, args, event?)`; the initial call has no event, resize events supply it, and the listener is removed on unplug |
+| `Styles.child(el)`               | Append a child element                   | Created on plug, removed on unplug                                                                                           |
+| `Styles.params({...})`           | Set element params via styles            | Calls `setParams()` on plug                                                                                                  |
+| `Styles.opts({...})`             | Pass options to a parent plugin          | Used internally by ECharts and layer builders                                                                                |
+| `Styles.expando({...})`          | Define expando properties on the element | Read-only properties accessible as `el.key`                                                                                  |
+| `Styles.addChild(node)`          | Append a DOM node                        | Alias for `child`                                                                                                            |
+
+For attachment-bound effects or shared style owners, read [mount and shared application lifetime](#mount-and-shared-application-lifetime).
+
+`Styles.resize(fn)` installs its resize listener when applied. Its separate initial callback waits for the host connection-readiness hook when available, then host/child stability checks. The initial callback has no event; resize callbacks receive the event and need not wait for initial readiness. Ordinary elements without that hook do not wait for DOM connection. Unplug removes the listener and invalidates pending initial work; async work already started inside a callback must guard its own lifetime.
+
+### Mount and shared application lifetime
+
+`Styles.mount(setup, cleanup)` starts setup on mount, or immediately for an already-mounted framework host or connected ordinary element. Unmount cleans the active setup once and allows remount. Plugin teardown or host destruction detaches its handlers and cleans the active setup. Reentrant replacement setup waits for synchronous cleanup to finish; removal during cleanup cancels the pending replacement. Shared style ownership delays teardown until its final owner is removed. Cleanup is synchronous; promises returned by arbitrary setup or cleanup code are not a general cancellation mechanism.
+
+Sharing means **the same plugin instance on the same host**, retained by distinct style application owners. Equal path strings, equal arguments or separately constructed plugins do not establish that identity.
+
+| Transition on an already-mounted host           | Effect                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------ |
+| First owner acquires the plugin                 | Setup once                                                         |
+| Second owner acquires that same plugin instance | Retain the active setup; no second setup                           |
+| One owner releases it while another remains     | Keep the effect and mount handlers                                 |
+| Final owner releases it                         | Clean the active setup once and remove its handlers                |
+| Host unmounts while an owner remains            | Clean the active setup; retained ownership allows setup on remount |
+| Host is destroyed                               | Clean active work and detach handlers                              |
+
+A different host has its own setup and cleanup. Ordinary `Styles.func` or plugin `unplug` cleanup follows plugin removal, not every DOM detach; use `Styles.mount` when the effect must follow mount/unmount. Async callbacks remain responsible for cancelling or ignoring stale work and retaining the identity of the setup that started it. See the [plugin lifecycle](../Plugins/plugins.md#lifecycle-and-ownership) for ordinary behavior plugins.
 
 ### Registration & global styles
 
-| Method | Description | Notes |
-|---|---|---|
-| `Styles.global` | User-extensible global style container | `Styles.global.myStyle = ...` |
-| `Styles.register(name, styles, selector?)` | Register a global style | Applies to all matching elements in the document |
-| `Styles.unregister(selector)` | Remove a registered global style | — |
-| `Styles.registerPlugin(path, option)` | Register a custom style plugin | Makes it available via string path |
-| `Styles.refineSelector(sel, parent?)` | Refine a JavaScript selector key | Used by theme `styles` and scoped selector dictionaries; does not transform raw CSS/SCSS |
+| Method                                     | Description                            | Notes                                                                                    |
+| ------------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `Styles.global`                            | User-extensible global style container | `Styles.global.myStyle = ...`                                                            |
+| `Styles.register(name, styles, selector?)` | Register a global style                | Applies to all matching elements in the document                                         |
+| `Styles.unregister(selector)`              | Remove a registered global style       | —                                                                                        |
+| `Styles.registerPlugin(path, option)`      | Register a custom style plugin         | Makes it available via string path                                                       |
+| `Styles.refineSelector(sel, parent?)`      | Refine a JavaScript selector key       | Used by theme `styles` and scoped selector dictionaries; does not transform raw CSS/SCSS |
 
 Global registration honors a style plugin's `selector` argument or content key. For example, `css(selector:& > .item;color:primary)` scopes the generated rule relative to the selector registered by `Styles.register(...)`; `selector` controls routing and is not emitted as a CSS declaration.
 
@@ -408,13 +442,10 @@ Global registration honors a style plugin's `selector` argument or content key. 
 
 ```javascript
 Styles.registerPlugin('my.title', {
-  desc: 'Title style',
-  args: { fontSize: { desc: 'Font size', type: 'string', default: '1.8rem' } },
-  plugins: [
-    Styles.css({ display: 'flex', alignItems: 'center', gap: '0.5rem' }),
-    (args) => Styles.label.cap.css({ fontSize: args.fontSize, fontWeight: 'bold' })
-  ]
-})
+    desc: 'Title style',
+    args: { fontSize: { desc: 'Font size', type: 'string', default: '1.8rem' } },
+    plugins: [Styles.css({ display: 'flex', alignItems: 'center', gap: '0.5rem' }), (args) => Styles.label.cap.css({ fontSize: args.fontSize, fontWeight: 'bold' })]
+});
 
 // Now usable via string path:
 // { type: 'label', cap: 'Title', styles: ['my.title(fontSize:2rem)'] }
@@ -422,15 +453,15 @@ Styles.registerPlugin('my.title', {
 
 ### Template & builder
 
-| Method | Description | Notes |
-|---|---|---|
+| Method                 | Description                         | Notes                                                                               |
+| ---------------------- | ----------------------------------- | ----------------------------------------------------------------------------------- |
 | `Styles.style(option)` | Build a `Style` from a `StyleParam` | Low-level factory. Prefer `Styles.registerPlugin()` for reusable public style paths |
-| `Styles.builder` | Gradient builder utilities | `GradientBuilder` module (stripy, grid, chess, bubbles, comet) |
+| `Styles.builder`       | Gradient builder utilities          | `GradientBuilder` module (stripy, grid, chess, bubbles, comet)                      |
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "childStyles": ["size.fullsize", "layout.overflow(hidden)"]
+    "type": "wrapper",
+    "childStyles": ["size.fullsize", "layout.overflow(hidden)"]
 }
 ```
 
@@ -440,14 +471,14 @@ Styles.registerPlugin('my.title', {
 
 ```typescript
 interface IStyle {
-  desc:     string
-  comment?: string
-  plugins:  AbstractPlugin[]
-  path?:    string[]
+    desc: string;
+    comment?: string;
+    plugins: AbstractPlugin[];
+    path?: string[];
 
-  mergeWith(style: IStyle): this
-  applyTo(target: any, revertable?: boolean | string): Dictionary
-  revert(target: any): void
+    mergeWith(style: IStyle): this;
+    applyTo(target: any, revertable?: boolean | string): Dictionary;
+    revert(target: any): void;
 }
 ```
 
@@ -459,12 +490,18 @@ interface IStyle {
 
 ```javascript
 const myStyle = {
-  desc: 'My glow effect',
-  plugins: [myGlowPlugin],
-  applyTo(el) { this.plugins.forEach(p => p.plug(el)) },
-  revert(el)  { this.plugins.forEach(p => p.unplug(el)) },
-  mergeWith(other) { return { ...this, plugins: [...this.plugins, ...other.plugins] } }
-}
+    desc: 'My glow effect',
+    plugins: [myGlowPlugin],
+    applyTo(el) {
+        this.plugins.forEach((p) => p.plug(el));
+    },
+    revert(el) {
+        this.plugins.forEach((p) => p.unplug(el));
+    },
+    mergeWith(other) {
+        return { ...this, plugins: [...this.plugins, ...other.plugins] };
+    }
+};
 
 // { type: 'button', styles: [myStyle] }
 ```
@@ -472,22 +509,25 @@ const myStyle = {
 ### Using `style()` builder
 
 ```javascript
-import { style } from 'jam-ui'
+import { style } from 'jam-ui';
 
 const myGlow = style({
-  desc: 'Golden glow',
-  args: { intensity: { desc: 'Glow intensity', type: 'number', default: 5 } },
-  plugins: [
-    func((el, args) => {
-      el.style.boxShadow = `0 0 ${args.intensity * 2}px gold`
-    }, (el) => {
-      el.style.boxShadow = ''
-    })
-  ]
-})
+    desc: 'Golden glow',
+    args: { intensity: { desc: 'Glow intensity', type: 'number', default: 5 } },
+    plugins: [
+        func(
+            (el, args) => {
+                el.style.boxShadow = `0 0 ${args.intensity * 2}px gold`;
+            },
+            (el) => {
+                el.style.boxShadow = '';
+            }
+        )
+    ]
+});
 
 // Register globally
-Styles.global.myGlow = myGlow
+Styles.global.myGlow = myGlow;
 
 // Use: { type: 'button', styles: ['global.myGlow(intensity:10)'] }
 ```
@@ -500,13 +540,13 @@ Styles.global.myGlow = myGlow
 
 ```javascript
 // Apply a revertable style group
-el.applyStylesSync('highlight', ['hover.brighter', 'border(width:2px;color:gold)'])
+el.applyStylesSync('highlight', ['hover.brighter', 'border(width:2px;color:gold)']);
 
 // Revert it later
-el.revertStyles('highlight')
+el.revertStyles('highlight');
 
 // Toggle it
-el.toggleStyles('highlight', ['hover.brighter'])
+el.toggleStyles('highlight', ['hover.brighter']);
 ```
 
 ---
@@ -517,99 +557,99 @@ Detailed documentation for every style category:
 
 ### Root styles
 
-| Category | Doc | Description |
-|---|---|---|
-| `hover.*` | [hover](./hover.md) | Hover-triggered visual effects |
-| `interact.*` | [interact](./interact.md) | Drag, resize, close, zoom behaviors |
-| `auto.*` | [auto](./auto.md) | Automatic behaviors on mount/data change |
-| `group.*` | [group](./group.md) | Child-group presentation presets |
-| `click.*` | [click](./click.md) | Click-triggered behaviors |
-| `check.*` | [check](./check.md) | Checked-state visual indicators |
-| `sync.*` | [sync](./sync.md) | Dimension synchronization |
-| `animation.*` | [animation](./animation.md) | Entry, exit, and FLIP animations |
+| Category      | Doc                         | Description                              |
+| ------------- | --------------------------- | ---------------------------------------- |
+| `hover.*`     | [hover](./hover.md)         | Hover-triggered visual effects           |
+| `interact.*`  | [interact](./interact.md)   | Drag, resize, close, zoom behaviors      |
+| `auto.*`      | [auto](./auto.md)           | Automatic behaviors on mount/data change |
+| `group.*`     | [group](./group.md)         | Child-group presentation presets         |
+| `click.*`     | [click](./click.md)         | Click-triggered behaviors                |
+| `check.*`     | [check](./check.md)         | Checked-state visual indicators          |
+| `sync.*`      | [sync](./sync.md)           | Dimension synchronization                |
+| `animation.*` | [animation](./animation.md) | Entry, exit, and FLIP animations         |
 
 ### Layer styles
 
-| Category | Doc | Description |
-|---|---|---|
-| `layer.spinner.*` | [layers/spinner](./layers/spinner.md) | Animated spinner/loader effects |
-| `layer.scroller.*` | [layers/scroller](./layers/scroller.md) | Auto-scrolling background effects |
-| `layer.canvas.*` | [layers/canvas](./layers/canvas.md) | Canvas particle effects |
-| `layer.follower.*` | [layers/follower](./layers/follower.md) | Cursor-following decorative effects |
-| Loading indicators | [layers/loader](./layers/loader.md) | Public spinner layers and loading-state ownership |
-| `layer.glare.*` | [layers/glare](./layers/glare.md) | Light glare and reflections |
-| `layer.watermark.*` | [layers/watermark](./layers/watermark.md) | Watermark and icon overlays |
-| `layer.ribbon.*` | [layers/ribbon](./layers/ribbon.md) | Corner ribbon decorations |
-| `layer.combo.*` | [layers/combo](./layers/combo.md) | Composite spinner/masked combos |
-| `layer.chart` | [layers/chart](./layers/chart.md) | ECharts integration layer |
-| `layer.background` | [layers/background](./layers/background.md) | Background layer |
-| `layer.border` | [layers/border](./layers/border.md) | Border layer |
-| `layer.css` | [layers/css](./layers/css.md) | Arbitrary CSS layer |
-| `layer.crosshair` | [layers/crosshair](./layers/crosshair.md) | Mouse-following crosshair |
-| `layer.overlay` | [layers/overlay](./layers/overlay.md) | Semi-transparent overlay |
+| Category            | Doc                                         | Description                                       |
+| ------------------- | ------------------------------------------- | ------------------------------------------------- |
+| `layer.spinner.*`   | [layers/spinner](./layers/spinner.md)       | Animated spinner/loader effects                   |
+| `layer.scroller.*`  | [layers/scroller](./layers/scroller.md)     | Auto-scrolling background effects                 |
+| `layer.canvas.*`    | [layers/canvas](./layers/canvas.md)         | Canvas particle effects                           |
+| `layer.follower.*`  | [layers/follower](./layers/follower.md)     | Cursor-following decorative effects               |
+| Loading indicators  | [layers/loader](./layers/loader.md)         | Public spinner layers and loading-state ownership |
+| `layer.glare.*`     | [layers/glare](./layers/glare.md)           | Light glare and reflections                       |
+| `layer.watermark.*` | [layers/watermark](./layers/watermark.md)   | Watermark and icon overlays                       |
+| `layer.ribbon.*`    | [layers/ribbon](./layers/ribbon.md)         | Corner ribbon decorations                         |
+| `layer.combo.*`     | [layers/combo](./layers/combo.md)           | Composite spinner/masked combos                   |
+| `layer.chart`       | [layers/chart](./layers/chart.md)           | ECharts integration layer                         |
+| `layer.background`  | [layers/background](./layers/background.md) | Background layer                                  |
+| `layer.border`      | [layers/border](./layers/border.md)         | Border layer                                      |
+| `layer.css`         | [layers/css](./layers/css.md)               | Arbitrary CSS layer                               |
+| `layer.crosshair`   | [layers/crosshair](./layers/crosshair.md)   | Crosshair locator anchored to the host            |
+| `layer.overlay`     | [layers/overlay](./layers/overlay.md)       | Semi-transparent overlay                          |
 
 ### ECharts styles
 
-| Category | Doc | Description |
-|---|---|---|
+| Category    | Doc                     | Description                        |
+| ----------- | ----------------------- | ---------------------------------- |
 | `echarts.*` | [echarts](./echarts.md) | ECharts chart and component styles |
 
 ### Common atomic styles
 
-| Category | Doc | Description |
-|---|---|---|
-| `background.*` | [common/background](./common/background.md) | Semantic colored/surface backgrounds and extended effects |
-| `css.*` | [common/css](./common/css.md) | Arbitrary CSS, state prefixes, and property-aware token values |
-| `text.*` | [common/text](./common/text.md) | Font and text styling |
-| `size.*` | [common/size](./common/size.md) | Element sizing |
-| `layout.*` | [common/layout](./common/layout.md) | CSS layout properties |
-| `border.*` | [common/border](./common/border.md) | Border, border-radius, and semantic width styling |
-| `shadow.*` | [common/shadow](./common/shadow.md) | Box-shadow and text-shadow presets |
-| `color.*` | [common/color](./common/color.md) | Foreground, `on.*` contrast presets, and HSL color adjustments |
-| `flex.*` | [common/flex](./common/flex.md) | Flexbox container |
-| `grid.*` | [common/grid](./common/grid.md) | CSS grid |
-| `align.*` | [common/align](./common/align.md) | Flexbox alignment |
-| `margin.*` | [common/margin](./common/margin.md) | Margin |
-| `padding.*` | [common/padding](./common/padding.md) | Padding |
-| `gap.*` | [common/gap](./common/gap.md) | Row and column gap |
-| `filter.*` | [common/filter](./common/filter.md) | CSS filter |
-| `hide` / `show` | [common/hide](./common/hide.md) | Visibility toggle |
-| `icon.*` | [common/icon](./common/icon.md) | Icon customization |
-| `mask.*` | [common/mask](./common/mask.md) | CSS mask |
-| `outline.*` | [common/outline](./common/outline.md) | Outline |
-| `agent.*` | [common/agent](./common/agent.md) | Internal agent element styling |
-| `clazz` | [common/clazz](./common/clazz.md) | Raw CSS class helper |
-| `is` / `with` / `no` / `on` | [common/trait](./common/trait.md) | Semantic trait class helpers |
-| `cap.*` | [common/cap](./common/cap.md) | Caption-slot and caption-role helpers |
-| `value.*` | [common/value](./common/value.md) | Value-slot and input value helpers |
-| `attrs` | [common/attrs](./common/attrs.md) | HTML attribute setting |
+| Category                    | Doc                                         | Description                                                    |
+| --------------------------- | ------------------------------------------- | -------------------------------------------------------------- |
+| `background.*`              | [common/background](./common/background.md) | Semantic colored/surface backgrounds and extended effects      |
+| `css.*`                     | [common/css](./common/css.md)               | Arbitrary CSS, state prefixes, and property-aware token values |
+| `text.*`                    | [common/text](./common/text.md)             | Font and text styling                                          |
+| `size.*`                    | [common/size](./common/size.md)             | Element sizing                                                 |
+| `layout.*`                  | [common/layout](./common/layout.md)         | CSS layout properties                                          |
+| `border.*`                  | [common/border](./common/border.md)         | Border, border-radius, and semantic width styling              |
+| `shadow.*`                  | [common/shadow](./common/shadow.md)         | Box-shadow and text-shadow presets                             |
+| `color.*`                   | [common/color](./common/color.md)           | Foreground, `on.*` contrast presets, and HSL color adjustments |
+| `flex.*`                    | [common/flex](./common/flex.md)             | Flexbox container                                              |
+| `grid.*`                    | [common/grid](./common/grid.md)             | CSS grid                                                       |
+| `align.*`                   | [common/align](./common/align.md)           | Flexbox alignment                                              |
+| `margin.*`                  | [common/margin](./common/margin.md)         | Margin                                                         |
+| `padding.*`                 | [common/padding](./common/padding.md)       | Padding                                                        |
+| `gap.*`                     | [common/gap](./common/gap.md)               | Row and column gap                                             |
+| `filter.*`                  | [common/filter](./common/filter.md)         | CSS filter                                                     |
+| `hide` / `show`             | [common/hide](./common/hide.md)             | Visibility toggle                                              |
+| `icon.*`                    | [common/icon](./common/icon.md)             | Icon customization                                             |
+| `mask.*`                    | [common/mask](./common/mask.md)             | CSS mask                                                       |
+| `outline.*`                 | [common/outline](./common/outline.md)       | Outline                                                        |
+| `agent.*`                   | [common/agent](./common/agent.md)           | Internal agent element styling                                 |
+| `clazz`                     | [common/clazz](./common/clazz.md)           | Raw CSS class helper                                           |
+| `is` / `with` / `no` / `on` | [common/trait](./common/trait.md)           | Semantic trait class helpers                                   |
+| `cap.*`                     | [common/cap](./common/cap.md)               | Caption-slot and caption-role helpers                          |
+| `value.*`                   | [common/value](./common/value.md)           | Value-slot and input value helpers                             |
+| `attrs`                     | [common/attrs](./common/attrs.md)           | HTML attribute setting                                         |
 
 ### Element-specific styles
 
-| Element | Doc |
-|---|---|
-| `badge.*` | [badge-style](./badge-style.md) |
-| `button.*` | [button-style](./button-style.md) |
+| Element         | Doc                                         |
+| --------------- | ------------------------------------------- |
+| `badge.*`       | [badge-style](./badge-style.md)             |
+| `button.*`      | [button-style](./button-style.md)           |
 | `buttongroup.*` | [buttongroup-style](./buttongroup-style.md) |
-| `calendar.*` | [calendar-style](./calendar-style.md) |
-| `card.*` | [card-style](./card-style.md) |
-| `chart.*` | [chart-style](./chart-style.md) |
-| `container.*` | [container-style](./container-style.md) |
-| `datepicker.*` | [datepicker-style](./datepicker-style.md) |
-| `element.*` | [element-style](./element-style.md) |
-| `indicator.*` | [indicator-style](./indicator-style.md) |
-| `input.*` | [input-style](./input-style.md) |
-| `label.*` | [label-style](./label-style.md) |
-| `locator.*` | [locator-style](./locator-style.md) |
-| `map.*` | [map-style](./map-style.md) |
-| `notify.*` | [notify-style](./notify-style.md) |
-| `options.*` | [options-style](./options-style.md) |
-| `popup.*` | [popup-style](./popup-style.md) |
-| `progress.*` | [progress-style](./progress-style.md) |
-| `select.*` | [select-style](./select-style.md) |
-| `shortcuts.*` | [shortcuts-style](./shortcuts-style.md) |
-| `switch.*` | [switch-style](./switch-style.md) |
-| `table.*` | [table-style](./table-style.md) |
-| `tags.*` | [tags-style](./tags-style.md) |
-| `timepicker.*` | [timepicker-style](./timepicker-style.md) |
-| `wrapper.*` | [wrapper-style](./wrapper-style.md) |
+| `calendar.*`    | [calendar-style](./calendar-style.md)       |
+| `card.*`        | [card-style](./card-style.md)               |
+| `chart.*`       | [chart-style](./chart-style.md)             |
+| `container.*`   | [container-style](./container-style.md)     |
+| `datepicker.*`  | [datepicker-style](./datepicker-style.md)   |
+| `element.*`     | [element-style](./element-style.md)         |
+| `indicator.*`   | [indicator-style](./indicator-style.md)     |
+| `input.*`       | [input-style](./input-style.md)             |
+| `label.*`       | [label-style](./label-style.md)             |
+| `locator.*`     | [locator-style](./locator-style.md)         |
+| `map.*`         | [map-style](./map-style.md)                 |
+| `notify.*`      | [notify-style](./notify-style.md)           |
+| `options.*`     | [options-style](./options-style.md)         |
+| `popup.*`       | [popup-style](./popup-style.md)             |
+| `progress.*`    | [progress-style](./progress-style.md)       |
+| `select.*`      | [select-style](./select-style.md)           |
+| `shortcuts.*`   | [shortcuts-style](./shortcuts-style.md)     |
+| `switch.*`      | [switch-style](./switch-style.md)           |
+| `table.*`       | [table-style](./table-style.md)             |
+| `tags.*`        | [tags-style](./tags-style.md)               |
+| `timepicker.*`  | [timepicker-style](./timepicker-style.md)   |
+| `wrapper.*`     | [wrapper-style](./wrapper-style.md)         |

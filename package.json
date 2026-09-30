@@ -1,21 +1,24 @@
 {
-  "name": "@jam/skills",
-  "version": "0.1.0-dev.0",
-  "private": true,
-  "type": "module",
-  "description": "JAML application and theme authoring skill with a portable reference wiki",
-  "engines": {
-    "node": ">=22"
-  },
-  "scripts": {
-    "build": "node scripts/build.mjs",
-    "test": "node --test test/*.test.mjs",
-    "check": "node scripts/check-resources.mjs",
-    "export:public": "node scripts/export-public.mjs"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jaml-group/jaml-skills.git"
-  }
+    "name": "@jam/skills",
+    "version": "0.1.0-dev.0",
+    "private": true,
+    "type": "module",
+    "description": "JAML application and theme authoring skill with a portable reference wiki",
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "build": "node scripts/build.mjs",
+        "catalog:import": "node scripts/import-catalog.mjs",
+        "catalog:generate": "node scripts/catalog-reference.mjs",
+        "catalog:check": "node scripts/catalog-reference.mjs --check",
+        "test": "node --test test/*.test.mjs",
+        "check": "node scripts/check-resources.mjs",
+        "export:public": "node scripts/export-public.mjs"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jaml-group/jaml-skills.git"
+    }
 }

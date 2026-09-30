@@ -1,56 +1,73 @@
 # `Plugins.router` / `Plugins.subRouter`
 
+<!-- Generated from native authoring; do not edit. -->
+
+[中文](router-plugins.zh.md)
+
 Full client-side SPA routing for top-level and nested route outlets. `Plugins.router` installs a root router on an element. `Plugins.subRouter` installs a passive child router under the nearest `.jam-router-installed` ancestor or the global `rambutan`.
 
 ---
 
 ## Router args
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Router mode | `'history'` or `'hash'`. Defaults to the current `AbstractRouter.type` (initially `'history'`) |
-| `routes` | `Route[]` | Array of route configurations | — |
-| `resources` | `string[]` | Global JS/CSS resources to load for all routes | Loaded once on first navigation |
-| `syncTitle` | `boolean` | Sync document title with route title | Default: `false` |
-| `beforeSwitch` | `Function` | Called before any route switch | — |
-| `afterSwitch` | `Function` | Called after any route switch | — |
-| `beforeRender` | `Function` | Called before route render | — |
-| `afterRender` | `Function` | Called after route render | — |
-| `passive` | `boolean` | Resolve only through a parent router | Used internally by `subRouter` |
+<a id="entry-router"></a>
+
+Element router
+
+Attach URL-driven route resolution to an author-supplied content host.
+
+Uses the supplied type when present, otherwise the shared AbstractRouter type. hash selects hash routing and other values select history; a supplied type changes that shared default. It forwards remaining options, assigns the host, marks it and initializes the router.
+
+Route content defines the visuals; the plugin itself does not create a navigation bar or page design.
+
+Provide a suitable content host, route/content configuration and URL mode. History-based deployments need compatible server fallback behavior.
+
+On unplug destroys the owned router and clears the host router reference, marker and plugin data. Router destruction removes its route/load listeners and owned child-router state.
+
+Supply routes and loading policies through the underlying jam.AbstractRouter contract. Keep navigation controls and nested content ownership explicit; this metadata is an open forwarding schema.
+
+Teardown does not restore the shared route type, browser URL/history or previous host content. Open-key acceptance does not validate every route field or promise cancellation of all application work.
+
+Arguments are forwarded to `jam.AbstractRouter`. Undeclared fields have no inferred types, defaults or completion; an empty argument table does not reject arguments.
+
+hosts: `HTMLElement`.
+
+states: `plug`, `unplug`.
+
+Developer examples require a matching Playground that serves these fixtures:
+
+- `#/testground?jaml=intent-router`
+
+Arguments are forwarded to `jam.AbstractRouter` through an open contract. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
+
+See the [routing guide](./router.md) for route definitions and navigation behavior.
 
 ## `Plugins.subRouter` args
 
-| Arg | Type | Description | Notes |
-|---|---|---|---|
-| `type` | `string` | Router mode | Defaults to the parent router type |
-| `routes` | `Route[]` | Child route configurations | Registered before passive init |
-| `resources` | `string[]` | Global resources for this subrouter | — |
-| `syncTitle` | `boolean` | Sync document title with route title | Default: `false` |
-| `beforeSwitch` | `Function` | Called before child route switch | — |
-| `afterSwitch` | `Function` | Called after child route switch | — |
-| `beforeRender` | `Function` | Called before child route render | — |
-| `afterRender` | `Function` | Called after child route render | — |
+Arguments are forwarded to `jam.AbstractRouter` through an open contract. Field-level completion and inferred types/defaults are not yet available; the empty runtime profile does not reject forwarded options.
+
+See the [routing guide](./router.md) for route definitions and navigation behavior.
 
 ## Route options
 
-| Field | Type | Description | Notes |
-|---|---|---|---|
-| `path` | `string` | URL path, supports `:param` segments and `:param(.*)` catch-alls | Must start with `/`; `''` is allowed for an index route |
-| `name` | `string` | Display name | — |
-| `title` | `string` | Browser tab title | Used when `syncTitle` is enabled |
-| `icon` | `string` | Route icon | — |
-| `render` | `Function` | Called when route activates; `this.container` is the outlet | Must be idempotent |
-| `resources` | `string[]` | JS/CSS files to lazy-load for this route | Loaded on enter, unloaded on leave |
-| `broker` | `string` | Named broker for route-scoped messaging | Default: derived from path |
-| `params` | `Dictionary` | Default parameters for the route | — |
-| `preserveParams` | `boolean \| number` | Persist render params across navigations | Number = TTL in ms, boolean = 7 days |
-| `syncParams` | `string[]` | Parameter keys to sync via messenger | — |
-| `group` | `string` | Route group for organization | — |
-| `onEnter` | `Function` | Called when entering the route | — |
-| `onLeave` | `Function` | Called when leaving the route | — |
-| `subRouter` | `AbstractRouter` | Runtime child router for this route | Set by `Plugins.subRouter` |
-| `hide` | `boolean` | Hide from navigation UI | — |
-| `styles` | `StyleOption[]` | Styles applied during this route | — |
+| Field            | Type                | Description                                                      | Notes                                                   |
+| ---------------- | ------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
+| `path`           | `string`            | URL path, supports `:param` segments and `:param(.*)` catch-alls | Must start with `/`; `''` is allowed for an index route |
+| `name`           | `string`            | Display name                                                     | —                                                       |
+| `title`          | `string`            | Browser tab title                                                | Used when `syncTitle` is enabled                        |
+| `icon`           | `string`            | Route icon                                                       | —                                                       |
+| `render`         | `Function`          | Called when route activates; `this.container` is the outlet      | Must be idempotent                                      |
+| `resources`      | `string[]`          | JS/CSS files to lazy-load for this route                         | Loaded on enter, unloaded on leave                      |
+| `broker`         | `string`            | Named broker for route-scoped messaging                          | Default: derived from path                              |
+| `params`         | `Dictionary`        | Default parameters for the route                                 | —                                                       |
+| `preserveParams` | `boolean \| number` | Persist render params across navigations                         | Number = TTL in ms, boolean = 7 days                    |
+| `syncParams`     | `string[]`          | Parameter keys to sync via messenger                             | —                                                       |
+| `group`          | `string`            | Route group for organization                                     | —                                                       |
+| `onEnter`        | `Function`          | Called when entering the route                                   | —                                                       |
+| `onLeave`        | `Function`          | Called when leaving the route                                    | —                                                       |
+| `subRouter`      | `AbstractRouter`    | Runtime child router for this route                              | Set by `Plugins.subRouter`                              |
+| `hide`           | `boolean`           | Hide from navigation UI                                          | —                                                       |
+| `styles`         | `StyleOption[]`     | Styles applied during this route                                 | —                                                       |
 
 ## Navigation
 

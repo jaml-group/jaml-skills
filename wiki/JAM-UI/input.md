@@ -73,8 +73,12 @@ Use a composite JAML `type` directly — for example `"type": "input-number"`.
 
 | Slot | Description |
 |---|---|
-| `label` (via template) | Label area above the input |
-| `unit` | Unit label (right of number input) |
+| `label` | Label area; its fallback contains the `icon` and `cap` slots |
+| `icon` | Icon within the fallback label area |
+| `cap` | Caption within the fallback label area |
+| `unit` | Unit label, present in the number-input template |
+
+These follow the shared [named-slot lifecycle](./JAM-UI.md#named-slot-lifecycle). Use `capslotchange` for caption assignment changes and `valuechange` for the input value: the input template has no `value` slot.
 
 ---
 

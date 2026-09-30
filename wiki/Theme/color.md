@@ -54,19 +54,19 @@ The `sys.color` names describe usage, state, and visual weight. They are not a g
 
 Filled color families use a three-level interaction ladder:
 
-| Decorator | Intended use |
-| --------- | ------------ |
+| Decorator | Intended use                                                                                                                      |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `default` | Resting filled background. For an accent family, this is the colored background; for `neutral`, it is the normal non-accent fill. |
-| `strong` | Hover background for the same filled treatment. |
-| `heavy` | Active or pressed background for the same filled treatment. It may also provide the firm edge for a selected filled state. |
+| `strong`  | Hover background for the same filled treatment.                                                                                   |
+| `heavy`   | Active or pressed background for the same filled treatment. It may also provide the firm edge for a selected filled state.        |
 
 Neutral structural edges use the separate `outline` family:
 
-| Token | Intended use |
-| ----- | ------------ |
+| Token            | Intended use                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `outline.subtle` | Most visible low-intensity border or outline, especially around a tinted, elevated, or otherwise weak background. |
-| `outline.muted` | Quieter border, separator, or structural mark than `outline.subtle`. |
-| `outline.faint` | Least-intense border, separator, or decorative structural mark. |
+| `outline.muted`  | Quieter border, separator, or structural mark than `outline.subtle`.                                              |
+| `outline.faint`  | Least-intense border, separator, or decorative structural mark.                                                   |
 
 Treat `default` → `strong` → `heavy` as one interaction-state set, and `outline.subtle` → `outline.muted` → `outline.faint` as a descending neutral edge-emphasis set. Accent families may additionally supply their own `subtle`, `muted`, and `faint` edge colors. Do not pick these tokens merely because one happens to look lighter or darker in the current theme.
 
@@ -74,33 +74,33 @@ Treat `default` → `strong` → `heavy` as one interaction-state set, and `outl
 
 This is the recommended authoring contract for a theme that wants every filled-state and edge-emphasis level. It is richer than Jam-UI's built-in compatibility baseline, so a consumer must not assume the optional accent-family edge keys exist unless its theme supplies them.
 
-| Family | Recommended tokens | Intended use |
-| ------ | --------------- | ------------ |
-| `primary` | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`, `film`, `veil`, `mask` | Main accent fills, states, edges, and reusable accent overlays. |
-| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint` | The same filled-state and edge ladder for the remaining color-set entries. |
-| `neutral` | `default`, `strong`, `heavy`, `film`, `veil`, `mask` | Non-accent controls, filled states, and neutral overlays. |
-| `outline` | `subtle`, `muted`, `faint` | Neutral borders, outlines, separators, and structural marks. |
-| `tint` | `default`, `strong`, `heavy` | Translucent accent-tinted resting, hover, and active backgrounds. |
-| `elevated` | `default`, `strong`, `heavy` | Translucent elevation resting, hover, and active layers. |
-| `surface` | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover` | Structural surfaces ordered by relative elevation, plus alternate transparent/hover surfaces. |
-| `fg` | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` | Neutral emphasis hierarchy and colored foregrounds on ordinary surfaces. |
-| `on` | `primary`, `secondary`, `tertiary`, `quaternary` | Contrast foregrounds on the corresponding filled accent background. |
+| Family                                | Recommended tokens                                                                                | Intended use                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `primary`                             | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`, `film`, `veil`, `mask`                  | Main accent fills, states, edges, and reusable accent overlays.                               |
+| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`                                          | The same filled-state and edge ladder for the remaining color-set entries.                    |
+| `neutral`                             | `default`, `strong`, `heavy`, `film`, `veil`, `mask`                                              | Non-accent controls, filled states, and neutral overlays.                                     |
+| `outline`                             | `subtle`, `muted`, `faint`                                                                        | Neutral borders, outlines, separators, and structural marks.                                  |
+| `tint`                                | `default`, `strong`, `heavy`                                                                      | Translucent accent-tinted resting, hover, and active backgrounds.                             |
+| `elevated`                            | `default`, `strong`, `heavy`                                                                      | Translucent elevation resting, hover, and active layers.                                      |
+| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover`                          | Structural surfaces ordered by relative elevation, plus alternate transparent/hover surfaces. |
+| `fg`                                  | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` | Neutral emphasis hierarchy and colored foregrounds on ordinary surfaces.                      |
+| `on`                                  | `primary`, `secondary`, `tertiary`, `quaternary`                                                  | Contrast foregrounds on the corresponding filled accent background.                           |
 
 ### Built-in compatibility baseline
 
 The built-in `sysLit` exports this color baseline. Theme authoring must merge its overrides into the complete `sysLit` tree before calling `tokenize()`; swatch registration does not automatically merge `sys`. See the [token module contract](tokens.md#token-module-contract).
 
-| Family | Built-in keys |
-|---|---|
-| `primary` | `default`, `strong`, `heavy`, `subtle`, `film`, `veil`, `mask` |
-| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle` |
-| `neutral` | `default`, `strong`, `heavy`, `film`, `veil`, `mask` |
-| `outline` | `subtle`, `muted`, `faint` |
-| `tint`, `elevated` | `default`, `strong`, `heavy` |
-| `surface` | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover` |
-| `fg` | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` |
-| `on` | `primary`, `secondary`, `tertiary`, `quaternary` |
-| Direct color leaf | `transparent` |
+| Family                                | Built-in keys                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `primary`                             | `default`, `strong`, `heavy`, `subtle`, `film`, `veil`, `mask`                                    |
+| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`                                                            |
+| `neutral`                             | `default`, `strong`, `heavy`, `film`, `veil`, `mask`                                              |
+| `outline`                             | `subtle`, `muted`, `faint`                                                                        |
+| `tint`, `elevated`                    | `default`, `strong`, `heavy`                                                                      |
+| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover`                          |
+| `fg`                                  | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` |
+| `on`                                  | `primary`, `secondary`, `tertiary`, `quaternary`                                                  |
+| Direct color leaf                     | `transparent`                                                                                     |
 
 The authoring override dictionary may omit keys supplied by `sysLit`, but the final registered `sys` must include them. The richer accent-family `muted` and `faint` keys above are theme-authored extensions, not built-in guarantees.
 
@@ -108,26 +108,34 @@ The authoring override dictionary may omit keys supplied by `sysLit`, but the fi
 
 `primary` and `neutral` provide three fixed-alpha overlays for layering color without inventing component-owned alpha values:
 
-| Token          | Alpha  | Use                                      |
-| -------------- | ------ | ---------------------------------------- |
-| `primary.film`, `neutral.film` | `0.15` | Light wash |
-| `primary.veil`, `neutral.veil` | `0.3` | Noticeable selected or supporting fill |
-| `primary.mask`, `neutral.mask` | `0.5` | Strong overlay or obscuring layer |
+| Token                          | Alpha  | Use                                    |
+| ------------------------------ | ------ | -------------------------------------- |
+| `primary.film`, `neutral.film` | `0.15` | Light wash                             |
+| `primary.veil`, `neutral.veil` | `0.3`  | Noticeable selected or supporting fill |
+| `primary.mask`, `neutral.mask` | `0.5`  | Strong overlay or obscuring layer      |
 
 ### Translucent state backgrounds
 
 `tint` and `elevated` use the three interaction-state decorators without the edge ladder:
 
-| Token | Intended use |
-| ----- | ------------ |
-| `tint.default` | Resting translucent accent-tinted background. |
-| `tint.strong` | Hover state for the tint treatment. |
-| `tint.heavy` | Active or pressed state for the tint treatment. |
-| `elevated.default` | Resting translucent elevation layer. |
-| `elevated.strong` | Hover state for the elevation treatment. |
-| `elevated.heavy` | Active or pressed state for the elevation treatment. |
+| Token              | Intended use                                         |
+| ------------------ | ---------------------------------------------------- |
+| `tint.default`     | Resting translucent accent-tinted background.        |
+| `tint.strong`      | Hover state for the tint treatment.                  |
+| `tint.heavy`       | Active or pressed state for the tint treatment.      |
+| `elevated.default` | Resting translucent elevation layer.                 |
+| `elevated.strong`  | Hover state for the elevation treatment.             |
+| `elevated.heavy`   | Active or pressed state for the elevation treatment. |
 
 A theme may intentionally give hover and active the same value, but it should still provide both semantic state slots.
+
+### Filled button state backgrounds
+
+When a theme replaces a filled button's background, use opaque colors (alpha `1`) for its resting, hover and active states. The native hover/active recipe replaces `background-color`; it does not layer that color over the resting fill. Substituting a translucent `elevated.*` color can therefore expose an accented parent and change the button's apparent color.
+
+For a shared neutral palette, customize `sys.color.neutral.default`, `strong` and `heavy`: the default `cmpt.button.backgroundColor`, `cmpt.button.hover.backgroundColor` and `cmpt.button.active.backgroundColor` consume them respectively. Those three neutral colors are opaque in the built-in baseline; check the resolved alpha of theme overrides in both light and dark modes. For a button-specific treatment, override those existing component tokens with opaque state colors instead. Neutral `film`, `veil` and `mask` remain translucent overlay choices.
+
+Intentionally transparent ghost, blended and overlay treatments keep their transparency contract. The opaque rule applies when replacing a filled surface, not to every button subtype or state layer. Verify the resulting states on ordinary and accented parents so transparency is deliberate.
 
 ### Surface elevation
 
@@ -173,13 +181,13 @@ fg.quaternary
 
 Foreground meanings:
 
-| Token | Intended use |
-| ----- | ------------ |
-| `fg.strong` | Highest-emphasis headings, key values, and icons. |
-| `fg.default` | Normal body text and default icons. |
-| `fg.subtle` | Secondary labels and supporting text. |
-| `fg.muted` | Tertiary metadata, placeholders, and de-emphasized icons. |
-| `fg.faint` | Least-emphasis, disabled-like, or decorative foreground. |
+| Token                                                        | Intended use                                                                                                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fg.strong`                                                  | Highest-emphasis headings, key values, and icons.                                                                                           |
+| `fg.default`                                                 | Normal body text and default icons.                                                                                                         |
+| `fg.subtle`                                                  | Secondary labels and supporting text.                                                                                                       |
+| `fg.muted`                                                   | Tertiary metadata, placeholders, and de-emphasized icons.                                                                                   |
+| `fg.faint`                                                   | Least-emphasis, disabled-like, or decorative foreground.                                                                                    |
 | `fg.primary`, `fg.secondary`, `fg.tertiary`, `fg.quaternary` | Colored foregrounds derived from the color-set sequence. Use them on ordinary surfaces, not as contrast text on the matching filled accent. |
 
 Use `on` for contrast text and icon colors on filled or colored backgrounds:
@@ -208,7 +216,7 @@ Theme color is selected by usage and background context, not by element or role 
 Use this order:
 
 1. Tune the semantic `sys.color` families. This should cover most of a theme.
-2. Override an existing component seam only when the native recipe consumes it. Table/header colors are supported; button and checked color treatments belong together as complete stylesheet recipes.
+2. Override an existing component seam only when the native recipe consumes it. Table/header colors and the [filled button state backgrounds](#filled-button-state-backgrounds) have existing seams; checked-state customization must still cover its intended subtype/state matrix.
 3. Keep `cap.main|sub` and `value.major|main|sub|minor` as complete optical stylesheet recipes. Their foreground should inherit the owning surface or use an appropriate `fg.*` token; do not create `text.header1` through `text.header6` tokens.
 4. If a signature theme treatment still cannot be expressed through existing `sys`/`cmpt` values, write the complete recipe in `index.scss` using the framework selector boundary.
 

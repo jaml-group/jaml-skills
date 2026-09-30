@@ -1,0 +1,4 @@
+# Publisher bytes and generated references have deterministic source formatting.
+jaml/catalog/
+wiki/API/
+dist/

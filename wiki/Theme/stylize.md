@@ -1,6 +1,6 @@
 # Theme Stylize
 
-JAML elements use the runtime `stylize` key to designate a presentation profile. Most author-facing profiles are semantic roles; framework renderers also use the specialized `markdown` and `json` profiles. Use `none` when an element must opt out of profile-class styling.
+JAML elements use the runtime `stylize` key to designate a presentation profile. Author-facing profiles include layout-owned shell roles and semantic content/interaction roles; framework renderers also use the specialized `markdown` and `json` profiles. Use `none` when an element must opt out of profile-class styling.
 
 ```json
 {
@@ -11,7 +11,7 @@ JAML elements use the runtime `stylize` key to designate a presentation profile.
 
 Runtime profiles are represented by a `jam-[stylize]-style` class and participate in external style lookup. `stylize: "none"` suppresses that profile class.
 
-`stylize` expresses element identity, semantic context, or a framework-owned renderer profile. Native `variant` selects an alternate theme recipe for that same identity or context. Ad hoc visual treatments belong in `styles`, not new `stylize` names.
+`stylize` expresses element identity, layout responsibility, semantic context, or a framework-owned renderer profile. Native `variant` selects an alternate theme recipe for that same identity or context. Ad hoc visual treatments belong in `styles`, not new `stylize` names.
 
 Assign a semantic role when an element has a stable responsibility in app structure, content composition, or interaction. A role may also establish the stable selector boundary through which themes refine that responsibility. Mechanical layout can retain the element's normal identity and use local layout styles.
 
@@ -21,7 +21,7 @@ For a placement-based visual reference, see [Stylize Wireframes](./stylize-wiref
 
 ## Runtime Contract
 
-A role selects a semantic presentation profile. A hyphenated role also selects its variant through `jam-variant`. Registered theme selectors can match element types, roles and variants.
+A role selects a presentation profile for a layout or semantic responsibility. A hyphenated role also selects its variant through `jam-variant`. Registered theme selectors can match element types, roles and variants.
 
 During connection, profile-class eligibility depends on the parent: direct children of the body, `container`, `card`, or `wrapper` can receive it; `button` and `tag` identities are eligible independently, and `item` is also supported directly beneath `map` and `calendar`. Use the normal JAML containers when composing role regions. A role is not a recursive instruction to rename its children.
 
@@ -54,10 +54,10 @@ Inherited/container stylize is context. Explicit child stylize is identity. Cont
 
 ## Recommended Values
 
-Use a small semantic vocabulary first. Element types normally supply their framework-owned fallback profile; semantic roles describe the responsibility an element has in the composition.
+Use a small vocabulary first. Element types normally supply their framework-owned fallback profile; layout and semantic roles describe the responsibility an element has in the composition. The layout-owned set and the availability of `frame` are defined under [Layout-owned stylize profiles](#layout-owned-stylize-profiles).
 
 ```text
-app, header, footer, sidebar, nav, main
+app, frame, header, footer, sidebar, nav, main
 panel, tooltip, modal, tile, section
 toolbar, form, group, field, actions
 list, item
@@ -73,20 +73,21 @@ markdown, json
 
 ## Large-Scale JAML Authoring
 
-When suggesting or authoring JAML at app, surface, form, or list scale, assign runtime `stylize` roles to the structural nodes first. Let the active theme resolve spacing, surfaces, density, color, and state recipes from those roles.
+When suggesting or authoring JAML at app, surface, form, or list scale, assign runtime `stylize` roles to the structural nodes first. Preserve the selected layout's structure, geometry and scrolling. Let the active theme resolve compatible spacing, surfaces, density, color, and state recipes from those roles.
 
 The JAML tree should expose a stable responsibility at each role boundary:
 
-| Scale | Root role | Common child roles |
-|---|---|---|
-| App shell | `app` | `header`, `sidebar`, `main`, `footer` |
-| Dashboard main | `main` | direct `tile` children, with optional view-level `nav` or `toolbar` |
-| Content surface | `tile`, `type: 'card'`, `panel` | `section`, `nav`, `toolbar` |
-| Content region | `section` | `group`, `list`, `form`, or direct content |
-| Form | `form` | `group`, `field`, direct inputs, `list`, `actions` |
-| Repeated collection | `list` | direct `item` children |
-| Coordinate-aware collection | `type: 'map'` | direct `item` children |
-| Date-coordinate collection | `type: 'calendar'` | direct `item` children |
+| Scale                       | Root role                       | Common child roles                                                                 |
+| --------------------------- | ------------------------------- | ---------------------------------------------------------------------------------- |
+| App shell                   | `app`                           | `sidebar`, optional `frame`, and layout-defined `header`, `main`, `footer` regions |
+| Shared shell frame          | `frame`                         | the layout-defined header/work-area/footer grouping; see availability below        |
+| Dashboard main              | `main`                          | direct `tile` children, with optional view-level `nav` or `toolbar`                |
+| Content surface             | `tile`, `type: 'card'`, `panel` | `section`, `nav`, `toolbar`                                                        |
+| Content region              | `section`                       | `group`, `list`, `form`, or direct content                                         |
+| Form                        | `form`                          | `group`, `field`, direct inputs, `list`, `actions`                                 |
+| Repeated collection         | `list`                          | direct `item` children                                                             |
+| Coordinate-aware collection | `type: 'map'`                   | direct `item` children                                                             |
+| Date-coordinate collection  | `type: 'calendar'`              | direct `item` children                                                             |
 
 A normal application shell has one `app` and one `main`. Its primary `header`, `sidebar`, and `footer` each appear at most once at app-shell scope. In a dashboard `main`, tiles form a flat set of direct children. When a card is also a dashboard unit, one node can express both responsibilities with `type: 'card'` and `stylize: 'tile'`.
 
@@ -148,14 +149,14 @@ const loadDispatch = {
 
 These describe what an element is before richer page context is considered.
 
-- `element`: generic fallback for elements without a more specific semantic role.
-- `button`: command button identity.
-- `input`: input/control identity.
-- `label`: text/label identity.
-- `title`: prominent title text for app, header, sidebar, panel, card, tile, or section contexts.
-- `tag`: compact badge, chip, status, or tag identity. `badge`, `label-tag`, and tags children use this style identity.
-- `card`: card component identity.
-- `none`: explicit opt-out when an element must not receive a `jam-*-style` profile class.
+-   `element`: generic fallback for elements without a more specific semantic role.
+-   `button`: command button identity.
+-   `input`: input/control identity.
+-   `label`: text/label identity.
+-   `title`: prominent title text for app, header, sidebar, panel, card, tile, or section contexts.
+-   `tag`: compact badge, chip, status, or tag identity. `badge`, `label-tag`, and tags children use this style identity.
+-   `card`: card component identity.
+-   `none`: explicit opt-out when an element must not receive a `jam-*-style` profile class.
 
 Use these as base coverage. A theme should still look acceptable when page authors do not set custom `stylize` values.
 
@@ -165,10 +166,10 @@ Framework-owned fallback profiles such as `element`, `container`, `wrapper`, `in
 
 These elements select a built-in profile when the page does not provide one:
 
-| Element | Fallback `stylize` |
-|---|---|
-| `datepicker`, `input`, `progress`, `select`, `timepicker` | `input` |
-| `locator` | `none` |
+| Element                                                   | Fallback `stylize` |
+| --------------------------------------------------------- | ------------------ |
+| `datepicker`, `input`, `progress`, `select`, `timepicker` | `input`            |
+| `locator`                                                 | `none`             |
 
 An explicit author-supplied `stylize` remains the page/theme contract.
 
@@ -176,32 +177,49 @@ An explicit author-supplied `stylize` remains the page/theme contract.
 
 These profiles are assigned by framework renderers to their structured output roots:
 
-- `markdown`: Markdown document output produced by `jamd` or `jaml.md()`. It applies `.jam-markdown-style`.
-- `json`: recursive JSON visualization produced by `jaml.json()`. It applies `.jam-json-style`.
+-   `markdown`: Markdown document output produced by `jamd` or `jaml.md()`. It applies `.jam-markdown-style`.
+-   `json`: recursive JSON visualization produced by `jaml.json()`. It applies `.jam-json-style`.
 
 Call the renderer helper instead of applying these profiles to arbitrary content. The corresponding styles depend on the document or JSON component structure the helper creates.
 
 ## App Structure
 
-These describe page and app layout structure.
+### Layout-owned stylize profiles
 
-- `app`: top-level application surface. A normal application has one `app` root.
-- `header`: primary app-level top structure, present zero or one time in a normal shell.
-- `footer`: primary app-level bottom structure, present zero or one time in a normal shell.
-- `sidebar`: primary persistent side area, present zero or one time in a normal shell.
-- `nav`: navigation list, tabs, menu, breadcrumb, route picker, or table-of-contents-like structure. It can live in `header`, `sidebar`, `panel`, `main`, or a local `tile`.
-- `main`: primary semantic document/work area. A normal application has one `main`.
+**Layout-owned shell profiles: `app`, `frame`, `header`, `sidebar`, `main`, `footer`.** They use the existing `stylize` key and `jam-[stylize]-style` class convention. Ownership is a composition contract, not another JAML key or attribute. It applies to the shell regions managed by the selected layout; the role name alone does not create a layout builder or transfer an arbitrary node to one.
+
+| Owner                      | Responsibility                                                                                                                                                          |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout or shell builder    | Shell hierarchy and placement, sizing constraints, responsive geometry, overflow and scroll ownership; any generated region boundaries                                  |
+| Theme                      | Token-based surface, foreground, border, radius, elevation and state recipes on those boundaries; spacing and density that preserve the layout's structural constraints |
+| Application/content author | Region content, navigation, local content composition and interactions through the layout's supported extension points                                                  |
+
+Use `stylize: 'frame'`, with the class `.jam-frame-style`, for an optional shared shell boundary that groups the header, primary work area and optional footer for a common visual treatment. A layout can place the sidebar alongside it. `frame` describes that structural grouping; `main` remains the primary semantic work area inside it. A layout may omit `frame` when it has no such shared boundary.
+
+**Availability:** The updated development runtime implements `frame` as a native container with `stylize: 'frame'` and `.jam-frame-style`. With `frame: { ... }`, `jaml.application(...)` groups optional header/footer regions around exactly one `main` or `content` host; an optional sidebar remains alongside the frame. A `content` host retains its authored role. The builder enables `layout.application` with `frame: true`; that layout owns frame sizing and scrolling, while themes supply visual recipes and compatible insets. This integration is unreleased and still carries package version `1.6.0`; that version alone does not establish support in an installed runtime. Verify the target runtime before using it. Broader theme-plugin lifecycle and application-integration verification remains separate.
+
+Agents and authors should inspect which shell regions the chosen layout manages before changing them. Keep those nodes' identities, placement and scrolling under the layout's control; customize their appearance through theme recipes and the layout's supported options. Theme changes must preserve the route/content host and its lifecycle. A content role such as `nav`, `tile`, `section`, `group` or `form` keeps its own responsibility inside the shell; inheriting shell context does not relabel descendants.
+
+### Shell role meanings
+
+-   `app`: top-level application surface. A normal application has one `app` root.
+-   `frame`: optional shared shell grouping and theme surface boundary; see the layout ownership and availability contract above.
+-   `header`: primary app-level top structure, present zero or one time in a normal shell.
+-   `footer`: primary app-level bottom structure, present zero or one time in a normal shell.
+-   `sidebar`: primary persistent side area, present zero or one time in a normal shell.
+-   `nav`: navigation list, tabs, menu, breadcrumb, route picker, or table-of-contents-like structure. It can live in `header`, `sidebar`, `panel`, `main`, or a local `tile`.
+-   `main`: primary semantic document/work area. A normal application has one `main`.
 
 ## Surface Stylize Values
 
 These describe content and auxiliary surfaces:
 
-- `panel`: auxiliary work surface for a distinct task or context. It may be docked, slide-in, floating, movable, or resizable.
-- `popup`, normally selected by `type: 'popup'`: interaction-positioned floating surface, such as a context menu, hint, small confirm, or transient progress surface.
-- `tooltip`: compact informational or completion surface, separate from the richer popup element surface.
-- `modal`: centered blocking overlay surface.
-- `card`, normally selected by `type: 'card'`: portable content object with its own internal structure.
-- `tile`: dashboard or bento grid unit. Tiles form a flat set of direct children in a dashboard `main`.
+-   `panel`: auxiliary work surface for a distinct task or context. It may be docked, slide-in, floating, movable, or resizable.
+-   `popup`, normally selected by `type: 'popup'`: interaction-positioned floating surface, such as a context menu, hint, small confirm, or transient progress surface.
+-   `tooltip`: compact informational or completion surface, separate from the richer popup element surface.
+-   `modal`: centered blocking overlay surface.
+-   `card`, normally selected by `type: 'card'`: portable content object with its own internal structure.
+-   `tile`: dashboard or bento grid unit. Tiles form a flat set of direct children in a dashboard `main`.
 
 When a portable card also occupies a dashboard-grid position, use `type: 'card'` with `stylize: 'tile'`. A card placed inside a tile represents a distinct subordinate content object.
 
@@ -209,8 +227,8 @@ When a portable card also occupies a dashboard-grid position, use `type: 'card'`
 
 These describe how content is organized within a surface:
 
-- `section`: cohesive content region inside a `tile`, `card`, or `panel`. It may represent the surface's whole body or one of several regions, and may be named or unnamed.
-- `group`: related, same-purpose content or controls. Its children may use different element types, and the group may be named or unnamed.
+-   `section`: cohesive content region inside a `tile`, `card`, or `panel`. It may represent the surface's whole body or one of several regions, and may be named or unnamed.
+-   `group`: related, same-purpose content or controls. Its children may use different element types, and the group may be named or unnamed.
 
 `section` establishes a content boundary that themes can treat consistently. `group` owns local arrangement, alignment, wrapping, and `gap` within that content. Prefer a flat composition; nested sections, groups, or lists represent a corresponding content or data hierarchy.
 
@@ -218,12 +236,12 @@ These describe how content is organized within a surface:
 
 These describe common content and interaction responsibilities:
 
-- `toolbar`: dense command strip, especially for utility buttons in `header`, `panel`, `main`, or a local `tile`.
-- `form`: one data-editing workflow or data model. It may contain direct inputs, groups, compound fields, supporting indicators or lists, and optional actions.
-- `field`: one labelled compound logical value whose controls share label, help, error, validation, and value ownership.
-- `actions`: command row/area, often containing buttons such as reset, clear, cancel, submit, confirm, or delete.
-- `list`: repeated peer collection, typically generated with `buildFor`; static children are also valid.
-- `item`: collection-peer or coordinate-owned child role. Under a `list` it identifies one repeated record; under a `map` or `calendar` it identifies a child positioned by the parent's coordinate system. The child may be a concrete element or a wrapper containing multiple elements.
+-   `toolbar`: dense command strip, especially for utility buttons in `header`, `panel`, `main`, or a local `tile`.
+-   `form`: one data-editing workflow or data model. It may contain direct inputs, groups, compound fields, supporting indicators or lists, and optional actions.
+-   `field`: one labelled compound logical value whose controls share label, help, error, validation, and value ownership.
+-   `actions`: command row/area, often containing buttons such as reset, clear, cancel, submit, confirm, or delete.
+-   `list`: repeated peer collection, typically generated with `buildFor`; static children are also valid.
+-   `item`: collection-peer or coordinate-owned child role. Under a `list` it identifies one repeated record; under a `map` or `calendar` it identifies a child positioned by the parent's coordinate system. The child may be a concrete element or a wrapper containing multiple elements.
 
 `group`, `field`, and `actions` own arrangement and `gap`. A normal Jam-UI input already owns its cap, icon, helper/error presentation, and control buttons. Use `field` when multiple controls jointly represent one logical input value.
 
@@ -315,8 +333,8 @@ Role names describe stable page structure, content composition, or interaction r
 
 Theme authors should support both:
 
-- semantic `stylize` values for page structure and contextual recipes
-- element-type fallbacks for common elements when a page does not set custom `stylize`
+-   layout-owned and semantic `stylize` values for page structure and contextual recipes
+-   element-type fallbacks for common elements when a page does not set custom `stylize`
 
 For example, a theme can define a general button recipe and also a sidebar-specific button recipe:
 
@@ -325,7 +343,7 @@ button
 sidebar > button
 ```
 
-Use `stylize` when the element carries a semantic context. Otherwise, let its element-type fallback provide the base appearance.
+Use `stylize` when the element carries a documented layout responsibility or semantic context. Otherwise, let its element-type fallback provide the base appearance.
 
 ## Parent-Child Context
 
@@ -359,28 +377,29 @@ Traits map to known class-backed element behavior and are declared as `-[trait]`
 
 Use this when deciding between nearby values:
 
-| Need | Use |
-|---|---|
-| Whole application shell | `app` |
-| Primary document/work area | `main` |
-| Navigation region | `nav` |
-| Auxiliary work surface for a distinct task or context | `panel` |
-| Anchored transient surface | `type: "popup"` |
-| Compact tooltip/completion surface | `tooltip` |
-| Blocking centered overlay | `modal` |
-| Cohesive content region inside a tile, card, or panel | `section` |
-| Related, same-purpose content or controls | `group` |
-| One data-editing workflow or model | `form` |
-| One labelled compound logical value | `field` |
-| Form/dialog button row | `actions` |
-| Repeated peer collection | `list` |
-| Collection peer or coordinate-positioned child | `item` |
-| Dashboard/bento grid unit | `tile` |
-| App, section, panel, card, or tile title | `title` |
-| Compact badge/chip/status | matching badge, tag, or tags element type |
-| Portable content object | `type: "card"` |
-| Rendered Markdown document root | `markdown` (assigned by `jamd` / `jaml.md()`) |
-| Rendered JSON tree root | `json` (assigned by `jaml.json()`) |
+| Need                                                  | Use                                           |
+| ----------------------------------------------------- | --------------------------------------------- |
+| Whole application shell                               | `app`                                         |
+| Layout-owned shared header/work-area/footer boundary  | `frame` (verify runtime/layout support above) |
+| Primary document/work area                            | `main`                                        |
+| Navigation region                                     | `nav`                                         |
+| Auxiliary work surface for a distinct task or context | `panel`                                       |
+| Anchored transient surface                            | `type: "popup"`                               |
+| Compact tooltip/completion surface                    | `tooltip`                                     |
+| Blocking centered overlay                             | `modal`                                       |
+| Cohesive content region inside a tile, card, or panel | `section`                                     |
+| Related, same-purpose content or controls             | `group`                                       |
+| One data-editing workflow or model                    | `form`                                        |
+| One labelled compound logical value                   | `field`                                       |
+| Form/dialog button row                                | `actions`                                     |
+| Repeated peer collection                              | `list`                                        |
+| Collection peer or coordinate-positioned child        | `item`                                        |
+| Dashboard/bento grid unit                             | `tile`                                        |
+| App, section, panel, card, or tile title              | `title`                                       |
+| Compact badge/chip/status                             | matching badge, tag, or tags element type     |
+| Portable content object                               | `type: "card"`                                |
+| Rendered Markdown document root                       | `markdown` (assigned by `jamd` / `jaml.md()`) |
+| Rendered JSON tree root                               | `json` (assigned by `jaml.json()`)            |
 
 `main` owns the application's primary work area. `section` owns a cohesive content region within a tile, card, or panel.
 
@@ -388,11 +407,11 @@ Use this when deciding between nearby values:
 
 Runtime `stylize` and `Styles.group.*` describe complementary parts of composition.
 
-- Runtime `stylize: "sidebar"` names an element's presentation role.
-- Runtime `stylize: "group"` identifies related, same-purpose content or controls.
-- Runtime `stylize: "markdown"` and `stylize: "json"` identify framework-rendered content roots.
-- Runtime `stylize: "item"` identifies a peer child whose list, map, or calendar parent supplies its context.
-- Native `variant: "legend"` keeps the `list` role and selects an alternate recipe exposed through `jam-variant="legend"`; `stylize: "list-legend"` is its compact equivalent.
-- `Styles.group.bento`, `gridline`, `stripy`, and `divider` select child arrangement and presentation.
+-   Runtime `stylize: "sidebar"` names an element's presentation role.
+-   Runtime `stylize: "group"` identifies related, same-purpose content or controls.
+-   Runtime `stylize: "markdown"` and `stylize: "json"` identify framework-rendered content roots.
+-   Runtime `stylize: "item"` identifies a peer child whose list, map, or calendar parent supplies its context.
+-   Native `variant: "legend"` keeps the `list` role and selects an alternate recipe exposed through `jam-variant="legend"`; `stylize: "list-legend"` is its compact equivalent.
+-   `Styles.group.bento`, `gridline`, `stripy`, and `divider` select child arrangement and presentation.
 
 The `group` role and a `Styles.group.*` plugin can be used together: the role exposes responsibility, while the plugin selects an arrangement. Theme authors use variant selectors for alternate styles of the same role. A descriptive variant remains a role refinement. Group plugins may be selected directly by a page author or attached to role/variant selectors through the framework or theme `styles` map.

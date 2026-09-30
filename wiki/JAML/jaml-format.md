@@ -39,19 +39,13 @@ export default {
 The element type to create. Maps to a registered JAM-UI element.
 
 ```json
-[
-    { "type": "button" },
-    { "type": "indicator" }
-]
+[{ "type": "button" }, { "type": "indicator" }]
 ```
 
 Select an element specialization with a composite type.
 
 ```json
-[
-    { "type": "input-number" },
-    { "type": "button-cta" }
-]
+[{ "type": "input-number" }, { "type": "button-cta" }]
 ```
 
 ---
@@ -152,7 +146,7 @@ flowchart LR
 
 **Type:** `Dictionary`
 
-Root-level reactive data store (Model only). Every key is a reactive variable. Setting `model.vars.key = value` automatically publishes to the messenger and re-renders all bindings.
+Root-level reactive data store (Model only). Setting `model.vars.key = value` publishes to the messenger and updates subscribed consumers. Authored `vars` initializers can contain bindings, including nested object/array bindings; they are part of the executable definition. For external records, use the [runtime data path](./binder.md#runtime-data-and-authored-definitions), including initial population before rendering.
 
 > **Note:** If `vars` or `broker` is specified, the JAML object will be created as a **model** automatically.
 
@@ -189,17 +183,53 @@ export default {
 
 **Type:** `Dictionary`
 
-Static local constants scoped to this component and its children. Unlike `vars`, **primitive** `props` values are not reactive — they are frozen at build time and never updated afterwards. If a primitive `props` value changes after the component is built, nothing happens.
+Component-scoped inputs and custom data, inherited by children. For each locally declared key that does not already exist on the element, JAML automatically installs a getter/setter backed by `this.props`. A declaration such as `props: { payload: { id: 7 } }` therefore makes `element.payload` available after the component's build tasks finish.
 
-`props` is best used as a way to **pass named constants down into a component**, similar to function arguments. This is especially useful for registered custom components (CCs): when you define a CC you don't know what `vars` environment it will be used in, so `props` lets the caller pass named values in without the CC needing to know the surrounding `vars` structure.
+Use this declarative contract whenever an `onafterbuild` hook would only attach custom data or install a property getter/setter. It applies to ordinary elements and registered custom components (CCs), not just selection controls. Keep lifecycle hooks for work that actually needs lifecycle timing, side effects or cleanup.
 
-**Props values have three modes:**
+#### Property binding and timing
 
-| Prop value type | Example | Behavior |
-|---|---|---|
-| Primitive (no `{{}}`) | `{ step: 2 }` | Static constant, frozen at build time |
-| Single `{{key}}` | `{ name: '{{data.username}}' }` | **Alias** — `{{name}}` in children resolves to `data.username` in `vars`. The prop name refers to the underlying vars key |
-| Binder expression | `{ pct: '{{score}} / {{max}} * 100' }` | **Reactive binder** — re-evaluates whenever any referenced key changes |
+-   `onafterbuild` runs after the element and its `props` access are created, but **before** the automatic custom-property bridges are installed. Read `this.props.payload` in that component hook; the DOM shortcut `this.element.payload` need not exist yet. The bridges are installed by the remaining build tasks before mounting.
+-   Existing own or inherited element properties are protected. If a name such as `cap`, `value`, `style` or a method already exists, JAML leaves it intact; the custom data remains accessible through `this.props`. Choose a non-conflicting name when a consumer needs the direct element property.
+-   A prop getter exposes data; it does not by itself subscribe arbitrary consumers to changes. Use the existing [binding lifecycle](./binder.md#binding-lifecycle) and watchers for reactive UI updates.
+
+#### Values, reads and writes
+
+| Prop value        | Example                                                          | Exposed property behavior                                                                                                                          |
+| ----------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Literal primitive | `{ step: 2 }`                                                    | Ordinary stored value, not frozen. Assignment changes later reads but does not publish a reactive update by itself.                                |
+| Literal object    | `{ payload: { id: 7 } }`                                         | Custom data object; ordinary mutation is not automatically a framework change notification.                                                        |
+| Single-key binder | `{ recordData: '{{record}}' }`                                   | Alias: reads resolve the underlying data key and assignment writes through to that key. Aliased bindings use the target key's reactivity.          |
+| Expression binder | `{ total: '{{price}} * {{quantity}}' }`                          | Evaluated from current source data when the exposed property is read. Assigning a value replaces the expression; it is not an inverse calculation. |
+| Object binder     | `{ payload: { id: '{{record.id}}', label: '{{record.name}}' } }` | Resolves the nested bindings when read. Treat the result as derived data; editing that returned object is not a write-back contract.               |
+
+In the updated development runtime, literal-prop reads and writes use the same nearest declaring component: a child's own declaration wins; otherwise assignment reaches the nearest ancestor declaring that prop. Alias assignment still writes through to its data key. Older 1.6.0 bundles can incorrectly write to an ancestor when a child declares the same literal name; verify the consuming runtime before relying on that correction.
+
+Outside a [`noBinder`](./binder.md#nobinder) subtree, props are authored declarations: a newly assigned `{{key}}` string can become an alias. Writing through an existing authored alias reaches its data key; use the [runtime model-data path](./binder.md#runtime-data-and-authored-definitions) for external records. Inside a disabled subtree, prop values and implicit aliases remain literal, including inherited declarations.
+
+For reactive edits, write through an alias or the owning model/shared-state API. A [single-record alias](./component.md#one-caller-owned-record-per-cc-instance) retains model reactivity for nested writes and record replacement. A literal or compound/computed object result has no such write-back guarantee. A consumer with its own selection/reconciliation contract still follows that contract. In a CC, preserve its internal prop names and use the [shared-state ownership pattern](./component.md#cc-state-ownership).
+
+Here `recordData` and `request` are automatically available on the button. No property descriptor or build hook is needed:
+
+```javascript jaml-playground
+export default {
+    type: 'button',
+    cap: 'Show record',
+    vars: { record: { id: 7, name: 'Draft' } },
+    props: {
+        recordData: '{{record}}',
+        request: {
+            id: '{{record.id}}',
+            label: "{{ 'Open ' + record.name }}"
+        }
+    },
+    onclick() {
+        nutmeg.info(this.request.label);
+    }
+};
+```
+
+For a custom grouped control, `props.option` is one application of this same mechanism; see [custom grouped controls](../JAM-UI/options.md#custom-grouped-controls). The CC example below uses named props to decouple its public inputs from the caller's data layout.
 
 ```javascript jaml-playground
 jaml.register('scoreCard', {
@@ -218,9 +248,9 @@ export default {
         {
             type: 'scoreCard',
             props: {
-                name: '{{data.username}}',          // alias
-                points: '{{data.score}}',            // alias
-                pct: '{{data.score}} / {{data.maxScore}} * 100'  // binder expression
+                name: '{{data.username}}', // alias
+                points: '{{data.score}}', // alias
+                pct: '{{data.score}} / {{data.maxScore}} * 100' // binder expression
             }
         },
         { type: 'input', cap: 'Name', value: '{{data.username}}' },
@@ -268,6 +298,8 @@ Assign a child element to a named slot. JAM-UI elements auto-slot to the parent'
 ```
 
 Other common slots vary by element: `icon`, `cap`, `label`, `extra`, `value`, `content`, `thead`, `option`. If omitted, the element goes to the default slot.
+
+To react to slot assignment changes, read [Named-slot lifecycle](../JAM-UI/JAM-UI.md#named-slot-lifecycle): `[name]slotchange`, `on[name]slotchange`, initial reads, capture delegation and text-update limits.
 
 ---
 
@@ -354,14 +386,17 @@ When a `keyMap` is set on the root component (model), child `buildFor` loops aut
 export default {
     type: 'wrapper',
     keyMap: {
-        users: 'id'  // every "users" loop uses "id" as the key
+        users: 'id' // every "users" loop uses "id" as the key
     },
     vars: {
-        users: [{ id: 'a', name: 'Alice' }, { id: 'b', name: 'Bob' }]
+        users: [
+            { id: 'a', name: 'Alice' },
+            { id: 'b', name: 'Bob' }
+        ]
     },
     components: [
         {
-            buildFor: 'user in users',  // no explicit 'key' — inherits 'id' from keyMap
+            buildFor: 'user in users', // no explicit 'key' — inherits 'id' from keyMap
             type: 'badge',
             cap: '{{user.name}}'
         }
@@ -438,11 +473,11 @@ Any element param key ending with a registered suffix is intercepted by the `Suf
 ```javascript
 // Register a custom suffix that transforms a value before setting
 jaml.registerSuffix('ff', (el, key, value) => {
-  // el: the element
-  // key: the param name with suffix stripped (e.g. 'value' from 'valueff')
-  // value: the raw value assigned to the suffixed key
-  const result = (value.s * 20 + value.b) / 10000;
-  jam.setParam(el, key, result);
+    // el: the element
+    // key: the param name with suffix stripped (e.g. 'value' from 'valueff')
+    // value: the raw value assigned to the suffixed key
+    const result = (value.s * 20 + value.b) / 10000;
+    jam.setParam(el, key, result);
 });
 ```
 
@@ -455,6 +490,8 @@ Once registered, any param ending in `ff` triggers the processor:
   valueff: { s: '{{salary}}', b: '{{balance}}' }  // → processor runs, sets 'value'
 }
 ```
+
+For request ownership, option-object refresh and conditional request sharing, see [State and data composition](state-and-data.md#private-runtime-data).
 
 **Reactive fetching:** Like `vars`, the URL value can contain binders (`{{key}}`). When the referenced variables change, the URL is automatically requested again with the new values, and the element updates.
 
@@ -548,22 +585,22 @@ export default {
 
 **Request option fields:**
 
-| Field       | Type               | Description                                                         |
-| ----------- | ------------------ | ------------------------------------------------------------------- |
-| `url`       | `string`           | Request URL                                                         |
-| `method`    | `MethodType`       | HTTP method: `'GET'` (default), `'POST'`, `'PUT'`, `'DELETE'`, etc. |
-| `data`      | `any`              | Request body or query params                                        |
-| `headers`   | `Dictionary`       | Additional HTTP headers                                             |
-| `transform` | `(data) => any`    | Transform the response before applying to the param                 |
-| `onsuccess` | `(data) => void`   | Called on success                                                   |
-| `onerror`   | `(err) => void`    | Called on error                                                     |
-| `onaborted` | `() => void`       | Called when request is aborted                                      |
-| `interval`  | `number`           | Polling interval in ms. When set, `cacheTime` is forced to `0`      |
-| `debounce`  | `number`           | Debounce delay in ms before sending                                 |
-| `cacheTime` | `number`           | Cache response duration in ms (default: ~400ms)                     |
-| `mock`      | `string \| object` | Mock URL or object to use as fallback on 404 / network error        |
-| `useForm`   | `boolean`          | Serialize `data` as `FormData` (auto-sets method to `POST`)         |
-| `urls`      | `array`            | Multiple sequential/parallel requests                               |
+| Field       | Type               | Description                                                                                                                          |
+| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`       | `string`           | Request URL                                                                                                                          |
+| `method`    | `MethodType`       | HTTP method: `'GET'` (default), `'POST'`, `'PUT'`, `'DELETE'`, etc.                                                                  |
+| `data`      | `any`              | Request body or query params                                                                                                         |
+| `headers`   | `Dictionary`       | Additional HTTP headers                                                                                                              |
+| `transform` | `(data) => any`    | Transform the response before applying to the param                                                                                  |
+| `onsuccess` | `(data) => void`   | Called on success                                                                                                                    |
+| `onerror`   | `(err) => void`    | Called on error                                                                                                                      |
+| `onaborted` | `() => void`       | Called when request is aborted                                                                                                       |
+| `interval`  | `number`           | Polling interval in ms. When set, `cacheTime` is forced to `0`                                                                       |
+| `debounce`  | `number`           | Debounce delay in ms before sending                                                                                                  |
+| `cacheTime` | `number`           | Shared-promise retention after completion (default: 400ms); see [sharing limits](state-and-data.md#request-sharing-and-cache-limits) |
+| `mock`      | `string \| object` | Mock URL or object to use as fallback on 404 / network error                                                                         |
+| `useForm`   | `boolean`          | Serialize `data` as `FormData` (auto-sets method to `POST`)                                                                          |
+| `urls`      | `array`            | Multiple sequential/parallel requests                                                                                                |
 
 ---
 
@@ -656,6 +693,8 @@ export default {
 
 Reactive visibility toggle. `false` hides the element via `setHide()` (CSS `display: none` / `jam-hide`). The element stays in the DOM — all binders, watchers, and state remain intact. Supports binder syntax (`{{key}}`) for reactive toggling.
 
+Showing may be deferred to preserve hide/show animation ordering. In the updated development runtime, a pending show respects the latest visibility request: it cannot undo a later hide, run after component destruction, or affect a replacement element. This governs visibility intent, not animation completion or guaranteed measurable geometry. [`buildIf`](#buildif) still owns DOM detachment. Older 1.6.0 bundles may lack these lifetime checks; verify the consuming runtime.
+
 ```javascript jaml-playground
 export default {
     type: 'container',
@@ -736,13 +775,15 @@ Name this component's value in the model. `model.getFormData()` collects all com
 
 **Type:** `string`
 
-Apply a registered usage, optionally with arguments. Built-in form actions include:
+Apply a registered usage, optionally with arguments. Built-in actions include:
 
-| Value      | Effect                                                         |
-| ---------- | -------------------------------------------------------------- |
-| `"reset"`  | Calls `model.resetAll()` — resets all inputs to `defaultValue` |
-| `"clear"`  | Calls `model.clearAll()` — clears all inputs to `null`         |
-| `"cancel"` | Closes the nearest `.jam-closable` ancestor                    |
+| Value        | Effect                                                                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `"reset"`    | Calls `model.resetAll()` — resets all inputs to `defaultValue`                                                                                                                             |
+| `"clear"`    | Calls `model.clearAll()` — clears all inputs to `null`                                                                                                                                     |
+| `"cancel"`   | Closes the nearest `.jam-closable` ancestor                                                                                                                                                |
+| `"option"`   | Makes a custom child participate in the direct parent's selection group; supply its data with `props.option`. See [custom grouped controls](../JAM-UI/options.md#custom-grouped-controls). |
+| `"checkAll"` | Adds a select-all control for the direct parent's checkbox group; delegates to the enclosing options element.                                                                              |
 
 ```javascript jaml-playground
 export default {
@@ -853,7 +894,7 @@ export default {
 };
 ```
 
-Individual `on*` hooks (`onclick`, `onvaluechange`, `onmount`, etc.) can also be written as direct top-level keys.
+Individual exposed `on*` hooks (`onclick`, `onvaluechange`, `onmount`, etc.) can also be written as direct top-level keys. Hook arguments can differ from event-listener arguments; see [Named-slot lifecycle](../JAM-UI/JAM-UI.md#named-slot-lifecycle) for the slot hook/event distinction.
 
 **`once` — one-shot event handlers:** Works identically to `on` but each handler auto-unsubscribes after its first invocation.
 
@@ -927,17 +968,18 @@ export default {
     type: 'button',
     cap: 'Styled',
     styles: [
-        Styles.hover.brighter({ b: 1.05 }),           // with args — call the builder
-        Styles.hover.withbg,                            // no args — pass the builder reference directly
+        Styles.hover.brighter({ b: 1.05 }), // with args — call the builder
+        Styles.hover.withbg, // no args — pass the builder reference directly
         Styles.animation.entry.frombottom({ delay: 100, easing: 'bouncing' })
     ]
 };
 ```
 
 **Two ways to write args:**
-- **Inline style string:** `"path.to.style(key1:val1;key2:val2)"` — semicolon-separated, like inline CSS. Supports array values `[a,b,c]`, do not support value that contains parenthesis or semicolon.
-- **Literal object string:** `"path.to.style({key1:\"val1\", key2:\"val2\"})"` — JavaScript object literal as a string (parsed at runtime).
-- **In JS:** `Styles.path.to.style({ key1: 'val1' })` — real JS object, full type safety.
+
+-   **Inline style string:** `"path.to.style(key1:val1;key2:val2)"` — semicolon-separated, like inline CSS. Supports array values `[a,b,c]`, do not support value that contains parenthesis or semicolon.
+-   **Literal object string:** `"path.to.style({key1:\"val1\", key2:\"val2\"})"` — JavaScript object literal as a string (parsed at runtime).
+-   **In JS:** `Styles.path.to.style({ key1: 'val1' })` — real JS object, full type safety.
 
 See [Styles](../Styles/styles.md) for the full reference.
 
@@ -945,14 +987,14 @@ See [Styles](../Styles/styles.md) for the full reference.
 
 Beyond `styles` (which targets the element itself), JAML provides several scoped style params whose selectors are resolved relative to an element. Most target its subtree; dictionary `descStyles` can also target the owning element with `:scope`. All are resolved at mount time and scoped to the component's unique selector so they don't leak.
 
-| Param          | Array value targets                      | Dictionary value                                               |
-| -------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| `childStyles`  | `:scope > *` — direct children           | Keys are sub-selectors scoped to `element > `                  |
+| Param          | Array value targets                      | Dictionary value                                                    |
+| -------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| `childStyles`  | `:scope > *` — direct children           | Keys are sub-selectors scoped to `element > `                       |
 | `descStyles`   | `*` — all descendants                    | Keys are scoped to `element`; `:scope` can match the element itself |
-| `optionStyles` | `:scope > .jam-option` — option children | —                                                              |
-| `[name]Styles` | CSS selector derived from the key name   | —                                                              |
-| `globalStyles` | —                                        | Keys registered globally (no element scope)                    |
-| `stateStyles`  | —                                        | Keys are state names; styles applied when that state is active |
+| `optionStyles` | `:scope > .jam-option` — option children | —                                                                   |
+| `[name]Styles` | CSS selector derived from the key name   | —                                                                   |
+| `globalStyles` | —                                        | Keys registered globally (no element scope)                         |
+| `stateStyles`  | —                                        | Keys are state names; styles applied when that state is active      |
 
 **`childStyles`** — styles applied to direct children only:
 
@@ -1022,7 +1064,7 @@ Simple selector refinement is limited to JavaScript selector dictionaries such a
 
     // ".fooStyles" → targets ".foo" within the element's scope (any custom class)
     '.fooStyles': ['text.bold']
-})
+});
 ```
 
 **`stateStyles`** — map state names to style arrays. Merged into `states` so the styles activate whenever the component transitions to that state:
@@ -1156,9 +1198,9 @@ Broadcast collected form data to a message key on click. See [Binders & Messagin
 Attach callbacks to the component's internal lifecycle. Note that `this` in these hooks refers to the **Component / Model**, not the underlying DOM Element.
 
 -   `onbeforebuild`: Called before the component's element is created.
--   `onafterbuild`: Called immediately after the component's element is created and easy-access properties (`cmpt`, `model`, `props`, `vars`, `shared`, etc.) are installed, before params are applied, attached to the DOM, or children are built.
+-   `onafterbuild`: Called immediately after the component's element is created and easy-access properties (`cmpt`, `model`, `props`, `vars`, `shared`, etc.) are installed, before params are applied, DOM attachment, or child construction. Automatic custom-property bridges from [`props`](#props) are installed by later build tasks; use `this.props.key` here rather than assuming `this.element.key` already exists.
 -   `onbeforerender`: Called just before the component is attached to the DOM.
--   `onafterrender`: Called after the component and all its children are fully attached to the DOM.
+-   `onafterrender`: Completes the current render after its synchronous work and requested attachment. Normally queued; in synchronous mode it runs after the component's own attachment step, which may be into a detached parent. The updated runtime skips obsolete or destroyed renders. It does not wait for promise-valued bindings, remote data, debounced updates, deferred children, layout/paint or animation completion; it does not guarantee nonzero geometry. See [binding lifecycle and runtime compatibility](./binder.md#binding-lifecycle) and the limits of [`jam.basicallyStable`](../utils.md#jambasicallystableel).
 
 ```javascript jaml-playground
 export default {
@@ -1178,7 +1220,7 @@ export default {
     },
     onafterrender: function () {
         // this = the Component
-        nutmeg.green('4. Fully rendered and mounted!');
+        nutmeg.green('4. Current component render completed');
     }
 };
 ```
@@ -1213,7 +1255,7 @@ Attach a named message broker to this model for shared reactive state. Built-in 
 
 **Type:** `boolean`
 
-Disable binder evaluation for this component and its descendants. See [Binders & Messaging](./binder.md#nobinder).
+Disable binder interpretation for this component and its descendants, including implicit prop aliases. Descendant `false` does not re-enable it. Trusted callbacks and other parameter processing still operate; this is not an executable-code sandbox. See [the full contract and runtime compatibility](./binder.md#nobinder).
 
 ---
 
@@ -1229,16 +1271,16 @@ The value of `this` depends on where a callback is written:
 
 Easy access of the element's properties:
 
-| Reference    | Points to    | Notes                                          |
-| ------------ | ------------ | ---------------------------------------------- |
-| `this.cmpt`  | Component    | The component that built this element          |
-| `this.model` | Root Model   | Always the root `Model` instance               |
-| `this.ref`   | Ref map      | Shortcut to component's `ref` map              |
-| `this.vars`  | Vars proxy   | Shortcut to `this.model.vars`                  |
-| `this.props` | Props object | The static `props` constants of this component |
-| `this.shared`| Shared proxy | Upward-looking proxy for nearest `share: true` ancestor |
+| Reference     | Points to    | Notes                                                                          |
+| ------------- | ------------ | ------------------------------------------------------------------------------ |
+| `this.cmpt`   | Component    | The component that built this element                                          |
+| `this.model`  | Root Model   | Always the root `Model` instance                                               |
+| `this.ref`    | Ref map      | Shortcut to component's `ref` map                                              |
+| `this.vars`   | Vars proxy   | Shortcut to `this.model.vars`                                                  |
+| `this.props`  | Props access | Resolves this component's literals, aliases and binders; see [`props`](#props) |
+| `this.shared` | Shared proxy | Upward-looking proxy for nearest `share: true` ancestor                        |
 
-**`props` constants on the element:** Every key defined in `props` is also directly accessible as a property on the element itself (i.e. `this.fooBar` in an element hook), as long as the key doesn't conflict with a built-in element param. Avoid reusing names like `icon`, `cap`, `data`, `value`, `content`, `color`, `state`, `disabled`, `type`, `style`, `class`, etc.
+**Custom properties on the element:** Locally declared `props` keys receive automatic element getters/setters after the build tasks finish, provided the name does not already exist on the element. This existing bridge handles custom data without a manual descriptor in `onafterbuild`. See [`props`](#props) for timing, collisions and reactivity; use `this.props.key` when the direct name belongs to the element already.
 
 ```javascript jaml-playground
 export default {
@@ -1278,4 +1320,4 @@ export default {
 
 ## Binder syntax
 
-Binders are reactive subscriptions — any string value containing `{{key}}` is automatically evaluated and re-evaluated whenever the referenced key changes. The full binder reference covering variable binders, expression binders, `jaml.var()`, cross-broker binding, compound binder objects, `jaml.pre()`, and `noBinder` has been moved to **[Binders & Messaging](./binder.md)**.
+Binders describe dependencies and value calculation. Supported element parameters and component control keys create subscriptions; props resolve their binders when read. Runtime data containing `{{key}}` is not automatically another binder. See **[Binders & Messaging](./binder.md)** for binding positions, runtime data, `jaml.var()`, cross-broker binding, compound binders, `jaml.pre()` and `noBinder`.

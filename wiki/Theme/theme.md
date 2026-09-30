@@ -14,20 +14,22 @@ authoring ref -> registered sys / cmpt / chart
 
 This page routes theme concerns to their owning references. Open only the pages the task needs:
 
-| Question | Owning reference |
-|---|---|
-| Which role describes this region? How does a variant work? | [Stylize](./stylize.md) |
-| Where do roles sit on a page? | [Stylize Wireframes](./stylize-wireframes.md) |
-| Is this an authoring primitive, system token, component token, or chart recipe? | [Tokens](./tokens.md) |
-| How do values adapt to mode, accent, and background? | [Theme Color](./color.md), [Color System](../color.md) |
-| How do JavaScript style selectors differ from SCSS? | [Stylesheets](./stylesheets.md) |
-| How should design import/export address a visual declaration? | [Recipe](./recipe.md) |
-| How is a theme packaged and registered? | [Structure](./structure.md) |
-| How do I implement and review a complete theme? | [Authoring](./authoring.md) |
+| Question                                                                        | Owning reference                                       |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Which role describes this region? How does a variant work?                      | [Stylize](./stylize.md)                                |
+| Where do roles sit on a page?                                                   | [Stylize Wireframes](./stylize-wireframes.md)          |
+| Is this an authoring primitive, system token, component token, or chart recipe? | [Tokens](./tokens.md)                                  |
+| How do values adapt to mode, accent, and background?                            | [Theme Color](./color.md), [Color System](../color.md) |
+| How do JavaScript style selectors differ from SCSS?                             | [Stylesheets](./stylesheets.md)                        |
+| How should design import/export address a visual declaration?                   | [Recipe](./recipe.md)                                  |
+| How is a theme packaged and registered?                                         | [Structure](./structure.md)                            |
+| How do I implement and review a complete theme?                                 | [Authoring](./authoring.md)                            |
 
 ## Docs
 
 The table above is the theme topic map. The [JAML reference map](../index.md) covers elements, bindings, styles, and plugins outside theme authoring.
+
+For a settings UI, read [theme-panel composition and readiness](../JAML/component.md#theme-panel-composition-and-readiness) before expanding its factory or mounting the registered panel.
 
 ## Theme-Adaptive JAML
 

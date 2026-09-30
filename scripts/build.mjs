@@ -1,9 +1,10 @@
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { checkResources, filesUnder, sha256 } from './resources.mjs';
+import { generateReferences } from './catalog-reference.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
@@ -12,9 +13,13 @@ const output = resolve(root, 'dist');
 // Keep generated skill copies out of recursive client discovery.
 const staging = resolve(output, '.build');
 const bundle = resolve(staging, 'package');
+// Maintenance skills stay in their source checkout, outside consumer artifacts.
 const skills = ['jaml'];
+const catalog = await generateReferences(root, { check: true });
 const sourceCheck = checkResources(root);
-if (sourceCheck.issues.length) { throw new Error(sourceCheck.issues.join('\n')); }
+if (sourceCheck.issues.length) {
+    throw new Error(sourceCheck.issues.join('\n'));
+}
 
 rmSync(bundle, { recursive: true, force: true });
 mkdirSync(bundle, { recursive: true });
@@ -26,9 +31,19 @@ for (const name of skills) {
         mkdirSync(dirname(_destination), { recursive: true });
         writeFileSync(_destination, readFileSync(file));
     }
-    writeFileSync(resolve(_target, 'version.json'), JSON.stringify({
-        name, distribution: pkg.name, version: pkg.version, framework: source.framework
-    }, null, 2) + '\n');
+    writeFileSync(
+        resolve(_target, 'version.json'),
+        JSON.stringify(
+            {
+                name,
+                distribution: pkg.name,
+                version: pkg.version,
+                framework: source.framework
+            },
+            null,
+            2
+        ) + '\n'
+    );
 }
 cpSync(resolve(root, 'LICENSE'), resolve(bundle, 'LICENSE'));
 mkdirSync(resolve(bundle, 'scripts'));
@@ -37,9 +52,13 @@ for (const name of ['install.mjs', 'resources.mjs']) {
 }
 writeFileSync(resolve(bundle, 'package.json'), JSON.stringify({ name: pkg.name, version: pkg.version, type: 'module', private: true }, null, 2) + '\n');
 const check = checkResources(bundle);
-if (check.issues.length) { throw new Error(check.issues.join('\n')); }
+if (check.issues.length) {
+    throw new Error(check.issues.join('\n'));
+}
 const manifest = {
-    name: pkg.name, version: pkg.version, framework: source.framework,
+    name: pkg.name,
+    version: pkg.version,
+    framework: source.framework,
     skills: Object.fromEntries(skills.map((name) => [name, 'skills/' + name])),
     wiki: 'skills/jaml/references',
     inventory: Object.fromEntries(filesUnder(bundle).map((file) => [relative(bundle, file).replaceAll('\\', '/'), sha256(file)]))
@@ -47,10 +66,18 @@ const manifest = {
 writeFileSync(resolve(bundle, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 const filename = 'jam-skills-' + pkg.version + '.tgz';
 const packed = spawnSync('tar', ['-czf', resolve(output, filename), '-C', staging, 'package'], { encoding: 'utf8', env: { ...process.env, COPYFILE_DISABLE: '1' } });
-if (packed.status !== 0) { throw new Error(packed.stderr || 'tar failed'); }
+if (packed.status !== 0) {
+    throw new Error(packed.stderr || 'tar failed');
+}
 const artifact = {
-    name: pkg.name, version: pkg.version, file: filename,
-    integrity: 'sha512-' + createHash('sha512').update(readFileSync(resolve(output, filename))).digest('base64'),
+    name: pkg.name,
+    version: pkg.version,
+    file: filename,
+    integrity:
+        'sha512-' +
+        createHash('sha512')
+            .update(readFileSync(resolve(output, filename)))
+            .digest('base64'),
     framework: source.framework
 };
 writeFileSync(resolve(output, 'artifact.json'), JSON.stringify(artifact, null, 2) + '\n');

@@ -65,6 +65,8 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ## Examples
 
+For mutually exclusive switches that can return to no selection, see the [cancelable switch-group recipe](../utils.md#cancelable-switch-group) and its runtime compatibility note. Use [group utilities](../utils.md#checked-state-and-group-helpers) when application code owns grouping; `updateSiblingsCheckedState` reconciles an already updated target without toggling it again.
+
 ### Default slider toggle
 
 ```json jaml-playground
