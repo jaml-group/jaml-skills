@@ -36,13 +36,15 @@ For a new dashboard, landing page, form or app, follow [Building a JAML UI](./bu
 
 Verify examples in layers:
 
--   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground` or `jaml-result` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
+-   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground` or `jaml-playground-result` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
 -   **Static semantics:** use the current source registry to check types, inherited parameters, style paths, and arguments. Dynamic builders and open argument dictionaries can exceed static metadata; investigate a diagnostic before accepting or rejecting the code.
 -   **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. A static pass does not prove visibility, resource loading, or lifecycle behavior.
 
 ## Trust and application data
 
-JAML definitions, authored `vars` initializers, props, handlers, binding expressions and external plugin modules are trusted application code. Populate external records through [runtime model-data writes](JAML/binder.md#runtime-data-and-authored-definitions); never concatenate them into executable definitions, expressions or module locations. A data value remaining literal does not make an HTML-capable display setter safe: use [Text nodes or `textContent`](JAM-UI/JAM-UI.md#slot-content-and-literal-text) for literal captions. `noBinder` and `jaml.pre()` do not sanitize content or sandbox executable code. Markdown dialect selection is not sanitization either; raw HTML and executable playground directives need an application-owned content policy. See [Markdown](Plugins/markdown.md).
+JAML definitions, authored `vars` initializers, props, handlers, binding expressions and external plugin modules are trusted application code. Populate external records through [runtime model-data writes](JAML/binder.md#runtime-data-and-authored-definitions); never concatenate them into executable definitions, expressions or module locations. A data value remaining literal does not make an HTML-capable display setter safe: use [Text nodes or `textContent`](JAM-UI/JAM-UI.md#slot-content-and-literal-text) for literal captions. `noBinder` and `jaml.pre()` do not sanitize content or sandbox executable code. Markdown dialect selection is not sanitization either. Use the explicit safe policy for untrusted Markdown and supply an execution hook only for intentionally enabled interactive blocks. See [Markdown policy and execution ownership](Plugins/markdown.md#content-policy-and-playground-ownership).
+
+For external option names, use the shared [literal option-text policy](JAM-UI/JAM-UI.md#literal-external-labels); keep names as strings for native filtering and selection.
 
 ## Maintaining this corpus
 

@@ -28,6 +28,8 @@ A row of buttons, with each option rendered as a `BananaButton`. Plain `"buttong
 
 ## Params
 
+For external labels, use `optionTextPolicy: 'literal'` and keep `autoTip` disabled where available. See the shared [literal-label contract](./JAM-UI.md#literal-external-labels) for text-template scope and trusted metadata limits.
+
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
 | Param          | Type              | Default           | Description                                                         |

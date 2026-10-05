@@ -24,7 +24,7 @@ Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. 
 
 匹配直接检查事件目标，而不是其最近的匹配祖先。子提示替换需要主弹出层已经显示。需要时另行提供可通过焦点访问的帮助。
 
-位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip`.
+位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
@@ -42,6 +42,7 @@ Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. 
 | `bias` | `numberOrString` | 未提供 | 弹出层位置偏移。 |
 | `snapTo` | `string` | 未提供 | 吸附目标。<br>选项: `cursor`, `target` |
 | `autoFlip` | `boolean` | 未提供 | 允许自动翻转位置。 |
+| `focus` | `boolean` | `false` |  |
 
 Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A sub-tip target with a `jam-sub-tip` attribute updates an already showing main popup without closing it. Returning to the main target restores its original content. Matching tests the event target itself, so a nested label or icon does not inherit a matching ancestor’s tip automatically.
 
@@ -84,7 +85,7 @@ export default {
 
 匹配直接检查事件目标，而不是其最近的匹配祖先。子提示替换需要主弹出层已经显示。需要时另行提供可通过焦点访问的帮助。
 
-位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip`.
+位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
 
 公共参数: [popup.tip](#entry-popup-tip).
 

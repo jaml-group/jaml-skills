@@ -287,22 +287,23 @@ export default [
 
 返回已挂载的内容时恢复稳定的滚动位置。
 
-路由变化或卸载时，以宿主 id 保存像素偏移；恢复可等待延迟回调，并要求视口控制器准备所需的内容范围。
+像素模式在路由变化或卸载时保存偏移，并在可选延迟及视口准备后恢复。bookmark 委托模式在生命周期边界或显式 save 时保存应用 JSON；read/save/prepare 不执行恢复滚动。
 
-宿主需要稳定的 id；可选选择器解析滚动目标。
+两种模式都需要稳定的宿主 id。委托模式必须提供 connect 和 capture，不能结合 selector 或 delay。定向 prepare 还需要唯一可测量的原生 lazy 宿主和显式正数 estimatedHeight；详见滚动工具契约。
 
-卸载和移除会取消待执行的恢复并移除监听器；用户滚动或导航输入会取消待执行的恢复。
+卸载或移除会取消准备并使委托 store 失效；新准备取代旧准备。像素模式自动监听用户导航；委托调用方提供 AbortSignal。connect 返回的函数负责断开清理；capture 返回 undefined 时保留原存储。
 
-与受支持的惰性或虚拟视口控制器配合使用，使深处的偏移位置可在恢复前准备好。
+像素模式用于精确的已加载前缀准备。bookmark 模式结合 store.prepare(request, signal) 可在保持延迟构建的同时恢复语义行或末尾；应用解析行身份、分页和可见性，在用户或导航意图变化时中止，并立即写入返回的 top。参见 [滚动准备](../utils.md#targeted-lazy-scroll-preparation)。
 
-位置参数顺序: `selector` → `delay`.
+位置参数顺序: `selector` → `delay` → `bookmark`.
 
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
 | `selector` | `string` | 目标选择器 |
 | `delay` | `function` | 延迟 |
+| `bookmark` | `dictionary` | 可选委托模式：{ connect(store, element), capture(element) }。store 提供 read、save 和 prepare；应用解释书签并写入准备好的滚动位置。 |
 
-Persists and restores the scroll position of an element across page loads using `miso` (sessionStorage).
+Pixel mode persists and restores offsets using session storage. Optional `bookmark` mode delegates semantic identity and scrolling to the application; see [targeted lazy preparation](../utils.md#targeted-lazy-scroll-preparation).
 
 > **Note:** The element must have an `id` attribute for the storage key.
 

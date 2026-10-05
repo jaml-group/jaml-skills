@@ -2,22 +2,24 @@
 
 [toc]
 
-A **binder** describes data dependencies and how to calculate a value. Applying one to a supported element parameter or component control key creates a reactive subscription through the **messenger** (broker) system. Reading a binder through [`props`](./jaml-format.md#props) instead resolves its current value on demand; that getter does not itself create a subscription.
+A **binder** describes data dependencies and how to calculate a value. Applying one to a supported element parameter or component control key creates a reactive subscription through the **messenger** (broker) system. Reading a binder through [`props`](./jaml-format.md#props) instead resolves its current value on demand; that getter does not itself create a subscription. Keep prop alias chains acyclic: a same-name alias does not implicitly jump to outer data. See [self-referencing aliases](./jaml-format.md#avoid-self-referencing-aliases).
 
 ---
 
 ## Binding lifecycle
 
-For a newly built, non-virtual component:
+For a non-virtual component in the corrected development runtime:
 
-1. **Prepare.** JAML separates literal parameters from bindings, resolves prop aliases to their underlying data keys, and prepares watchers. A compiled binder contains dependency keys and an evaluation function; compilation alone does not subscribe.
+1. **Prepare.** JAML separates literal parameters from bindings, resolves prop aliases to their underlying data keys, and prepares watchers. A compiled binder contains dependency keys and an evaluation function; compilation alone does not subscribe. At the end of component construction, logical `showIf`, `buildIf` and bound `ref` subscriptions activate even if a lazy viewport defers the element. They use available data and remain subscribed for later initial Model data. Keep these binder callbacks independent of DOM; their element may not exist.
 2. **Build.** `onbeforebuild` runs, the element is created, and component accessors such as `props` and `vars` are installed. `onafterbuild` runs at this point, before parameter application and the remaining build tasks. Use `this.props.key` here; the direct `this.element.key` shortcut for custom props may not exist yet.
-3. **Activate.** Parameters are applied and build tasks install the non-conflicting custom-property bridges, then activate the prepared watchers. Generated parameter bindings normally request synchronous initialization from available data. User-declared watchers default to `init: false`. Initial evaluation can therefore happen before mounting, but a setter may defer its visible effect until the element initializes.
+3. **Activate.** Parameters are applied and build tasks install the non-conflicting custom-property bridges, then activate the remaining element bindings and user watchers. Logical bindings already active from construction are not subscribed twice. Generated parameter bindings normally request synchronous initialization from available data. User-declared watchers default to `init: false`. Initial evaluation can therefore happen before mounting, but a setter may defer its visible effect until the element initializes.
 4. **Render.** JAML renders children and runs `onbeforerender` before requested insertion. Connection initializes the element and invokes `oninit` and `onmount`. Under normal asynchronous scheduling, `onafterrender` is queued; it completes only if the render finished and is still current. Destruction, a newer render or element replacement invalidates the older completion. In synchronous runtime mode it runs after that component's own render/attachment step, possibly into a parent that is still detached. Neither mode makes it a barrier for promise-valued bindings, debounced updates, remote data, deferred children, browser layout/paint or animation completion. A completed render can still be hidden, detached or have zero geometry. [`jam.basicallyStable`](../utils.md#jambasicallystableel) is a separate helper with limited waits, not a universal readiness barrier.
 5. **Update.** Publications to subscribed keys re-evaluate bound parameters. Watcher callbacks may be debounced; do not assume that writing state immediately updates every element. Prop getters resolve when read, and assigning a literal prop does not publish a change. Reading a prop in arbitrary JavaScript does not register a reactive dependency.
 6. **Dispose.** Destroying a component unsubscribes its watchers and disposes its children. Queued watcher callbacks check whether the subscription is still active. Promise-valued parameter applications also check that their target/update is still current before applying a result; this ignores obsolete results rather than cancelling the promise.
 
-> **Development compatibility:** The render-completion guards and option-readiness handling described here require the updated runtime. Older 1.6.0 bundles may not contain these fixes; verify the runtime used by the consuming application.
+> **Development compatibility:** The early logical-binding activation, render-completion guards and option-readiness handling described here require the updated runtime. Older 1.6.0 bundles may not contain these fixes; verify the runtime used by the consuming application.
+
+The [targeted scroll preparation helper](../utils.md#targeted-lazy-scroll-preparation) owns a narrower native readiness wait for publication, logical controls and deferred reveal. It can be awaited immediately after a reveal/page state write. That contract does not turn render completion, repaint waits or `basicallyStable` into general binding barriers.
 
 For incoming option-value messages, the runtime waits for option readiness and then checks whether the update still belongs to the current element/component. A newer message supersedes an older pending message; destruction or element replacement invalidates it. Current readiness/application failures are reported, while obsolete failures are ignored. Ordinary input messages still apply synchronously. This protects message-driven updates; it does not make every direct element write a superseding message.
 
@@ -784,17 +786,16 @@ value: '{{ firstName + " " + lastName }}'
 
 ### Expression binders only detect top-level keys
 
-Inside an expression binder `'{{ expression }}'`, the parser scans for identifier names and checks them against top-level `vars` keys. Dot-paths like `user.name` are treated as `user` (the top-level key) with a `.name` property access — only `user` is subscribed. Changing a nested property without replacing the parent object reference may not trigger re-evaluation.
+Inside an expression binder `'{{ expression }}'`, the parser scans for identifier names and checks them against top-level `vars` keys. Dot-paths like `user.name` are treated as `user` (the top-level key) with a `.name` property access — only `user` is subscribed. Managed plain-object and array mutations through `model.vars` publish changed paths and their ancestors, so an expression subscribed to `user` re-evaluates after `model.vars.user.name` changes. Mutating a retained raw reference, an opaque value or a blacklisted path is outside that managed notification contract.
 
 <!-- prettier-ignore -->
 ```javascript
 vars: { user: { name: 'Alice' } }
 
-// Subscribes to "user" (the object reference).
-// Changing user.name directly may not trigger a re-eval.
+// Subscribes to "user". Managed model.vars.user.name writes notify it.
 value: '{{ user.name.toUpperCase() }}'
 
-// To reliably watch nested changes, reference the exact key directly:
+// A direct path binder watches the exact key and can publish back:
 value: '{{user.name}}'
 ```
 

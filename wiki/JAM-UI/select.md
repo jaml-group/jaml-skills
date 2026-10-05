@@ -4,10 +4,10 @@
 
 A native `<select>` dropdown with `<optgroup>` support, a configurable placeholder entry, and single/multi-select modes.
 
-| Type shorthand | Behavior |
-|---|---|
-| `"select"` (default) | Single selection |
-| `"select-checkbox"` | Multi-selection; adds the native `multiple` attribute |
+| Type shorthand       | Behavior                                              |
+| -------------------- | ----------------------------------------------------- |
+| `"select"` (default) | Single selection                                      |
+| `"select-checkbox"`  | Multi-selection; adds the native `multiple` attribute |
 
 ---
 
@@ -18,8 +18,8 @@ A native `<select>` dropdown with `<optgroup>` support, a configurable placehold
   "type": "select",
   "cap": "Country",
   "data": [
-    { "name": "USA",    "value": "us" },
-    { "name": "China",  "value": "cn" },
+    { "name": "USA", "value": "us" },
+    { "name": "China", "value": "cn" },
     { "name": "France", "value": "fr" }
   ],
   "defaultValue": "us"
@@ -30,10 +30,12 @@ A native `<select>` dropdown with `<optgroup>` support, a configurable placehold
 
 ## Params
 
+For external labels, use `optionTextPolicy: 'literal'` and keep `autoTip` disabled where available. See the shared [literal-label contract](./JAM-UI.md#literal-external-labels) for text-template scope and trusted metadata limits.
+
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
-| Param | Type | Default | Description |
-|---|---|---|---|
+| Param         | Type                | Default        | Description                                                                  |
+| ------------- | ------------------- | -------------- | ---------------------------------------------------------------------------- |
 | `placeholder` | `string \| boolean` | `'--请选择--'` | Placeholder option at the top of the dropdown. Pass `false` or `''` to hide. |
 
 ---
@@ -55,10 +57,10 @@ Use the `group` field on options to create `<optgroup>` sections:
   "type": "select",
   "cap": "Location",
   "data": [
-    { "name": "New York",   "value": "ny",  "group": "North America" },
-    { "name": "Los Angeles","value": "la",  "group": "North America" },
-    { "name": "Paris",      "value": "par", "group": "Europe" },
-    { "name": "London",     "value": "lon", "group": "Europe" }
+    { "name": "New York", "value": "ny", "group": "North America" },
+    { "name": "Los Angeles", "value": "la", "group": "North America" },
+    { "name": "Paris", "value": "par", "group": "Europe" },
+    { "name": "London", "value": "lon", "group": "Europe" }
   ]
 }
 ```
@@ -70,7 +72,7 @@ Use the `group` field on options to create `<optgroup>` sections:
   "type": "select-checkbox",
   "cap": "Permissions",
   "data": [
-    { "name": "Read",  "value": "read" },
+    { "name": "Read", "value": "read" },
     { "name": "Write", "value": "write" },
     { "name": "Admin", "value": "admin" }
   ],
@@ -118,6 +120,8 @@ Use the `group` field on options to create `<optgroup>` sections:
 ---
 
 ## Notes
+
+For a select without a visible caption, provide an accessible name through host `attrs` in the updated development runtime. See [native-agent naming](JAM-UI.md#naming-native-input-agents) for the bounded forwarding contract and a direct `oninit` fallback for older bundles.
 
 - The placeholder entry is always the first `<option>` and is hidden when `placeholder: false` or `placeholder: ''`.
 - The `jam-selected` CSS class is toggled when a non-null value is selected.

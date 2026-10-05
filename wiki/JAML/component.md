@@ -43,9 +43,15 @@ Three globals are registered at startup:
 
 ---
 
+## Logical component lookup before DOM
+
+`model.findComponent(predicate)` searches logical components and can find a deferred row before its element exists. The predicate receives a raw component. This synchronous lookup does not wait for pending publication. For restoration immediately after inserting rows or revealing work, pass the predicate as `prepareScrollPosition`'s `row` request so native preparation resolves it after publication. Use `component.matchRef('transcript-row')` for a static ref and `component.getVarData('row')?.id` to read a loop alias; raw `component.props.row` is its declaration. Exclude virtual wrappers when selecting an actual row. The corrected development runtime activates `showIf`, `buildIf` and bound refs before deferred DOM construction; see [binding lifecycle](./binder.md#binding-lifecycle) and [targeted lazy restoration](../utils.md#targeted-lazy-scroll-preparation) for settlement and compatibility limits.
+
 ## `jaml` — render JAML UI
 
 `jaml(container, option)` is the primary entry point. It parses the JAML option, builds the element tree, renders into `container`, and synchronously returns the `Model` instance. `await jaml(...)` or `await jam.render(...)` does not provide a readiness promise. See [render completion](./binder.md#binding-lifecycle) and [limited stability waits](../utils.md#jambasicallystableel). To supply external initial data before rendering, use the [construct → vars-write → render pattern](./binder.md#runtime-data-and-authored-definitions).
+
+Destroy an owned view with `model.destroy()` when it is replaced or canceled; synchronous disposal after `render()` returns does not need an artificial delay. In the corrected development runtime, option-value publication still stores the value immediately, then broadcasts checked options after readiness only while the originating element/component and messenger remain alive. Destroyed or replaced controls cannot publish from that pending continuation. A detached but live control is still eligible. Readiness failures are reported for live controls and ignored after disposal. The host continues to own cancellation of its external requests and subscriptions; native cleanup does not cancel that work. See [element destruction hooks](../JAM-UI/JAM-UI.md#lifecycle-hooks) for receiver and teardown ordering, and verify the updated runtime before relying on these corrections.
 
 `container` accepts an element ID string, a CSS selector, or an `HTMLElement`.
 
@@ -365,7 +371,7 @@ Inside `userCard`, `{{name}}` behaves identically to `{{data.username}}` in the 
 
 > Props with literal primitive values (`{ foo: 1 }`) are writable local values that do not publish reactive updates by themselves. A single-key binder (`{ foo: '{{key}}' }`) creates an alias: setting the exposed prop writes to the target key rather than changing the alias declaration. See [props](./jaml-format.md#props) for automatic element-property binding, expression/object reads and lifecycle timing.
 
-For a record edited by nested controls, follow the [two-instance record example](#one-caller-owned-record-per-cc-instance), including nested mutation and whole-record replacement.
+For a record edited by nested controls, follow the [two-instance record example](#one-caller-owned-record-per-cc-instance), including nested mutation and whole-record replacement. Keep the CC input name distinct from an unqualified alias target that would resolve back to it; registration alone does not provide an outer-scope escape. See [self-referencing aliases and scope](./jaml-format.md#avoid-self-referencing-aliases).
 
 ### One caller-owned record per CC instance
 
@@ -417,8 +423,8 @@ A CC should not define its own `vars` or refer to the caller's future `vars` nam
 
 Use `props` for the CC's public inputs and local state handles:
 
--   Literal configuration: `props: { step: 2 }`
--   Reactive aliases: `props: { count: '{{firstCount}}' }`
+- Literal configuration: `props: { step: 2 }`
+- Reactive aliases: `props: { count: '{{firstCount}}' }`
 
 When nested children need to read or write the CC root props, set `share: true` on the CC root and use `this.shared` from child hooks. This keeps event handlers pointed at the CC contract instead of the root model's `vars`.
 
@@ -599,13 +605,13 @@ jaml.registry.entry('userCard'); // → current registered option or factory
 
 JAM-UI ships a small built-in component registry. These names can be used directly as the JAML `type` value.
 
-| Type                | Description                                                                             | Props                                   |
-| ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------- |
-| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                       |
-| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                       |
-| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath` |
-| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`        |
-| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                         |
+| Type                | Description                                                                             | Props                                                   |
+| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                                       |
+| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                                       |
+| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath`                 |
+| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`, `items`, `onactivate` |
+| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                                         |
 
 ```javascript jaml-playground
 export default {
@@ -626,6 +632,49 @@ export default {
     ]
 };
 ```
+
+---
+
+### Breadcrumb navigation
+
+`type: 'breadcrumb'` is a built-in CC. Choose the mode that matches the existing navigation owner:
+
+| Prop         | Default | Contract                                                                                                         |
+| ------------ | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `separator`  | `'/'`   | First Unicode character of the supplied value; an empty value falls back to `/`.                                 |
+| `subpath`    | `''`    | Router mode only: start at the matching normalized route path. A missing match leaves the full chain.            |
+| `scoped`     | `false` | Router mode only: exclude the matched `subpath` crumb when true.                                                 |
+| `items`      | `null`  | Updated development runtime: ordered explicit items; `[]` renders an empty path, null/undefined uses the router. |
+| `onactivate` | `null`  | Explicit mode callback `(key) => void`; the application owns navigation and permissions.                         |
+
+**Router mode** reads the active route chain from the nearest installed router, falling back to `rambutan`. Clicking a crumb opens native sibling-route choices; selecting one calls `switchTo`. Hidden choices are excluded. Route labels use title, then name, then path, then `Home`. Route metadata follows authored caption/option conventions; it is not an external-text boundary. The default refresh subscription follows global route notifications; check refresh behavior separately when composing a local router. See [router data](../Plugins/router.md).
+
+**Explicit mode** is for application-owned paths such as workspace → parent chat → current chat, or settings → plugins. Each item has a unique nonempty string `key`, a string `label`, and optional boolean `current`. Keys are opaque callback identifiers, not route URLs or DOM IDs. Current items are non-actionable labels with `aria-current="page"`; other items are native keyboard buttons. `label` renders as literal text, including markup and binding-looking braces. Explicit mode creates no router state, home icon or sibling menu.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    vars: { breadcrumbItems: [] },
+    components: [{
+        type: 'breadcrumb',
+        attrs: { role: 'navigation', 'aria-label': 'Workspace path' },
+        props: {
+            items: '{{breadcrumbItems}}',
+            onactivate(key) { console.log('Open breadcrumb item', key); }
+        }
+    }],
+    onmount() {
+        this.model.vars.breadcrumbItems = [
+            { key: 'workspace:1', label: 'Workspace' },
+            { key: 'chat:2', label: '<Current chat>', current: true }
+        ];
+    }
+};
+```
+
+Keep external items in runtime model data, assigning them after trusted definitions are constructed; do not splice them into JAML source. Use a distinct model name such as `breadcrumbItems` for the `items` prop alias. Replace the array to update the path; in-place mutation is not the update contract. Keys preserve action identity, not child DOM identity: rendering replaces the children. Retained old buttons cannot activate after the replacement reaches the prop or after disposal; model publication and binding settlement are asynchronous. Invalid item shape or duplicate keys is a contract error. `subpath` and `scoped` do not filter explicit items. Keep focus restoration after application navigation with the application owner.
+
+This explicit mode requires the updated development runtime; an older bundle bearing the same framework version may support only router mode. Verify the actual delivered bundle before adopting it.
 
 ---
 
@@ -727,7 +776,7 @@ export default jaml.wrapper(
 
 `themepanel` is a registered composition backed by a factory, not an already-expanded element definition. Prefer `{ type: 'themepanel' }` and let the registry expand it when the application builds. The factory reads current theme state, including the body color context, at invocation time; obtaining or calling it during module initialization can be too early. `jaml.registry.entry('themepanel')` returns the registered factory; `jaml.registry.get('themepanel')` invokes it immediately. Neither call is a readiness barrier.
 
-Build the composition after the application's normal framework startup and theme readiness. In the standard browser entry, theme initialization begins at `DOMContentLoaded`; await `jam.themeReady` after that initialization has started. Awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
+Build the composition after the application's normal framework startup and theme readiness. For this composition, await `jam.themeReady` using the [runtime readiness contract](../utils.md#jamthemeready). The updated development entry exposes that promise synchronously and starts initialization at `DOMContentLoaded` for loading documents or in a microtask for an already-ready document. Older bundles assign it later; awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
 
 The built-in panel defaults to `build: false` for popup use. Set `build: true` for an inline panel. This runnable example assumes the playground's already-initialized runtime:
 
@@ -741,3 +790,21 @@ export default {
 The panel reads and publishes the framework's saved theme choices, including `jam-darkmode@milo` (`true`, `false`, or `'auto'`). Integrate it with the application's existing preference owner; opening it is not a reason to overwrite saved light/dark or system choices with a second default. See [system theme and saved choices](../color.md#system-theme-and-saved-choices). Full-page mounting still follows the [standalone application root](#standalone-application-root); embedded surfaces retain their [host boundary](#embedded-application-hosts).
 
 For a packaged runtime, confirm its artifact identity and registration (for example `jaml.registry.has('themepanel')`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.
+
+A header button can open the existing panel model using its native reference. Keep both components in the same owning model and create them after theme readiness:
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        {
+            type: 'button',
+            cap: 'Appearance',
+            onclick() { jam.popup(this, this.ref('theme-config')); }
+        },
+        { type: 'themepanel' }
+    ]
+};
+```
+
+Reuse the panel while its owner exists; closing it is not a request to reset saved preferences. Before destroying that owner, close its owned popup and release application-owned focus/listener work. The shared popup's [readiness and ownership contract](../JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) still applies. [Automatic mode and Studio](../color.md#automatic-mode-persistence-and-studio) explains persistence, system changes and the theme selector's page-reload boundary.

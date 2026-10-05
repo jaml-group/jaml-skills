@@ -89,12 +89,13 @@
 
 必要操作还应提供其他可访问的入口；此预设仅控制悬停时的呈现。
 
-位置参数顺序: `position` → `reverse`.
+位置参数顺序: `position` → `reverse` → `duration`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `position` | `string` | `right` | 位置<br>选项: `left`, `right` |
+| `position` | `string` | `right` | 位置<br>选项: `left`, `right`, `inline` |
 | `reverse` | `boolean` | `false` | 反向 |
+| `duration` | `number` | `120` | Unit: `ms` |
 
 ## `extraslot.text.mono`
 

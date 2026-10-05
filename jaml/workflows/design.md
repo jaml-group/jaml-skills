@@ -8,6 +8,8 @@ Follow [Building a JAML UI](../references/building-ui.md) for the shared design-
 
 Use [intent-first element selection](../references/building-ui.md#choose-elements-by-user-intent) to establish the important user operations, state/data shape, responsive behavior, accessibility and lifecycle expectations. Map each substantial capability to an existing native element, public style/plugin or a specific extension gap. Read candidate detail pages and inheritance before selecting a custom implementation. A documented control name alone does not establish keyboard, accessibility or state-preservation guarantees.
 
+For streamed or external data, read the [literal-text boundary](../references/index.md#trust-and-application-data), [Markdown policy and execution ownership](../references/Plugins/markdown.md#content-policy-and-playground-ownership), and [owned subscription/follow-scroll contracts](../references/utils.md#owned-external-subscriptions-and-follow-scrolling). Choose the sink and lifecycle owner before composing the view.
+
 Record a compact design with:
 
 -   Structural regions and semantic roles; theme/token consumption and business-color strategy.

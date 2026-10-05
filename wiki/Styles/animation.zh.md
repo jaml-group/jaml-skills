@@ -124,13 +124,15 @@ export default {
 
 加载框架动画样式。共享动画构建器会跳过 popup 元素的直接入场和出场 CSS 变量设置；不要认为这些样式能替代 popup 的显示和隐藏配置。
 
-注册入场动画设置，并立即应用于已经连接的非 popup 宿主；框架后续追加或显示时使用相同设置。
+注册入场动画设置，并立即应用于已经连接的非 popup 宿主；框架后续追加或显示时使用相同设置。 同一宿主的文本更新不会重放入场；重新挂载或框架重新入场可能重放。消息标识与新消息动画资格由应用维护。
 
 在同一宿主上组合入场和出场样式。周围子元素需要以动画呈现位置变化时，在父元素上使用 animation.flipchild。
 
 时序辅助函数接受 random(...) 和 seq(...) 表达式；seq 时序使用动画索引。自定义 beforeApply 会替换变体准备逻辑，因此应保留所需的原点、缩放或透视设置。
 
 入场预设用于添加或显示元素，可与退场预设配合。
+
+入场预设没有通用的减少动态效果策略。消息淡入可配合局部 prefers-reduced-motion 样式表，将时长设为 1ms、延迟设为零，并使用最终透明度，见淡入示例，使用有限时长保留原生动画事件，并以最终透明度消除可见运动；零时长在初次插入时可能跳过这些事件。不要仅设置 `animation: none`：入场准备依赖动画事件清除等待中的透明状态。使用 `duration:var(--jam-motion-fast)` 跟随主题时长。仅为新到达消息启用淡入，不要为每次历史恢复重放。原生入场不提供可取消的逐消息句柄，不能假定已移除行或异步 beforeApply 的取消已获保证。
 
 ### `animation.entry.fadein`
 
@@ -155,6 +157,14 @@ export default {
             styles: ['animation.entry.fadein(duration:500)']
         }
     ]
+};
+```
+
+```javascript jaml-playground
+export default {
+    type: 'label',
+    cap: 'A newly arrived message',
+    styles: ['animation.entry.fadein(duration:var(--jam-motion-fast);easing:easeOut)', Styles.stylesheet('@media (prefers-reduced-motion: reduce) { & { animation-duration:1ms!important;animation-delay:0s!important;opacity:var(--jam-opacity,1)!important; } }')]
 };
 ```
 

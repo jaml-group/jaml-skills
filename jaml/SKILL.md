@@ -14,14 +14,15 @@ Read [LEARNED.md](LEARNED.md), identify the target runtime/version and project i
 
 Load the workflow for the requested work. New apps normally use Design → Compose → Validate; a small edit needs only its affected contract and checks.
 
-| Ability  | When                                             | Workflow                                                                  |
-| -------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
-| Design   | New app, substantial feature, theme or migration | [Design](workflows/design.md), [Building a UI](references/building-ui.md) |
-| Compose  | Create or change executable JAML or extensions   | [Compose](workflows/compose.md)                                           |
-| Refactor | Restructure a project or theme                   | [Refactor](workflows/refactor.md), then its project/theme route           |
-| Validate | Review correctness and framework fit             | [Validate](workflows/validate.md)                                         |
-| Explain  | Concepts, mechanisms, rationale or comparisons   | [Explain](workflows/explain.md)                                           |
-| Debug    | Failure, incorrect behavior or performance       | [Debug](workflows/debug.md)                                               |
+| Ability      | When                                                             | Workflow                                                                  |
+| ------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Design       | New app, substantial feature, theme or migration                 | [Design](workflows/design.md), [Building a UI](references/building-ui.md) |
+| jam-dsh AGUI | Interactive assistant views in jam-dsh or its state/response API | [jam-dsh AGUI](workflows/jam-dsh-agui.md)                                 |
+| Compose      | Create or change executable JAML or extensions                   | [Compose](workflows/compose.md)                                           |
+| Refactor     | Restructure a project or theme                                   | [Refactor](workflows/refactor.md), then its project/theme route           |
+| Validate     | Review correctness and framework fit                             | [Validate](workflows/validate.md)                                         |
+| Explain      | Concepts, mechanisms, rationale or comparisons                   | [Explain](workflows/explain.md)                                           |
+| Debug        | Failure, incorrect behavior or performance                       | [Debug](workflows/debug.md)                                               |
 
 ## Retrieve for the current decision
 

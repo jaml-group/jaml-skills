@@ -4,68 +4,70 @@
 
 The router supports path parameters, route lifecycle hooks, pre-render resource loading, URL parameter syncing via the messenger system, and parameter preservation across navigations.
 
+Use the built-in [breadcrumb CC](../JAML/component.md#breadcrumb-navigation) to display the active route chain with sibling choices. For a path owned by application state, the updated CC also accepts explicit literal items without introducing another router.
+
 ## Global API: `rambutan.*`
 
-| Property / Method                     | Description                                                                          |
-|---------------------------------------|--------------------------------------------------------------------------------------|
-| `rambutan.use(type)`                  | Switch routing mode — `'history'` (default) or `'hash'`.                             |
-| `rambutan.routes`                     | Get/set the routes map. Setting accepts `Record<string, Route>` or `Route[]`.        |
-| `rambutan.addRoute(route)`            | Add a single route definition.                                                        |
-| `rambutan.addRoutes(routes)`          | Add multiple route definitions at once. Returns `this` for chaining.                 |
-| `rambutan.removeRoute(path)`          | Remove a route by its path.                                                           |
-| `rambutan.switchTo(path, params?)`    | Navigate to the given path with optional parameters.                                  |
-| `rambutan.setParams(value, quietly?)` | Update URL parameters. When `quietly: true`, saves params without resolving.          |
-| `rambutan.updateParams(value)`        | Silently update URL parameters (calls `setParams` with `quietly: true`).              |
-| `rambutan.currPath`                   | The current route path string.                                                        |
-| `rambutan.currRoute`                  | The current `Route` object.                                                           |
-| `rambutan.prevRoute`                  | The previous `Route` object (before the last navigation).                             |
-| `rambutan.currParams`                 | Get the current route's render parameters.                                            |
-| `rambutan.type`                       | Returns the active router type: `'history'` or `'hash'`.                              |
-| `rambutan.routeData`                  | Array of `RouteData` for building navigation UI.                                      |
-| `rambutan.routeDataSnapshot`          | `{ routes, current }`, where `routes` is available navigation data and `current` is current breadcrumb route data. |
-| `rambutan.nestedRouteData`            | Nested route data structure (grouped by path segments) for hierarchical navigation.   |
-| `rambutan.getCurrentRouteData()`      | Current route chain across root router and subrouters.                                |
-| `rambutan.getRouteData(parentPath?, pathOrRoutes?)` | Route data for all routes, siblings under `parentPath`, or a supplied route collection. |
-| `rambutan.getNestedRouteData(path?)`  | Nested route data, optionally scoped to a path.                                       |
-| `rambutan.getRoutePathKey(path)`      | Mango key used to publish the active subroute path for a matched route.               |
-| `rambutan.currMatch`                  | Current match object: `{ route, params, ownParams, matchedPath, subPath }`.           |
-| `rambutan.resolveCurrent()`           | Resolve the current URL path immediately.                                             |
-| `rambutan.resolveCurrentSubRouter(params?)` | Resolve the active child router for the current match.                           |
-| `rambutan.is(path, params?)`          | Check if the current route matches the given path and params.                         |
-| `rambutan.getHash()`                  | Get the current URL hash.                                                             |
-| `rambutan.setHash(hash, quietly?)`    | Set the URL hash.                                                                     |
-| `rambutan.resolvePath(path)`          | Resolve a relative path against the current `rootPath`.                               |
-| `rambutan.rootPath`                   | Get/set the base path. Auto-detects from `<base>` tag.                                |
-| `rambutan.registerTo(rootpath)`       | Register the router under a specific base path (must end with `/`).                   |
-| `rambutan.syncTitle`                  | Get/set whether to automatically sync `document.title` with the route name.           |
-| `rambutan.container`                  | The container element (or selector) where route content is rendered.                  |
-| `rambutan.resources`                  | Global resources loaded before any route render.                                      |
-| `rambutan.beforeSwitch`               | Hook called before route switch.                                                      |
-| `rambutan.afterSwitch`                | Hook called after route switch.                                                       |
-| `rambutan.beforeRender`               | Hook called before route render.                                                      |
-| `rambutan.afterRender`                | Hook called after route render.                                                       |
-| `rambutan.pathWatcher`                | Mango key for path change watcher.                                                    |
+| Property / Method                                   | Description                                                                                                        |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `rambutan.use(type)`                                | Switch routing mode — `'history'` (default) or `'hash'`.                                                           |
+| `rambutan.routes`                                   | Get/set the routes map. Setting accepts `Record<string, Route>` or `Route[]`.                                      |
+| `rambutan.addRoute(route)`                          | Add a single route definition.                                                                                     |
+| `rambutan.addRoutes(routes)`                        | Add multiple route definitions at once. Returns `this` for chaining.                                               |
+| `rambutan.removeRoute(path)`                        | Remove a route by its path.                                                                                        |
+| `rambutan.switchTo(path, params?)`                  | Navigate to the given path with optional parameters.                                                               |
+| `rambutan.setParams(value, quietly?)`               | Update URL parameters. When `quietly: true`, saves params without resolving.                                       |
+| `rambutan.updateParams(value)`                      | Silently update URL parameters (calls `setParams` with `quietly: true`).                                           |
+| `rambutan.currPath`                                 | The current route path string.                                                                                     |
+| `rambutan.currRoute`                                | The current `Route` object.                                                                                        |
+| `rambutan.prevRoute`                                | The previous `Route` object (before the last navigation).                                                          |
+| `rambutan.currParams`                               | Get the current route's render parameters.                                                                         |
+| `rambutan.type`                                     | Returns the active router type: `'history'` or `'hash'`.                                                           |
+| `rambutan.routeData`                                | Array of `RouteData` for building navigation UI.                                                                   |
+| `rambutan.routeDataSnapshot`                        | `{ routes, current }`, where `routes` is available navigation data and `current` is current breadcrumb route data. |
+| `rambutan.nestedRouteData`                          | Nested route data structure (grouped by path segments) for hierarchical navigation.                                |
+| `rambutan.getCurrentRouteData()`                    | Current route chain across root router and subrouters.                                                             |
+| `rambutan.getRouteData(parentPath?, pathOrRoutes?)` | Route data for all routes, siblings under `parentPath`, or a supplied route collection.                            |
+| `rambutan.getNestedRouteData(path?)`                | Nested route data, optionally scoped to a path.                                                                    |
+| `rambutan.getRoutePathKey(path)`                    | Mango key used to publish the active subroute path for a matched route.                                            |
+| `rambutan.currMatch`                                | Current match object: `{ route, params, ownParams, matchedPath, subPath }`.                                        |
+| `rambutan.resolveCurrent()`                         | Resolve the current URL path immediately.                                                                          |
+| `rambutan.resolveCurrentSubRouter(params?)`         | Resolve the active child router for the current match.                                                             |
+| `rambutan.is(path, params?)`                        | Check if the current route matches the given path and params.                                                      |
+| `rambutan.getHash()`                                | Get the current URL hash.                                                                                          |
+| `rambutan.setHash(hash, quietly?)`                  | Set the URL hash.                                                                                                  |
+| `rambutan.resolvePath(path)`                        | Resolve a relative path against the current `rootPath`.                                                            |
+| `rambutan.rootPath`                                 | Get/set the base path. Auto-detects from `<base>` tag.                                                             |
+| `rambutan.registerTo(rootpath)`                     | Register the router under a specific base path (must end with `/`).                                                |
+| `rambutan.syncTitle`                                | Get/set whether to automatically sync `document.title` with the route name.                                        |
+| `rambutan.container`                                | The container element (or selector) where route content is rendered.                                               |
+| `rambutan.resources`                                | Global resources loaded before any route render.                                                                   |
+| `rambutan.beforeSwitch`                             | Hook called before route switch.                                                                                   |
+| `rambutan.afterSwitch`                              | Hook called after route switch.                                                                                    |
+| `rambutan.beforeRender`                             | Hook called before route render.                                                                                   |
+| `rambutan.afterRender`                              | Hook called after route render.                                                                                    |
+| `rambutan.pathWatcher`                              | Mango key for path change watcher.                                                                                 |
 
 ## Route Definition
 
-| Field             | Type                        | Description                                                  |
-|-------------------|-----------------------------|--------------------------------------------------------------|
-| `path`            | `string`                    | Route path starting with `/`. Supports `:param` and `:param(.*)` placeholders; `''` is allowed for index routes.|
-| `name`            | `string`                    | Human-readable route name.                                   |
-| `title`           | `string`                    | Document title (used when `syncTitle` is enabled).           |
-| `icon`            | `string`                    | Icon identifier for navigation UI.                           |
-| `hide`            | `boolean`                   | Hide this route from navigation.                             |
-| `render`          | `Function`                  | Render function called with `(router, params)`. Must be idempotent. |
-| `resources`       | `string[]`                  | URLs of scripts/modules to load before rendering.            |
-| `params`          | `Dictionary`                | Default parameters for the route.                            |
-| `preserveParams`  | `boolean \| number`         | Persist render params across navigations. `true` = 7 days TTL. Number = TTL in ms. |
-| `syncParams`      | `string[]`                  | Parameter keys to sync via the messenger bus.                |
-| `broker`          | `string`                    | Messenger broker name (defaults to path without leading `/`).|
-| `group`           | `string`                    | Group name for organizing routes in navigation.              |
-| `onEnter`         | `(router, params) => void`  | Called when entering this route (before resource load).      |
-| `onLeave`         | `(router, params) => void`  | Called when leaving this route.                              |
-| `subRouter`       | `AbstractRouter`            | Runtime child router attached by a nested route outlet.      |
-| `styles`          | `StyleOption[]`             | Additional styles for this route in navigation.              |
+| Field            | Type                       | Description                                                                                                      |
+| ---------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `path`           | `string`                   | Route path starting with `/`. Supports `:param` and `:param(.*)` placeholders; `''` is allowed for index routes. |
+| `name`           | `string`                   | Human-readable route name.                                                                                       |
+| `title`          | `string`                   | Document title (used when `syncTitle` is enabled).                                                               |
+| `icon`           | `string`                   | Icon identifier for navigation UI.                                                                               |
+| `hide`           | `boolean`                  | Hide this route from navigation.                                                                                 |
+| `render`         | `Function`                 | Render function called with `(router, params)`. Must be idempotent.                                              |
+| `resources`      | `string[]`                 | URLs of scripts/modules to load before rendering.                                                                |
+| `params`         | `Dictionary`               | Default parameters for the route.                                                                                |
+| `preserveParams` | `boolean \| number`        | Persist render params across navigations. `true` = 7 days TTL. Number = TTL in ms.                               |
+| `syncParams`     | `string[]`                 | Parameter keys to sync via the messenger bus.                                                                    |
+| `broker`         | `string`                   | Messenger broker name (defaults to path without leading `/`).                                                    |
+| `group`          | `string`                   | Group name for organizing routes in navigation.                                                                  |
+| `onEnter`        | `(router, params) => void` | Called when entering this route (before resource load).                                                          |
+| `onLeave`        | `(router, params) => void` | Called when leaving this route.                                                                                  |
+| `subRouter`      | `AbstractRouter`           | Runtime child router attached by a nested route outlet.                                                          |
+| `styles`         | `StyleOption[]`            | Additional styles for this route in navigation.                                                                  |
 
 ## Path Parameters
 

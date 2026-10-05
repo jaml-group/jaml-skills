@@ -20,6 +20,31 @@
 
 ## Style variants
 
+### `input.ghost`
+
+<a id="entry-input-ghost"></a>
+
+Ghost input
+
+Compose a text input or textarea on an application-owned surface.
+
+Makes the native input background transparent in normal, hover, focus, disabled and read-only states; removes its resting border width and shadow. Preserves the native focus outline, label, padding, radius, editing and row behavior. No arguments.
+
+Use input or input-textarea with styles: ['input.ghost'] in the updated development runtime. Omit cap and icon when the composition needs no label.
+
+This is a style, not a textarea subtype: input-textarea-ghost does not select the native textarea. For a shared composer focus outline, style the enclosing container with :focus-within and suppress the inner outline only on that input. File, color and external editor surfaces are not covered.
+
+```javascript jaml-playground
+export default {
+    type: 'input-textarea',
+    placeholder: 'Message',
+    rows: 'auto',
+    minRows: 1,
+    maxRows: 8,
+    styles: ['input.ghost']
+};
+```
+
 ### `input.showColorName`
 
 <a id="entry-input-showcolorname"></a>

@@ -21,6 +21,8 @@ Plugins attach behavior to an element through `plug(el)` and release their owned
 | Build a reusable visual recipe                    | [`Styles.registerPlugin`](../Styles/styles.md#styles-methods)                     | Composes existing styles/plugins under a named style                                               |
 | Attach application behavior with explicit cleanup | `Plugins.registerPlugin` or an object with `plug` / `unplug`                      | Keep per-element state and clean up listeners, timers, and owned nodes                             |
 
+For an interactive terminal, the [optional terminal surface](terminal-surface.md) registers a separately delivered emulator plugin. Its screen lifetime is independent of the application's connection, process and persistence owners.
+
 ## Lifecycle and ownership
 
 AbstractElement plugs its configured plugins once during initial connection, before applying external and local styles. `addPlugin` plugs immediately; `removePlugin` unplugs; `destroy` unplugs configured plugins. A temporary DOM disconnection emits `unmount` and is not the same as destruction. Plain plugins that must pause and resume with attachment should subscribe to `mount` / `unmount` themselves and remove those listeners when unplugged.

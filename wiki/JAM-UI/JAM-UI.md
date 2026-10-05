@@ -53,22 +53,22 @@ Each element type is used as the `"type"` value in JAML. Click through to the in
 
 ## Representers
 
-Representers are lightweight elements that represent a data shape or HTML primitive. They use the same `"type"` key in JAML and accept all [AbstractElement](#section-1--abstractelement) params.
+Representers use the same `"type"` key in JAML for data carriers and HTML primitives. Most entries create framework elements with their inherited parameters. [`vanilla`](vanilla.md) instead creates an ordinary HTML element; component-level bindings, attributes and visibility still apply, but it does not inherit every `AbstractElement` property or slot.
 
-| Type          | Class           | Description                                                                                       |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------- |
-| `checkbox`    | —               | Checkbox input. Extends `AbstractInputElement`.                                                   |
-| `code`        | —               | Syntax-highlighted code block.                                                                    |
-| `data`        | —               | Invisible data carrier; see [shared data ownership](../JAML/state-and-data.md#shared-data-owner). |
-| `divider`     | `EndiveElement` | Visual divider; optional label is supplied through inherited `value` from `AbstractInputElement`. |
-| `hr`          | —               | Horizontal rule (`<hr>`).                                                                         |
-| `placeholder` | —               | Placeholder element.                                                                              |
-| `radio`       | —               | Radio input. Extends `AbstractInputElement`.                                                      |
-| `tag`         | —               | Single tag/chip.                                                                                  |
-| `textarea`    | —               | Multi-line text area. Extends `AbstractInputElement`.                                             |
-| `vr`          | —               | Vertical rule.                                                                                    |
-| `vanilla`     | —               | Wraps an arbitrary existing `HTMLElement`.                                                        |
-| `unknown`     | —               | Fallback for unrecognized types.                                                                  |
+| Type                    | Class           | Description                                                                                       |
+| ----------------------- | --------------- | ------------------------------------------------------------------------------------------------- |
+| `checkbox`              | —               | Checkbox input. Extends `AbstractInputElement`.                                                   |
+| `code`                  | —               | Syntax-highlighted code block.                                                                    |
+| `data`                  | —               | Invisible data carrier; see [shared data ownership](../JAML/state-and-data.md#shared-data-owner). |
+| `divider`               | `EndiveElement` | Visual divider; optional label is supplied through inherited `value` from `AbstractInputElement`. |
+| `hr`                    | —               | Horizontal rule (`<hr>`).                                                                         |
+| `placeholder`           | —               | Placeholder element.                                                                              |
+| `radio`                 | —               | Radio input. Extends `AbstractInputElement`.                                                      |
+| `tag`                   | —               | Single tag/chip.                                                                                  |
+| `textarea`              | —               | Multi-line text area. Extends `AbstractInputElement`.                                             |
+| `vr`                    | —               | Vertical rule.                                                                                    |
+| [`vanilla`](vanilla.md) | —               | Creates an ordinary HTML tag: `vanilla` defaults to `<div>`; `vanilla-img` creates `<img>`.       |
+| `unknown`               | —               | Fallback for unrecognized types.                                                                  |
 
 ---
 
@@ -101,9 +101,9 @@ Use a stable descriptive value when it makes the alternate purpose clear:
 
 ```json jaml-playground
 {
-    "type": "container",
-    "stylize": "list",
-    "variant": "legend"
+  "type": "container",
+  "stylize": "list",
+  "variant": "legend"
 }
 ```
 
@@ -131,25 +131,25 @@ Numeric values remain valid when they are the clearer contract. Because the valu
 
 ```javascript jaml-playground
 export default {
-    type: 'indicator',
-    states: {
-        pass: { color: 'green' },
-        fail: { color: 'red' },
-        warning: { color: 'orange' }
-    },
-    onstatechange: function (state, old) {
-        // this = the indicator element
-        console.log(`State: ${old} → ${state}`);
-    }
+  type: "indicator",
+  states: {
+    pass: { color: "green" },
+    fail: { color: "red" },
+    warning: { color: "orange" },
+  },
+  onstatechange: function (state, old) {
+    // this = the indicator element
+    console.log(`State: ${old} → ${state}`);
+  },
 };
 ```
 
 **Instance methods:**
 
--   `el.state = 'fail'` — set state directly
--   `el.resetState()` — return to `'default'`
--   `el.switchToNextState()` — cycle through defined states
--   `el.toggleState('fail')` — toggle between named state and `'default'`
+- `el.state = 'fail'` — set state directly
+- `el.resetState()` — return to `'default'`
+- `el.switchToNextState()` — cycle through defined states
+- `el.toggleState('fail')` — toggle between named state and `'default'`
 
 ---
 
@@ -163,8 +163,8 @@ export default {
 
 ```json jaml-playground
 {
-    "type": "input",
-    "disabled": "<b>This field is locked</b> — contact an admin to change it"
+  "type": "input",
+  "disabled": "<b>This field is locked</b> — contact an admin to change it"
 }
 ```
 
@@ -181,9 +181,9 @@ export default {
 
 ```json jaml-playground
 {
-    "type": "button",
-    "cap": "Danger",
-    "color": "red"
+  "type": "button",
+  "cap": "Danger",
+  "color": "red"
 }
 ```
 
@@ -200,10 +200,10 @@ export default {
 
 ```json jaml-playground
 {
-    "type": "button",
-    "cap": "Primary",
-    "class": "my-button jam-primary",
-    "style": { "marginTop": "1rem" }
+  "type": "button",
+  "cap": "Primary",
+  "class": "my-button jam-primary",
+  "style": { "marginTop": "1rem" }
 }
 ```
 
@@ -219,10 +219,10 @@ export default {
 
 ```json jaml-playground
 {
-    "type": "input",
-    "cap": "Email",
-    "tip": "Enter your work email address",
-    "help": "We use your email for account recovery only. It will not be shared."
+  "type": "input",
+  "cap": "Email",
+  "tip": "Enter your work email address",
+  "help": "We use your email for account recovery only. It will not be shared."
 }
 ```
 
@@ -243,12 +243,28 @@ Slot setters such as `cap` accept authored HTML strings as well as supplied `Tex
 
 ```javascript
 // Imperative example: label is an existing Jam-UI label element.
-label.cap = document.createTextNode('<b>Literal {{text}}</b>');
+label.cap = document.createTextNode("<b>Literal {{text}}</b>");
 // Authored HTML strings intentionally retain markup semantics:
-label.cap = '<b>Emphasized text</b>';
+label.cap = "<b>Emphasized text</b>";
 ```
 
 The updated development runtime preserves supplied Text as literal content when wrapping it for a slot, including nested/async binding results. Slot assignment can wrap or move nodes; it does not promise preservation of the Text node's identity. Elements retain their existing DOM content, so create them through text-safe APIs when needed. Older 1.6.0 bundles may reparse a supplied Text node as markup; verify the consuming runtime. This correction does not sanitize arbitrary HTML strings or Elements.
+
+### Naming native input agents
+
+For a native input, textarea or select without a visible caption, provide an accessible name on its actual native agent. The updated development runtime forwards selected host ARIA attributes; see [native caption and accessible names](input.md#native-caption-and-accessible-names) for ownership, removal and browser-reference limits. Older bundles do not forward these attributes: use the direct-agent fallback below. `getAgent()` is public; the element's `oninit` hook runs after its native agent has been assigned.
+
+```javascript jaml-playground
+export default {
+  type: "select",
+  data: [{ name: "Model A", value: "a" }],
+  oninit() {
+    this.getAgent().setAttribute("aria-label", "Model");
+  },
+};
+```
+
+For a changing or localized name, update the same attribute from its existing application owner. This example sets a static name once; it does not define naming for replacement editors. `setParam('aria-label', ...)` is not an attribute-forwarding API, and `agent.attrs` is not a registered style. Component `onafterrender` may run while a parent is detached; prefer element initialization when native-agent readiness is required.
 
 ### Named-slot lifecycle
 
@@ -272,10 +288,10 @@ Native `slotchange` does bubble inside the shadow tree. Nested template slots ca
 
 #### Initialization and firing limits
 
--   Slots and their listeners are prepared on first connection, before `init` / `oninit` and `mount` / `onmount`. There is no unconditional initial named event or replay for a late subscriber. Read current state when attaching behavior, and use mount/render lifecycle when the behavior depends on attachment or completed child rendering.
--   Native notifications are asynchronous and can coalesce. Adding, removing, replacing or reassigning slotted nodes can notify; changing a descendant's text or attributes without changing assignment does not. JAM-UI can update an existing caption text node in place, so setting `cap` is not a guarantee of `capslotchange`. See the [DOM slot notification contract](https://dom.spec.whatwg.org/#signaling-slot-change).
--   A slot added after template initialization does not automatically receive this bridge. In particular, dynamically created `layer` / `extra` slots are not guaranteed to emit their own named host event.
--   A `value` property does not imply a `value` slot. Text inputs write their internal control, so use `valuechange` / `onvaluechange` for value changes; `valueslotchange` describes slot assignment only where a value slot exists.
+- Slots and their listeners are prepared on first connection, before `init` / `oninit` and `mount` / `onmount`. There is no unconditional initial named event or replay for a late subscriber. Read current state when attaching behavior, and use mount/render lifecycle when the behavior depends on attachment or completed child rendering.
+- Native notifications are asynchronous and can coalesce. Adding, removing, replacing or reassigning slotted nodes can notify; changing a descendant's text or attributes without changing assignment does not. JAM-UI can update an existing caption text node in place, so setting `cap` is not a guarantee of `capslotchange`. See the [DOM slot notification contract](https://dom.spec.whatwg.org/#signaling-slot-change).
+- A slot added after template initialization does not automatically receive this bridge. In particular, dynamically created `layer` / `extra` slots are not guaranteed to emit their own named host event.
+- A `value` property does not imply a `value` slot. Text inputs write their internal control, so use `valuechange` / `onvaluechange` for value changes; `valueslotchange` describes slot assignment only where a value slot exists.
 
 #### Reuse before observing DOM
 
@@ -285,22 +301,24 @@ This example marks whether the input has caption text on mount and whenever capt
 
 ```javascript jaml-playground
 function syncCaptionState(element, assigned) {
-    const _hasCaption = assigned.some((node) => (node.textContent ?? '').trim() !== '');
-    element.toggleAttribute('data-has-caption', _hasCaption);
+  const _hasCaption = assigned.some(
+    (node) => (node.textContent ?? "").trim() !== "",
+  );
+  element.toggleAttribute("data-has-caption", _hasCaption);
 }
 
 export default {
-    type: 'input',
-    cap: 'Account',
-    onmount() {
-        syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
+  type: "input",
+  cap: "Account",
+  onmount() {
+    syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
+  },
+  on: {
+    capslotchange(event) {
+      const { assigned } = event.detail;
+      syncCaptionState(this, assigned);
     },
-    on: {
-        capslotchange(event) {
-            const { assigned } = event.detail;
-            syncCaptionState(this, assigned);
-        }
-    }
+  },
 };
 ```
 
@@ -308,7 +326,9 @@ export default {
 
 ### Lifecycle hooks
 
-The hooks listed below can be passed as JAML params or set directly on the element instance. Inside all element hooks, `this` = **element**. For slot hooks, including their parameter and subscription limits, see [Named-slot lifecycle](#named-slot-lifecycle).
+The hooks listed below can be passed as JAML params or set directly on the element instance. For ordinary functions in element hooks, `this` = **element**; arrow functions retain their lexical receiver. For slot hooks, including their parameter and subscription limits, see [Named-slot lifecycle](#named-slot-lifecycle).
+
+The current development runtime corrects the ordinary `ondestroy` receiver to the element. Earlier bundles omitted that receiver; verify the corrected bundle before relying on `this` there. Until updating, a cleanup closure can capture the actual element in component `onafterrender` (`this.element` in that component hook). Destruction unplugs element plugins first, invokes `ondestroy`, emits `destroy`, and then removes the element. A throwing hook is reported and native teardown continues. This is not a guarantee that arbitrary application cleanup or repeated direct destruction is idempotent.
 
 | Hook                | Signature                           | When                                                                                                                      |
 | ------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -326,19 +346,19 @@ The hooks listed below can be passed as JAML params or set directly on the eleme
 
 ```javascript jaml-playground
 export default {
-    type: 'container',
-    oninit: function () {
-        // this = the container element
-        // Fires ONCE — setup that should only run the first time
-        console.log('initialized');
-    },
-    onmount: function () {
-        // Fires on every connection
-        console.log('mounted');
-    },
-    ondestroy: function () {
-        console.log('container destroyed');
-    }
+  type: "container",
+  oninit: function () {
+    // this = the container element
+    // Fires ONCE — setup that should only run the first time
+    console.log("initialized");
+  },
+  onmount: function () {
+    // Fires on every connection
+    console.log("mounted");
+  },
+  ondestroy: function () {
+    console.log("container destroyed");
+  },
 };
 ```
 
@@ -380,7 +400,7 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 
 | Param               | Type                                                | Description                                                                                                                                                |
 | ------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`             | `any`                                               | Current value. Setting fires `onvaluechange`.                                                                                                              |
+| `value`             | `any`                                               | Current value. A changed assignment normally fires the value-change hook and events.                                                                       |
 | `defaultValue`      | `any`                                               | Initial value to reset to. Accepts a factory function `() => value`.                                                                                       |
 | `clearable`         | `boolean`                                           | Whether `clear()` and the clearable plugin can reset the value. Default `true`.                                                                            |
 | `onvaluechange`     | `(value, oldValue) => void`                         | Hook fired when value changes. `this` = element.                                                                                                           |
@@ -388,11 +408,21 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 
 ```json jaml-playground
 {
-    "type": "input",
-    "cap": "Name",
-    "defaultValue": "Alice"
+  "type": "input",
+  "cap": "Name",
+  "defaultValue": "Alice"
 }
 ```
+
+---
+
+### Value changes and explicit actions
+
+Assigning `value`, or calling `setValue` with its default `triggerChange: true`, invokes `onvaluechange`, emits `valuechange` and dispatches `change` when the resulting value differs. Programmatic assignments, including model bindings that write `value`, can therefore reach `onchange`; that notification alone does not establish a human commit. Native user editing also uses the framework's synthesized change event.
+
+Use `onchange` freely for local draft state, previews and other intended value reactions. When changing access, applying a preset or sending another business action requires explicit confirmation, bind the selector to a draft value and perform that action from a separate **Apply** button. At the application boundary, ignore unchanged effective settings before making an RPC or entering a timed wait; native setter equality checks do not cover every application update path.
+
+For a deliberately silent programmatic update, `setValueQuietly(value)` or `setValue(value, source, false)` suppresses this hook/event sequence. Use that only when subscribers should not be notified; it is not a substitute for separating drafts from committed actions.
 
 ---
 
@@ -400,13 +430,13 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 
 **Type:** `IRules`
 
-Define validation constraints. `getFormData()` throws if any fail.
+Define validation constraints. `getFormData()` throws if any fail. Rule keys are case-sensitive: use `minLength` and `maxLength`, matching the native control properties. Test user typing separately from programmatic value assignment; native length validity and input truncation do not imply that arbitrary assigned values receive the same enforcement.
 
 | Rule field  | Type               | Description                                             |
 | ----------- | ------------------ | ------------------------------------------------------- |
 | `required`  | `boolean`          | Value must not be empty                                 |
-| `minlength` | `number`           | Minimum string length                                   |
-| `maxlength` | `number`           | Maximum string length                                   |
+| `minLength` | `number`           | Minimum string length                                   |
+| `maxLength` | `number`           | Maximum string length                                   |
 | `min`       | `number \| string` | Minimum numeric/date value                              |
 | `max`       | `number \| string` | Maximum numeric/date value                              |
 | `pattern`   | `string` (RegExp)  | Must match the pattern                                  |
@@ -414,13 +444,13 @@ Define validation constraints. `getFormData()` throws if any fail.
 
 ```json jaml-playground
 {
-    "type": "input",
-    "cap": "Email",
-    "rules": {
-        "required": true,
-        "pattern": "^[^@]+@[^@]+\\.[^@]+$",
-        "triggers": ["blur", "valuechange"]
-    }
+  "type": "input",
+  "cap": "Email",
+  "rules": {
+    "required": true,
+    "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+    "triggers": ["blur", "valuechange"]
+  }
 }
 ```
 
@@ -428,12 +458,12 @@ Rules can carry a custom `message`:
 
 ```javascript jaml-playground
 export default {
-    type: 'input-number',
-    cap: 'Score',
-    rules: {
-        min: { limit: 0, message: 'Must be positive' },
-        max: { limit: 100, message: 'Cannot exceed 100' }
-    }
+  type: "input-number",
+  cap: "Score",
+  rules: {
+    min: { limit: 0, message: "Must be positive" },
+    max: { limit: 100, message: "Cannot exceed 100" },
+  },
 };
 ```
 
@@ -451,11 +481,11 @@ Values flow through: `modifier` (normalize on set) → stored → `accessor` (tr
 
 ```javascript jaml-playground
 export default {
-    type: 'input',
-    cap: 'Price',
-    modifier: (v) => parseFloat(v), // store as number
-    formatter: (v) => `$${v?.toFixed(2)}`, // display as "$1.23"
-    accessor: (v) => v // read as stored
+  type: "input",
+  cap: "Price",
+  modifier: (v) => parseFloat(v), // store as number
+  formatter: (v) => `$${v?.toFixed(2)}`, // display as "$1.23"
+  accessor: (v) => v, // read as stored
 };
 ```
 
@@ -478,18 +508,18 @@ export default {
 
 ```javascript jaml-playground
 export default {
-    type: 'indicator',
-    cap: 'Score',
-    value: '{{score}}',
-    valueStates: {
-        pass: (value) => value >= 60,
-        failed: (value) => value < 60
-    },
-    descStyles: {
-        ':scope[state=pass]': ['color(green)'],
-        ':scope[state=failed]': ['color(red)']
-    },
-    vars: { score: 43 }
+  type: "indicator",
+  cap: "Score",
+  value: "{{score}}",
+  valueStates: {
+    pass: (value) => value >= 60,
+    failed: (value) => value < 60,
+  },
+  descStyles: {
+    ":scope[state=pass]": ["color(green)"],
+    ":scope[state=failed]": ["color(red)"],
+  },
+  vars: { score: 43 },
 };
 ```
 
@@ -499,16 +529,16 @@ export default {
 
 ### Instance methods
 
-| Method                                        | Description                                  |
-| --------------------------------------------- | -------------------------------------------- |
-| `el.getValue()`                               | Get raw stored value (before `accessor`)     |
-| `el.setValue(value, source?, triggerChange?)` | Set value with optional source tracking      |
-| `el.setValueQuietly(value, source?)`          | Set value without firing `onvaluechange`     |
-| `el.clear()`                                  | Reset value to `null` if `clearable` is true |
-| `el.getContent()`                             | Get the display content from the value slot  |
-| `el.setContent(content)`                      | Set display content manually                 |
-| `el.focus()`                                  | Focus the internal agent element             |
-| `el.blur()`                                   | Blur the internal agent element              |
+| Method                                        | Description                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| `el.getValue()`                               | Get raw stored value (before `accessor`)                                 |
+| `el.setValue(value, source?, triggerChange?)` | Set value; `triggerChange` defaults to `true`                            |
+| `el.setValueQuietly(value, source?)`          | Set value without the value-change hook or `valuechange`/`change` events |
+| `el.clear()`                                  | Reset value to `null` if `clearable` is true                             |
+| `el.getContent()`                             | Get the display content from the value slot                              |
+| `el.setContent(content)`                      | Set display content manually                                             |
+| `el.focus()`                                  | Focus the internal agent element                                         |
+| `el.blur()`                                   | Blur the internal agent element                                          |
 
 ---
 
@@ -529,10 +559,11 @@ Extends `AbstractInputElement`. Elements where the value is selected from a list
 
 ### Options data
 
-| Param     | Type              | Description                                           |
-| --------- | ----------------- | ----------------------------------------------------- |
-| `data`    | `ElementOption[]` | The options list. Each entry is an option descriptor. |
-| `dataUrl` | `string`          | Load options from a remote URL (JSON).                |
+| Param              | Type                     | Description                                                                                                                                    |
+| ------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`             | `ElementOption[]`        | The options list. Each entry is an option descriptor.                                                                                          |
+| `dataUrl`          | `string`                 | Load options from a remote URL (JSON).                                                                                                         |
+| `optionTextPolicy` | `'trusted' \| 'literal'` | Current development runtime: default `'trusted'`; `'literal'` inserts option-template text once without parsing HTML or resubstituting braces. |
 
 **`ElementOption` fields:**
 
@@ -551,15 +582,38 @@ Extends `AbstractInputElement`. Elements where the value is selected from a list
 
 ```json jaml-playground
 {
-    "type": "select",
-    "cap": "Category",
-    "data": [
-        { "name": "Electronics", "value": "electronics", "group": "Products" },
-        { "name": "Clothing", "value": "clothing", "group": "Products" },
-        { "name": "Books", "value": "books", "group": "Media" }
-    ]
+  "type": "select",
+  "cap": "Category",
+  "data": [
+    { "name": "Electronics", "value": "electronics", "group": "Products" },
+    { "name": "Clothing", "value": "clothing", "group": "Products" },
+    { "name": "Books", "value": "books", "group": "Media" }
+  ]
 }
 ```
+
+---
+
+### Literal external labels
+
+In the current development runtime, set `optionTextPolicy: 'literal'` for external question choices, model names and file/workspace labels. It applies to native select, radio/checkbox and button-group text templates. Names remain strings, so filtering, option keys and selected values keep their ordinary behavior. Text placeholders are replaced once; markup and braces in inserted values remain visible literally. Native select group labels are also literal attributes.
+
+```javascript jaml-playground
+export default {
+  type: "buttongroup-radio",
+  optionTextPolicy: "literal",
+  autoTip: false,
+  onafterrender({ element }) {
+    // Pass incoming labels as data, outside JAML expression authoring.
+    const choices = [{ name: "<model> {{literal}} {name}", value: "model-id" }];
+    element.setOptions(choices.map(({ name, value }) => ({ name, value })));
+  },
+};
+```
+
+Configure the policy before `setOptions`; `setParams({ data, optionTextPolicy: 'literal' })` orders the policy first automatically. Changing the policy alone does not redraw existing options: call `setOptions` with the new list afterward. Keep external labels as strings rather than replacing names with DOM nodes.
+
+The policy applies to all text-node placeholders in a custom option template, including mixed/repeated placeholders. Templates and attribute fields remain trusted authoring: it does not sanitize `attrs`, events, `icon`, `tip`, or a custom `cap="{name}"` attribute sink. Keep `autoTip: false` for untrusted labels because automatic tooltips interpret generated markup. Copy only approved label/value fields from external records. The default `trusted` policy preserves existing authored markup.
 
 ---
 
@@ -574,12 +628,12 @@ Use a composite select type to choose single- or multi-selection.
 
 ```json jaml-playground
 {
-    "type": "select-checkbox",
-    "cap": "Toppings",
-    "data": [
-        { "name": "Cheese", "value": "cheese" },
-        { "name": "Mushrooms", "value": "mushrooms" }
-    ]
+  "type": "select-checkbox",
+  "cap": "Toppings",
+  "data": [
+    { "name": "Cheese", "value": "cheese" },
+    { "name": "Mushrooms", "value": "mushrooms" }
+  ]
 }
 ```
 
@@ -634,5 +688,5 @@ This is a boundary for the generated native-input listener, not a whole-framewor
 ```javascript
 // Imperative usage (outside JAML playground)
 await el.optionReady;
-console.log('Options are ready:', el.getCheckedValue());
+console.log("Options are ready:", el.getCheckedValue());
 ```

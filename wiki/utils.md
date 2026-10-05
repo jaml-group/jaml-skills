@@ -8,7 +8,9 @@ The `jam` global is the main runtime namespace. It merges all exports from JAML,
 
 ### `jam.themeReady`
 
-On `DOMContentLoaded`, Jam-UI assigns `jam.themeReady` to the initial `initTheme()` promise. It resolves after Jam-UI initializes built-in tokens, restores saved theme state, discovers themes, and applies the initial theme. Rambutan route rendering waits for it automatically before invoking render hooks.
+In the updated development runtime, `jam.themeReady` exists synchronously after loading Jam-UI. Initialization starts at `DOMContentLoaded` while the document is loading, or in the next microtask when it is already interactive/complete. The stable promise preserves initialization rejection. It resolves after Jam-UI initializes built-in tokens, restores saved theme state, discovers themes, and applies the initial theme. Rambutan route rendering waits for it automatically before invoking render hooks.
+
+Older bundles may assign the promise only at `DOMContentLoaded`. Verify that it exists before treating `await jam.themeReady` as a readiness barrier: awaiting `undefined` does not wait for initialization. Early global dark-mode writes in the updated runtime wait for the body color profile and coalesce to the latest request. Wait for it before assigning `colors`/`colorScheme` palettes. This barrier does not establish component rendering, geometry or font readiness.
 
 ### `jam.defaultStyleOverrides`
 
@@ -16,10 +18,10 @@ Assign a selector-to-style dictionary to extend or replace entries in the framew
 
 ```javascript
 jam.defaultStyleOverrides = {
-  'tile > section': ['group.gridline'],
-  'map-standard': {
-    'item-external': ['text.muted']
-  }
+  "tile > section": ["group.gridline"],
+  "map-standard": {
+    "item-external": ["text.muted"],
+  },
 };
 ```
 
@@ -32,13 +34,11 @@ jam.defaultStyleOverrides = {
 Render a JAML object into a DOM container. Synchronously returns a `Model` instance for one definition. Adding `await` does not make this a readiness promise: [render completion](./JAML/binder.md#binding-lifecycle), option loading, visible geometry and animation settlement are different conditions. For external initial data, see [constructing a model before runtime vars writes and rendering](./JAML/binder.md#runtime-data-and-authored-definitions).
 
 ```javascript
-const model = jam.render('#app', {
-  type: 'container',
-  vars: { title: 'Hello' },
-  components: [
-    { type: 'indicator', cap: '{{title}}' }
-  ]
-})
+const model = jam.render("#app", {
+  type: "container",
+  vars: { title: "Hello" },
+  components: [{ type: "indicator", cap: "{{title}}" }],
+});
 // model.vars.title = 'Updated' — reactive
 ```
 
@@ -50,7 +50,9 @@ Render Markdown as a styled document with TOC, section navigation, and code tool
 The generated document root uses the runtime renderer profile `stylize: 'markdown'`.
 
 ```javascript
-jamd('#docs', `
+jamd(
+  "#docs",
+  `
 # Getting Started
 
 Install and write your first JAML:
@@ -58,7 +60,8 @@ Install and write your first JAML:
 \`\`\`javascript
 jaml('#app', { type: 'button', cap: 'Hello' })
 \`\`\`
-`)
+`,
+);
 ```
 
 ### `jam.renderFromString(container, str, option?)`
@@ -68,9 +71,9 @@ Auto-detect language (JSON, JavaScript, Markdown, Mermaid, HTML) and render acco
 For JavaScript, a default-exported object containing `jaml` plus at least one CC Definition marker (`showType`, `desc`, `size`, or `variants`) is registered temporarily and rendered through the CC variant preview. Recognition is content-first; `.cc.mjs` is the explicit filename convention used by the language tooling, not a runtime requirement.
 
 ```javascript
-jam.renderFromString('#app', '{"type":"button","cap":"Hello"}')
-jam.renderFromString('#app', 'export default { type: "button", cap: "Hi" }')
-jam.renderFromString('#app', '# Hello World')
+jam.renderFromString("#app", '{"type":"button","cap":"Hello"}');
+jam.renderFromString("#app", 'export default { type: "button", cap: "Hi" }');
+jam.renderFromString("#app", "# Hello World");
 ```
 
 ### `jam.renderJSON(container, data)`
@@ -79,7 +82,7 @@ Auto-visualize any JS object as a JAML component tree. Arrays become tables or t
 The generated root uses the runtime renderer profile `stylize: 'json'`.
 
 ```javascript
-jam.renderJSON('#app', { name: 'Alice', scores: [88, 91, 76] })
+jam.renderJSON("#app", { name: "Alice", scores: [88, 91, 76] });
 ```
 
 ### `jam.parseJSONAsJAML(data)`
@@ -88,7 +91,7 @@ Convert a JS object to a `ComponentOption` without rendering.
 The returned root uses `stylize: 'json'`.
 
 ```javascript
-const option = jam.parseJSONAsJAML(myData)
+const option = jam.parseJSONAsJAML(myData);
 ```
 
 ### `jam.renderModal(container, option, config?)`
@@ -96,14 +99,18 @@ const option = jam.parseJSONAsJAML(myData)
 Render a JAML object as a modal dialog. Shows a blur/dimmer curtain behind it. Accepts `click2Close` (boolean, default `true`) or a config object with `onclose` callback.
 
 ```javascript
-const model = jam.renderModal('#app', {
-  type: 'card',
-  cap: 'Confirm',
-  components: [
-    { type: 'label', cap: 'Are you sure?' },
-    { type: 'button-cta', cap: 'OK', onclick: 'jam.closeTopModal()' }
-  ]
-}, { click2Close: true, onclose: (m) => nutmeg.info('Closed') })
+const model = jam.renderModal(
+  "#app",
+  {
+    type: "card",
+    cap: "Confirm",
+    components: [
+      { type: "label", cap: "Are you sure?" },
+      { type: "button-cta", cap: "OK", onclick: "jam.closeTopModal()" },
+    ],
+  },
+  { click2Close: true, onclose: (m) => nutmeg.info("Closed") },
+);
 ```
 
 ### `jam.closeTopModal()`
@@ -117,10 +124,10 @@ Show a Yes/No confirmation popup. Returns the popup element.
 ```javascript
 jam.popupYesNo(
   someElement,
-  'Delete this item?',
-  () => nutmeg.warn('Deleted'),
-  () => nutmeg.info('Cancelled')
-)
+  "Delete this item?",
+  () => nutmeg.warn("Deleted"),
+  () => nutmeg.info("Cancelled"),
+);
 ```
 
 ---
@@ -132,22 +139,22 @@ jam.popupYesNo(
 Show a notification. Returns the `NutmegNotify` instance.
 
 ```javascript
-jam.notify('File saved', { level: 'success', duration: 3000 })
-jam.notify('Upload failed', { level: 'error', type: 'card', pinnable: true })
+jam.notify("File saved", { level: "success", duration: 3000 });
+jam.notify("Upload failed", { level: "error", type: "card", pinnable: true });
 ```
 
 ### `nutmeg.*` — level shortcuts
 
 ```javascript
-nutmeg.info('Processing...')
-nutmeg.success('Done!')
-nutmeg.warn('Session expiring')
-nutmeg.error('Connection lost')
-nutmeg.hurray('Level up!')
+nutmeg.info("Processing...");
+nutmeg.success("Done!");
+nutmeg.warn("Session expiring");
+nutmeg.error("Connection lost");
+nutmeg.hurray("Level up!");
 
 // Custom color notifications
-nutmeg.gold('Special event!')
-nutmeg.coral('Custom highlight')
+nutmeg.gold("Special event!");
+nutmeg.coral("Custom highlight");
 ```
 
 ### `NutmegNotify.config(option)`
@@ -156,10 +163,10 @@ Configure global notification defaults.
 
 ```javascript
 NutmegNotify.config({
-  position: 'right',          // 'left' | 'center' | 'right'
+  position: "right", // 'left' | 'center' | 'right'
   defaultDuration: 4000,
-  defaultType: 'card'         // 'banner' | 'card'
-})
+  defaultType: "card", // 'banner' | 'card'
+});
 ```
 
 > **Shorthand:** `nutmeg.config(option)` is equivalent to `NutmegNotify.config(option)` — configure globally via the proxy.
@@ -177,9 +184,9 @@ Remove all active notifications.
 Show a popup anchored to an element or mouse event. The optional 4th `type` parameter accepts a `PopupType` key (e.g. `'dropDown'`, `'tip'`, `'contextMenu'`) to use a predefined profile.
 
 ```javascript
-jam.popup(buttonElement, 'Click me for details')
-jam.popup(mouseEvent, 'Tooltip text', { showDelay: 200 })
-jam.popup(target, content, {}, 'dropDown')  // dropdown-styled popup
+jam.popup(buttonElement, "Click me for details");
+jam.popup(mouseEvent, "Tooltip text", { showDelay: 200 });
+jam.popup(target, content, {}, "dropDown"); // dropdown-styled popup
 ```
 
 ### `jam.closePopup(delay?)`
@@ -187,8 +194,8 @@ jam.popup(target, content, {}, 'dropDown')  // dropdown-styled popup
 Close the current popup.
 
 ```javascript
-jam.closePopup()      // immediate
-jam.closePopup(200)   // after 200ms
+jam.closePopup(); // immediate
+jam.closePopup(200); // after 200ms
 ```
 
 ### `jam.dropDown(target, content, option?)`
@@ -196,12 +203,51 @@ jam.closePopup(200)   // after 200ms
 Show a dropdown popup. Convenience wrapper around `jam.popup(target, content, option, 'dropDown')`.
 
 ```javascript
-jam.dropDown(this, this.ref.menu, { position: 'bottom' })
+jam.dropDown(this, this.ref.menu, { position: "bottom" });
 ```
 
 ### `jam.closeDropDown()`
 
 Alias for `jam.closePopup()`. Closes the currently open dropdown.
+
+### Contextual action buttons
+
+Use native buttons inside `jam.dropDown` for commands such as Pin and Archive. A radio group represents a selection, so it is not the default owner for side-effect commands. `jam.popup` and `jam.dropDown` return no popup handle; `jam.closeDropDown()` closes the shared current popup.
+
+```javascript jaml-playground
+function actions() {
+  return {
+    type: "container",
+    styles: ["layout.flex(direction:column)"],
+    components: ["Pin", "Archive"].map((action) => ({
+      type: "button-ghost",
+      cap: action,
+      styles: ["align(left-middle)", "cap.text(align:left)"],
+      onclick() {
+        console.log(action);
+        jam.closeDropDown();
+      },
+    })),
+  };
+}
+export default {
+  type: "button-ghost",
+  icon: "⋯",
+  styles: ["icon.chars"],
+  attrs: { "aria-label": "Chat actions" },
+  onclick() {
+    jam.dropDown(this, actions(), { position: "bottom", align: "right" });
+  },
+  oncontextmenu(event) {
+    event.preventDefault();
+    jam.popup(event, actions(), {}, "contextMenu");
+  },
+};
+```
+
+Keep an ordinary click/keyboard entry point even when right-click is supported. The helper does not prevent the browser context menu itself; the application handler does so. Native popup profiles own positioning and outside-click dismissal. This primitive example does not implement a complete accessible menu: the application still owns initial focus, Escape/restore behavior, expanded state and any menu-specific keyboard semantics. Do not add menu roles without those interactions. Keep callbacks scoped to the selected record and recheck action eligibility when activated; close the owned popup when the view becomes invalid.
+
+For this helper path, a top-level `onafterrender` callback inside the popup content definition is not a visible-readiness hook: content is built directly rather than rendered through that Model hook. Use the popup's owned `showing` event and verify focus eligibility; cancel deferred focus when ownership ends. The `hiding` event follows exit completion, while `papaya.showing` becomes false earlier. See [popup content, focus and dismissal timing](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) before implementing initial focus or expanded-state synchronization.
 
 ### `jam.modalYesNo(container, prompt, onYes, onNo, styles?)`
 
@@ -209,11 +255,11 @@ Show a confirmation modal with Yes/No buttons.
 
 ```javascript
 jam.modalYesNo(
-  '#app',
-  'Are you sure you want to delete this item?',
-  () => nutmeg.success('Deleted'),
-  () => nutmeg.info('Cancelled')
-)
+  "#app",
+  "Are you sure you want to delete this item?",
+  () => nutmeg.success("Deleted"),
+  () => nutmeg.info("Cancelled"),
+);
 ```
 
 ### `jam.closeTopModal()`
@@ -225,10 +271,10 @@ Close the topmost modal.
 Show a blur/dimmer overlay on an element. Returns the curtain element.
 
 ```javascript
-const curtain = jam.showCurtain('#app', {
+const curtain = jam.showCurtain("#app", {
   blur: true,
-  onclick: () => jam.removeCurtain('#app')
-})
+  onclick: () => jam.removeCurtain("#app"),
+});
 ```
 
 ### `jam.removeCurtain(el)`
@@ -244,8 +290,8 @@ Remove the curtain overlay.
 Scroll to and highlight an element with a locator frame.
 
 ```javascript
-jam.locate('#email-field')                              // scroll + highlight
-jam.locate('#email-field', { color: 'red', width: 4 })  // custom locator
+jam.locate("#email-field"); // scroll + highlight
+jam.locate("#email-field", { color: "red", width: 4 }); // custom locator
 ```
 
 ---
@@ -267,13 +313,13 @@ The corresponding TypeScript exports are `AgentLocator`, `AgentSnapshotOptions`,
 
 ```javascript
 const compactAgent = jam.createAgentUtil({
-  defaultStyleProperties: ['display', 'width', 'height', 'color']
-})
+  defaultStyleProperties: ["display", "width", "height", "color"],
+});
 
 // Replace the global instance when every integration should use this profile.
 jam.installAgentUtil({
-  defaultStyleProperties: ['display', 'visibility', 'width', 'height']
-})
+  defaultStyleProperties: ["display", "visibility", "width", "height"],
+});
 ```
 
 ### Locators and snapshot scope
@@ -316,21 +362,21 @@ A serialized JAM node includes its identity, type/subtype, cap, text, rounded re
 Element targets can be a CSS selector string, `{ selector }`, `{ locator, options? }`, or a bare `AgentLocator`. Method arguments also support `{ $target: ... }`, `{ $locator: ... }`, and `{ $selector: ... }`; the agent resolves those wrappers to live DOM elements before invocation. Dot-separated property and method paths reject `__proto__`, `prototype`, and `constructor` segments.
 
 ```javascript
-const options = { selector: '#app', maxDepth: 2 }
-const snapshot = jam.agent.getAgentSnapshot(options)
+const options = { selector: "#app", maxDepth: 2 };
+const snapshot = jam.agent.getAgentSnapshot(options);
 
 const query = await jam.agent.runElementQuery({
-  requestId: 'find-save',
-  locator: { type: 'button', cap: 'Save' },
-  options
-})
+  requestId: "find-save",
+  locator: { type: "button", cap: "Save" },
+  options,
+});
 
 const action = await jam.agent.runAgentAction({
-  actionId: 'click-save',
-  action: 'click',
-  locator: { type: 'button', cap: 'Save' },
-  options
-})
+  actionId: "click-save",
+  action: "click",
+  locator: { type: "button", cap: "Save" },
+  options,
+});
 ```
 
 ### Direct helpers
@@ -367,9 +413,9 @@ The instance also exposes the lower-level helpers used by the request methods:
 Find a DOM element. Accepts ID string, CSS selector, or `HTMLElement` (passed through).
 
 ```javascript
-const el = jam.findElement('#my-button')
-const option = jam.findElement('.jam-option')
-const body = jam.findElement(document.body)  // pass-through
+const el = jam.findElement("#my-button");
+const option = jam.findElement(".jam-option");
+const body = jam.findElement(document.body); // pass-through
 ```
 
 ### `jam.applyStyle(el, styles)`
@@ -377,8 +423,8 @@ const body = jam.findElement(document.body)  // pass-through
 Apply inline CSS styles.
 
 ```javascript
-jam.applyStyle(el, { color: 'red', fontSize: '1.2rem' })
-jam.applyStyle(el, 'display:none;opacity:0.5')
+jam.applyStyle(el, { color: "red", fontSize: "1.2rem" });
+jam.applyStyle(el, "display:none;opacity:0.5");
 ```
 
 ### `jam.findScrollableParent(el)`
@@ -420,35 +466,43 @@ This complete example targets the updated runtime described above. Clicking **Fi
 
 ```javascript jaml-playground
 export default {
-    type: 'container',
-    vars: {
-        disposition: null,
-        choices: [
-            { value: 'fixed', name: 'Fixed' },
-            { value: 'ignore', name: 'Ignore' }
-        ]
+  type: "container",
+  vars: {
+    disposition: null,
+    choices: [
+      { value: "fixed", name: "Fixed" },
+      { value: "ignore", name: "Ignore" },
+    ],
+  },
+  components: [
+    {
+      type: "switch-button",
+      buildFor: "choice in choices",
+      key: "value",
+      cap: "{{choice.name}}",
+      autoState: true,
+      attrs: { group: "wiki-review-disposition" },
+      props: { option: "{{choice}}" },
+      onclick(event) {
+        event.preventDefault();
+        jam.toggleCheck(this);
+        const _siblings = this.parentElement.querySelectorAll(
+          'jam-switch[group="wiki-review-disposition"]',
+        );
+        const _selected = jam.updateSiblingsCheckedState(
+          this,
+          "radio",
+          _siblings,
+        );
+        this.vars.disposition = _selected[0]?.value ?? null;
+      },
     },
-    components: [
-        {
-            type: 'switch-button',
-            buildFor: 'choice in choices',
-            key: 'value',
-            cap: '{{choice.name}}',
-            autoState: true,
-            attrs: { group: 'wiki-review-disposition' },
-            props: { option: '{{choice}}' },
-            onclick(event) {
-                event.preventDefault();
-                jam.toggleCheck(this);
-                const _siblings = this.parentElement.querySelectorAll(
-                    'jam-switch[group="wiki-review-disposition"]'
-                );
-                const _selected = jam.updateSiblingsCheckedState(this, 'radio', _siblings);
-                this.vars.disposition = _selected[0]?.value ?? null;
-            }
-        },
-        { type: 'indicator', cap: 'Disposition', value: "{{disposition || 'None'}}" }
-    ]
+    {
+      type: "indicator",
+      cap: "Disposition",
+      value: "{{disposition || 'None'}}",
+    },
+  ],
 };
 ```
 
@@ -473,21 +527,27 @@ For a first options render, the narrower [`optionReady`](./JAM-UI/JAM-UI.md#opti
 
 ## Storage
 
+In the current development runtime, storage areas are resolved once when the runtime loads. If accessing an area or its initial read throws (for example in an opaque `sandbox="allow-scripts"` iframe), or the area is absent, Jam-UI uses a separate in-memory area for that realm. Reloading/replacing the frame loses it. Available native storage keeps its original identity and behavior. Jam-UI does not replace browser globals, synthesize storage events or create cross-frame persistence/bridging. Session-ID creation uses the same resolved session area.
+
+This fallback covers initial absence/unreadability. Native write/quota errors and access revoked after initialization retain their existing error behavior. It does not relax CSP or change serialization: the existing deserializer evaluates serialized expressions, and `getFromStorage` returns the raw stored string when deserialization fails, including when CSP blocks evaluation. A storage fallback is not an application action/state bridge.
+
+`STORAGE_TYPE.SESSION_ONLY`, `LOCAL_ONLY` and `BOTH` select the area. Saves default to local; reads default to session-first `BOTH`. Use `jam.STORAGE_TYPE` constants rather than strings such as `'session'`.
+
 ### `jam.save2Storage(key, value, type?)`
 
 Save data to localStorage (default) or sessionStorage.
 
 ```javascript
-jam.save2Storage('user-preferences', JSON.stringify(prefs))
-jam.save2Storage('session-data', data, 'session')
+jam.save2Storage("user-preferences", prefs);
+jam.save2Storage("session-data", data, jam.STORAGE_TYPE.SESSION_ONLY);
 ```
 
-### `jam.getFromStorage(key, type?)`
+### `jam.getFromStorage(key, defaultValue?, storageType?)`
 
 Read data from storage.
 
 ```javascript
-const prefs = JSON.parse(jam.getFromStorage('user-preferences') || '{}')
+const prefs = jam.getFromStorage("user-preferences", {});
 ```
 
 ---
@@ -499,8 +559,8 @@ const prefs = JSON.parse(jam.getFromStorage('user-preferences') || '{}')
 Trigger a file download in the browser.
 
 ```javascript
-jam.downloadAsFile('data.json', JSON.stringify(myData))
-jam.downloadAsFile('export.csv', csvString)
+jam.downloadAsFile("data.json", JSON.stringify(myData));
+jam.downloadAsFile("export.csv", csvString);
 ```
 
 ### `jam.addResource(url)`
@@ -508,8 +568,10 @@ jam.downloadAsFile('export.csv', csvString)
 Dynamically load a JS/CSS module. Returns a promise.
 
 ```javascript
-const module = await jam.addResource('/assets/my-component.mjs')
+const module = await jam.addResource("/assets/my-component.mjs");
 ```
+
+For CSS, this loads a stylesheet link and caches its promise. Await `jam.addResource('/assets/fontawesome/css/all.min.css')` after packaging the matching font assets. The individual loader rejects failed resources; `jam.addResources` catches individual failures. Font readiness and glyph availability require a separate application check. See [font-icon composition](JAM-UI/button.md#sidebar-icons-and-left-aligned-captions).
 
 ---
 
@@ -520,10 +582,10 @@ const module = await jam.addResource('/assets/my-component.mjs')
 Parse and evaluate a string expression safely.
 
 ```javascript
-const fn = jam.toEval('(a, b) => a + b')
-fn(1, 2) // → 3
+const fn = jam.toEval("(a, b) => a + b");
+fn(1, 2); // → 3
 
-jam.toEval('this.value * 2', { value: 5 }) // → 10
+jam.toEval("this.value * 2", { value: 5 }); // → 10
 ```
 
 ### `jam.serialize(value)`
@@ -539,9 +601,9 @@ Deserialize a string back to its original value.
 Generate a random number. No args: 0–1. One arg: 0–max. Two args: min–max.
 
 ```javascript
-jam.random()        // 0.5432...
-jam.random(100)     // 42
-jam.random(10, 20)  // 15.7
+jam.random(); // 0.5432...
+jam.random(100); // 42
+jam.random(10, 20); // 15.7
 ```
 
 ### `jam.isJamElement(el)`
@@ -577,16 +639,16 @@ String case conversion utilities.
 `lime.*` writes developer-console diagnostics. When feedback must be visible to the user, use `nutmeg.info`, `nutmeg.success`, `nutmeg.warn`, or `nutmeg.error` instead.
 
 ```javascript
-lime.log('General log')
-lime.info('Information')
-lime.warn('Warning')
-lime.error('Error message')
-lime.debug('Debug detail')
-lime.prompt('Development-only log (debug mode required)')
+lime.log("General log");
+lime.info("Information");
+lime.warn("Warning");
+lime.error("Error message");
+lime.debug("Debug detail");
+lime.prompt("Development-only log (debug mode required)");
 
 // Color-named console logging
-lime.red('Error in red')
-lime.green('Success in green')
+lime.red("Error in red");
+lime.green("Success in green");
 ```
 
 ---
@@ -831,36 +893,36 @@ The registration API is part of the development runtime; verify availability in 
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
+  type: "container",
   components: [
     {
-      type: 'button',
-      cap: 'Show notification',
+      type: "button",
+      cap: "Show notification",
       onclick() {
-        nutmeg.success('Hello from JAML!', { duration: 2000 })
-      }
+        nutmeg.success("Hello from JAML!", { duration: 2000 });
+      },
     },
     {
-      type: 'button',
-      cap: 'Confirm action',
+      type: "button",
+      cap: "Confirm action",
       onclick() {
         jam.modalYesNo(
           this,
-          'Delete this item?',
-          () => nutmeg.warn('Deleted'),
-          () => nutmeg.info('Cancelled')
-        )
-      }
+          "Delete this item?",
+          () => nutmeg.warn("Deleted"),
+          () => nutmeg.info("Cancelled"),
+        );
+      },
     },
     {
-      type: 'button',
-      cap: 'Download',
+      type: "button",
+      cap: "Download",
       onclick() {
-        jam.downloadAsFile('export.json', JSON.stringify({ status: 'ok' }))
-      }
-    }
-  ]
-}
+        jam.downloadAsFile("export.json", JSON.stringify({ status: "ok" }));
+      },
+    },
+  ],
+};
 ```
 
 ## Style restoration and host theme integration
@@ -874,3 +936,88 @@ export default {
 | `jam.refreshSystemAccentColor()`              | Reapply the system color when the current saved accent choice is `system`.                                                                                                                               |
 
 See [system theme integration](./color.md#system-theme-and-saved-choices).
+
+## Owned external subscriptions and follow scrolling
+
+`jam.mount(mountCallback, unmountCallback)` returns a plugin builder; returning a function from `mountCallback` is not its cleanup contract. Pair acquisition/release using plugin-local element data and follow the [mount and shared-owner lifetime](Styles/styles.md#mount-and-shared-application-lifetime). Seed external state explicitly when a subscription does not replay it. Keep each setup's identity with its callbacks: a synchronous subscription callback may unmount the owner before `subscribe` returns, so immediately release a late returned disposer and ignore callbacks from obsolete setups.
+
+`jam.followScrollToBottom(scrollElement)` returns `{ following, update(), pause(), destroy() }`. Call `update()` when content grows; upward user intent pauses following. Reaching the bottom while moving downward resumes following. There is no `resume()` method. A jump-to-latest control can scroll to the bottom; keep any resize observer and its cleanup in the same owner, and call `destroy()` when that owner ends. The helper does not virtualize messages or observe every content resize.
+
+`jam.makeFileDroppable(target, onDrop, prompt?, accept?, beginRead?)` keeps its ordinary per-drop delivery by default. The optional `beginRead(files)` receives a raw `File[]` snapshot before asynchronous reads. Returning exactly `false` vetoes those reads. Returning a predicate retains the existing delivery-only check: a false predicate result suppresses obsolete delivery after reading and does not cancel reads. Use the predicate to capture a consumer-owned generation when replacement semantics are needed. Native `input-file` exposes this boundary through its documented `onfileselect` hook.
+
+`jam.renderModal` routes Escape/curtain dismissal to the top modal's own `onclose` callback and respects `click2Close`. Canceled/composing Escape and ordinary typing do not dismiss. Programmatic `closeTopModal()` does not invoke this dismissal callback. `modalYesNo` settles its yes/no decision once and closes its own modal during exit animation. These helpers do not by themselves establish a full focus trap or background-inertness contract.
+
+### Preparing deferred scroll destinations
+
+`await jam.prepareScrollTop(target, top, signal)` prepares component viewport content before an application's existing scroll owner writes its position. Use the corrected development runtime and call after the owning JAML model is mounted with a measurable scroll root.
+
+- A nonnegative finite `top` prepares enough of each registered viewport's loaded prefix for that offset, or stops at exhaustion.
+- `Infinity` prepares all currently supplied lazy rows. It does not fetch history; keep the supplied window bounded.
+- The required `AbortSignal` cancels obsolete work. The promise returns false on cancellation or owner disconnection, and invalid offsets reject. Starting another preparation on the same lazy owner supersedes its pending preparation.
+- The helper does not write `scrollTop`, persist position, resume following or resolve message IDs. After readiness, the application writes its saved finite offset or the current `scrollHeight` for a latest jump. Native viewport refresh then restores parked rows at that position.
+
+```javascript
+const controller = new AbortController();
+const destination = savedTop ?? Infinity;
+const ready = await jam.prepareScrollTop(
+  scrollRoot,
+  destination,
+  controller.signal,
+);
+if (ready && !controller.signal.aborted && scrollRoot.isConnected) {
+  scrollRoot.scrollTo({
+    top: destination === Infinity ? scrollRoot.scrollHeight : destination,
+    behavior: "instant",
+  });
+}
+// The owning task calls controller.abort() on conversation changes,
+// teardown or user navigation that should cancel restoration.
+```
+
+Keep a request identity check as well when a reused connected root changes conversations. Hidden roots can wait until visible or aborted. This prepares framework row construction, not arbitrary Markdown streams, fonts, images or later layout growth. An immediate `measureScrollRow` is only a synchronous snapshot; constructing cold rich content can still change geometry afterward. It is not a hidden-element `scrollIntoView` or row-key lookup API. Coordinate later measurements through the application's single position owner. Do not add pixel-mode `auto.keepScrollPosition` as a second owner when the application already persists offsets; its delegated bookmark mode below keeps restoration with the application.
+
+### Targeted lazy scroll preparation
+
+The development runtime with `jam.prepareScrollPosition` adds semantic row/latest preparation without constructing the entire loaded prefix. Check that the helper (or delegated store's `prepare`) exists when consuming an older bundle. This is opt-in behavior for `Styles.layout.lazyload`, not a release-wide compatibility statement.
+
+`await jam.prepareScrollPosition(scrollRoot, request, signal)` and delegated `store.prepare(request, signal)` share this contract:
+
+- For a saved row, supply `{ owner, row, offset, estimatedHeight }`. `owner` is the native lazy container element; `row` is its direct logical component or a synchronous predicate selecting one. A predicate receives raw components after pending row publication and logical reference/visibility work settle; use it when publishing a page or revealing folded work immediately before preparation. Once selected, native preparation retains that component identity. Virtual/data wrappers and redirected children are not eligible row targets. `offset` defaults to zero and measures the row's top from the scroll root's inner viewport top; negative values represent a partly clipped row.
+- For latest, supply `{ owner, edge: 'end', estimatedHeight }`. It prepares the current loaded end, without fetching a next page or resuming follow mode. Do not supply a row as well.
+- `estimatedHeight` is required, positive and finite in CSS pixels. Invalid height or non-finite offset rejects. Unbuilt rows reserve estimated space; visited rows retain DOM and local state. Width changes invalidate old height authority. Construction is bounded to the destination neighborhood; bookkeeping still scales with the number of supplied rows. Keep loaded history bounded.
+- When older pages must be supplied first, add optional `load: (signal: AbortSignal) => void | Promise<void>`. A supporting runtime installs the native construction hold before invoking this callback once. Publish pages and fold visibility inside it; pending logical publication can continue, but deferred row construction and target predicate selection wait until it completes. Then normal logical readiness and target-neighborhood preparation run. Finish the callback after data publication; awaiting held row DOM or Markdown readiness inside it would deadlock. The application owns fetch/paging limits and checks both the supplied signal and its current conversation/request identity before publishing.
+- A current loading error rejects preparation with that error. Abort, supersession, exact pixel preparation, print or removal cancels the preparation promptly with `undefined` and aborts the callback signal even if the callback never settles. Late callback completion/rejection cannot revive preparation; the application must still stop obsolete work and publication. A non-function `load` rejects. Use a verified loading-phase runtime: older helpers can exist while ignoring this new field.
+- The root and owner must be connected and measurable. The first supported layout has one active native lazy owner per root, with the root either that owner or an ancestor. Hidden sibling owners may coexist. Nested child viewports and multiple active owners return `undefined`; grid, horizontal, wrapping and arbitrary nested layouts are outside this contract.
+- A result is `{ top, provisional }`. The actual target row and visible neighborhood are prepared at the returned position, clamped to the scrollable extent. `provisional` is true while other active rows are unbuilt, parked or retain measurements from another width. It is not a promise that future fonts, images, streams or interactive content have settled. Estimated total extent means absolute offsets and the scrollbar may change as rows are visited.
+- Aborted, superseded, hidden/disconnected, missing, folded or removed targets return `undefined`. Pass the caller's required `AbortSignal`, abort on user navigation or conversation changes, and recheck application request identity after awaiting. A row with zero rendered height is ineligible. Neither helper writes the restoration position or interprets stored message IDs. Immediately write the returned `top` from the application's single scroll owner.
+
+```javascript
+const controller = new AbortController();
+// Rows declare a static ref: 'transcript-row'. The predicate receives a raw component.
+const row = (component) =>
+  !component.isVirtual &&
+  component.matchRef("transcript-row") &&
+  component.getVarData("row")?.id === saved.id;
+const prepared = await jam.prepareScrollPosition(
+  scrollRoot,
+  { owner: lazyOwner, row, offset: saved.offset, estimatedHeight: 160 },
+  controller.signal,
+);
+if (prepared && !controller.signal.aborted && currentRequest === requestId) {
+  scrollRoot.scrollTo({ top: prepared.top, behavior: "instant" });
+}
+// The application owns controller.abort() on wheel/touch/scrolling keys,
+// navigation, content replacement and teardown.
+```
+
+Cold `buildFor` rows with `showIf`/`buildIf` require the corrected logical-binding runtime; the presence of the preparation helper alone does not prove this correction is installed. Logical flags and bound refs resolve independently of row DOM. `getVarData('row')` evaluates the loop alias; raw `component.props.row` contains its declaration. Use a key map on the model that owns a shared collection when retaining keyed identity across nested loops. Bound refs can use an explicit expression such as `ref: "{{'row-' + row.id}}"`; mixed strings are not guaranteed literal interpolation. For cold paging, supply the loading callback before publishing pages. For already supplied rows, call preparation immediately after publishing visibility or page state and await its result. It waits on existing native publication, queued visibility/build callbacks, their current async results and deferred reveal; predicate lookup also waits for bound refs. It does not flush or re-evaluate bindings, and does not wait for unrelated element/user watchers or future content. A current unresolved control binding remains pending until completion, abort, supersession or removal; current binding failure ends preparation with `undefined`. Actual settled false/folded or zero-height rows remain ineligible. Keep predicates synchronous and free of mutations.
+
+Ordinary lazy rendering remains prefix-based until targeted preparation is requested. After opting in, offscreen placeholders support sparse traversal, while visited components remain retained. Legacy `prepareScrollTop` and print preparation return that owner to exact prefix construction; this can construct previously skipped rows. `measureScrollRow` still requires exact all-loaded preparation and does not become a cheap sparse snapshot. In the corrected development runtime, native local anchoring preserves a measured row while neighboring rows are constructed or resized, accounting for observed user movement. Verify that correction in the consuming runtime before relying on it. Compensation anchors row tops, not a text position inside a growing row; estimated total height and scrollbar proportions can still change. Input combined with a shrinking-extent boundary clamp before either is observed separately can remain ambiguous. The application still owns later asynchronous admission, following, pagination and final semantic restoration; avoid applying a second correction for the same native layout change.
+
+#### Delegated bookmark storage
+
+`Styles.auto.keepScrollPosition({ bookmark: { connect, capture } })` keeps storage under a stable host id while the application owns semantic position. Do not combine `bookmark` with pixel-mode `selector` or `delay`.
+
+`connect(store, element)` receives `{ read(key), save(key, value), prepare(request, signal) }` and may return a disconnect function. `read` returns a JSON snapshot or `undefined`; `save` returns success and uses a nonempty application key within the host's storage namespace. `capture(element)` returns `{ key, value }` on route change, unload and disposal, or `undefined` to preserve an earlier bookmark. Ordinary scroll does not save. Save explicitly before switching semantic identity when needed. Storage/capture failures preserve the previous value.
+
+The delegated handle's `prepare` uses its host as the scroll root, cancels its preceding request, and aborts on unmount/disposal. Stale handles cannot read, save or prepare. The application supplies user-input cancellation, loaded-row identity resolution, visibility and paging, and writes the returned top; the storage plugin does not add a second restoration writer. Plain pixel mode retains its automatic input cancellation and offset writing. Pair late content growth with the existing follow helper only when application follow intent remains active.

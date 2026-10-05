@@ -13,9 +13,9 @@ An inline radio or checkbox option list. Renders each option as a styled `<input
   "type": "radio",
   "cap": "Priority",
   "data": [
-    { "name": "Low",    "value": 1 },
+    { "name": "Low", "value": 1 },
     { "name": "Medium", "value": 2 },
-    { "name": "High",   "value": 3 }
+    { "name": "High", "value": 3 }
   ],
   "defaultValue": 2,
   "valueKey": "priority"
@@ -25,6 +25,8 @@ An inline radio or checkbox option list. Renders each option as a styled `<input
 ---
 
 ## Params
+
+For external labels, use `optionTextPolicy: 'literal'` and keep `autoTip` disabled where available. See the shared [literal-label contract](./JAM-UI.md#literal-external-labels) for text-template scope and trusted metadata limits.
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement), including `data`, `dataUrl`, `value`, `defaultValue`, `allKeys`, `perGroup`, `template`, and `keyword`.
 
@@ -59,10 +61,10 @@ Add a `group` field to options to create collapsible group sections:
   "cap": "Permissions",
   "chooseAll": false,
   "data": [
-    { "name": "Read",   "value": "read",   "group": "Data" },
-    { "name": "Write",  "value": "write",  "group": "Data" },
+    { "name": "Read", "value": "read", "group": "Data" },
+    { "name": "Write", "value": "write", "group": "Data" },
     { "name": "Delete", "value": "delete", "group": "Data" },
-    { "name": "Login",  "value": "login",  "group": "Auth" },
+    { "name": "Login", "value": "login", "group": "Auth" },
     { "name": "Logout", "value": "logout", "group": "Auth" }
   ],
   "valueKey": "permissions"
@@ -81,24 +83,24 @@ Use `data` for the standard option rendering. When a custom control is needed, p
 
 ```javascript jaml-playground
 export default {
-  type: 'checkbox',
-  group: 'wiki-custom-numbers',
+  type: "checkbox",
+  group: "wiki-custom-numbers",
   vars: { items: [1, 2, 3] },
   descStyles: {
-    '.jam-checked': ['css(background-color:ac;color:onAc)']
+    ".jam-checked": ["css(background-color:ac;color:onAc)"],
   },
   components: [
-    { type: 'button', cap: 'Select all', usage: 'checkAll' },
+    { type: "button", cap: "Select all", usage: "checkAll" },
     {
-      type: 'button',
-      buildFor: 'item in items',
+      type: "button",
+      buildFor: "item in items",
       cap: "{{ 'opt-' + item }}",
-      usage: 'option',
+      usage: "option",
       props: {
-        option: { value: '{{item}}', name: "{{ 'opt-' + item }}" }
-      }
-    }
-  ]
+        option: { value: "{{item}}", name: "{{ 'opt-' + item }}" },
+      },
+    },
+  ],
 };
 ```
 
@@ -130,9 +132,9 @@ The property bridge does not guarantee selection reconciliation after every nest
   "type": "radio",
   "cap": "Gender",
   "data": [
-    { "name": "Male",   "value": "m" },
+    { "name": "Male", "value": "m" },
     { "name": "Female", "value": "f" },
-    { "name": "Other",  "value": "x" }
+    { "name": "Other", "value": "x" }
   ],
   "defaultValue": "m",
   "valueKey": "gender"
@@ -167,9 +169,9 @@ The property bridge does not guarantee selection reconciliation after every nest
   "styles": ["checkbox.alignoption(width:10rem)", "checkbox.checkmark"],
   "data": [
     { "name": "TypeScript", "value": "ts" },
-    { "name": "React",      "value": "react" },
-    { "name": "Vue",        "value": "vue" },
-    { "name": "Svelte",     "value": "svelte" }
+    { "name": "React", "value": "react" },
+    { "name": "Vue", "value": "vue" },
+    { "name": "Svelte", "value": "svelte" }
   ],
   "valueKey": "techStack"
 }
@@ -191,8 +193,8 @@ Assuming `/api/users` returns:
 ```json
 [
   { "name": "Alice Johnson", "value": 1 },
-  { "name": "Bob Smith",     "value": 2 },
-  { "name": "Carol Davis",   "value": 3 }
+  { "name": "Bob Smith", "value": 2 },
+  { "name": "Carol Davis", "value": 3 }
 ]
 ```
 
@@ -200,37 +202,43 @@ Assuming `/api/users` returns:
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  vars: { search: '' },
+  type: "container",
+  vars: { search: "" },
   components: [
     {
-      type: 'input',
-      cap: 'Filter',
-      valueKey: 'search',
-      placeholder: 'Type to filter options...'
+      type: "input",
+      cap: "Filter",
+      valueKey: "search",
+      placeholder: "Type to filter options...",
     },
     {
-      type: 'checkbox',
-      cap: 'Fruits',
-      keyword: '{{search}}',
+      type: "checkbox",
+      cap: "Fruits",
+      keyword: "{{search}}",
       data: [
-        { name: 'Apple',     value: 'apple' },
-        { name: 'Banana',    value: 'banana' },
-        { name: 'Cherry',    value: 'cherry' },
-        { name: 'Grape',     value: 'grape' },
-        { name: 'Orange',    value: 'orange' },
-        { name: 'Strawberry',value: 'strawberry' }
+        { name: "Apple", value: "apple" },
+        { name: "Banana", value: "banana" },
+        { name: "Cherry", value: "cherry" },
+        { name: "Grape", value: "grape" },
+        { name: "Orange", value: "orange" },
+        { name: "Strawberry", value: "strawberry" },
       ],
-      valueKey: 'selectedFruits'
-    }
-  ]
-}
+      valueKey: "selectedFruits",
+    },
+  ],
+};
 ```
 
 ---
 
 ## Notes
 
--   Use `keyword` param to filter options by text match in real time.
--   Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
--   The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).
+- Use `keyword` param to filter options by text match in real time.
+- Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
+- The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).
+
+## Native names and disabled choices
+
+In the updated development runtime, ordinary option captions use native labels. Choice wrappers without an associated label or an explicit accessible name receive the option name as a native-input fallback. Literal option text remains literal, including when a custom builder finishes initialization.
+
+Host `disabled` propagates to native choice inputs after construction and data replacement. Re-enabling the host preserves per-option `disable` and template-owned native disabled state. Update option metadata through the existing data replacement/rebuild contract. This prevents native keyboard/pointer activation; it does not redesign programmatic selection or select-all, which can still change individually disabled choices.

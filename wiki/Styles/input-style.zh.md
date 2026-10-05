@@ -20,6 +20,31 @@
 
 ## Style variants
 
+### `input.ghost`
+
+<a id="entry-input-ghost"></a>
+
+透明输入框
+
+在应用拥有的背景上组合文本输入框或多行文本框。
+
+将原生输入区域的普通、悬停、聚焦、禁用和只读背景设为透明，并移除静态边框宽度和阴影。保留原生聚焦轮廓、标签、内边距、圆角、编辑和行数行为。无参数。
+
+在更新后的开发运行时中，对 input 或 input-textarea 使用 styles: ['input.ghost']。不需要标签时省略 cap 和 icon。
+
+这是样式而非多行输入子类型；input-textarea-ghost 不会选择原生 textarea。共享编辑器聚焦轮廓应放在父容器的 :focus-within 上，仅在内部输入框关闭自身轮廓。文件、颜色和外部编辑器不在覆盖范围内。
+
+```javascript jaml-playground
+export default {
+    type: 'input-textarea',
+    placeholder: 'Message',
+    rows: 'auto',
+    minRows: 1,
+    maxRows: 8,
+    styles: ['input.ghost']
+};
+```
+
 ### `input.showColorName`
 
 <a id="entry-input-showcolorname"></a>

@@ -600,9 +600,9 @@ Uses LoquatLazyLoad to progressively build unseen children, park offscreen rende
 
 Requires a component-owned container and a scroll target that is the host or an ancestor. Only one child-rendering style may own a container.
 
-Use for variable-height content. Use grid.virtualScroll for regular fixed-height grid rows.
+Use for variable-height content with one natural-height row host inside a bounded scroll target. Prepend or append through the component owner; removeComponent destroys an evicted row, whereas parking retains it. Use grid.virtualScroll for regular fixed-height grid rows.
 
-Defers rendering, not data fetching; retained children still consume memory.
+Defers rendering, not data fetching; retained children still consume memory. In ordinary prefix mode, unseen content builds forward and inserts into the visited prefix mount synchronously, so keep prepended pages bounded. For cold paging during semantic restoration, use the verified prepareScrollPosition loading phase to hold deferred construction before publishing pages; fetching remains application-owned. Parking preserves subscriptions, but hidden streaming/interactive rows retain their last measured placeholder height until restored. Focus and selection prevent parking; there is no active-stream pin option. Keep an active stream measurable or explicitly accept deferred measurement. The corrected development runtime preserves a measured visible row while neighboring rows are built or resized, accounting for observed user movement. Verify the updated runtime before relying on bidirectional compensation. It anchors row tops, not text positions within a changing row; scrollbar proportions may change. Input coalesced with a shrinking-extent clamp can be ambiguous. Pagination, stable IDs, data-window eviction and final semantic restoration remain application-owned. Do not combine independent scroll-restoration owners.
 
 Positional order: `buffer` → `scrollTarget`.
 

@@ -124,13 +124,15 @@ Use an entry transition for newly shown content.
 
 Load the framework animation styles. The shared animation builder skips direct entry/exit CSS-variable setup for popup elements; do not assume these styles replace popup show/hide configuration.
 
-Registers entry animation settings and applies them immediately to an already connected non-popup host; framework append/show handling uses the same settings later.
+Registers entry animation settings and applies them immediately to an already connected non-popup host; framework append/show handling uses the same settings later. Updating text on the same host does not replay entry; remounting or framework re-entry can. The application owns message identity and new-message eligibility.
 
 Combine an entry style and an exit style on the same host. Use animation.flipchild on its parent when surrounding children must animate their changed positions.
 
 The timing helpers accept random(...) and seq(...) expressions; seq timing uses the animation index. A custom beforeApply replaces variant preparation, so preserve any needed origin, scale or perspective setup.
 
 Entry presets run on append/show and can be paired with an exit preset.
+
+Entry presets do not supply a generic reduced-motion policy. For message fades, use the native fade preset with a scoped prefers-reduced-motion stylesheet that sets animation-duration to 1ms and animation-delay to zero and opacity to the configured final value, as shown in the fade example. The finite duration keeps native animation events while immediate final opacity suppresses visible motion. A zero duration may skip those events on initial insertion. Do not use only `animation: none`: entry preparation waits for animation events to clear pending opacity. Prefer `duration:var(--jam-motion-fast)` for theme timing. Apply fades only to newly arriving messages, not every history restoration. Native entry does not provide an abortable per-message handle; do not treat detached-row cleanup or asynchronous beforeApply cancellation as guaranteed.
 
 ### `animation.entry.fadein`
 
@@ -155,6 +157,14 @@ export default {
             styles: ['animation.entry.fadein(duration:500)']
         }
     ]
+};
+```
+
+```javascript jaml-playground
+export default {
+    type: 'label',
+    cap: 'A newly arrived message',
+    styles: ['animation.entry.fadein(duration:var(--jam-motion-fast);easing:easeOut)', Styles.stylesheet('@media (prefers-reduced-motion: reduce) { & { animation-duration:1ms!important;animation-delay:0s!important;opacity:var(--jam-opacity,1)!important; } }')]
 };
 ```
 

@@ -22,27 +22,33 @@ A text label element with optional icon. Commonly used as a static display or he
 
 Inherits all params from [AbstractElement](./JAM-UI.md).
 
-| Param | Type | Default | Description |
-|---|---|---|---|
-| `cap` | `string` | — | Label text. Fills the `cap` slot. |
-| `icon` | `string` | — | Icon content. Fills the `icon` slot. |
+| Param  | Type             | Default | Description                                                                              |
+| ------ | ---------------- | ------- | ---------------------------------------------------------------------------------------- |
+| `cap`  | `string \| Node` | —       | Caption content in the `cap` slot; visibility still depends on text or an assigned icon. |
+| `icon` | `string`         | —       | Icon content. Fills the `icon` slot.                                                     |
 
 The visual specialization is selected with a composite type:
 
-| Composite type | Specialization | Description |
-|---|---|---|
-| `"label"` | `'label'` | Default text label (no border) |
-| `"label-tag"` | `'tag'` | Tag/badge style with background |
-| `"label-outline"` | `'outline'` | Outline border style |
+| Composite type    | Specialization | Description                     |
+| ----------------- | -------------- | ------------------------------- |
+| `"label"`         | `'label'`      | Default text label (no border)  |
+| `"label-tag"`     | `'tag'`        | Tag/badge style with background |
+| `"label-outline"` | `'outline'`    | Outline border style            |
 
 ---
 
 ## Slots
 
-| Slot | Description |
-|---|---|
-| `icon` | Icon content (left of cap) |
-| `cap` (default) | Label text |
+| Slot            | Description                |
+| --------------- | -------------------------- |
+| `icon`          | Icon content (left of cap) |
+| `cap` (default) | Label text                 |
+
+### Caption content and visibility
+
+A label is a text/icon display, not a general image wrapper. Its caption slot accepts Nodes under the [shared slot contract](JAM-UI.md#slot-content-and-literal-text), but the label is considered empty when the caption has no text content and no icon is assigned. An image-only caption therefore remains hidden even after the image loads; an image's `alt` attribute does not count as caption text. An assigned icon keeps an icon-only label visible.
+
+Use a real text caption for a label, or [`vanilla-img`](vanilla.md#image-preview) for an ordinary image. Adding an image Node to `cap` does not give the label image-layout semantics.
 
 ---
 

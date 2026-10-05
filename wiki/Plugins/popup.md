@@ -24,7 +24,7 @@ Repeated application to the same host does not duplicate its delegation listener
 
 Matching tests the event target directly, not its closest matching ancestor. Sub-tip replacement requires a main popup that is already showing. Provide focus-accessible help separately where needed.
 
-Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip`.
+Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
@@ -42,6 +42,7 @@ Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `co
 | `bias` | `numberOrString` | Not supplied | Popup position bias. |
 | `snapTo` | `string` | Not supplied | Snap target.<br>Options: `cursor`, `target` |
 | `autoFlip` | `boolean` | Not supplied | Allow automatic position flipping. |
+| `focus` | `boolean` | `false` |  |
 
 Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A sub-tip target with a `jam-sub-tip` attribute updates an already showing main popup without closing it. Returning to the main target restores its original content. Matching tests the event target itself, so a nested label or icon does not inherit a matching ancestor’s tip automatically.
 
@@ -84,7 +85,7 @@ Repeated application to the same host does not duplicate its delegation listener
 
 Matching tests the event target directly, not its closest matching ancestor. Sub-tip replacement requires a main popup that is already showing. Provide focus-accessible help separately where needed.
 
-Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip`.
+Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
 
 Common arguments: [popup.tip](#entry-popup-tip).
 

@@ -33,11 +33,11 @@ Tree uses the table rendering, selection, filtering, and row-detail APIs with a 
 
 Inherits [table params and row methods](./table.md).
 
-| Param | Type | Description | Notes |
-|---|---|---|---|
-| `nodeDef` | `Partial<ThOption>` | Visible node-column definition, including cell styles and `ontdbuild` | Default: `{}`. Built-in arrow and checkbox controls are retained. |
-| `click2Check` | `boolean` | Select a node by clicking its row | Default: `true` |
-| `data` | `object[]` | Nested nodes with `children` arrays | `name` falls back to `cap`; `id` defaults to the node's index path; `value` defaults to `id`. |
+| Param         | Type                | Description                                                           | Notes                                                                                         |
+| ------------- | ------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `nodeDef`     | `Partial<ThOption>` | Visible node-column definition, including cell styles and `ontdbuild` | Default: `{}`. Built-in arrow and checkbox controls are retained.                             |
+| `click2Check` | `boolean`           | Select a node by clicking its row                                     | Default: `true`                                                                               |
+| `data`        | `object[]`          | Nested nodes with `children` arrays                                   | `name` falls back to `cap`; `id` defaults to the node's index path; `value` defaults to `id`. |
 
 Supply stable, unique `id` values when data can be reordered. Initial node `checked` values seed selection when no value has been set. Selection applies to individual nodes; checking a parent does not automatically check its descendants.
 
@@ -45,11 +45,11 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 
 ## Slots
 
-| Slot | Description |
-|---|---|
+| Slot              | Description                           |
+| ----------------- | ------------------------------------- |
 | `tbody` (default) | Generated node cells and row details. |
-| `thead` | Hidden table header. |
-| `tneck` / `tfoot` | Inherited table slots. |
+| `thead`           | Hidden table header.                  |
+| `tneck` / `tfoot` | Inherited table slots.                |
 
 ---
 
@@ -92,9 +92,9 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
       "name": "User Management",
       "value": "users",
       "children": [
-        { "name": "Create Users",  "value": "create", "checked": true },
-        { "name": "Edit Users",    "value": "edit" },
-        { "name": "Delete Users",  "value": "delete" }
+        { "name": "Create Users", "value": "create", "checked": true },
+        { "name": "Edit Users", "value": "edit" },
+        { "name": "Delete Users", "value": "delete" }
       ]
     }
   ]
@@ -109,10 +109,14 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
   "styles": ["tree.gridline", "tree.hoverhighlight"],
   "nodeDef": { "styles": ["css(font-weight:600)"] },
   "data": [
-    { "id": "devices", "name": "Devices", "children": [
-      { "id": "meter", "name": "Meter" },
-      { "id": "sensor", "name": "Sensor" }
-    ] }
+    {
+      "id": "devices",
+      "name": "Devices",
+      "children": [
+        { "id": "meter", "name": "Meter" },
+        { "id": "sensor", "name": "Sensor" }
+      ]
+    }
   ]
 }
 ```
@@ -138,3 +142,7 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 Use `hasRowChildren(pKey)`, `getRowLevel(pKey)`, `isRowChildrenExpanded(pKey)`, and `toggleRowChildren(pKey, force?)` to inspect or change expansion. The inherited `rowchildrenchange` event reports `{ pKey, expanded }`. Active filters reveal matching descendants and hold expansion until filtering ends.
 
 See [tree styles](../Styles/tree-style.md) and [table row details](./table.md#row-details-and-nested-rows).
+
+### Clearing tree data
+
+Trees inherit the table structural `clear(theadOnly?)` operation: it clears rows, data, headers, expansion, filters and sort state even with `clearable: false`. Passing `true` retains only `tneck` and `tfoot` slot contents; it does not preserve tree nodes. See [table methods](table.md#data--display).

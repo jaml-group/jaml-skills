@@ -264,11 +264,30 @@ export default {
 
 > **Note:** Primitives are static. Single-key placeholders create aliases. Binder expressions are reactive derived values.
 
+#### Avoid self-referencing aliases
+
+An unqualified prop alias resolves through the props visible to that component; it does not automatically skip its own declaration to reach a same-named model variable. On an ordinary container, `props: { planDocument: '{{planDocument}}' }` therefore refers back to itself. Reading that prop or resolving a binding/watcher through it can overflow the call stack in the current runtime, even when the model has a `planDocument` value. Descendants inheriting that prop inherit the same cycle.
+
+Give the local prop a distinct name and use that name consistently in its consumers:
+
+```javascript
+// Fragment within a model that owns vars.planDocument:
+const preview = {
+    type: 'container',
+    props: { planValue: '{{planDocument}}' },
+    components: [{ type: 'label', cap: '{{planValue.text}}' }]
+};
+// Read this.props.planValue; bind descendants to {{planValue.text}}.
+// A watcher on planValue resolves to the owning planDocument data key.
+```
+
+This retains the alias's live reads, reactive consumers and writeback; copying the value into a literal prop is a different contract. Keep alias chains acyclic. Merely registering a plain-container CC does not create an outer-scope lookup or make a self-alias safe. For an existing CC, preserve its published input names and choose a non-conflicting caller data path. Components with their own model data or explicitly qualified broker/scope bindings follow those separate ownership rules; changing a prop name does not select a different model.
+
 ---
 
 ### `components`
 
-**Type:** `ComponentOption[]`
+**Type:** `ComponentOption[]` or a binder returning `ComponentOption[]`
 
 Array of child JAML objects. Children are rendered inside the parent element in array order.
 
@@ -284,6 +303,62 @@ Array of child JAML objects. Children are rendered inside the parent element in 
 ```
 
 > **Note:** `submitURL` can also be a request option object to control method, headers.
+
+#### Reactive child replacement
+
+`components` also accepts a binder that returns an array of child JAML options, for example `jaml.var('field.type', type => [...])`. When a replacement list is applied, the previous children are destroyed, their framework bindings are disposed, and the new children are built under the same parent. Return `[]` to remove all children. This replaces the whole child list; it does not reconcile children by `id` or preserve their local state, focus or element references. Use [`buildFor`](#buildfor) for keyed list updates.
+
+Use this for mutually exclusive editors that must not stay subscribed to the same value. [`showIf`](#showif) only hides a child, and [`buildIf`](#buildif) detaches it without destroying its bindings. Keep the stable field container and model outside the replaced region. Subscribe the child-list binder only to the structural discriminator, such as `field.type`; bind the selected editor's caption, options, disabled state and value separately. Binding the child list to the entire field or its value can replace the editor during ordinary edits.
+
+This example keeps one keyed field and switches its single native editor. The direct `value` binder supports two-way writes through the loop alias; do not also add `valueKey` to the same editor.
+
+```javascript jaml-playground
+export default {
+  type: "container",
+  vars: { fields: [{ id: "setting-1", type: "string", value: "12" }] },
+  components: [
+    {
+      type: "button",
+      cap: "Text editor",
+      onclick() {
+        this.model.vars.fields[0].type = "string";
+      },
+    },
+    {
+      type: "button",
+      cap: "Number editor",
+      onclick() {
+        this.model.vars.fields[0].type = "number";
+      },
+    },
+    {
+      type: "button",
+      cap: "Remove editor",
+      onclick() {
+        this.model.vars.fields[0].type = "none";
+      },
+    },
+    {
+      type: "container",
+      buildFor: "field in fields",
+      key: "id",
+      components: [
+        {
+          type: "container",
+          components: jaml.var("field.type", (type) => {
+            const inputType = type === "string" ? "input" : type === "number" ? "input-number" : null;
+            return inputType
+              ? [{ type: inputType, cap: "Value", value: "{{field.value}}" }]
+              : [];
+          }),
+        },
+      ],
+    },
+  ],
+};
+```
+
+The callback selects trusted, authored JAML options; external field data belongs in the model. Replacement follows reactive update timing, so assigning the discriminator is not a synchronous rendering barrier: wait for the new editor before reading or focusing it. Destruction follows the normal [element lifecycle](../JAM-UI/JAM-UI.md#lifecycle-hooks); application-owned requests, subscriptions and other external work still need their own cleanup. Model data outside the replaced subtree survives, while child-owned state does not.
 
 ---
 
@@ -341,6 +416,26 @@ export default {
 **`key` — unique item identifier for arrays:**
 
 Pair `key` to declare how each array item is uniquely identified. `key` accepts a property name string, a binder expression (`"{{item.id}}"`), or a function `(item) => string`. With a `key` defined, the underlying array also supports **access by key** in addition to access by index. Items are matched by their key rather than their position, so insertions, removals, and reorders update the minimal number of components.
+
+**Keys containing dots:** loop keys participate in dotted binding paths. A raw key such as `file:src/app.mjs` can create a row whose loop prop is undefined, leaving descendant captions and attributes blank. Use stable, unique keys without dots. Keep the original identifier in the item for application actions; a key function can encode it without changing that data.
+
+For arbitrary string IDs, including unpaired UTF-16 surrogates, encode each code unit as exactly four hexadecimal digits and add a nonnumeric prefix:
+
+```javascript
+key: (item) =>
+  `row:${String(item.id)
+    .split("")
+    .map((unit) => unit.charCodeAt(0).toString(16).padStart(4, "0"))
+    .join("")}`;
+```
+
+`split('')` deliberately iterates UTF-16 code units. Do not replace it with spread syntax or `Array.from` while retaining `charCodeAt(0)`: those iterate code points and would discard the second unit of surrogate pairs. Fixed-width encoding keeps distinct strings distinct, including empty strings, percent signs, dots and unpaired surrogates. IDs must still be unique within the collection; this recipe does not distinguish non-string values whose `String(...)` results are equal.
+
+The shorter `row:` prefix plus `encodeURIComponent(item.id).replace(/\./g, '%2E')` is suitable only for well-formed Unicode strings. `encodeURIComponent` throws on unpaired surrogates and leaves dots unchanged unless explicitly replaced. Do not normalize or replace invalid surrogates when exact external identity must be preserved.
+
+Apply the same key builder consistently to consumers of the same collection, including an explicit `keyMap` when present. Do not substitute array positions when stable item identity is required across filtering or reordering.
+
+A nested loop still addresses the collection named in its `buildFor`: `row in rows` reads root `rows`, while `row in visit.rows` reads the current `visit` record’s rows. For shared collections, declare their stable key builders in the owning model’s `keyMap` before populating model data. This also supports older runtimes that may fail to infer a root collection’s keys when its loop is nested under another loop. Use the same key function in that map and each consumer; adding a key declaration after the collection already exists does not re-key its stored data.
 
 > **Key/index collision:** digit-only keys must not fall within the array's valid index range. For a 10-element array (indices `0`–`9`), a key value of e.g. `"5"` would silently resolve to index 5 instead of the keyed element.
 
@@ -736,7 +831,7 @@ export default {
 };
 ```
 
-> **Static vs reactive:** Use `build: true | false` for static control. Use `buildIf` for reactive toggling. Unlike [`showIf`](#showif) which hides with CSS (element stays in DOM), `buildIf` physically removes the element from the DOM. Neither destroys the element object or its binders.
+> **Static vs reactive:** Use `build: true | false` for static control. Use `buildIf` for reactive toggling. Unlike [`showIf`](#showif) which hides with CSS (element stays in DOM), `buildIf` physically removes the element from the DOM. Neither destroys the element object or its binders. Use [reactive child replacement](#reactive-child-replacement) when an inactive branch must release them.
 
 ---
 

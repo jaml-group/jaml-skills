@@ -214,7 +214,22 @@ export default {
 };
 ```
 
-Use `css()` for simple inline properties. Use `Styles.stylesheet` when you need `::before`/`::after`, animations, or nested selectors. For media queries, use compiled CSS text with concrete selectors inside the at-rule: dictionary conversion flattens nested selectors, and scoping does not rewrite a nested `&` inside an at-rule. Keep properties that must change at a breakpoint in stylesheet rules rather than overriding them with inline `css()` declarations.
+Use `css()` for simple inline properties. Use `Styles.stylesheet` for pseudo-elements, animations or conditional rules. For media queries, use compiled CSS text; dictionary conversion still flattens nested selectors and is not an at-rule authoring syntax.
+
+In the current development runtime, element-attached stylesheets apply the same owner selector to every rule inside `@media`, `@supports`, `@container`, `@layer`, `@scope`, `@starting-style` and document grouping rules, including nested groups. Both the first and subsequent rules receive the same specificity as ordinary base rules. Use `&` or `:scope` for the owner; a plain `.child` targets its descendant. Repeating the owner's application class as a descendant adds an unintended second owner level. The previous one-rule-per-media-block workaround is no longer needed.
+
+```css
+& .sidebar { display: block; }
+& .header { display: block; }
+@media (max-width: 50rem) {
+  & .sidebar { display: none; }
+  & .header { display: flex; }
+}
+```
+
+Grouping conditions, declaration bodies, keyframes and descriptor blocks such as `@font-face` and `@property` remain unchanged. CSS is inserted as literal text, preserving values such as `syntax: "<number>"` and quoted markup. Native CSS nesting inside an ordinary style rule remains relative to that already-scoped rule. Unknown at-rule blocks are left unchanged; this is not a general CSS parser or a sanitizer. Existing selector-composition limits still apply, including commas inside functional/quoted selectors and quoted `&`/`:scope` values.
+
+Keep breakpoint-sensitive properties in stylesheet rules rather than overriding them with inline `css()` declarations. Container queries require a container with a rendered box and appropriate `container-type`; set an explicit layout/display when the native container would otherwise use `display: contents`. Globally registered theme stylesheets retain their existing registration and specificity contracts.
 
 ---
 
@@ -411,7 +426,7 @@ For attachment-bound effects or shared style owners, read [mount and shared appl
 
 ### Mount and shared application lifetime
 
-`Styles.mount(setup, cleanup)` starts setup on mount, or immediately for an already-mounted framework host or connected ordinary element. Unmount cleans the active setup once and allows remount. Plugin teardown or host destruction detaches its handlers and cleans the active setup. Reentrant replacement setup waits for synchronous cleanup to finish; removal during cleanup cancels the pending replacement. Shared style ownership delays teardown until its final owner is removed. Cleanup is synchronous; promises returned by arbitrary setup or cleanup code are not a general cancellation mechanism.
+`jam.mount(setup, cleanup)` starts setup on mount, or immediately for an already-mounted framework host or connected ordinary element. Unmount cleans the active setup once and allows remount. Plugin teardown or host destruction detaches its handlers and cleans the active setup. Reentrant replacement setup waits for synchronous cleanup to finish; removal during cleanup cancels the pending replacement. Shared style ownership delays teardown until its final owner is removed. Cleanup is synchronous; promises returned by arbitrary setup or cleanup code are not a general cancellation mechanism.
 
 Sharing means **the same plugin instance on the same host**, retained by distinct style application owners. Equal path strings, equal arguments or separately constructed plugins do not establish that identity.
 
@@ -424,7 +439,7 @@ Sharing means **the same plugin instance on the same host**, retained by distinc
 | Host unmounts while an owner remains            | Clean the active setup; retained ownership allows setup on remount |
 | Host is destroyed                               | Clean active work and detach handlers                              |
 
-A different host has its own setup and cleanup. Ordinary `Styles.func` or plugin `unplug` cleanup follows plugin removal, not every DOM detach; use `Styles.mount` when the effect must follow mount/unmount. Async callbacks remain responsible for cancelling or ignoring stale work and retaining the identity of the setup that started it. See the [plugin lifecycle](../Plugins/plugins.md#lifecycle-and-ownership) for ordinary behavior plugins.
+A different host has its own setup and cleanup. Ordinary `Styles.func` or plugin `unplug` cleanup follows plugin removal, not every DOM detach; use `jam.mount` when the effect must follow mount/unmount. Async callbacks remain responsible for cancelling or ignoring stale work and retaining the identity of the setup that started it. See the [plugin lifecycle](../Plugins/plugins.md#lifecycle-and-ownership) for ordinary behavior plugins.
 
 ### Registration & global styles
 

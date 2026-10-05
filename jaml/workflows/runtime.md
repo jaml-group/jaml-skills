@@ -22,15 +22,21 @@ Before updating, preserve local edits and installed `LEARNED.md`; the external i
 
 ## Live playground
 
-1. Use serve mode and the browser owner documented by the server. Validate source, start/reuse the playground, submit with `setjaml` and confirm `browserSync`.
+1. Use serve mode and the browser owner documented by the server. Validate source, start/reuse the playground and submit with `setjaml`. A successful `browserSync` confirms command pickup, not rendering completion; verify the resulting state separately.
 2. After user edits, read `getjaml` before replacing source. Use rendered action tools for UI interaction.
 3. Inspect the rendered tree and JAM host locators. Verify nonzero geometry, relevant wrapping/overlap, reactive state, requested interactions and lifecycle.
 4. Check diagnostics and account separately for harness/resource noise and scenario failures.
 
 ## Existing app
 
-Use copilot mode for an already-served app. Call `open_page` then `wait_ready`; require `jamReady:true` and `agentReady:true` before interaction. Inspect from a body-scoped snapshot and use rendered JAM host locators. After source or route changes, await readiness again and verify intended state, geometry, behavior and diagnostics.
+Use copilot mode for an already-served app. Call `open_page` then `wait_ready`; inspect the returned payload for an `error`, including a normal tool result that carries one. Require `jamReady:true` and `agentReady:true` before interaction. Inspect from a body-scoped snapshot and use rendered JAM host locators. After source or route changes, await readiness again and verify intended state, geometry, behavior and diagnostics.
 
 Static `validate_jaml` is read-only. Live browser execution follows the user's authorization; an ordinary explanation or static review does not start a browser.
 
 Keep local development control services on loopback unless the user explicitly requests a reviewed remote setup. Browser access and executable JAML can affect the connected application; static validation is not a sandbox.
+
+## Completion and recovery
+
+A command timeout does not cancel its queued mutation. Reconcile the live state before resubmitting; blind retries can duplicate side effects. Use the current tool schema and a bounded recovery attempt, then report the unresolved command and observed state if the browser cannot be inspected.
+
+The default `wait_for` path can use a cached snapshot. Request an explicit live scope, such as `body`, a selector or a JID, when verifying a mutation. Read returned errors even when the tool call itself succeeds. An old matching locator does not prove a new render completed: verify the intended new value, content or generation together with its current geometry and behavior.

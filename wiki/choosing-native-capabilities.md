@@ -75,9 +75,17 @@ Keep the shell's regions and scroll ownership with its [layout-owned roles](Them
 | Display a metric hierarchy | `style value.major`, `value.main`, `value.sub`, `value.minor`; `cap.main`, `cap.sub` | Typography uses theme tokens; value formatting and updates stay with the native element/model.                         |
 | Animate a number           | `style indicator.tweening`, `indicator.tweening.dial`                                | Read formatter, update and cleanup caveats before choosing for frequently changing values.                             |
 | Display time               | `style indicator.clock`, `indicator.datetime`                                        | Supply the correct value/type and an update source; a clock display does not create a timer.                           |
-| Show icons                 | `style icon.solid`, `icon.regular`, `icon.emoji`, `icon.arrow`                       | Check slot shape, font assets and whether state/value changes actually drive the chosen variant.                       |
+| Show icons                 | `style icon.solid`, `icon.regular`, `icon.emoji`, `icon.arrow`, `icon.bar`           | Check slot shape, font assets and whether state/value changes actually drive the chosen variant.                       |
+
+For a transparent text composer, pair native `input-textarea` with the updated [`input.ghost` style](JAM-UI/input.md#ghost-textarea-and-shared-composer-focus). Keep shared geometry/focus with the wrapper and textarea growth with the native input.
+
+For recorded unified-diff text, choose native `input-code` with `lang: 'diff'` and `readOnly: true` after checking the paired development runtime/editor prerequisites. Keep external text in runtime model data and retain original bytes in the host; the editor normalizes line endings. See [read-only diff composition](JAM-UI/input.md#read-only-unified-diff). Binary/oversized results need a literal status message, while diff computation and patch authorization belong to the host.
+
+For a real interactive terminal, use the separately loaded [optional terminal surface](Plugins/terminal-surface.md) around the existing xterm engine, with native JAML controls. A code input is not a terminal emulator. The application owns explicit connection/input permission, process retention, transport acknowledgements and close; mounting the screen does not connect a process.
 
 Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [icon styles](Styles/common/icon.md) and [interaction styles](Styles/interact.md) for the relevant composition. Keep an element's slots distinct from the wrappers that distribute them: a caption, caption slot and internal input agent are different styling targets. A familiar style name is not proof that it implements an action or has a current stylesheet consumer; read the selected guide's behavior and caveats before adopting legacy markers.
+
+For sidebar rows, see [native bar icons, font assets and caption alignment](JAM-UI/button.md#sidebar-icons-and-left-aligned-captions).
 
 ## Popups, notifications and observers
 
@@ -89,6 +97,8 @@ Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [
 | React to direct-child changes | `plugin observe.child`                  | Observe mutations; do not duplicate component construction ownership.                                |
 | React to child visibility     | `plugin observe.intersection`           | Visibility callbacks; custom adding/removing hooks must manage observation themselves.               |
 | Contextual web-search actions | `plugin shortcut.search`                | Hover popup actions, not keyboard-shortcut registration; inspect its provider and query limitations. |
+
+For Pin/Archive and similar commands, compose [native action buttons in a dropdown](utils.md#contextual-action-buttons); the application retains focus, keyboard and record eligibility ownership.
 
 See [popup composition](Plugins/popup.md), [observers](Plugins/observe.md), [notifications](Styles/notify-style.md) and [shortcuts](Plugins/shortcut.md). Prefer a native popup's lifecycle over independently managed floating DOM. Use `popup.title` to replace existing native titles, or `popup.tip` for explicit tip content; read their target-matching and restoration contracts. Keep required help reachable through the product's keyboard/focus flow.
 
@@ -140,6 +150,8 @@ For theme settings, follow [theme-panel composition and readiness](JAML/componen
 For plain CSS, use [css()](Styles/common/css.md) with `styles`, `childStyles` or `descStyles` according to the target. Query a full generated style path: host, slotted content, slot wrapper and agent variables have different consumers, and a suffix such as `m` can denote spacing, type size, border width or shadow in different families. Use a registered style for a repeated complex presentation contract. Keep explicit geometry with the layout and avoid modifying theme-owned shell structure to achieve a cosmetic result.
 
 ## Application services and extensions
+
+Use the built-in [breadcrumb CC](JAML/component.md#breadcrumb-navigation) for a navigation path: router mode reads existing route ownership; updated explicit-item mode displays literal application data and returns stable action keys. Do not fabricate router state solely for a header.
 
 Use `plugin i18n` to load the required dictionaries through the existing localization system; retain `@tr` expressions and locale configuration. Use `plugin router`/`subRouter` for navigation ownership, checking parent/child lifetime and state retention in [routing](Plugins/router-plugins.md). `plugin composable.composable` serves a configuration-driven dashboard with shared routing state; it is not a small local grid decorator.
 

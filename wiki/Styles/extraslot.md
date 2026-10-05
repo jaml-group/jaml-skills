@@ -89,12 +89,13 @@ Requires content in the host extra slot.
 
 Provide another accessible way to reach essential actions; this preset is hover presentation.
 
-Positional order: `position` → `reverse`.
+Positional order: `position` → `reverse` → `duration`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `position` | `string` | `right` | Position<br>Options: `left`, `right` |
+| `position` | `string` | `right` | Position<br>Options: `left`, `right`, `inline` |
 | `reverse` | `boolean` | `false` | Reverse |
+| `duration` | `number` | `120` | Unit: `ms` |
 
 ## `extraslot.text.mono`
 

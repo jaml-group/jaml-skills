@@ -140,6 +140,16 @@ export default {
 | `a` | `numberOrString` | 透明度 |
 | `color` | `string` | 颜色<br>支持简写 |
 
+## `tree.lines`
+
+<a id="entry-tree-lines"></a>
+
+位置参数顺序: `show`.
+
+| 参数 | 类型 | 默认值 |
+| --- | --- | --- |
+| `show` | `boolean` | `true` |
+
 ## `tree.inline`
 
 <a id="entry-tree-inline"></a>

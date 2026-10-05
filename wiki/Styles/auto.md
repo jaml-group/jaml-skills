@@ -287,22 +287,23 @@ Preserve scroll position
 
 Restore a stable scroll position when returning to mounted content.
 
-Stores pixel offsets under the host id on route change or unload; restoration can wait for a delay callback and asks viewport controllers to prepare the required extent.
+Pixel mode stores offsets on route change or unload and restores after optional delay and viewport preparation. Delegated bookmark mode stores application JSON on lifecycle boundaries or explicit save; read/save/prepare never perform restoration scrolling.
 
-The host needs a stable id; an optional selector resolves the scroll target.
+Both modes require a stable host id. Delegated mode requires connect and capture and cannot combine selector or delay. Targeted prepare additionally requires one measurable native lazy owner and an explicit positive estimatedHeight; see the scroll utilities contract.
 
-Unmount and removal cancel pending restoration and remove listeners; user scrolling or navigation input cancels the pending restore.
+Unmount/removal cancels preparation and invalidates the delegated store. A new delegated preparation supersedes its predecessor. Pixel mode listens for user navigation automatically; delegated callers supply their AbortSignal. A connect return function is the disconnect callback; capture may return undefined to preserve prior storage.
 
-Use with supported lazy or virtual viewport controllers so deep offsets can be prepared before restoration.
+Use pixel mode for exact loaded-prefix preparation. Use bookmark mode with store.prepare(request, signal) for semantic row/latest restoration while retaining lazy construction; the application resolves row identity, paging and visibility, aborts on user/navigation intent and immediately writes the returned top. See [scroll preparation](../utils.md#targeted-lazy-scroll-preparation).
 
-Positional order: `selector` → `delay`.
+Positional order: `selector` → `delay` → `bookmark`.
 
 | Argument | Type | Contract |
 | --- | --- | --- |
 | `selector` | `string` | Target selector |
 | `delay` | `function` | Delay |
+| `bookmark` | `dictionary` | Optional delegated mode: { connect(store, element), capture(element) }. The store supplies read, save and prepare; the application owns bookmark meaning and writes the prepared position. |
 
-Persists and restores the scroll position of an element across page loads using `miso` (sessionStorage).
+Pixel mode persists and restores offsets using session storage. Optional `bookmark` mode delegates semantic identity and scrolling to the application; see [targeted lazy preparation](../utils.md#targeted-lazy-scroll-preparation).
 
 > **Note:** The element must have an `id` attribute for the storage key.
 

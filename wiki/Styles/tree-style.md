@@ -140,6 +140,16 @@ Positional order: `h` → `s` → `l` → `a` → `color`.
 | `a` | `numberOrString` | Opacity |
 | `color` | `string` | Color<br>Shorthand |
 
+## `tree.lines`
+
+<a id="entry-tree-lines"></a>
+
+Positional order: `show`.
+
+| Argument | Type | Default |
+| --- | --- | --- |
+| `show` | `boolean` | `true` |
+
 ## `tree.inline`
 
 <a id="entry-tree-inline"></a>
