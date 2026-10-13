@@ -358,11 +358,11 @@ Styles descendants whose existing `jam-pos` markers contain `even`. It does not 
 
 应用旧有的子标签位于内容上方标记。
 
-添加 child-label-attop 类。
+添加 child-label-atop 类。
 
 此入口不实现测量或布局逻辑。未发现使用此标记的专用原生处理；请选择显式布局或尺寸样式，或使用 label.atTop 放置标签，而不是依赖名称。
 
-Adds the legacy `jam-child-label-attop` marker without a native positioning consumer in this baseline. Apply `label.atTop` to the actual native field elements.
+Adds the legacy `jam-child-label-atop` marker without a native positioning consumer in this baseline. Apply `label.atTop` to the actual native field elements.
 
 ```javascript jaml-playground
 export default [
@@ -602,7 +602,7 @@ hosts: `HTMLElement`.
 
 适用于可变高度内容：在有界滚动目标中使用自然高度的行容器。通过组件所有者前插或追加；removeComponent 会销毁被移出的行，停放则保留行。固定高度规则网格使用 grid.virtualScroll。
 
-延迟渲染而非数据请求；保留的子项仍占用内存。普通前缀模式下，未访问内容向后构建，插入已访问前缀的行会同步挂载，因此前插分页应保持有界。语义恢复需要补齐历史分页时，使用已验证的 prepareScrollPosition 加载阶段，在发布分页前暂缓延迟行的构建；数据请求仍由应用负责。停放保留订阅，但隐藏的流式或交互行在恢复前沿用上次测量的占位高度。焦点和选区可阻止停放，没有活动流固定选项。保持活动流可测量，或明确接受延迟测量。修正后的开发版运行时会在相邻行构建或变高时保留已测量可见行的位置，并计入已观察到的用户滚动；依赖双向补偿前需确认已使用更新的运行时。锚点保留行顶位置，不保证变化行内部的文本位置，滚动条比例仍可能改变。输入与内容缩短导致的边界钳制在同次观测中合并时可能无法区分。分页、稳定标识、数据窗口移除和最终语义位置恢复仍由应用负责，不要叠加独立滚动恢复所有者。
+延迟渲染而非数据请求；保留的子项仍占用内存。普通前缀模式下，未访问内容向后构建，插入已访问前缀的行会同步挂载，因此前插分页应保持有界。语义恢复需要补齐历史分页时，使用已验证的 prepareScrollPosition 加载阶段，在发布分页前暂缓延迟行的构建；数据请求仍由应用负责。停放保留订阅，但隐藏的流式或交互行在恢复前沿用上次测量的占位高度。焦点和选区可阻止停放，没有活动流固定选项。保持活动流可测量，或明确接受延迟测量。修正后的开发版运行时会在相邻行构建或变高时保留已测量可见行的位置，并计入已观察到的用户滚动；依赖双向补偿前需确认已使用更新的运行时。锚点保留行顶位置，不保证变化行内部的文本位置，滚动条比例仍可能改变。输入与内容缩短导致的边界钳制在同次观测中合并时可能无法区分。分页、稳定标识、数据窗口移除和最终语义位置恢复仍由应用负责，不要叠加独立滚动恢复所有者。 修正后的开发运行时会在宿主和实际滚动目标上临时设置 overflow-anchor:none !important，并协调所有拥有者，直到最后一个拥有者移除。若该声明仍属于样式，则恢复原有行内值和优先级。运行期间另行写入的不同声明会被保留；重新启用浏览器滚动锚定会破坏补偿保证。相同的 none!important 写入无法与样式拥有的声明区分。滚动根上的禁用也影响该容器中的其他内容，不应与相互竞争的根锚定策略混用。
 
 位置参数顺序: `buffer` → `scrollTarget`.
 

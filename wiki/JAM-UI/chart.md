@@ -6,6 +6,10 @@ An ECharts-powered chart element. The `type` second part maps directly to the EC
 
 ---
 
+## Runtime prerequisite
+
+Load the ECharts browser library before mounting chart elements. The chart reads `globalThis.echarts` from its own browsing context; a library loaded only in a parent window does not supply an iframe's runtime. An opaque or sandboxed host must provide the library inside that frame under its existing script policy. Chart data/options do not install the library or grant network access. Give the element nonzero dimensions and verify an initialized chart instance after mounting.
+
 ## JAML usage
 
 ```json jaml-playground
@@ -29,14 +33,14 @@ An ECharts-powered chart element. The `type` second part maps directly to the EC
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
-| Param | Type | Description |
-|---|---|---|
-| `data` | `any[][] \| Dictionary[]` | Chart data. Two formats: **dataset** (array of arrays, first row = headers) for multi-series; **series objects** (`{name, data: [...]}`) for single series |
-| `option` | `Dictionary` | Complete ECharts option object. For new users migrating from raw ECharts — wraps the object into the chart's config (non-series keys → `option`, `series` key → series config). Sets `data = []` to trigger redraw |
-| `chartOption` | `Dictionary` | Read-only — the resolved ECharts option object. Set via styles or the `option` param |
-| `colorSet` | `ColorType[]` | Color palette for the chart series. Auto-generated from accent color |
-| `tuner` | `ColorTuner \| (color: chroma.Color) => chroma.Color \| null` | Immutably tunes each original `colorSet` entry before the chart option is drawn. Presets: `none`, `dopamine`, `neon`, `pastel`, `jewel`, `morandi` |
-| `redrawOnResize` | `boolean` | When `true`, redraws the full chart after an observed resize; otherwise only resizes the ECharts instance. Default `false` |
+| Param            | Type                                                          | Description                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `data`           | `any[][] \| Dictionary[]`                                     | Chart data. Two formats: **dataset** (array of arrays, first row = headers) for multi-series; **series objects** (`{name, data: [...]}`) for single series                                                         |
+| `option`         | `Dictionary`                                                  | Complete ECharts option object. For new users migrating from raw ECharts — wraps the object into the chart's config (non-series keys → `option`, `series` key → series config). Sets `data = []` to trigger redraw |
+| `chartOption`    | `Dictionary`                                                  | Read-only — the resolved ECharts option object. Set via styles or the `option` param                                                                                                                               |
+| `colorSet`       | `ColorType[]`                                                 | Color palette for the chart series. Auto-generated from accent color                                                                                                                                               |
+| `tuner`          | `ColorTuner \| (color: chroma.Color) => chroma.Color \| null` | Immutably tunes each original `colorSet` entry before the chart option is drawn. Presets: `none`, `dopamine`, `neon`, `pastel`, `jewel`, `morandi`                                                                 |
+| `redrawOnResize` | `boolean`                                                     | When `true`, redraws the full chart after an observed resize; otherwise only resizes the ECharts instance. Default `false`                                                                                         |
 
 **Available chart types (second part of composite `type`):** bar, line, pie, scatter, radar, gauge, funnel, k (candlestick), heatmap, treemap, tree, wordCloud, parallel, sankey, boxplot, graph, lines, themeRiver, map, map3d, custom. The second part becomes the ECharts `series.type`.
 
@@ -132,27 +136,31 @@ Use `eopts` for non-series ECharts options (tooltip, grid, axes) and `eseries` f
 
 ```javascript jaml-playground
 export default {
-  type: 'chart-bar',
-  cap: 'Sales',
+  type: "chart-bar",
+  cap: "Sales",
   styles: [
-    'css(height:15rem;width:22rem)',
+    "css(height:15rem;width:22rem)",
     // Non-series options: axes, grid, tooltip
     Styles.eopts({
-      tooltip: { trigger: 'axis' },
-      yAxis: { name: 'Revenue (USD)' }
+      tooltip: { trigger: "axis" },
+      yAxis: { name: "Revenue (USD)" },
     }),
     // Series config: each key matches a data object's `name`
     Styles.eseries({
-      Revenue: { type: 'bar', barMaxWidth: 32, itemStyle: { borderRadius: [6, 6, 0, 0] } },
-      Cost: { type: 'line', smooth: true }
-    })
+      Revenue: {
+        type: "bar",
+        barMaxWidth: 32,
+        itemStyle: { borderRadius: [6, 6, 0, 0] },
+      },
+      Cost: { type: "line", smooth: true },
+    }),
   ],
   // Data stays independent — change freely without touching styles
   data: [
-    { name: 'Revenue', data: [120, 200, 150, 280] },
-    { name: 'Cost', data: [80, 95, 110, 130] }
-  ]
-}
+    { name: "Revenue", data: [120, 200, 150, 280] },
+    { name: "Cost", data: [80, 95, 110, 130] },
+  ],
+};
 ```
 
 **How it works:** `eseries({Revenue: {...}, Cost: {...}})` registers named series templates. Each object in `data` with a matching `name` gets its config merged in. The `Revenue` data object becomes a bar series with rounded corners; `Cost` becomes a smooth line.
@@ -163,9 +171,9 @@ When using `eseries` with named keys, use the series-object data format:
 
 ```javascript
 data: [
-  { name: 'Revenue', data: [120, 200, 150] },   // merges with eseries.Revenue
-  { name: 'Cost', data: [80, 95, 110] }          // merges with eseries.Cost
-]
+  { name: "Revenue", data: [120, 200, 150] }, // merges with eseries.Revenue
+  { name: "Cost", data: [80, 95, 110] }, // merges with eseries.Cost
+];
 ```
 
 Each object's `name` must match a key in `eseries`. The `data` array inside each object is the actual ECharts series data.
@@ -176,31 +184,51 @@ Uses `eseries` to define two stacked series (`offset` for invisible spacing, `Ta
 
 ```javascript jaml-playground
 export default {
-  type: 'chart-bar',
-  cap: 'Project Schedule',
+  type: "chart-bar",
+  cap: "Project Schedule",
   styles: [
-    'css(height:24rem;width:44rem)',
+    "css(height:24rem;width:44rem)",
     Styles.eopts({
-      grid: { left: '14%', right: '5%', top: '8%', bottom: '8%' },
-      xAxis: { type: 'value', name: 'Day', nameLocation: 'end', max: 30,
-               splitLine: { lineStyle: { type: 'dashed' } } },
-      yAxis: { type: 'category', inverse: true,
-               data: ['Planning', 'Design', 'Development', 'Testing', 'Deployment'] }
+      grid: { left: "14%", right: "5%", top: "8%", bottom: "8%" },
+      xAxis: {
+        type: "value",
+        name: "Day",
+        nameLocation: "end",
+        max: 30,
+        splitLine: { lineStyle: { type: "dashed" } },
+      },
+      yAxis: {
+        type: "category",
+        inverse: true,
+        data: ["Planning", "Design", "Development", "Testing", "Deployment"],
+      },
     }),
     Styles.eseries({
       // Invisible spacer — shifts each bar to its start position
-      offset: { stack: 'gantt', silent: true,
-                itemStyle: { color: 'transparent', borderColor: 'transparent' } },
+      offset: {
+        stack: "gantt",
+        silent: true,
+        itemStyle: { color: "transparent", borderColor: "transparent" },
+      },
       // Actual task bar — renders the duration
-      Task: { stack: 'gantt', barMaxWidth: 28,
-              label: { show: true, position: 'insideLeft', formatter: function(p) { return p.value + 'd' } } }
-    })
+      Task: {
+        stack: "gantt",
+        barMaxWidth: 28,
+        label: {
+          show: true,
+          position: "insideLeft",
+          formatter: function (p) {
+            return p.value + "d";
+          },
+        },
+      },
+    }),
   ],
   data: [
-    { name: 'offset', data: [0, 3, 7, 18, 25] },
-    { name: 'Task', data: [3, 4, 11, 7, 5] }
-  ]
-}
+    { name: "offset", data: [0, 3, 7, 18, 25] },
+    { name: "Task", data: [3, 4, 11, 7, 5] },
+  ],
+};
 ```
 
 ### Complete ECharts option (migration from raw ECharts)
@@ -209,20 +237,18 @@ If you're new to JAML and have an existing ECharts option object, use the `optio
 
 ```javascript jaml-playground
 export default {
-  type: 'chart',
-  cap: 'Custom Chart',
-  styles: ['css(height:15rem;width:22rem)'],
+  type: "chart",
+  cap: "Custom Chart",
+  styles: ["css(height:15rem;width:22rem)"],
   option: {
     // Put everything here — exactly like a raw ECharts option
-    tooltip: { trigger: 'axis' },
-    grid: { top: '10%', bottom: '10%' },
-    xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar'] },
-    yAxis: { type: 'value' },
-    series: [
-      { name: 'Sales', type: 'line', data: [120, 200, 150] }
-    ]
-  }
-}
+    tooltip: { trigger: "axis" },
+    grid: { top: "10%", bottom: "10%" },
+    xAxis: { type: "category", data: ["Jan", "Feb", "Mar"] },
+    yAxis: { type: "value" },
+    series: [{ name: "Sales", type: "line", data: [120, 200, 150] }],
+  },
+};
 ```
 
 > **Note:** Using `eopts` directly for complete ECharts options is **not recommended**. If you must, set `data: []` — otherwise the chart won't trigger a redraw. The `option` param handles this automatically and is the proper migration path.
@@ -234,22 +260,22 @@ Run a function right before `setOption()` to modify the chart option programmati
 ```javascript
 Styles.efuncs((chart, args) => {
   chart.chartOption.series[0].markLine = {
-    data: [{ type: 'average', name: 'Avg' }]
-  }
-})
+    data: [{ type: "average", name: "Avg" }],
+  };
+});
 ```
 
 ---
 
 ## Event hooks
 
-| Hook | Signature | Description |
-|---|---|---|
-| `onchartclick` | `(params) => void` | ECharts `click` event |
-| `onchartdblclick` | `(params) => void` | ECharts `dblclick` event |
-| `onchartmouseover` | `(params) => void` | ECharts `mouseover` event |
-| `onchartmouseout` | `(params) => void` | ECharts `mouseout` event |
-| `onchartgeoroam` | `(params) => void` | ECharts `georoam` event (map charts) |
+| Hook               | Signature          | Description                          |
+| ------------------ | ------------------ | ------------------------------------ |
+| `onchartclick`     | `(params) => void` | ECharts `click` event                |
+| `onchartdblclick`  | `(params) => void` | ECharts `dblclick` event             |
+| `onchartmouseover` | `(params) => void` | ECharts `mouseover` event            |
+| `onchartmouseout`  | `(params) => void` | ECharts `mouseout` event             |
+| `onchartgeoroam`   | `(params) => void` | ECharts `georoam` event (map charts) |
 
 Each hook also fires a corresponding event on the element: `chartclick`, `chartdblclick`, `chartmouseover`, `chartmouseout`, `chartgeoroam`.
 
@@ -257,14 +283,14 @@ Each hook also fires a corresponding event on the element: `chartclick`, `chartd
 
 ## Instance properties and methods
 
-| Member | Description |
-|---|---|
-| `chart.chart` | Access the raw ECharts instance |
-| `chart.redraw()` | Re-render the chart (debounced at 50ms) |
-| `chart.reinit()` | Dispose and re-initialize the ECharts instance |
-| `chart.chartReady` | `Promise<void>` that resolves after the first draw |
-| `chart.addDrawTask(callback)` | Register an identified `EChartsFunctionCallback` to run before `setOption()`. Normally supplied by `Styles.efuncs`. |
-| `chart.removeDrawTask(callbackOrId)` | Remove a registered draw task by callback or plugin id. |
+| Member                               | Description                                                                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `chart.chart`                        | Access the raw ECharts instance                                                                                     |
+| `chart.redraw()`                     | Re-render the chart (debounced at 50ms)                                                                             |
+| `chart.reinit()`                     | Dispose and re-initialize the ECharts instance                                                                      |
+| `chart.chartReady`                   | `Promise<void>` that resolves after the first draw                                                                  |
+| `chart.addDrawTask(callback)`        | Register an identified `EChartsFunctionCallback` to run before `setOption()`. Normally supplied by `Styles.efuncs`. |
+| `chart.removeDrawTask(callbackOrId)` | Remove a registered draw task by callback or plugin id.                                                             |
 
 ---
 
@@ -275,10 +301,10 @@ Each hook also fires a corresponding event on the element: `chartclick`, `chartd
 // e.g. <script src="echarts.min.js"></script>
 
 // Charts use the adaptive built-in theme by default. Optional: merge custom overrides.
-CashewChart.themeBuilder = (el) => jam.buildEchartsTheme(el, myThemeOverrides)
+CashewChart.themeBuilder = (el) => jam.buildEchartsTheme(el, myThemeOverrides);
 
 // Debounce interval (default 50ms)
-CashewChart.debounce = 100
+CashewChart.debounce = 100;
 ```
 
 ---

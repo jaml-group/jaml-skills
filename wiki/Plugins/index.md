@@ -4,6 +4,7 @@ Choose the owning topic, then read the entry’s arguments, prerequisites and cl
 
 - [composable-plugins](composable-plugins.md)
 - [event](event.md)
+- [follow-scroll](follow-scroll.md)
 - [i18n](i18n.md)
 - [interact-plugins](interact-plugins.md)
 - [observe](observe.md)

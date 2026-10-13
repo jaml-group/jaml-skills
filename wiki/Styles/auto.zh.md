@@ -289,7 +289,7 @@ export default [
 
 像素模式在路由变化或卸载时保存偏移，并在可选延迟及视口准备后恢复。bookmark 委托模式在生命周期边界或显式 save 时保存应用 JSON；read/save/prepare 不执行恢复滚动。
 
-两种模式都需要稳定的宿主 id。委托模式必须提供 connect 和 capture，不能结合 selector 或 delay。定向 prepare 还需要唯一可测量的原生 lazy 宿主和显式正数 estimatedHeight；详见滚动工具契约。
+两种模式都需要稳定的宿主 id。委托模式必须提供 connect 和 capture，不能结合 selector 或 delay。定向 prepare 还需要唯一可测量的原生 lazy 宿主；estimatedHeight 可选，提供时必须为正数。省略时，滚动范围随访问行逐步增长；详见滚动工具契约。
 
 卸载或移除会取消准备并使委托 store 失效；新准备取代旧准备。像素模式自动监听用户导航；委托调用方提供 AbortSignal。connect 返回的函数负责断开清理；capture 返回 undefined 时保留原存储。
 

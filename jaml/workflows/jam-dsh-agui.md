@@ -12,6 +12,14 @@ Load this guide when generating an interactive assistant view for the **jam-dsh 
 
 A completed fence renders automatically when its native lazy block activates; initial generated views have no extra Run gate. Streaming without a matching closing delimiter and quoted example blocks stay inert. Source-editor/result layout belongs to native Markdown; source edits create a new preview revision. See the generic [Markdown executor contract](../references/Plugins/markdown.md#content-policy-and-playground-ownership) when implementing another host.
 
+## Chart runtime prerequisite
+
+Native [chart elements](../references/JAM-UI/chart.md#runtime-prerequisite) require `globalThis.echarts` in the same frame that mounts them. An opaque AGUI frame cannot inherit the outer page's ECharts global or read `parent.echarts`. The host must package a local ECharts browser bundle, load it inside each frame before rendering the authored view, and allow that exact asset URL in `script-src`. Keep `connect-src 'none'` and the existing opaque sandbox boundary; loading a host-approved script does not authorize chart code to fetch arbitrary data or modules.
+
+For generated views, use native `chart-*` definitions and provide bounded, nonzero chart dimensions. Do not inject a CDN loader, import an unprovided package, or relax the sandbox to repair a missing global. If the host has not supplied the chart runtime, report that prerequisite to the host owner. The host owns bundle version/integrity and asset readiness; the view owns its chart data and native options.
+
+Verify an actual native chart instance with the intended dataset/series and a rendered canvas or SVG, then check theme changes, resize and frame disposal. A global on the parent page or a chart working in a stock playground does not establish chart readiness inside the opaque result frame. Theme and size updates should retain the current view and its local state.
+
 ## Narrow embedded forms
 
 Assign [native roles](../references/Theme/stylize.md#workload-stylize-values) by responsibility: `form` for the editing context and `actions` for its commands. Reserve `field` for multiple controls sharing one compound logical value; ordinary native inputs already own their labels and helper/error presentation. A role selects theme presentation; choose its layout separately. Use a vertical single-column composition at narrow widths rather than assuming a full application viewport or adding a nested app shell.

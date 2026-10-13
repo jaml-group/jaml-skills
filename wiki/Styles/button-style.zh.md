@@ -4,6 +4,14 @@
 
 [English](button-style.md)
 
+## `button.colorOnly`
+
+<a id="entry-button-coloronly"></a>
+
+仅变色的按钮交互
+
+可选类在静止、悬停、按下与聚焦状态移除背景、阴影和可见边框。交互时由默认文字色变为主要前景色。与 button-ghost 组合，不影响其他幽灵按钮。
+
 **Element:** `jam-button` · **Type:** `element`
 
 ---

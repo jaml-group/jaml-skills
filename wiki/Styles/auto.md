@@ -289,7 +289,7 @@ Restore a stable scroll position when returning to mounted content.
 
 Pixel mode stores offsets on route change or unload and restores after optional delay and viewport preparation. Delegated bookmark mode stores application JSON on lifecycle boundaries or explicit save; read/save/prepare never perform restoration scrolling.
 
-Both modes require a stable host id. Delegated mode requires connect and capture and cannot combine selector or delay. Targeted prepare additionally requires one measurable native lazy owner and an explicit positive estimatedHeight; see the scroll utilities contract.
+Both modes require a stable host id. Delegated mode requires connect and capture and cannot combine selector or delay. Targeted prepare additionally requires one measurable native lazy owner and an optional positive estimatedHeight. Omit it to grow extent as rows are visited; see the scroll utilities contract.
 
 Unmount/removal cancels preparation and invalidates the delegated store. A new delegated preparation supersedes its predecessor. Pixel mode listens for user navigation automatically; delegated callers supply their AbortSignal. A connect return function is the disconnect callback; capture may return undefined to preserve prior storage.
 

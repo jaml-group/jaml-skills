@@ -151,6 +151,105 @@ export default {
 - `el.switchToNextState()` — cycle through defined states
 - `el.toggleState('fail')` — toggle between named state and `'default'`
 
+#### Pointer and focus presentation states
+
+A disclosure can use one native [button](./button.md) and its existing icon slot for all presentations. Keep the expanded value in the application model; `state` chooses presentation from that value and the current pointer/focus interaction. Pointer enter/leave and focus changes must not toggle the expanded value.
+
+| State           | Presentation                                                             |
+| --------------- | ------------------------------------------------------------------------ |
+| `default`       | Collapsed, showing the current semantic icon                             |
+| `default-hover` | Collapsed and hovered or keyboard-focus-visible, showing a right chevron |
+| `expand`        | Expanded, showing a down chevron                                         |
+| `expand-hover`  | Expanded and hovered or keyboard-focus-visible, showing a down chevron   |
+
+These are authored names, not built-in hover or expansion behavior. The following fragments assume the application model supplies `disclosureOpen` and `toolIcon`. The local `expanded` prop is a plain alias of `disclosureOpen`. Font Awesome classes require its stylesheet and matching font assets in the host; other supported icon content can use the same state pattern.
+
+```javascript
+const interactions = new WeakMap();
+
+function interaction(element, patch = {}) {
+  const value = {
+    ...(interactions.get(element) || {
+      hover: element.matches(":hover"),
+      focus: element.matches(":focus-within"),
+    }),
+    ...patch,
+  };
+  interactions.set(element, value);
+  return value;
+}
+
+function selectDisclosureState(element) {
+  const expanded = !!element.props.expanded;
+  const { hover, focus } = interaction(element);
+  const interacting = hover || (focus && element.matches(":focus-visible"));
+  element.state = expanded
+    ? interacting
+      ? "expand-hover"
+      : "expand"
+    : interacting
+      ? "default-hover"
+      : "default";
+}
+```
+
+Attach interaction handlers to the same button. Use the [`on` event map](../JAML/jaml-format.md#on) for `focusin`/`focusout`; do not rely on unsupported `onfocusin`/`onfocusout` DOM properties. Keep hover and focus separately. Pointer clicks may leave focus on the button after pointer exit; that retained click focus must not keep the hover presentation active. Combine hover with tracked focus gated by `:focus-visible`, preserving the keyboard-visible presentation without blurring the button. Re-evaluate on `keydown` as well: keyboard use can make an already click-focused button focus-visible without another `focusin`. Initialize their values from the element, then update from event transitions. During `focusout`, use `relatedTarget` containment rather than synchronously re-reading `:focus-within`, which can still reflect the departing focus.
+
+```javascript
+// Button option fragment; uses the helpers above.
+{
+    props: { expanded: '{{disclosureOpen}}' },
+    states: {
+        default: { icon: '{{toolIcon}}' },
+        'default-hover': { icon: 'fas fa-chevron-right' },
+        expand: { icon: 'fas fa-chevron-down' },
+        'expand-hover': { icon: 'fas fa-chevron-down' }
+    },
+    styles: ['icon.attrs(aria-hidden:true)'],
+    onmouseenter() {
+        interaction(this, { hover: true });
+        selectDisclosureState(this);
+    },
+    onmouseleave() {
+        interaction(this, { hover: false });
+        selectDisclosureState(this);
+    },
+    on: {
+        keydown() {
+            selectDisclosureState(this);
+        },
+        focusin() {
+            interaction(this, { focus: true });
+            selectDisclosureState(this);
+        },
+        focusout(event) {
+            interaction(this, { focus: this.contains(event.relatedTarget) });
+            selectDisclosureState(this);
+        }
+    },
+    onafterrender({ element }) {
+        selectDisclosureState(element);
+    },
+    watchers: [{
+        key: 'expanded',
+        init: true,
+        callback() {
+            selectDisclosureState(this);
+        }
+    }]
+}
+```
+
+In the updated development runtime, slot-targeted CSS, attributes and class effects follow replacement, removal and recreation of the icon slot content. They restore their owned values on the old target and apply to the new target through the native slot lifecycle. Use a bundle with that support when binding changing icons; older bundles can lose slot-targeted effects on replacement.
+
+The icon is decorative: `icon.attrs(aria-hidden:true)` excludes its glyph, including generated font content, from the accessible name. Keep the caption or an explicit `aria-label` as the button's name.
+
+The [watcher](../JAML/binder.md#watchers) follows the plain `expanded` prop alias to its model key. A computed `jaml.var(...)` prop is read when accessed; it is not interchangeable with a plain alias when selecting watcher keys. If a prop is computed, watch its actual model dependencies explicitly. Reading a prop in a callback does not subscribe to it.
+
+Keep the changing icon binding inside `states`: native [compound binding](../JAML/binder.md#compound-binder-object-recursive-binding) re-evaluates the state dictionary when its bound values change. This refreshes the current presentation even if the selected state name stays the same, and retains the latest semantic icon for a later collapse. Assigning the same `element.state` string alone does not refresh its parameters.
+
+Keep click/keyboard activation, `aria-expanded` and content visibility connected to the same expanded model value. Leave `autoState` off: cycling four presentation states would make hover/focus compete with the expansion model. Prefer the native icon slot over a second overlaid icon or a wrapper that duplicates the button's interaction. When reusing this pattern, verify initial rendering, pointer and keyboard transitions, model updates without pointer movement, and semantic-icon changes while the state name remains unchanged. In particular, click to expand and fold, then move the pointer away without moving focus: the collapsed button must return to its semantic icon while retaining focus. Also verify keyboard-visible focus, and keyboard use of the already click-focused button without a new focus event.
+
 ---
 
 ### Enabled / readOnly

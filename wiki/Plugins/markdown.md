@@ -33,6 +33,36 @@ The global `jamd` function is an alias for `MandarinMarkdown.render()`.
 | `eagerEditor`   | `boolean`                             | `false`      | Request code editors immediately, including offscreen code.                                          |
 | `printMode`     | `boolean`                             | `false`      | Enable eager code-editor initialization for print-oriented documents.                                |
 
+## Embedded documents in a parent scroll viewport
+
+Use this composition when a transcript or feed owns vertical scrolling for all its Markdown fragments. The parent owns following, pause/resume and saved-position policy; each fragment grows naturally. Remove fixed/max-height caps and inner follow controllers from the fragment's wrappers. Keep document navigation disabled. Standalone documents that need their own viewport should retain the default layout.
+
+There is currently no dedicated Markdown option for parent-owned scrolling. `style` targets the outer renderer container, so setting only its overflow does not change the inner document. The public `styles` extension can apply [scoped CSS](../Styles/common/css.md) to both. Register a reusable application style once, before rendering:
+
+```javascript
+Styles.registerPlugin('app.markdown-flow', {
+    desc: 'Markdown flowing in its parent viewport',
+    plugins: [
+        Styles.css({ height: 'auto', overflow: 'visible' }),
+        Styles.css({ selector: '& > .jam-md-doc', height: 'auto', overflow: 'visible', scrollBehavior: 'auto' })
+    ]
+});
+
+const markdownOptions = {
+    contentPolicy: 'safe',
+    buildToc: false,
+    buildEof: false,
+    keepScrollPosition: false,
+    styles: ['app.markdown-flow']
+};
+```
+
+Pass these options to either `MandarinMarkdown.render(target, source, markdownOptions)` or `MandarinMarkdown.stream(target, markdownOptions)`. The target must already be mounted in the application's parent viewport. Merge the style into existing option styles. Retain one stream per live fragment; finish it at completion and destroy it on teardown as described below. The application still owns the parent viewport's controller and its cleanup; this style creates no follow controller.
+
+This is a generic style composition, **not a semantic Markdown scroll option**: `.jam-md-doc` is an internal renderer selector. Keep the override centralized and verify it when upgrading the runtime. Change only the outer container and its direct document child; do not set overflow on all descendants. Code, tables and editors retain their own horizontal scrolling. Setting only `overflowY: 'visible'` while leaving `overflowX: 'hidden'` is insufficient: that combination computes the vertical overflow to `auto`. The recipe sets both axes to `visible` on the document; it does not remove nested controls' own size or scroll policies.
+
+Verify parent scroll growth during streaming, upward wheel over reasoning and answer content, paused reading during further growth, and document identity at completion. Also check wide code and tables in the target layout. An `overflowY: auto` computed value with equal client and scroll heights alone does not prove a wheel trap; inspect actual overflow and the input target when diagnosing intermittent behavior.
+
 ## Static Methods
 
 | Method                                                    | Description                                                                                  |

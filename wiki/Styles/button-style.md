@@ -4,6 +4,14 @@
 
 [中文](button-style.zh.md)
 
+## `button.colorOnly`
+
+<a id="entry-button-coloronly"></a>
+
+Color-only button interaction
+
+Opt-in class removes background, shadow and visible border in idle, hover, active and focus states. Foreground changes from the default text token to the primary foreground token on interaction. Compose with button-ghost; other ghost buttons are unchanged.
+
 **Element:** `jam-button` · **Type:** `element`
 
 ---

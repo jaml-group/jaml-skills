@@ -27,11 +27,11 @@
 
 将组件标签放在其值/控件上方。
 
-添加 jam-label-attop，并要求宿主重新计算额外插槽的位置；卸载时移除该类并重新计算。
+添加 jam-label-atop，并要求宿主重新计算额外插槽的位置；卸载时移除该类并重新计算。
 
 使用具有常规标签布局的原生元素。
 
-Top-aligned label — positions the cap text above the content instead of inline. No args.
+Top-aligned label — positions the cap text above the content instead of inline. No args. The public name remains `label.atTop`; its class is `jam-label-atop`. Automatic alignment owns the separate `jam-label-auto-atop` class and does not remove explicit placement. Neither label mode uses `jam-overflow`, which is reserved for scroll edges.
 
 ```javascript jaml-playground
 export default [

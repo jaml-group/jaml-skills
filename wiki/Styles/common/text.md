@@ -10,6 +10,52 @@
 
 ## Variants
 
+### `shimmer`
+
+<a id="entry-text-shimmer"></a>
+
+Sweep a soft highlight across existing text.
+
+Uses one non-repeating gradient clipped to existing text. Both the band percentage and sweep travel refer to the element background box, not glyph width. The band leaves the box before the loop restarts. Reduced motion renders plain text, including live preference changes.
+
+For running activity, use a content-sized text element and let application activity state enable or remove shimmer. Keep meaningful status text and stop the effect when work completes, fails or is cancelled. This decoration does not detect activity or measure progress.
+
+Owns the target background and CSS animation while enabled. Apply to a dedicated text element, not a surface with its own background or animation. Does not create text content or support text inside a shadow root.
+
+Positional order: `shimmer` → `color` → `highlight` → `width` → `duration` → `delay` → `easing` → `direction`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `shimmer` | `boolean` | `false` | Enable the repeating one-way sweep; false leaves plain text. |
+| `color` | `string` | Not supplied | Base text color; omitted preserves the current color. |
+| `highlight` | `string` | Runtime-determined (object) | Highlight color, defaulting to the theme foreground. |
+| `width` | `string` | `30%` | Highlight band width as a CSS length or plain percentage of the element box, capped at the box width. Percentage expressions such as calc(30%) are not supported. |
+| `duration` | `number` | `2000` | Milliseconds per sweep. |
+| `delay` | `number` | `0` | Initial delay in milliseconds, not a pause between sweeps. |
+| `easing` | `string` | `linear` | CSS easing or a named framework easing. |
+| `direction` | `string` | `normal` | Normal sweeps left to right; reverse sweeps right to left. Neither alternates.<br>Options: `normal`, `reverse` |
+
+Use `styles: ['text.shimmer(shimmer:true;color:faint;duration:2000)']` on an existing text element. The default is disabled. This is a one-way sweep, never a back-and-forth animation. A plain percentage width and the sweep both use the element background box. On a full-width row with short text, much of the sweep crosses empty space. Use a content-sized label for an activity caption; keep a full-width host only when that behavior is intended.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    styles: ['layout.flex(direction:column;gap:1rem)'],
+    components: [
+        {
+            type: 'label',
+            cap: 'Running command',
+            styles: ['css(width:fit-content;align-self:flex-start)', 'text.shimmer(shimmer:true;color:faint;duration:2000)']
+        },
+        {
+            type: 'label',
+            cap: 'Working',
+            styles: ['css(width:100%;box-sizing:border-box)', 'border(width:0.0625rem;style:solid;color:subtle)', 'text.shimmer(shimmer:true;color:faint;duration:2000)']
+        }
+    ]
+};
+```
+
 ### `text`
 
 <a id="entry-text"></a>

@@ -171,8 +171,18 @@ export default {
         user: { name: 'Alice', role: 'admin' }
     },
     components: [
-        { type: 'input', cap: 'User', value: '{{user.name}}', placeholder: 'Enter username' },
-        { type: 'input', cap: 'Score', value: '{{score}}', placeholder: 'Enter score' }
+        {
+            type: 'input',
+            cap: 'User',
+            value: '{{user.name}}',
+            placeholder: 'Enter username'
+        },
+        {
+            type: 'input',
+            cap: 'Score',
+            value: '{{score}}',
+            placeholder: 'Enter score'
+        }
     ]
 };
 ```
@@ -296,7 +306,12 @@ Array of child JAML objects. Children are rendered inside the parent element in 
     "type": "wrapper",
     "cap": "My Form",
     "components": [
-        { "type": "input", "cap": "Name", "valueKey": "name", "placeholder": "Enter your name" },
+        {
+            "type": "input",
+            "cap": "Name",
+            "valueKey": "name",
+            "placeholder": "Enter your name"
+        },
         { "type": "button", "cap": "Submit", "submitURL": "/api/submit" }
     ]
 }
@@ -314,47 +329,45 @@ This example keeps one keyed field and switches its single native editor. The di
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  vars: { fields: [{ id: "setting-1", type: "string", value: "12" }] },
-  components: [
-    {
-      type: "button",
-      cap: "Text editor",
-      onclick() {
-        this.model.vars.fields[0].type = "string";
-      },
-    },
-    {
-      type: "button",
-      cap: "Number editor",
-      onclick() {
-        this.model.vars.fields[0].type = "number";
-      },
-    },
-    {
-      type: "button",
-      cap: "Remove editor",
-      onclick() {
-        this.model.vars.fields[0].type = "none";
-      },
-    },
-    {
-      type: "container",
-      buildFor: "field in fields",
-      key: "id",
-      components: [
+    type: 'container',
+    vars: { fields: [{ id: 'setting-1', type: 'string', value: '12' }] },
+    components: [
         {
-          type: "container",
-          components: jaml.var("field.type", (type) => {
-            const inputType = type === "string" ? "input" : type === "number" ? "input-number" : null;
-            return inputType
-              ? [{ type: inputType, cap: "Value", value: "{{field.value}}" }]
-              : [];
-          }),
+            type: 'button',
+            cap: 'Text editor',
+            onclick() {
+                this.model.vars.fields[0].type = 'string';
+            }
         },
-      ],
-    },
-  ],
+        {
+            type: 'button',
+            cap: 'Number editor',
+            onclick() {
+                this.model.vars.fields[0].type = 'number';
+            }
+        },
+        {
+            type: 'button',
+            cap: 'Remove editor',
+            onclick() {
+                this.model.vars.fields[0].type = 'none';
+            }
+        },
+        {
+            type: 'container',
+            buildFor: 'field in fields',
+            key: 'id',
+            components: [
+                {
+                    type: 'container',
+                    components: jaml.var('field.type', (type) => {
+                        const inputType = type === 'string' ? 'input' : type === 'number' ? 'input-number' : null;
+                        return inputType ? [{ type: inputType, cap: 'Value', value: '{{field.value}}' }] : [];
+                    })
+                }
+            ]
+        }
+    ]
 };
 ```
 
@@ -417,16 +430,16 @@ export default {
 
 Pair `key` to declare how each array item is uniquely identified. `key` accepts a property name string, a binder expression (`"{{item.id}}"`), or a function `(item) => string`. With a `key` defined, the underlying array also supports **access by key** in addition to access by index. Items are matched by their key rather than their position, so insertions, removals, and reorders update the minimal number of components.
 
-**Keys containing dots:** loop keys participate in dotted binding paths. A raw key such as `file:src/app.mjs` can create a row whose loop prop is undefined, leaving descendant captions and attributes blank. Use stable, unique keys without dots. Keep the original identifier in the item for application actions; a key function can encode it without changing that data.
+**Keys containing path syntax:** loop keys participate in binding paths. Dots and brackets are interpreted as path syntax rather than literal identity. Raw keys such as `file:src/app.mjs` or `JSON.stringify([sessionId, rowId])` can create rows whose loop props are undefined, leaving descendant captions and attributes blank. Use stable, unique path-safe keys; encode arbitrary external identities with the recipe below. Keep the original identifier in the item for application actions; a key function can encode it without changing that data.
 
 For arbitrary string IDs, including unpaired UTF-16 surrogates, encode each code unit as exactly four hexadecimal digits and add a nonnumeric prefix:
 
 ```javascript
 key: (item) =>
-  `row:${String(item.id)
-    .split("")
-    .map((unit) => unit.charCodeAt(0).toString(16).padStart(4, "0"))
-    .join("")}`;
+    `row:${String(item.id)
+        .split('')
+        .map((unit) => unit.charCodeAt(0).toString(16).padStart(4, '0'))
+        .join('')}`;
 ```
 
 `split('')` deliberately iterates UTF-16 code units. Do not replace it with spread syntax or `Array.from` while retaining `charCodeAt(0)`: those iterate code points and would discard the second unit of surrogate pairs. Fixed-width encoding keeps distinct strings distinct, including empty strings, percent signs, dots and unpaired surrogates. IDs must still be unique within the collection; this recipe does not distinguish non-string values whose `String(...)` results are equal.
@@ -542,7 +555,10 @@ export default {
             type: 'button',
             cap: 'Add Item',
             onclick: function () {
-                this.model.vars.data.push({ label: 'Extra', value: Math.floor(Math.random() * 5000) });
+                this.model.vars.data.push({
+                    label: 'Extra',
+                    value: Math.floor(Math.random() * 5000)
+                });
             }
         }
     ]
@@ -709,7 +725,12 @@ Name this component so it can be retrieved via `this.model.ref.myName` or `this.
 export default {
     type: 'container',
     components: [
-        { type: 'input', cap: 'Search', ref: 'searchInput', placeholder: 'Enter keyword here' },
+        {
+            type: 'input',
+            cap: 'Search',
+            ref: 'searchInput',
+            placeholder: 'Enter keyword here'
+        },
         {
             type: 'button',
             cap: 'Focus',
@@ -886,8 +907,18 @@ export default {
     cap: 'Form',
     styles: ['layout.autoalign'],
     components: [
-        { type: 'input', cap: 'Name', defaultValue: 'John Doe', placeholder: 'Enter your name' },
-        { type: 'input', cap: 'Email', defaultValue: 'johndoe@example.com', placeholder: 'Enter your email' },
+        {
+            type: 'input',
+            cap: 'Name',
+            defaultValue: 'John Doe',
+            placeholder: 'Enter your name'
+        },
+        {
+            type: 'input',
+            cap: 'Email',
+            defaultValue: 'johndoe@example.com',
+            placeholder: 'Enter your email'
+        },
         {
             type: 'wrapper',
             components: [
@@ -978,7 +1009,9 @@ export default {
     on: {
         valuechange: function (e) {
             // this = the input element
-            nutmeg.info('Search keywords: ' + (this.value || 'empty'), { id: 'search' });
+            nutmeg.info('Search keywords: ' + (this.value || 'empty'), {
+                id: 'search'
+            });
         },
         mount: function () {
             // this.model = root Model
@@ -1201,7 +1234,10 @@ See [Plugins](../Plugins/plugins.md) for the full list.
     "type": "container",
     "plugins": ["shortcut.search(selector:.jam-option)"],
     "components": [
-        { "type": "label", "cap": "Which scientist proposed the following theory?" },
+        {
+            "type": "label",
+            "cap": "Which scientist proposed the following theory?"
+        },
         {
             "type": "radio",
             "cap": "The laws of physics are the same for all non-accelerating observers.",
@@ -1233,9 +1269,27 @@ export default {
     styles: ['layout.autoalign'],
     cap: 'New User',
     components: [
-        { type: 'input', cap: 'Name', valueKey: 'name', placeholder: 'Enter name', rules: { required: true } },
-        { type: 'input', cap: 'Email', valueKey: 'email', placeholder: 'Enter email', rules: { required: true, pattern: '^[^@]+@[^@]+\\.[^@]+$' } },
-        { type: 'input-number', cap: 'Age', valueKey: 'age', placeholder: 'Enter age', rules: { min: 18, max: 99 } },
+        {
+            type: 'input',
+            cap: 'Name',
+            valueKey: 'name',
+            placeholder: 'Enter name',
+            rules: { required: true }
+        },
+        {
+            type: 'input',
+            cap: 'Email',
+            valueKey: 'email',
+            placeholder: 'Enter email',
+            rules: { required: true, pattern: '^[^@]+@[^@]+\\.[^@]+$' }
+        },
+        {
+            type: 'input-number',
+            cap: 'Age',
+            valueKey: 'age',
+            placeholder: 'Enter age',
+            rules: { min: 18, max: 99 }
+        },
         {
             type: 'select',
             cap: 'Role',

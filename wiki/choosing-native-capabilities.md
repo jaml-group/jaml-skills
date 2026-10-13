@@ -18,19 +18,21 @@ Keep selection state with the native option owner. Plain `buttongroup-radio` own
 
 ```javascript jaml-playground
 export default {
-    type: 'buttongroup-radio',
-    cap: 'View',
-    defaultValue: 'overview',
-    data: [
-        { name: 'Overview', value: 'overview' },
-        { name: 'Details', value: 'details' }
-    ]
+  type: "buttongroup-radio",
+  cap: "View",
+  defaultValue: "overview",
+  data: [
+    { name: "Overview", value: "overview" },
+    { name: "Details", value: "details" },
+  ],
 };
 ```
 
 For tab-like navigation, start with plain `buttongroup-radio`; `check.underscore` is an optional visual treatment. Prefer publishing the selected value and letting content consume it through [state bindings and visibility](JAML/state-and-data.md#selection-and-content). Direct event-driven control remains supported. For multiple selection, preserve the checkbox owner's feedback: the generated check contract describes a single locator, not one marker for every selected item.
 
 ## Decorative activity and actual progress
+
+For a moving highlight on running-status text, choose [`text.shimmer`](Styles/common/text.md#shimmer), with `shimmer:true` and a contrasting base such as `color:faint`. Application activity state owns enabling and removal; the style does not detect pending work or report measured progress. It sweeps in one direction and renders plain text under reduced motion. Use a content-sized text element: percentage band width and travel follow the element background box, so short text in a full-width row receives only a brief part of the sweep. Avoid applying it to a surface with its own background/animation or text inside a shadow root.
 
 For an ornamental ring, arc, orbit, repeated object or particle effect, inspect `style layer.spinner.background`, `.frets`, `.comet`, `.orbit`, `.object` or `.particles`. [Spinner styles](Styles/layers/spinner.md) describe variant behavior, sizing, animation prerequisites and composition examples.
 
@@ -77,6 +79,8 @@ Keep the shell's regions and scroll ownership with its [layout-owned roles](Them
 | Display time               | `style indicator.clock`, `indicator.datetime`                                        | Supply the correct value/type and an update source; a clock display does not create a timer.                           |
 | Show icons                 | `style icon.solid`, `icon.regular`, `icon.emoji`, `icon.arrow`, `icon.bar`           | Check slot shape, font assets and whether state/value changes actually drive the chosen variant.                       |
 
+For Markdown draft editing with application-defined inline/atomic tokens and autocomplete, choose [`input-compose`](JAM-UI/input.md#markdown-editing-and-keyboard-commands). It stores plain source, provides Tab/list indentation and bold/italic commands, and keeps newline/submission configurable. Deploy matching editor assets; use `compose.markdown: false` for plain token composition. Choose the Markdown plugin for rendered documents instead of rich editing.
+
 For a transparent text composer, pair native `input-textarea` with the updated [`input.ghost` style](JAM-UI/input.md#ghost-textarea-and-shared-composer-focus). Keep shared geometry/focus with the wrapper and textarea growth with the native input.
 
 For recorded unified-diff text, choose native `input-code` with `lang: 'diff'` and `readOnly: true` after checking the paired development runtime/editor prerequisites. Keep external text in runtime model data and retain original bytes in the host; the editor normalizes line endings. See [read-only diff composition](JAM-UI/input.md#read-only-unified-diff). Binary/oversized results need a literal status message, while diff computation and patch authorization belong to the host.
@@ -97,6 +101,8 @@ For sidebar rows, see [native bar icons, font assets and caption alignment](JAM-
 | React to direct-child changes | `plugin observe.child`                  | Observe mutations; do not duplicate component construction ownership.                                |
 | React to child visibility     | `plugin observe.intersection`           | Visibility callbacks; custom adding/removing hooks must manage observation themselves.               |
 | Contextual web-search actions | `plugin shortcut.search`                | Hover popup actions, not keyboard-shortcut registration; inspect its provider and query limitations. |
+
+For suggestions or options that grow and shrink while visible, choose [popup edge anchoring with `moreSteady`](JAM-UI/popup.md#dynamic-content-and-edge-anchoring) before adding timing-based positioning repairs. The current development flyout profile enables it by default; read the resize example and positioning requirements. Configure an existing component-owned flyout rather than creating a competing popup.
 
 For Pin/Archive and similar commands, compose [native action buttons in a dropdown](utils.md#contextual-action-buttons); the application retains focus, keyboard and record eligibility ownership.
 
@@ -152,6 +158,8 @@ For plain CSS, use [css()](Styles/common/css.md) with `styles`, `childStyles` or
 ## Application services and extensions
 
 Use the built-in [breadcrumb CC](JAML/component.md#breadcrumb-navigation) for a navigation path: router mode reads existing route ownership; updated explicit-item mode displays literal application data and returns stable action keys. Do not fabricate router state solely for a header.
+
+Use the [minimap CC](JAML/component.md#minimap-navigation) for a compact ordered overview with several viewport-visible items highlighted at once. The caller supplies identity, visibility, preview content and navigation; the rail owns magnification and its native floating tip. It is not a viewport observer or a bookmark store.
 
 Use `plugin i18n` to load the required dictionaries through the existing localization system; retain `@tr` expressions and locale configuration. Use `plugin router`/`subRouter` for navigation ownership, checking parent/child lifetime and state retention in [routing](Plugins/router-plugins.md). `plugin composable.composable` serves a configuration-driven dashboard with shared routing state; it is not a small local grid decorator.
 

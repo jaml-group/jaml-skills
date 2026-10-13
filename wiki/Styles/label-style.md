@@ -27,11 +27,11 @@ Align at the top
 
 Place a component label above its value/control.
 
-Adds jam-label-attop and asks the host to recalculate extra-slot placement; removes the class and recalculates on unplug.
+Adds jam-label-atop and asks the host to recalculate extra-slot placement; removes the class and recalculates on unplug.
 
 Use a native element with the normal label layout.
 
-Top-aligned label — positions the cap text above the content instead of inline. No args.
+Top-aligned label — positions the cap text above the content instead of inline. No args. The public name remains `label.atTop`; its class is `jam-label-atop`. Automatic alignment owns the separate `jam-label-auto-atop` class and does not remove explicit placement. Neither label mode uses `jam-overflow`, which is reserved for scroll edges.
 
 ```javascript jaml-playground
 export default [

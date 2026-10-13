@@ -6,6 +6,26 @@
 
 `Styles.tree.*` styles the [tree element](../JAM-UI/tree.md). Trees use the table theme tokens and hide the table header by default.
 
+## `tree.lines(show = true)`
+
+<a id="entry-tree-lines"></a>
+
+Indentation guides
+
+Show or hide the tree’s vertical indentation guides.
+
+Sets the guide width to the native extra-small border token when enabled and zero when disabled. Removing the style restores the previous guide-width value.
+
+Use tree.lines(false) to hide indentation guides. This does not change row/column grid lines, disclosure controls or keyboard navigation.
+
+Positional order: `show`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `show` | `boolean` | `true` | Show indentation guides; defaults to true. |
+
+Toggle vertical indentation guides with `styles: ["tree.lines(false)"]`. The default is `true`; removal restores the previous guide width. This is independent of `tree.gridline`, disclosure controls and keyboard navigation.
+
 ## Variants
 
 | Style | Description |
@@ -139,16 +159,6 @@ Positional order: `h` → `s` → `l` → `a` → `color`.
 | `l` | `numberOrString` | Lightness |
 | `a` | `numberOrString` | Opacity |
 | `color` | `string` | Color<br>Shorthand |
-
-## `tree.lines`
-
-<a id="entry-tree-lines"></a>
-
-Positional order: `show`.
-
-| Argument | Type | Default |
-| --- | --- | --- |
-| `show` | `boolean` | `true` |
 
 ## `tree.inline`
 

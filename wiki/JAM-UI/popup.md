@@ -6,6 +6,81 @@
 
 ---
 
+## Root-bound flyouts
+
+The current development runtime provides `jam.flyout(root, content, options)` and `jam.closeFlyout()` on the shared popup owner. `papaya.show(root, content, { type: "flyout" })` and a dedicated `new jam.PapayaPopup({ type: "flyout" })` select the same profile. Use a dedicated instance when independent owners must not close one another's presentation.
+
+A flyout attaches to `top`, `bottom`, `left` or `right`, defaulting to `bottom`, zero gap and start alignment. Above/below, both popup and content are capped by the root's border-box width; left/right, by its height. Content can be smaller and overflow scrolls. `align` can choose the opposite cross-axis edge, `bias` sets the gap, and `autoFlip` responds to available space. In the current development runtime, automatic positioning observes popup size changes and refreshes placement after pending layout work. Target or custom geometry changes still need an appropriate position refresh. Flyouts enable `moreSteady` by default; see [dynamic content and edge anchoring](#dynamic-content-and-edge-anchoring).
+
+Entry slides outward from the actual edge in 200ms and exit returns in 150ms. Set `showAnima: "none", hideAnima: "none"` for immediate appearance/dismissal. Profile changes release flyout sizing. Scaled, rotated or CSS-zoomed popup ancestors are outside this positioning contract.
+
+```javascript
+jam.flyout(composerElement, suggestionContent, {
+  position: "top",
+  showAnima: "none",
+  hideAnima: "none",
+});
+```
+
+For custom geometry, `snapTo` also accepts a client-coordinate `{ left, top, width, height }` rectangle or resolver `(target, popup) => rectangle`. `destination` accepts `{ x, y }` or a resolver returning that coordinate or undefined; it sets the preferred destination before the first placement, retaining snap bounds and flip rules. Use `align: []` when the preferred cross-axis coordinate must remain unconstrained by alignment. `moveToTarget()` re-evaluates these resolvers. Keep resolver callbacks free of presentation mutations.
+
+A bare flyout does not own menu semantics, keyboard navigation or focus management. [Compose input](input.md#compose-input-and-inline-tokens) already owns these for suggestions, including its own flyout; configure that owner instead of adding a second popup.
+
+---
+
+## Dynamic content and edge anchoring
+
+Use `moreSteady` when an anchored popup changes size while visible, such as filtered suggestions or asynchronously populated options. It anchors the edge nearest the target so content grows away from it. For a popup above a composer, adding rows grows upward while the bottom edge stays attached. This avoids the transient downward growth that can produce page overflow before the next position measurement.
+
+| Placement | Fixed popup edge | Growth direction |
+| --------- | ---------------- | ---------------- |
+| `top`     | Bottom           | Up               |
+| `bottom`  | Top              | Down             |
+| `left`    | Right            | Left             |
+| `right`   | Left             | Right            |
+
+This is CSS edge anchoring, not a debounce, delay or suppression of small movements. In the **current development runtime**, the `flyout` and `floatingTip` profiles enable it; the base popup default remains `false`. Explicit `moreSteady: false` opts out. Check the runtime bundled with an application before relying on the development flyout default; setting `moreSteady: true` explicitly makes the intended behavior clear.
+
+### Resize example
+
+This example uses the button's owned popup. Click the content to grow or shrink it. Reserve space above the trigger; `autoFlip: false` isolates growth on one side and is not a general overflow remedy.
+
+```javascript jaml-playground
+export default {
+  type: "button",
+  cap: "Open resizing flyout",
+  style: { marginTop: "12rem", width: "18rem" },
+  onclick: function () {
+    const content = document.createElement("button");
+    content.textContent = "Click to grow / shrink";
+    content.style.width = "16rem";
+    content.style.height = "3rem";
+    content.onclick = () => {
+      content.style.height = content.style.height === "3rem" ? "8rem" : "3rem";
+    };
+    this.popup(content, {
+      type: "flyout",
+      position: "top",
+      moreSteady: true,
+      autoFlip: false,
+      click2Hide: false,
+      showAnima: "none",
+      hideAnima: "none",
+    });
+  },
+};
+```
+
+Use the existing popup owner and its close/disposal lifecycle; do not add another overlay or a timer just to compensate for size growth. The example deliberately leaves keyboard and focus behavior to the application; a flyout profile does not implement a menu or dialog.
+
+### What still needs positioning
+
+Edge anchoring does not replace measurement for viewport constraints, cross-axis alignment, moving targets, custom geometry or choosing another side. Automatic popup size observation still performs placement work. With `manuallyUpdatePos: true`, the caller remains responsible for position updates; `moreSteady` does not enable automatic positioning.
+
+In the current development runtime, a live `moveToTarget()` update that flips to another side also switches the anchored edge and remeasures before committing placement. Subsequent growth therefore follows the new side. Older runtimes can retain the previous anchor after a live flip; verify the runtime bundled with the application. Edge anchoring does not guarantee that oversized content fits the viewport.
+
+---
+
 ## `papaya` — global singleton
 
 `papaya` is a globally available `PapayaPopup` instance created once at startup. Use it to show persistent or reused popups.
@@ -110,36 +185,36 @@ For common use cases, use the declarative `tip` and `help` params instead of cal
 
 ## `ShowPopupOption` fields
 
-| Field                  | Type                                 | Default                                   | Description                                                                        |
-| ---------------------- | ------------------------------------ | ----------------------------------------- | ---------------------------------------------------------------------------------- |
-| `position`             | `PositionString`                     | `'top'`                                   | Popup placement: `'top'`, `'bottom'`, `'left'`, `'right'`, `'bottom-right'`, etc.  |
-| `align`                | `MoveAlign \| MoveAlign[] \| string` | —                                         | Alignment override passed to `MelonMove` for popup positioning.                    |
-| `snapTo`               | `'cursor' \| 'target'`               | `'target'`                                | What the popup snaps to for positioning — the cursor or the target element.        |
-| `triggerBy`            | `'click' \| 'hover' \| 'rightClick'` | `'click'`                                 | What triggers the popup to show.                                                   |
-| `showDelay`            | `number`                             | `0`                                       | Delay in ms before showing.                                                        |
-| `hideDelay`            | `number`                             | `0`                                       | Delay in ms before hiding (auto-calculated for hover mode when not set).           |
-| `stay`                 | `boolean`                            | `true`                                    | Keep showing when hovering over the popup itself.                                  |
-| `exclusive`            | `boolean \| string`                  | `false`                                   | Hide other popups of the same type when this shows.                                |
-| `unified`              | `boolean`                            | `false`                                   | Use a single popup instance for the element (reuse across calls).                  |
-| `dynamic`              | `boolean \| Function`                | `false`                                   | Popup follows the cursor.                                                          |
-| `moreSteady`           | `boolean`                            | `false`                                   | Smoother positioning — avoids repositioning on minor positional changes.           |
-| `click2Hide`           | `boolean`                            | `false`                                   | Clicking the popup hides it.                                                       |
-| `clickElsewhere2Hide`  | `boolean`                            | `true`                                    | Clicking outside hides the popup.                                                  |
-| `autoFlip`             | `boolean`                            | `true`                                    | Auto-flip position if the popup would go off-screen.                               |
-| `alignWithCursor`      | `boolean \| Function`                | `true`                                    | Align arrow with cursor position.                                                  |
-| `arrowAlignWithCursor` | `boolean`                            | `true`                                    | Keep arrow pointing at cursor.                                                     |
-| `allowOverflow`        | `boolean \| Function`                | `false`                                   | Allow popup to overflow scroll container.                                          |
-| `showArrow`            | `boolean`                            | `true`                                    | Show the directional arrow.                                                        |
-| `showAnima`            | `string`                             | `'show-popup 300ms ease-out'`             | CSS animation for show.                                                            |
-| `hideAnima`            | `string`                             | `'hide-popup 250ms ease-in-out forwards'` | CSS animation for hide.                                                            |
-| `container`            | `HTMLElement \| Function`            | `document.body`                           | Container element to append the popup into.                                        |
-| `manuallyUpdatePos`    | `boolean`                            | `false`                                   | Disable automatic position updates. Set `true` when controlling position manually. |
-| `moveAlong`            | `boolean`                            | `false`                                   | Popup follows the target element when it moves (e.g. during drag).                 |
-| `moveAlongThrottle`    | `number`                             | `25`                                      | Throttle interval for move-along behavior in ms.                                   |
-| `moveDebug`            | `boolean \| number`                  | `false`                                   | Enable debug mode for position calculation.                                        |
-| `noFlash`              | `boolean`                            | `false`                                   | Prevent flash animation when re-showing a previously visible popup.                |
-| `color`                | `ColorType`                          | —                                         | Popup accent color.                                                                |
-| `style`                | `Dictionary \| string`               | —                                         | Inline styles to apply to the popup content.                                       |
+| Field                  | Type                                 | Default                                                     | Description                                                                                                                                               |
+| ---------------------- | ------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `position`             | `PositionString`                     | `'top'`                                                     | Popup placement: `'top'`, `'bottom'`, `'left'`, `'right'`, `'bottom-right'`, etc.                                                                         |
+| `align`                | `MoveAlign \| MoveAlign[] \| string` | —                                                           | Alignment override passed to `MelonMove` for popup positioning.                                                                                           |
+| `snapTo`               | `'cursor' \| 'target'`               | `'target'`                                                  | What the popup snaps to for positioning — the cursor or the target element.                                                                               |
+| `triggerBy`            | `'click' \| 'hover' \| 'rightClick'` | `'click'`                                                   | What triggers the popup to show.                                                                                                                          |
+| `showDelay`            | `number`                             | `0`                                                         | Delay in ms before showing.                                                                                                                               |
+| `hideDelay`            | `number`                             | `0`                                                         | Delay in ms before hiding (auto-calculated for hover mode when not set).                                                                                  |
+| `stay`                 | `boolean`                            | `true`                                                      | Keep showing when hovering over the popup itself.                                                                                                         |
+| `exclusive`            | `boolean \| string`                  | `false`                                                     | Hide other popups of the same type when this shows.                                                                                                       |
+| `unified`              | `boolean`                            | `false`                                                     | Use a single popup instance for the element (reuse across calls).                                                                                         |
+| `dynamic`              | `boolean \| Function`                | `false`                                                     | Popup follows the cursor.                                                                                                                                 |
+| `moreSteady`           | `boolean`                            | Base: `false`; development `flyout` / `floatingTip`: `true` | Anchors the appropriate edge so resizing grows away from the target. See [edge anchoring, defaults and limitations](#dynamic-content-and-edge-anchoring). |
+| `click2Hide`           | `boolean`                            | `false`                                                     | Clicking the popup hides it.                                                                                                                              |
+| `clickElsewhere2Hide`  | `boolean`                            | `true`                                                      | Clicking outside hides the popup.                                                                                                                         |
+| `autoFlip`             | `boolean`                            | `true`                                                      | Auto-flip position if the popup would go off-screen.                                                                                                      |
+| `alignWithCursor`      | `boolean \| Function`                | `true`                                                      | Align arrow with cursor position.                                                                                                                         |
+| `arrowAlignWithCursor` | `boolean`                            | `true`                                                      | Keep arrow pointing at cursor.                                                                                                                            |
+| `allowOverflow`        | `boolean \| Function`                | `false`                                                     | Allow popup to overflow scroll container.                                                                                                                 |
+| `showArrow`            | `boolean`                            | `true`                                                      | Show the directional arrow.                                                                                                                               |
+| `showAnima`            | `string`                             | `'show-popup 300ms ease-out'`                               | CSS animation for show.                                                                                                                                   |
+| `hideAnima`            | `string`                             | `'hide-popup 250ms ease-in-out forwards'`                   | CSS animation for hide.                                                                                                                                   |
+| `container`            | `HTMLElement \| Function`            | `document.body`                                             | Container element to append the popup into.                                                                                                               |
+| `manuallyUpdatePos`    | `boolean`                            | `false`                                                     | Disable automatic position updates. Set `true` when controlling position manually.                                                                        |
+| `moveAlong`            | `boolean`                            | `false`                                                     | Popup follows the target element when it moves (e.g. during drag).                                                                                        |
+| `moveAlongThrottle`    | `number`                             | `25`                                                        | Throttle interval for move-along behavior in ms.                                                                                                          |
+| `moveDebug`            | `boolean \| number`                  | `false`                                                     | Enable debug mode for position calculation.                                                                                                               |
+| `noFlash`              | `boolean`                            | `false`                                                     | Prevent flash animation when re-showing a previously visible popup.                                                                                       |
+| `color`                | `ColorType`                          | —                                                           | Popup accent color.                                                                                                                                       |
+| `style`                | `Dictionary \| string`               | —                                                           | Inline styles to apply to the popup content.                                                                                                              |
 
 ---
 

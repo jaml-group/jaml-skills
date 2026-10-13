@@ -61,6 +61,38 @@ Positional order: `display` → `position` → `width` → `height` → `minWidt
 
 ---
 
+## `hover.marquee`
+
+<a id="entry-hover-marquee"></a>
+
+Hover marquee
+
+Pointer hover moves overflowing single-line text from its start to its end at constant speed, holds for 1000 ms by default, then jumps to the start and repeats forward. Default speed is 48 pixels/s. Pointer leave resets immediately. RTL uses its negative scroll origin.
+
+Unmount/unplug cancels pending animation and removes pointer/media subscriptions. Layout changes restart only when geometry changes; fitting text stays still. Live reduced-motion preference stops motion and retains the static fade.
+
+Includes mask.overflow with listenScroll:false and a default 1.5rem fade. The animation refreshes overflow state directly without a native scroll listener. Apply to the actual bounded clipping element; no extra moving wrapper, duplicate text or separate mask is needed.
+
+Sets overflow:hidden, white-space:nowrap and scroll-behavior:auto while applied. Supply the target width. Does not target a nested caption automatically or expose child/slot/agent menu variants. Nonpositive or nonfinite speed disables motion; negative/nonfinite hold becomes zero. Do not combine with another owner that moves the same scroll position.
+
+Positional order: `speed` → `hold` → `size`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `speed` | `number` | `48` | Constant speed in pixels per second |
+| `hold` | `number` | `1000` | End hold in milliseconds |
+| `size` | `numberOrString` | `1.5` | Mask fade length; numeric values use rem<br>Unit: `rem` |
+
+For sidebar conversation names, use `hover.marquee(speed:48;hold:5000)` on the actual bounded title element. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    styles: ['css(display:block;width:16rem;height:2rem;padding:0)', 'hover.marquee(speed:48;hold:5000;size:1.5rem)'],
+    components: [{ type: 'label', cap: 'A conversation title that needs more room in the sidebar', styles: ['css(display:inline;white-space:nowrap)'] }]
+};
+```
+
 ## Common arguments
 
 <a id="common-args-hover-frame"></a>

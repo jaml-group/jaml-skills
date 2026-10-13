@@ -343,25 +343,24 @@ export default [
 
 Scroll activation
 
-Expose whether a scroll container has moved from its origin.
+Expose remaining scrollable edges while preserving the legacy scrolled classes.
 
-After a delay, listens to the resolved target and toggles jam-x-scrolled and jam-y-scrolled on the host.
+After delay (100 ms by default), measures the resolved target immediately and on scroll, resize and light-DOM content changes. Publishes space-separated left/right/top/bottom tokens in jam-overflow on the host; removes the attribute when there is no overflow. Physical edges support horizontal-tb LTR/RTL and reversed flex origins. jam-x-scrolled and jam-y-scrolled retain their raw positive-offset meaning.
 
-Unmount, style teardown or host destruction unbinds the actual resolved scroll target. Delayed setup and throttled callbacks check application identity, so obsolete work is inert; remount can establish a new listener.
+Unmount, teardown or destruction cancels scheduled work and disconnects listeners and observers. Overlapping applications use the latest active owner; final cleanup restores the previous jam-overflow value unless externally replaced. The last legacy scroll classes remain. Remount resolves the target again.
 
-The declared clazz argument is unused. Initial state is not computed until scrolling. Teardown leaves the last jam-x-scrolled and jam-y-scrolled classes in place; it does not restore their earlier values.
+The declared clazz argument remains unused. Overflow styles consume their selected target's own attribute; they do not install observation. Slot and agent overflow styles are not supported. Half-pixel edge tolerance suppresses rounding noise. Avoid overflow-state CSS that changes measured geometry. Shadow trees below the measured target are not traversed.
 
-Positional order: `clazz` → `delay` → `target`.
+Positional order: `clazz` → `delay` → `target` → `listenScroll`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
 | `clazz` | `string` | `jam-scrolled` | Active class |
 | `delay` | `number` | `100` | Delay |
 | `target` | `string` | Not supplied | Target |
+| `listenScroll` | `boolean` | `true` | Listen to native scroll events; false retains initial and layout/content observation |
 
-Scroll watching unbinds its resolved target and ignores obsolete delayed/throttled work on teardown. The declared `clazz` argument is unused, and the last scroll-state classes remain in place.
-
-Toggles CSS classes on the host element based on the scroll position of a target element. Adds `jam-x-scrolled` when scrolled horizontally and `jam-y-scrolled` when scrolled vertically. Use with `descStyles` to apply visual treatments to scrolled states.
+Measures the resolved target initially and after scroll, resize and light-DOM content changes. Set `listenScroll:false` for clipped non-scrolling content; initial and layout/content measurements remain active, but this subscription does not listen to scroll events. Default is true. Scroll listeners are shared and exist only while at least one subscriber requests them. Publishes remaining physical edges as space-separated tokens in `jam-overflow` on the host. The legacy `jam-x-scrolled` / `jam-y-scrolled` classes retain their positive-offset meaning. `overflow.css(...)` and `overflow.left/right/top/bottom.css(...)` consume the selected target’s own attribute; no observation is installed by those styles. Slot and agent paths are excluded. Teardown restores the previous attribute unless externally replaced, preserves the last legacy classes, and releases all observation. Subscriptions from this style, event.scrollProgress and table progress share one native scroll listener per target; removing one consumer leaves the others active, and the last cleanup disconnects observation. Scroll updates are immediate; layout/content invalidations are coalesced into animation frames. Descendant shadow trees are not observed; vertical writing modes are outside the supported geometry contract. The declared `clazz` argument remains unused.
 
 ```javascript jaml-playground
 export default [

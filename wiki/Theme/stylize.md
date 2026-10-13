@@ -200,6 +200,8 @@ Use `stylize: 'frame'`, with the class `.jam-frame-style`, for an optional share
 
 Agents and authors should inspect which shell regions the chosen layout manages before changing them. Keep those nodes' identities, placement and scrolling under the layout's control; customize their appearance through theme recipes and the layout's supported options. Theme changes must preserve the route/content host and its lifecycle. A content role such as `nav`, `tile`, `section`, `group` or `form` keeps its own responsibility inside the shell; inheriting shell context does not relabel descendants.
 
+A peer region absent from the selected layout can live beside one application layout inside an ordinary native container; see [composite application hosts](../JAML/component.md#composite-application-hosts). The host owns the outer arrangement without becoming a second `app` or transferring ownership of managed regions. Qualify selectors against the real host hierarchy: a nested application is not automatically equivalent to a direct-body shell.
+
 ### Shell role meanings
 
 -   `app`: top-level application surface. A normal application has one `app` root.

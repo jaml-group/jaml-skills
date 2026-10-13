@@ -21,7 +21,7 @@ A standard click button with icon and cap slots. Supports keyboard binding, hold
 
 ## Params
 
-Inherits all params from [AbstractElement](./JAM-UI.md).
+Inherits all params from [AbstractElement](./JAM-UI.md). For a disclosure with different collapsed, expanded and hover/focus icons, see [pointer and focus presentation states](./JAM-UI.md#pointer-and-focus-presentation-states).
 
 | Param         | Type                        | Default | Description                                                                                                                  |
 | ------------- | --------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |

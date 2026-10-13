@@ -61,6 +61,38 @@
 
 ---
 
+## `hover.marquee`
+
+<a id="entry-hover-marquee"></a>
+
+悬停跑马灯
+
+指针悬停时，溢出的单行文本以恒定速度从起点向末尾移动，默认停留 1000 毫秒，再立即跳回起点并正向循环。默认速度为每秒 48 像素。指针离开立即复位。RTL 使用负滚动起点。
+
+卸载或移除时取消待执行动画并移除指针及媒体查询订阅。几何变化时重新开始，内容适配时保持静止。动态减少运动偏好会停止动画并保留静态渐隐。
+
+内置 listenScroll:false 的 mask.overflow，默认渐隐长度为 1.5rem。动画直接刷新溢出状态，不增加原生滚动监听器。应用到实际有界裁剪元素，不需要额外移动包装、复制文本或单独遮罩。
+
+应用期间设置 overflow:hidden、white-space:nowrap 和 scroll-behavior:auto；需指定目标宽度。不自动选择嵌套标题，也不提供子目标、影子槽或 agent 菜单变体。非正或非有限速度禁用运动，负数或非有限停留时间按零处理。不要同时由其他功能控制同一滚动位置。
+
+位置参数顺序: `speed` → `hold` → `size`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `speed` | `number` | `48` | 恒定速度，单位 像素/秒 |
+| `hold` | `number` | `1000` | 末尾停留时间，单位毫秒 |
+| `size` | `numberOrString` | `1.5` | 遮罩渐隐长度；数值使用 rem<br>Unit: `rem` |
+
+For sidebar conversation names, use `hover.marquee(speed:48;hold:5000)` on the actual bounded title element. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    styles: ['css(display:block;width:16rem;height:2rem;padding:0)', 'hover.marquee(speed:48;hold:5000;size:1.5rem)'],
+    components: [{ type: 'label', cap: 'A conversation title that needs more room in the sidebar', styles: ['css(display:inline;white-space:nowrap)'] }]
+};
+```
+
 ## Common arguments
 
 <a id="common-args-hover-frame"></a>

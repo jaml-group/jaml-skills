@@ -4,7 +4,52 @@
 
 [English](popup.md)
 
-Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. They listen for mouse events on matching child selectors and show a `PapayaPopup` instance.
+## `popup.more`
+
+<a id="entry-popup-more"></a>
+
+直属子项的更多操作
+
+为原生容器中指定的直属子项提供尾部操作菜单。
+
+按单个目标类名匹配，可带前导点。现有子项和后续新增子项各获得一个原生 extra 插槽按钮。静止时使用 display:none，悬停或聚焦时占用标题空间，弹窗打开时保持显示；无悬停或粗指针设备始终显示。同步 getcontent(target) 在每次打开时返回原生 JAML 内容或节点。click2Hide 沿用原生下拉弹窗默认值与事件顺序，不包装回调。 默认将下拉弹窗右边缘与触发按钮对齐，禁用基于光标的弹窗与箭头对齐；可通过原生选项覆盖。
+
+使用支持行内 extra 插槽的原生直属子项；目标需可聚焦以便键盘发现。菜单操作需提供可访问名称与 role=menuitem。
+
+仅拥有注入的按钮以及每次插件应用的一个弹窗。移除、容器重新挂载和卸载会同步子项生命周期；替换及待打开状态的清理不会关闭更新的弹窗。保留调用方 extra 内容与 onchildadd 回调。
+
+仅处理直属子项，不监听仅类名发生的变化。不提供异步内容协议或标题遮罩。重叠目标类应使用单一插件所有者。其他选项转发给 PapayaPopup；应用身份、权限和操作逻辑留在 getcontent。
+
+位置参数顺序: `target` → `getcontent` → `click2Hide` → `clickElsewhere2Hide`.
+
+| 参数 | 类型 | 契约 |
+| --- | --- | --- |
+| `target` | `string` | 标识适用直属子项的单个类名。 |
+| `getcontent` | `function` | 每次打开时接收当前子项并返回弹窗内容的同步回调。 |
+| `click2Hide` | `boolean` | 转发原生点击关闭选项；省略时保留下拉弹窗默认 false 及现有回调顺序。 |
+| `clickElsewhere2Hide` | `boolean` | 转发原生外部点击关闭选项；省略时保留 true。 |
+
+## `popup.submenu`
+
+<a id="entry-popup-submenu"></a>
+
+嵌套弹出菜单
+
+悬停 100 毫秒后打开，提前离开取消。点击及 ArrowRight/Enter/Space 立即打开。离开项目时创建安全三角形，最多保护 300 毫秒且不续期。返回项目或进入子菜单移除保护。点击三角形关闭该子菜单分支并消耗点击。超时只移除保护。默认向右展开并顶部对齐，可通过原生定位选项覆盖。 启用 click2Hide 时，子菜单操作项在回调后关闭全部祖先弹窗；打开下一级子菜单的项目不会关闭祖先菜单。顶部对齐会计入首项的内部偏移。
+
+应用于 PapayaPopup 内的菜单内容。提供原生菜单项，每个菜单使用一个子菜单控制器。子菜单内容可应用同一插件实现嵌套。
+
+父菜单开始隐藏、销毁、项目移除及卸载插件时取消任务并关闭后代。Escape/ArrowLeft 关闭当前子菜单并恢复项目焦点。键盘操作清除三角形保护。 每次打开均创建新弹窗。正常关闭先播放收起动画再销毁，所有祖先弹窗和已开始关闭的分支均可完成动画。尚未显示的弹窗及强制清理立即销毁。
+
+位置参数顺序: `target` → `getcontent` → `triangleDebug`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `target` | `string` | 未提供 | 菜单容器内用于打开子菜单的项目类名。 |
+| `getcontent` | `function` | 未提供 | 同步 getcontent(item) 返回原生页描语言内容或节点。 |
+| `triangleDebug` | `boolean` | `false` | 使用 var(--jam-color-primary-mask) 显示裁剪的指针保护区域，默认关闭。 |
+
+Popup plugins attach tooltip, help, floating-tip, or more-action popups. Each variant owns its target discovery and interaction lifecycle while native popup infrastructure handles display and dismissal.
 
 ---
 

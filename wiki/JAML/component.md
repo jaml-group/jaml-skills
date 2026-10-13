@@ -64,18 +64,32 @@ const model = jaml(document.body, {
     type: 'container',
     stylize: 'app',
     vars: { title: 'Hello' },
-    components: [{ type: 'container', stylize: 'main', components: [{ type: 'label', cap: '{{title}}' }] }]
+    components: [
+        {
+            type: 'container',
+            stylize: 'main',
+            components: [{ type: 'label', cap: '{{title}}' }]
+        }
+    ]
 });
 model.vars.title = 'Updated'; // reactive — updates all bound {{title}} elements
 ```
 
 `jam.render(document.body, view)` follows the same mounting contract. Avoid gratuitous static `<main id="app">` or `<div id="app">` wrappers around a standalone app: theme recipes may target `body > .jam-app-style`, and an extra host breaks that boundary. `main` describes the primary semantic content inside the app; Electron does not require a static `<main>` mounting element. A splash or other intentionally separate body sibling does not require a wrapper around the app.
 
-Set `stylize` in the JAML definition so the framework processes it and supplies `.jam-app-style`. A raw HTML `stylize="app"` attribute on a static element is not equivalent to rendering that JAML definition. Keep one app role for the standalone shell and retain content roles beneath it; see [layout-owned profiles](../Theme/stylize.md#layout-owned-stylize-profiles).
+Set `stylize` in the JAML definition so the framework processes it and supplies `.jam-app-style`. A raw HTML `stylize="app"` attribute on a static element is not equivalent to rendering that JAML definition. Keep one app role for the standalone shell and retain content roles beneath it; see [layout-owned profiles](../Theme/stylize.md#layout-owned-stylize-profiles). A justified peer region outside the selected layout uses the explicit [composite-host pattern](#composite-application-hosts) below; it is not an incidental mounting wrapper.
 
 ### Embedded application hosts
 
 An embedded widget, preview, or Jam application inside another page can intentionally render into an existing host, for example `jaml('#widget-host', view)`. Preserve that host's sizing, lifecycle and ownership boundary, and check theme selectors against the actual embedding structure. Direct-body shell recipes do not automatically apply there. This is an explicit integration choice; ordinary JAML containers remain appropriate for content composition.
+
+### Composite application hosts
+
+When an application needs a peer region that the selected layout does not provide, an ordinary native `container` may host one `jaml.application(...)` result and that peer, such as a sibling `stylize: 'panel'` inspector. This lets the inspector sit beside the entire application layout, including its header. Keep exactly one `app` role; the composite host does not receive another `stylize: 'app'`. Do not append children to, replace, or reparent the builder's managed regions to invent an unsupported slot.
+
+The composite host owns its available size, outer flex/grid arrangement, responsive peer placement and overall lifetime. Give the child layout a bounded region and retain `viewport: false` (the application builder default) so it sizes within the host rather than fixing itself to the browser viewport. Keep its internal region identities, scrolling and lifecycle under the layout owner. Preserve both children when only peer visibility or width changes; release them through the owning model when the host is disposed. Use supported layout options for managed regions. A deliberate override of their grid placement is a separately qualified application layout recipe, not merely a theme appearance change.
+
+For an ordinary standalone shell, retain the direct-body convention above. A composite host needs a concrete peer-region requirement; an embedded application also retains its existing host's size and lifetime contract. Qualify theme selectors against that actual hierarchy: `body > .jam-app-style` cannot match an app nested inside a composite or integration host. Semantic roles and inherited tokens do not imply identical decorative layers. Verify selected themes and modes, bounded sizing, peer/header geometry, narrow layouts and retained content; do not claim automatic equivalence to a direct-body standalone shell.
 
 ---
 
@@ -361,8 +375,18 @@ export default {
                 points: '{{data.score}}'
             }
         },
-        { type: 'input', cap: 'Change Name', value: '{{data.username}}', placeholder: 'Enter new name' },
-        { type: 'input-number', cap: 'Change Score', value: '{{data.score}}', placeholder: 'Enter new score' }
+        {
+            type: 'input',
+            cap: 'Change Name',
+            value: '{{data.username}}',
+            placeholder: 'Enter new name'
+        },
+        {
+            type: 'input-number',
+            cap: 'Change Score',
+            value: '{{data.score}}',
+            placeholder: 'Enter new score'
+        }
     ]
 };
 ```
@@ -423,8 +447,8 @@ A CC should not define its own `vars` or refer to the caller's future `vars` nam
 
 Use `props` for the CC's public inputs and local state handles:
 
-- Literal configuration: `props: { step: 2 }`
-- Reactive aliases: `props: { count: '{{firstCount}}' }`
+-   Literal configuration: `props: { step: 2 }`
+-   Reactive aliases: `props: { count: '{{firstCount}}' }`
 
 When nested children need to read or write the CC root props, set `share: true` on the CC root and use `this.shared` from child hooks. This keeps event handlers pointed at the CC contract instead of the root model's `vars`.
 
@@ -605,13 +629,14 @@ jaml.registry.entry('userCard'); // → current registered option or factory
 
 JAM-UI ships a small built-in component registry. These names can be used directly as the JAML `type` value.
 
-| Type                | Description                                                                             | Props                                                   |
-| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                                       |
-| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                                       |
-| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath`                 |
-| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`, `items`, `onactivate` |
-| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                                         |
+| Type                | Description                                                                             | Props                                                         |
+| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                                             |
+| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                                             |
+| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath`                       |
+| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`, `items`, `onactivate`       |
+| `minimap`           | [Ordered navigation rail with multiple visible items](#minimap-navigation)              | `items`, `orientation`, `tickAlign`, dimensions and callbacks |
+| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                                               |
 
 ```javascript jaml-playground
 export default {
@@ -631,6 +656,82 @@ export default {
         }
     ]
 };
+```
+
+---
+
+### Minimap navigation
+
+`type: 'minimap'` renders a compact, keyed navigation rail with pointer-distance magnification and optional floating previews. It supports vertical and horizontal layouts. Use it for an overview of many ordered items, including several items visible at once; use a breadcrumb for a hierarchical path instead.
+
+**Availability:** requires a runtime containing the `minimap` CC. Older bundles may not register this type; the package version alone does not establish availability.
+
+The caller owns the item data, identity, viewport observation, navigation and persistence. Each item supplies a unique `key`, a `label` used for its accessible name, and a boolean `visible`. Multiple items may have `visible: true`; this is viewport presentation state, not a radio selection. Additional fields are passed through to callbacks. The CC does not discover document sections or observe their visibility automatically.
+
+**Key encoding.** Keys participate in native loop binding paths. Do not use raw serialized compound IDs such as `JSON.stringify([sessionId, rowId])` as keys: brackets are interpreted as path syntax, and ticks can exist while their item fields, labels and visibility are unresolved. Use stable path-safe keys; for arbitrary external IDs, use the fixed-width UTF-16 encoding in the [keyed-loop guidance](./jaml-format.md#buildfor). Encode the complete compound identity consistently and retain the original IDs as separate item fields for navigation. Encoding must preserve uniqueness rather than replace punctuation with a common separator.
+
+| Prop            | Default      | Contract                                                                                                                                                                                                           |
+| --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`         | `[]`         | Ordered keyed item records.                                                                                                                                                                                        |
+| `orientation`   | `'vertical'` | `'vertical'` or `'horizontal'`.                                                                                                                                                                                    |
+| `tickAlign`     | `'start'`    | `'start'`, `'center'`, or `'end'`. Start is left for vertical rails and top for horizontal rails; end is right or bottom. Controls tick placement and magnification origin, independently of whole-rail alignment. |
+| `tickLength`    | `0.5`        | Resting length in rem.                                                                                                                                                                                             |
+| `tickThickness` | `0.125`      | Thickness in rem.                                                                                                                                                                                                  |
+| `tickRadius`    | `0.03125`    | Corner radius in rem.                                                                                                                                                                                              |
+| `spacing`       | `0.75`       | Tick hit-area pitch in rem: height vertically, width horizontally.                                                                                                                                                 |
+| `fisheyeRadius` | `3.5`        | Pointer influence radius in rem.                                                                                                                                                                                   |
+| `fisheyeScale`  | `4`          | Maximum length multiplier; `1` disables magnification.                                                                                                                                                             |
+| `getTip`        | `null`       | `(item, index, tick) => content`; enables previews when a function is supplied. Return content accepted by the native floating tip.                                                                                |
+| `onhover`       | `null`       | `(item, index, tick, event)` on tick entry; called with `null` on hover exit.                                                                                                                                      |
+| `onactivate`    | `null`       | `(item, index, tick, event)` on activation; caller performs navigation.                                                                                                                                            |
+
+Supply these inputs through `props`. Numeric dimensions are **rem values**, not pixel counts. Use distinct caller alias names when binding inputs, for example `items: '{{sections}}'` and `tickAlign: '{{railAlignment}}'`. Callbacks receive the tick explicitly; do not rely on their `this` value being an element.
+
+```javascript jaml-playground
+export default {
+    type: 'wrapper',
+    vars: {
+        sections: [
+            { key: 'overview', label: 'Overview', visible: true },
+            { key: 'details', label: 'Details', visible: true },
+            { key: 'references', label: 'References', visible: false }
+        ]
+    },
+    styles: ['css(display:flex;flex-direction:column;align-items:center;gap:1rem)'],
+    components: [
+        {
+            type: 'label',
+            cap: 'Hover for a preview. Two sections are marked visible.'
+        },
+        {
+            type: 'minimap',
+            props: {
+                items: '{{sections}}',
+                orientation: 'horizontal',
+                tickAlign: 'center',
+                getTip(item) {
+                    const _content = document.createElement('div');
+                    _content.textContent = item.label;
+                    return _content;
+                }
+            }
+        }
+    ]
+};
+```
+
+This example supplies visibility explicitly. In an application, update each item's `visible` from the content viewport and implement `onactivate` against the caller's navigation targets. For a conversation overview, the caller can supply one record per user message; that mapping is not built into the CC. Bookmark controls and persistence also belong to caller-built preview content and data, not the rail.
+
+**Layout and appearance.** The parent places and centers the whole rail. To place a horizontal rail below content, put it after that content in a column layout. Tick magnification changes only the mark; button hit areas remain fixed. Pointer updates are throttled to 50ms with an 80ms transform transition; color and opacity transitions use 150ms. The current throttle can omit the final pointer update within its interval, so the magnification may remain at the last accepted position until movement resumes.
+
+The CSS custom properties `--jam-minimap-color` and `--jam-minimap-visible-color` override ordinary and visible tick colors; defaults use theme foreground tokens. The factory also accepts `key` (a field name or key function), `tickStyles` (additional tick styles), and `tipOptions` (native floating-tip options) through the [component factory syntax](#built-in-registered-components), for example `type: 'minimap({key:"id"})'`.
+
+**Preview ownership.** Each rail uses a shared native floating tip in the body boundary, with automatic flipping/containment. Vertical defaults are right/top; horizontal defaults are bottom/left. `tipOptions` can override native placement options; the rail retains its delegated tick selector and content callback. Native popup behavior handles entering the preview. Scrolling the rail resets magnification and its tip attachment; unmount releases it. No additional arrow-key navigation model is implemented by this CC.
+
+**Hidden routes.** Hiding a rail or its parent leaves it mounted and does not release an already open body-owned preview. If navigation hides the view, bind `getTip` to `null` while the view is inactive. A `getTip` change resets the native tip attachment, closing the previous preview; restore the callback when the view becomes active. This also handles keyboard or browser Back navigation that may produce no pointer-leave event. For example, the following prop fragment assumes an existing reactive `route` value and a caller-supplied `makePreview` callback:
+
+```javascript
+getTip: jaml.var('route', (route) => (route === 'chat' ? makePreview : null));
 ```
 
 ---
@@ -655,14 +756,18 @@ export default {
 export default {
     type: 'container',
     vars: { breadcrumbItems: [] },
-    components: [{
-        type: 'breadcrumb',
-        attrs: { role: 'navigation', 'aria-label': 'Workspace path' },
-        props: {
-            items: '{{breadcrumbItems}}',
-            onactivate(key) { console.log('Open breadcrumb item', key); }
+    components: [
+        {
+            type: 'breadcrumb',
+            attrs: { role: 'navigation', 'aria-label': 'Workspace path' },
+            props: {
+                items: '{{breadcrumbItems}}',
+                onactivate(key) {
+                    console.log('Open breadcrumb item', key);
+                }
+            }
         }
-    }],
+    ],
     onmount() {
         this.model.vars.breadcrumbItems = [
             { key: 'workspace:1', label: 'Workspace' },
@@ -789,6 +894,8 @@ export default {
 
 The panel reads and publishes the framework's saved theme choices, including `jam-darkmode@milo` (`true`, `false`, or `'auto'`). Integrate it with the application's existing preference owner; opening it is not a reason to overwrite saved light/dark or system choices with a second default. See [system theme and saved choices](../color.md#system-theme-and-saved-choices). Full-page mounting still follows the [standalone application root](#standalone-application-root); embedded surfaces retain their [host boundary](#embedded-application-hosts).
 
+The factory also accepts an optional `confirmation` object for both theme-switch and theme-reset dialogs. After readiness, use `jaml.registry.get('themepanel', [{ confirmation: { dimmer: true, blur: false } }])` for dimming without blur. This can be combined with `icons` and `iconStyles`; keep the native `theme-config` reference and set `build: true` when embedding the resulting definition inline. Omitting `confirmation` preserves the current curtain defaults. The panel keeps ownership of applying the saved theme on confirmation and restoring its previous selection on cancellation. See [`jam.modalYesNo`](../utils.md#jammodalyesnocontainer-prompt-onyes-onno-styles-option) for the shared presentation options. This option requires a runtime that includes confirmation forwarding.
+
 For a packaged runtime, confirm its artifact identity and registration (for example `jaml.registry.has('themepanel')`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.
 
 A header button can open the existing panel model using its native reference. Keep both components in the same owning model and create them after theme readiness:
@@ -800,7 +907,9 @@ export default {
         {
             type: 'button',
             cap: 'Appearance',
-            onclick() { jam.popup(this, this.ref('theme-config')); }
+            onclick() {
+                jam.popup(this, this.ref('theme-config'));
+            }
         },
         { type: 'themepanel' }
     ]

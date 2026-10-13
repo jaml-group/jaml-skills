@@ -6,6 +6,26 @@
 
 `Styles.tree.*` styles the [tree element](../JAM-UI/tree.md). Trees use the table theme tokens and hide the table header by default.
 
+## `tree.lines(show = true)`
+
+<a id="entry-tree-lines"></a>
+
+缩进引导线
+
+显示或隐藏树的纵向缩进引导线。
+
+启用时将引导线宽度设为原生超小边框令牌，禁用时设为零；移除样式会恢复原有的引导线宽度。
+
+使用 tree.lines(false) 隐藏缩进引导线。此样式不改变行列网格线、展开控件或键盘导航。
+
+位置参数顺序: `show`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `show` | `boolean` | `true` | 是否显示缩进引导线，默认为 true。 |
+
+Toggle vertical indentation guides with `styles: ["tree.lines(false)"]`. The default is `true`; removal restores the previous guide width. This is independent of `tree.gridline`, disclosure controls and keyboard navigation.
+
 ## Variants
 
 | Style | Description |
@@ -139,16 +159,6 @@ export default {
 | `l` | `numberOrString` | 亮度 |
 | `a` | `numberOrString` | 透明度 |
 | `color` | `string` | 颜色<br>支持简写 |
-
-## `tree.lines`
-
-<a id="entry-tree-lines"></a>
-
-位置参数顺序: `show`.
-
-| 参数 | 类型 | 默认值 |
-| --- | --- | --- |
-| `show` | `boolean` | `true` |
 
 ## `tree.inline`
 

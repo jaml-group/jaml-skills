@@ -343,25 +343,24 @@ export default [
 
 滚动激活
 
-呈现滚动容器是否已离开其起始位置。
+发布剩余可滚动边缘，并保留旧版滚动状态类。
 
-延迟后监听解析得到的目标，并在宿主上切换 jam-x-scrolled 和 jam-y-scrolled。
+延迟后（默认 100 毫秒）立即测量解析后的目标，并在滚动、尺寸和轻 DOM 内容变化时更新。在宿主的 jam-overflow 属性中发布以空格分隔的 left/right/top/bottom；无溢出时移除属性。物理边缘支持 horizontal-tb 下的 LTR/RTL 和反向 flex 原点。jam-x-scrolled 和 jam-y-scrolled 保留原有正偏移含义。
 
-卸载宿主、拆卸样式或销毁宿主时，解绑实际解析得到的滚动目标。延迟设置和节流回调检查应用身份，因此过期工作不会产生作用；重新挂载可建立新的监听器。
+卸载或销毁会取消待执行任务并释放监听器和观察器。重叠应用由最后一个活动所有者发布状态；最后清理时恢复原有 jam-overflow 值，但保留后来外部替换的值。保留最后的旧版滚动类。重新挂载会重新解析目标。
 
-声明的 clazz 参数未被使用。滚动发生前不计算初始状态。拆卸时保留最后的 jam-x-scrolled 和 jam-y-scrolled 类，不恢复其先前值。
+clazz 参数仍未使用。overflow 样式读取所选目标自身的属性，不自动启用观察。暂不支持 slot 和 agent 的 overflow 样式。边缘使用半像素容差。避免用溢出状态样式改变被测量的几何尺寸。不遍历目标内部的后代影子树。
 
-位置参数顺序: `clazz` → `delay` → `target`.
+位置参数顺序: `clazz` → `delay` → `target` → `listenScroll`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
 | `clazz` | `string` | `jam-scrolled` | 激活类名 |
 | `delay` | `number` | `100` | 延迟 |
 | `target` | `string` | 未提供 | 目标 |
+| `listenScroll` | `boolean` | `true` | 监听原生滚动事件；false 仍保留初次及布局和内容变化观察 |
 
-Scroll watching unbinds its resolved target and ignores obsolete delayed/throttled work on teardown. The declared `clazz` argument is unused, and the last scroll-state classes remain in place.
-
-Toggles CSS classes on the host element based on the scroll position of a target element. Adds `jam-x-scrolled` when scrolled horizontally and `jam-y-scrolled` when scrolled vertically. Use with `descStyles` to apply visual treatments to scrolled states.
+Measures the resolved target initially and after scroll, resize and light-DOM content changes. Set `listenScroll:false` for clipped non-scrolling content; initial and layout/content measurements remain active, but this subscription does not listen to scroll events. Default is true. Scroll listeners are shared and exist only while at least one subscriber requests them. Publishes remaining physical edges as space-separated tokens in `jam-overflow` on the host. The legacy `jam-x-scrolled` / `jam-y-scrolled` classes retain their positive-offset meaning. `overflow.css(...)` and `overflow.left/right/top/bottom.css(...)` consume the selected target’s own attribute; no observation is installed by those styles. Slot and agent paths are excluded. Teardown restores the previous attribute unless externally replaced, preserves the last legacy classes, and releases all observation. Subscriptions from this style, event.scrollProgress and table progress share one native scroll listener per target; removing one consumer leaves the others active, and the last cleanup disconnects observation. Scroll updates are immediate; layout/content invalidations are coalesced into animation frames. Descendant shadow trees are not observed; vertical writing modes are outside the supported geometry contract. The declared `clazz` argument remains unused.
 
 ```javascript jaml-playground
 export default [

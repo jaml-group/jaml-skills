@@ -4,7 +4,52 @@
 
 [中文](popup.zh.md)
 
-Popup plugins attach tooltip, help, or floating-tip popups to element subtrees. They listen for mouse events on matching child selectors and show a `PapayaPopup` instance.
+## `popup.more`
+
+<a id="entry-popup-more"></a>
+
+More actions for direct children
+
+Attach a reusable trailing action menu to selected direct children of a native container.
+
+Matches one target class, with an optional leading dot. Existing children and later child additions receive one native extra-slot button. The button uses display:none at rest, takes caption space on hover or focus, and remains displayed while open; non-hover or coarse input keeps it visible. Synchronous getcontent(target) runs at each opening and returns native JAML content or nodes. click2Hide delegates to the native dropdown default and event ordering; callbacks are not wrapped. By default the dropdown aligns with the trigger right edge, with cursor-based popup and arrow alignment disabled; native options can override this.
+
+Use native direct children with an inline extra slot and a focusable target for keyboard discovery. Give menu actions accessible names and role=menuitem.
+
+Owns only its injected buttons and one popup per application. Removal, container remount and unplug reconcile child lifetimes; replacement and pending opening cleanup cannot close a newer popup. Caller extra content and onchildadd callbacks remain intact.
+
+Direct children only; class-only mutations are not observed. No async content contract or caption mask is supplied. Overlapping target classes should use a single plugin owner. Other options forward to PapayaPopup. Keep application identity, permissions and action logic in getcontent.
+
+Positional order: `target` → `getcontent` → `click2Hide` → `clickElsewhere2Hide`.
+
+| Argument | Type | Contract |
+| --- | --- | --- |
+| `target` | `string` | One class name identifying eligible direct children. |
+| `getcontent` | `function` | Synchronous callback receiving the current child and returning popup content on each opening. |
+| `click2Hide` | `boolean` | Forward native click dismissal; omission retains the dropdown default of false and existing callback ordering. |
+| `clickElsewhere2Hide` | `boolean` | Forward native outside-click dismissal; omission retains true. |
+
+## `popup.submenu`
+
+<a id="entry-popup-submenu"></a>
+
+Nested popup menu
+
+Hover opens after 100 ms; leaving cancels pending opening. Click and ArrowRight/Enter/Space open immediately. On item exit a clipped safe triangle blocks underlying hover for at most 300 ms without timer renewal. Returning to the item or entering the submenu removes protection. Clicking the triangle closes that submenu branch and consumes the click. Expiry removes only protection. Position defaults right with top alignment; native placement options can override it. With click2Hide enabled, submenu action clicks close the entire ancestor popup chain after the callback; submenu-opening items keep ancestors open. Top alignment accounts for the first item inset.
+
+Attach to content inside a PapayaPopup. Provide native menu items and use one submenu controller per menu. Submenu content may attach the same plugin for nesting.
+
+Parent hide-start, destruction, item removal and unplug cancel owned work and close descendant popups. Escape/ArrowLeft closes the current submenu and restores item focus. Keyboard input clears triangle protection. Every opening creates a fresh popup. Normal dismissal plays collapse before destruction, including each ancestor and any already-closing branch. Pending presentations and forced teardown are destroyed immediately.
+
+Positional order: `target` → `getcontent` → `triangleDebug`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `target` | `string` | Not supplied | Class name of submenu-opening items inside this menu container. |
+| `getcontent` | `function` | Not supplied | Synchronous getcontent(item) returns native JAML content or nodes. |
+| `triangleDebug` | `boolean` | `false` | Show the clipped pointer shield with var(--jam-color-primary-mask); false by default. |
+
+Popup plugins attach tooltip, help, floating-tip, or more-action popups. Each variant owns its target discovery and interaction lifecycle while native popup infrastructure handles display and dismissal.
 
 ---
 

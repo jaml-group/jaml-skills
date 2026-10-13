@@ -4,6 +4,14 @@
 
 [English](icon.md)
 
+## `icon.more`
+
+<a id="entry-icon-more"></a>
+
+水平三点图标
+
+在 icon 插槽添加装饰性原生形状图标，由 CSS 使用 currentColor 绘制。不依赖 Font Awesome 或外部字体；外层控件负责可访问名称。
+
 `Styles.icon.*` -- icon customization using Font Awesome, emoji, or other icon sets.
 
 ---

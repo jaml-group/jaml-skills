@@ -38,6 +38,7 @@
 - [common/margin](common/margin.zh.md)
 - [common/mask](common/mask.zh.md)
 - [common/outline](common/outline.zh.md)
+- [common/overflow](common/overflow.zh.md)
 - [common/padding](common/padding.zh.md)
 - [common/shadow](common/shadow.zh.md)
 - [common/size](common/size.zh.md)

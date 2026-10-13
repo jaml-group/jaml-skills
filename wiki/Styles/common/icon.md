@@ -4,6 +4,14 @@
 
 [中文](icon.zh.md)
 
+## `icon.more`
+
+<a id="entry-icon-more"></a>
+
+Horizontal three-dot icon
+
+Adds a decorative native shaped icon in the icon slot, drawn with currentColor in CSS. No Font Awesome or external font dependency. The enclosing control owns its accessible name.
+
 `Styles.icon.*` -- icon customization using Font Awesome, emoji, or other icon sets.
 
 ---

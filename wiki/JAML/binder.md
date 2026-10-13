@@ -273,6 +273,10 @@ export default {
 };
 ```
 
+By default (including `debounce: 0`), publications coalesce into the latest pending callback without postponing an already queued delivery. Single-key watchers schedule a zero-delay timer and, when available, an animation frame: whichever runs first delivers once and cancels the other. Multiple-key watchers use a 20 ms timer and read current values in key order when delivered. Continuous updates can therefore render progressively before input stops, including at a rendering opportunity when other tasks delay timers. These are scheduling delays, not real-time deadlines; browser throttling and other work can delay execution.
+
+Set a positive `debounce` to wait for that many milliseconds of quiet after the latest publication. Pending callbacks are canceled when their subscription or component is destroyed. Hidden or detached live components remain subscribed; the timer remains available when animation frames are absent or suspended. There is no guaranteed ordering against unrelated timers or animation frames. User callback promises are not serialized or automatically canceled by the watcher.
+
 **Watcher fields:**
 
 | Field      | Type                            | Description                                                                                                                                               |
