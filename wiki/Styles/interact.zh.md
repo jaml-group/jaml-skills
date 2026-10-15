@@ -40,7 +40,7 @@ states: `mount`, `unmount`.
 
 - `#/testground?jaml=intent-interact-movable`
 
-Movement and resize helpers are disabled on unmount, style teardown or host destruction. Resize disable removes its `passiveresize`, `resize` and `moveend` callbacks and invalidates old debounce/completion work. Shared passive-observer ownership is unchanged. Previous coordinates and dimensions are not restored; persistence and accessible alternatives remain application responsibilities.
+Movement and resize helpers are disabled on unmount, style teardown or host destruction. Resize disable removes its `passiveresize`, `resize` and `moveend` callbacks and invalidates old debounce/completion work. Observation remains active for other subscribers and stops after the last callback is removed. See [shared passive resize](../JAM-UI/JAM-UI.md#shared-passive-resize) for subscription, measurements and runtime prerequisites. Previous coordinates and dimensions are not restored; persistence and accessible alternatives remain application responsibilities.
 
 Makes the element draggable via `DamsonDragNDrop`. Use `handle` to restrict the drag start area; `contain` constrains movement to the parent bounds.
 
@@ -79,7 +79,7 @@ export default [
 
 使尺寸约束与父级布局保持一致。转发参数的具体字段不属于这个开放结构；编辑器接受某个字段，不代表运行时该字段有效。
 
-禁用不会恢复原始尺寸。已排队的防抖或 animationEnd promise 仍可能完成，但其过期的后续操作不会产生作用。共享的被动 ResizeObserver 所有权不变；即使目标曾是唯一的尺寸调整目标，禁用也不会停止观察它。键盘控制、无障碍支持和尺寸持久化仍由调用方负责。
+禁用不会恢复原始尺寸。已排队的防抖或 animationEnd promise 仍可能完成，但其过期的后续操作不会产生作用。被动尺寸观察由订阅者共享。禁用会释放本次订阅，仅在没有剩余回调时停止观察目标；Jam 元素最终销毁时也会停止观察。运行时前提见共享被动尺寸观察说明。键盘控制、无障碍支持和尺寸持久化仍由调用方负责。
 
 参数转发至 `jam.makeResizable`；未声明字段的类型、默认值和补全尚不可用。空参数表不表示拒绝参数。
 

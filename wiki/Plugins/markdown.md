@@ -40,20 +40,25 @@ Use this composition when a transcript or feed owns vertical scrolling for all i
 There is currently no dedicated Markdown option for parent-owned scrolling. `style` targets the outer renderer container, so setting only its overflow does not change the inner document. The public `styles` extension can apply [scoped CSS](../Styles/common/css.md) to both. Register a reusable application style once, before rendering:
 
 ```javascript
-Styles.registerPlugin('app.markdown-flow', {
-    desc: 'Markdown flowing in its parent viewport',
-    plugins: [
-        Styles.css({ height: 'auto', overflow: 'visible' }),
-        Styles.css({ selector: '& > .jam-md-doc', height: 'auto', overflow: 'visible', scrollBehavior: 'auto' })
-    ]
+Styles.registerPlugin("app.markdown-flow", {
+  desc: "Markdown flowing in its parent viewport",
+  plugins: [
+    Styles.css({ height: "auto", overflow: "visible" }),
+    Styles.css({
+      selector: "& > .jam-md-doc",
+      height: "auto",
+      overflow: "visible",
+      scrollBehavior: "auto",
+    }),
+  ],
 });
 
 const markdownOptions = {
-    contentPolicy: 'safe',
-    buildToc: false,
-    buildEof: false,
-    keepScrollPosition: false,
-    styles: ['app.markdown-flow']
+  contentPolicy: "safe",
+  buildToc: false,
+  buildEof: false,
+  keepScrollPosition: false,
+  styles: ["app.markdown-flow"],
 };
 ```
 
@@ -76,7 +81,7 @@ Verify parent scroll growth during streaming, upward wheel over reasoning and an
 ## Streaming
 
 ```ts
-const reply = jam.MandarinMarkdown.stream('#answer', { buildToc: false });
+const reply = jam.MandarinMarkdown.stream("#answer", { buildToc: false });
 
 for await (const fragment of decodedFragments) {
   reply.append(fragment);
@@ -103,7 +108,7 @@ The public `jam.MarkdownParser` is DOM-free: `new jam.MarkdownParser({ dialect }
 ## Printing
 
 ```ts
-await jam.MandarinMarkdown.prepareForPrint('#answer');
+await jam.MandarinMarkdown.prepareForPrint("#answer");
 window.print();
 ```
 
@@ -130,35 +135,61 @@ The hook requires an actual matching closing delimiter in static and streamed in
 ```typescript signature
 type MarkdownPlaygroundRequest = {
   container: HTMLElement;
+  mount<T extends ModelOption | ModelOption[]>(
+    content: T,
+  ): (T extends ModelOption[] ? IModel[] : IModel) | undefined;
   source: string;
   language?: string;
   blockId: string;
   revision: number;
-  mode: 'source' | 'result';
+  mode: "source" | "result";
   context: unknown;
   signal: AbortSignal;
 };
 type MarkdownPlayground = {
   context?: unknown;
-  render(request: MarkdownPlaygroundRequest):
-    void | (() => void) | Promise<void | (() => void)>;
+  render(
+    request: MarkdownPlaygroundRequest,
+  ): void | (() => void) | Promise<void | (() => void)>;
 };
 ```
 
-`context` is passed by identity. `blockId` and monotonically increasing `revision` identify work within this document/block, not a durable application/session identifier. Each invocation gets a fresh result container. An edit aborts the previous signal, runs its cleanup and removes its container before replacement; teardown does the same. If an async invocation returns cleanup after replacement/destruction, that cleanup still runs. The hook must observe cancellation for its own requests, subscriptions and external resources. Late writes to its old container cannot overwrite the new container. Render failures follow Markdown's existing error/readiness path.
+`context` is passed by identity. `blockId` and monotonically increasing `revision` identify work within this document/block, not a durable application/session identifier. `container` is the actual native result pane, shared across revisions. Authored JAML roots mount directly under it, without an intermediate revision wrapper.
+
+Use `request.mount(definition)` after asynchronous source preparation. It accepts a native JAML model definition or an array, returns the corresponding model or model array, and automatically owns their destruction. It returns `undefined` if the revision has retired, including retirement triggered synchronously by mounting. Multiple calls in one revision are allowed, such as adding response controls only when needed. Calling a returned model's `destroy()` early is supported; final cleanup tolerates that. The hook still returns `void` or a cleanup function, optionally through a promise; model arrays are returned by `mount`, not by the hook itself.
+
+An edit or teardown aborts the previous signal and destroys its mounted models immediately, even if the hook's promise is still pending. A cleanup function returned after retirement still runs. Use that function for subscriptions and other resources not owned by `mount`. Cleanup must release only its own resources: never clear or remove the shared result container. Render failures follow Markdown's existing error/readiness path and retire the failed revision's owned mounts.
+
+This direct-mount contract requires a runtime with `request.mount`. It replaces the older per-revision result wrapper. Existing hooks that use `container` directly must be reviewed: cached raw DOM references cannot prevent late writes into a newer revision. Check `signal.aborted` after asynchronous work, prefer `mount` for native JAML, and keep arbitrary DOM mutations and their cleanup within the active revision. The hook must cancel its own requests, subscriptions and external resources; the signal cannot cancel arbitrary JavaScript for it.
+
+For a trusted, already-prepared definition, the integration shape is:
+
+```javascript
+async function renderPreparedView(request) {
+  const definition = await loadTrustedDefinition(request.source);
+  if (request.signal.aborted) return;
+  const models = request.mount(definition);
+  if (!models) return; // Retired during mounting.
+  // The framework owns these models; return cleanup only for other resources.
+}
+```
+
+`loadTrustedDefinition` is application-provided. `mount` executes native JAML; it does not make an untrusted definition safe.
 
 The hook replaces the built-in executor. It is an ownership seam, not a sandbox or a state bridge. The application owns isolation, capability validation, named actions, state synchronization and persistence. Do not call same-page evaluation on untrusted source. The following integration requires an application-provided isolated renderer:
 
 ```javascript
 const markdown = new jam.MandarinMarkdown({
-  contentPolicy: 'safe',
+  contentPolicy: "safe",
   playground: {
     context: { conversationId, messageId },
-    render: request => isolatedRenderer.mount(request)
-  }
+    render: (request) => isolatedRenderer.mount(request),
+  },
 });
 // Refuse an older runtime that does not implement this additive policy.
-if (markdown.contentPolicy !== 'safe') { throw new Error('Safe Markdown runtime required'); }
+if (markdown.contentPolicy !== "safe") {
+  throw new Error("Safe Markdown runtime required");
+}
 const model = jaml(container, markdown.parse(source));
 ```
 
@@ -224,7 +255,9 @@ Within paragraphs and inline text, `parseString` supports:
 ### Basic markdown rendering
 
 ```ts
-jamd('#app', `
+jamd(
+  "#app",
+  `
 # Hello World
 
 This is a **paragraph** with *formatting*.
@@ -232,16 +265,17 @@ This is a **paragraph** with *formatting*.
 - Item 1
 - Item 2
 - Item 3
-`);
+`,
+);
 ```
 
 ### Table of contents
 
 ```ts
-jamd('#doc', markdownContent, {
+jamd("#doc", markdownContent, {
   buildToc: true,
-  lineBefore: '0.8em',
-  lineHeight: 1.7
+  lineBefore: "0.8em",
+  lineHeight: 1.7,
 });
 ```
 
@@ -259,21 +293,27 @@ In the Mandarin dialect, the explicit `jaml-playground` modifier enables an edit
 const md = new MandarinMarkdown({ buildToc: true, lineHeight: 1.8 });
 
 const doc = md.doc([
-  md.header('API Documentation', 1),
-  md.para('This document describes the public API surface.'),
-  md.header('Authentication', 2),
-  md.para('All requests require a valid API key passed in the Authorization header.'),
-  md.code(`curl -H "Authorization: Bearer <token>" https://api.example.com/v1/users`, 0, 'bash'),
-  md.header('Endpoints', 2),
+  md.header("API Documentation", 1),
+  md.para("This document describes the public API surface."),
+  md.header("Authentication", 2),
+  md.para(
+    "All requests require a valid API key passed in the Authorization header.",
+  ),
+  md.code(
+    `curl -H "Authorization: Bearer <token>" https://api.example.com/v1/users`,
+    0,
+    "bash",
+  ),
+  md.header("Endpoints", 2),
   md.table([
-    ['Method', 'Path', 'Description'],
-    ['GET', '/users', 'List all users'],
-    ['POST', '/users', 'Create a user'],
-    ['DELETE', '/users/:id', 'Delete a user']
-  ])
+    ["Method", "Path", "Description"],
+    ["GET", "/users", "List all users"],
+    ["POST", "/users", "Create a user"],
+    ["DELETE", "/users/:id", "Delete a user"],
+  ]),
 ]);
 
-Model.render('#app', doc);
+Model.render("#app", doc);
 ```
 
 ### Inline markdown in data
@@ -281,7 +321,7 @@ Model.render('#app', doc);
 ```ts
 const md = new MandarinMarkdown();
 const html = md.parseString(
-  'Visit the **docs** at [example.com](https://example.com) for :rocket: fast setup.'
+  "Visit the **docs** at [example.com](https://example.com) for :rocket: fast setup.",
 );
 // => 'Visit the <strong>docs</strong> at <a href="https://example.com">example.com</a> for 🚀 fast setup.'
 ```
@@ -290,14 +330,17 @@ const html = md.parseString(
 
 ```ts
 const md = new MandarinMarkdown();
-md.footnote('src', 'See the official documentation at https://docs.example.com');
+md.footnote(
+  "src",
+  "See the official documentation at https://docs.example.com",
+);
 
-const rendered = md.parseString('This is a statement with a footnote[^src].');
+const rendered = md.parseString("This is a statement with a footnote[^src].");
 ```
 
 ### Math and diagrams
 
 ```ts
-md.code('E = mc^2', 0, 'math');
-md.code('graph TD; A-->B;', 0, 'mermaid');
+md.code("E = mc^2", 0, "math");
+md.code("graph TD; A-->B;", 0, "mermaid");
 ```

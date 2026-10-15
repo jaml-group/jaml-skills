@@ -40,7 +40,7 @@ Developer examples require a matching Playground that serves these fixtures:
 
 - `#/testground?jaml=intent-interact-movable`
 
-Movement and resize helpers are disabled on unmount, style teardown or host destruction. Resize disable removes its `passiveresize`, `resize` and `moveend` callbacks and invalidates old debounce/completion work. Shared passive-observer ownership is unchanged. Previous coordinates and dimensions are not restored; persistence and accessible alternatives remain application responsibilities.
+Movement and resize helpers are disabled on unmount, style teardown or host destruction. Resize disable removes its `passiveresize`, `resize` and `moveend` callbacks and invalidates old debounce/completion work. Observation remains active for other subscribers and stops after the last callback is removed. See [shared passive resize](../JAM-UI/JAM-UI.md#shared-passive-resize) for subscription, measurements and runtime prerequisites. Previous coordinates and dimensions are not restored; persistence and accessible alternatives remain application responsibilities.
 
 Makes the element draggable via `DamsonDragNDrop`. Use `handle` to restrict the drag start area; `contain` constrains movement to the parent bounds.
 
@@ -79,7 +79,7 @@ Runs on mount or an already-mounted/connected host. Unmount, style teardown or h
 
 Keep sizing constraints consistent with parent layout. Detailed forwarded fields remain outside this open schema; editor acceptance does not prove their runtime validity.
 
-Disabling does not restore original dimensions. A queued debounce or animationEnd promise may still finish, but its obsolete continuation is inert. Shared passive ResizeObserver ownership is unchanged; disable does not unobserve even a sole former resize target. Keyboard controls, accessibility and size persistence remain caller responsibilities.
+Disabling does not restore original dimensions. A queued debounce or animationEnd promise may still finish, but its obsolete continuation is inert. Passive resize observation is shared. Disable releases this subscription and unobserves the target only when no callbacks remain; final Jam element destruction also releases observation. See the shared passive resize contract for runtime prerequisites. Keyboard controls, accessibility and size persistence remain caller responsibilities.
 
 Arguments are forwarded to `jam.makeResizable`. Undeclared fields have no inferred types, defaults or completion; an empty argument table does not reject arguments.
 

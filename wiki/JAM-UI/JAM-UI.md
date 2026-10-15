@@ -336,6 +336,70 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ---
 
+### Shared passive resize
+
+Use `passiveresize` to react to an element's content-box size changes through the framework's shared `ResizeObserver`. Prefer it for ordinary application size tracking when deferred notification is acceptable. It observes layout size, not just user-driven resize handles or window resizing.
+
+**Runtime prerequisite:** the measurement payload and last-subscriber/final-destruction cleanup described here require the updated development runtime. Older bundles may emit an empty `detail`, stop observation when one subscriber unbinds, or retain destroyed targets. Verify the actual loaded bundle; a framework version string alone does not identify these development changes.
+
+#### Subscribe and release
+
+A JAML `on` map acquires observation through the framework event binder:
+
+```javascript
+// JAML object fragment; place on the element whose size matters.
+{
+    on: {
+        passiveresize: function (event) {
+            const entry = event.detail;
+            console.info(entry.contentRect.width, entry.contentRect.height);
+        }
+    }
+}
+```
+
+For an existing Jam element or ordinary DOM element, pair the exported helpers with the same callback identity:
+
+```javascript
+// Imperative example: element is an existing HTMLElement.
+const onResize = (event) => {
+  const entry = event.detail;
+  console.info(entry.borderBoxSize);
+};
+jam.bindEvent(element, "passiveresize", onResize);
+
+// When this subscription's owner is released:
+jam.unbindEvent(element, "passiveresize", onResize);
+```
+
+Direct `element.on('passiveresize', callback)`, `addEventListener`, and a JAML `once` map do not start observation themselves. Direct `off`/`removeEventListener` also bypass observation cleanup. Use the paired helpers for imperative observation; do not call `disconnect()` on the shared observer.
+
+Removing one subscription preserves other callbacks. Independent owners should use distinct callback functions; repeated registration of the same function is not an independently reference-counted subscription. For Jam elements, cleanup checks the element's event-handler registry; for ordinary DOM elements, it tracks callbacks registered through `jam.bindEvent`. Ordinary DOM callbacks registered or removed outside those helpers cannot be accounted for. Final Jam element destruction unobserves the element even if callbacks remain. Temporary removal/unmount alone does not end observation; a mount-scoped owner should unbind on unmount and bind again on remount. Ordinary DOM elements need explicit owner cleanup.
+
+#### Measurements and notification timing
+
+`event.detail` is the native `ResizeObserverEntry`, passed directly rather than spread into a plain object. Its measurements are exposed through platform properties that object spread does not reliably copy.
+
+| Field                       | Meaning                                                            |
+| --------------------------- | ------------------------------------------------------------------ |
+| `target`                    | The observed element.                                              |
+| `contentRect`               | Content rectangle, including `width` and `height` in CSS pixels.   |
+| `contentBoxSize`            | Content-box sizes as logical `inlineSize`/`blockSize` entries.     |
+| `borderBoxSize`             | Sizes including padding and border, as logical size entries.       |
+| `devicePixelContentBoxSize` | Content-box sizes in device pixels, where the browser supports it. |
+
+Box-size fields are sequences, not single rectangles. Logical inline/block axes follow writing mode. Check browser support before relying on device-pixel sizes. Keep authored spacing and dimensions in `rem`; convert measured CSS pixels at the geometry boundary when applying a measurement to authored styles.
+
+The event is dispatched on the observed target, does not bubble, and is deferred through `requestAnimationFrame` after native observer delivery. The entry describes that earlier observation; it is not a fresh measurement at event-handler time. Unobserving does not cancel an already queued event dispatch. A callback removed before dispatch will not receive it, but remaining or newly registered callbacks may; retained callbacks should guard owner disposal when needed. Do not assume synchronous delivery, one callback per native batch across several targets, or notification for every change of descendant content or scroll extent.
+
+#### Content box versus border box
+
+The subscription currently uses the native default, `content-box`; the helper does not expose a `box` argument. The payload still contains the browser's other supported box measurements. Receiving `borderBoxSize` does not mean border-only changes trigger an event: a padding/border change that leaves the content size unchanged is not sufficient.
+
+Use a directly owned `ResizeObserver` when the requirement needs native delivery timing, `{ box: 'border-box' }` or device-pixel triggering, or native multi-target batch processing. Give that observer explicit teardown. CSS transform-only changes are not resize observations. For scroll progress, overflow masks or chat following, first consider the existing [scrolling capabilities](../choosing-native-capabilities.md#scrolling-deferred-rendering-and-tables) rather than duplicating their ownership.
+
+---
+
 ### Slot content and literal text
 
 Slot setters such as `cap` accept authored HTML strings as well as supplied `Text` nodes and Elements. A string is not an automatic plain-text boundary. To display external content literally, supply `document.createTextNode(text)` or an Element whose `textContent` was assigned from the value. This remains separate from [binder/data interpretation](../JAML/binder.md#runtime-data-and-authored-definitions).

@@ -93,6 +93,8 @@ For sidebar rows, see [native bar icons, font assets and caption alignment](JAM-
 
 ## Popups, notifications and observers
 
+For element size tracking, start with [shared `passiveresize`](JAM-UI/JAM-UI.md#shared-passive-resize): JAML `on.passiveresize` or paired `jam.bindEvent`/`jam.unbindEvent` subscriptions provide deferred content-box notifications and native measurements in `event.detail` on the updated runtime. Choose a directly owned `ResizeObserver` only when native timing, a different observed box, or native batching is required. Read the linked runtime and cleanup prerequisites before replacing an existing observer.
+
 | Need                          | Capability                              | Ownership boundary                                                                                   |
 | ----------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Delegated hover explanation   | `plugin popup.tip`, `popup.floatingTip` | Annotated target/content and popup lifetime; inspect target-matching behavior.                       |
