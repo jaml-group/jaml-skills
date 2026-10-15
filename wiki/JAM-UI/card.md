@@ -10,14 +10,14 @@ A card component with a title section (icon + cap + extra) and a body (default) 
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "User Summary",
-  "icon": "👤",
-  "components": [
-    { "type": "indicator", "cap": "Name",  "value": "Alice"  },
-    { "type": "indicator", "cap": "Role",  "value": "Admin"  },
-    { "type": "indicator", "cap": "Score", "value": 98       }
-  ]
+    "type": "card",
+    "cap": "User Summary",
+    "icon": "👤",
+    "components": [
+        { "type": "indicator", "cap": "Name", "value": "Alice" },
+        { "type": "indicator", "cap": "Role", "value": "Admin" },
+        { "type": "indicator", "cap": "Score", "value": 98 }
+    ]
 }
 ```
 
@@ -27,22 +27,22 @@ A card component with a title section (icon + cap + extra) and a body (default) 
 
 Inherits all params from [CoconutContainer](./container.md) and [AbstractElement](./JAM-UI.md).
 
-| Param | Type | Description |
-|---|---|---|
-| `cap` | `string` | Card title text. Fills the `cap` slot inside the `label` wrapper. |
-| `icon` | `string` | Icon shown in the title row. |
+| Param  | Type     | Description                                                       |
+| ------ | -------- | ----------------------------------------------------------------- |
+| `cap`  | `string` | Card title text. Fills the `cap` slot inside the `label` wrapper. |
+| `icon` | `string` | Icon shown in the title row.                                      |
 
 ---
 
 ## Slots
 
-| Slot | Description |
-|---|---|
-| `label` | Wraps `icon` + `cap` + `extra` slots |
-| `icon` | Icon in the title |
-| `cap` | Title text |
-| `extra` | Extra content in the title row (e.g. action buttons). Set `slot="extra"` on children to place them here. |
-| default (body) | Card body content |
+| Slot           | Description                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| `label`        | Wraps `icon` + `cap` + `extra` slots                                                                     |
+| `icon`         | Icon in the title                                                                                        |
+| `cap`          | Title text                                                                                               |
+| `extra`        | Extra content in the title row (e.g. action buttons). Set `slot="extra"` on children to place them here. |
+| default (body) | Card body content                                                                                        |
 
 ---
 
@@ -52,14 +52,14 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "Server Status",
-  "icon": "🖥️",
-  "components": [
-    { "type": "indicator", "cap": "CPU",    "value": "45%",   "color": "green"  },
-    { "type": "indicator", "cap": "Memory", "value": "72%",   "color": "orange" },
-    { "type": "indicator", "cap": "Disk",   "value": "28%",   "color": "blue"   }
-  ]
+    "type": "card",
+    "cap": "Server Status",
+    "icon": "🖥️",
+    "components": [
+        { "type": "indicator", "cap": "CPU", "value": "45%", "color": "green" },
+        { "type": "indicator", "cap": "Memory", "value": "72%", "color": "orange" },
+        { "type": "indicator", "cap": "Disk", "value": "28%", "color": "blue" }
+    ]
 }
 ```
 
@@ -67,30 +67,28 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 
 ```javascript jaml-playground
 export default {
-  type: 'card',
-  cap: 'Data Panel',
-  components: [
-    {
-      type: 'button-cta',
-      cap: 'Refresh',
-      slot: 'extra',
-      onclick: function() {
-        this.model.reload()
-      }
-    },
-    { type: 'table', data: [] }
-  ]
-}
+    type: 'card',
+    cap: 'Data Panel',
+    components: [
+        {
+            type: 'button-cta',
+            cap: 'Refresh',
+            slot: 'extra',
+            onclick: function () {
+                this.model.reload();
+            }
+        },
+        { type: 'table', data: [] }
+    ]
+};
 ```
 
 ### No-title card (body only)
 
 ```json jaml-playground
 {
-  "type": "card",
-  "components": [
-    { "type": "chart", "cap": "Pie", "data": [] }
-  ]
+    "type": "card",
+    "components": [{ "type": "chart", "cap": "Pie", "data": [] }]
 }
 ```
 
@@ -100,13 +98,11 @@ When title, icon, and cap content are all absent, the card collapses its title r
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "Styled Card",
-  "icon": "🎨",
-  "styles": ["css(max-width:400px;margin:1rem)", "shadow.m"],
-  "components": [
-    { "type": "element", "value": "Content inside a styled card" }
-  ]
+    "type": "card",
+    "cap": "Styled Card",
+    "icon": "🎨",
+    "styles": ["css(max-width:400px;margin:1rem)", "shadow.m"],
+    "components": [{ "type": "element", "value": "Content inside a styled card" }]
 }
 ```
 
@@ -114,5 +110,5 @@ When title, icon, and cap content are all absent, the card collapses its title r
 
 ## Notes
 
-- To place a child in the `extra` slot, set `slot: "extra"` on the child, or add the `jam-extra-btn` CSS class.
-- `CherryCard` extends `CoconutContainer`, so it inherits `clear()`, `isStable`, and automatic child observation.
+-   To place a child in the `extra` slot, set `slot: "extra"` on the child, or add the `jam-extra-btn` CSS class.
+-   `CherryCard` extends `CoconutContainer`, so it inherits `clear()`, `isStable`, and automatic child observation.

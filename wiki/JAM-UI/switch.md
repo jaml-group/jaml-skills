@@ -19,9 +19,9 @@ A boolean toggle control available in six visual subtypes. The value is always a
 
 ```json jaml-playground
 {
-  "type": "switch",
-  "cap": "Dark Mode",
-  "defaultValue": false
+    "type": "switch",
+    "cap": "Dark Mode",
+    "defaultValue": false
 }
 ```
 
@@ -71,9 +71,9 @@ For mutually exclusive switches that can return to no selection, see the [cancel
 
 ```json jaml-playground
 {
-  "type": "switch",
-  "cap": "Enable notifications",
-  "defaultValue": true
+    "type": "switch",
+    "cap": "Enable notifications",
+    "defaultValue": true
 }
 ```
 
@@ -81,72 +81,72 @@ For mutually exclusive switches that can return to no selection, see the [cancel
 
 ```javascript jaml-playground
 export default {
-  type: 'switch-checkbox',
-  cap: 'Select All',
-  indeterminate: true,
-  onvaluechange: function(checked) {
-    console.log(`Checked: ${checked}`)
-  }
-}
+    type: 'switch-checkbox',
+    cap: 'Select All',
+    indeterminate: true,
+    onvaluechange: function (checked) {
+        console.log(`Checked: ${checked}`);
+    }
+};
 ```
 
 ### Button with hold-to-activate mode
 
 ```javascript jaml-playground
 export default {
-  type: 'switch-button',
-  cap: 'Hold to Record',
-  icon: 'mic',
-  holdingOn: true,
-  onvaluechange: function(active) {
-    if (active) startRecording()
-    else stopRecording()
-  }
-}
+    type: 'switch-button',
+    cap: 'Hold to Record',
+    icon: 'mic',
+    holdingOn: true,
+    onvaluechange: function (active) {
+        if (active) startRecording();
+        else stopRecording();
+    }
+};
 ```
 
 ### Keyboard-bound switch
 
 ```javascript jaml-playground
 export default {
-  type: 'switch',
-  cap: 'Toggle Panel (Space)',
-  bindKey: 'Space'
-}
+    type: 'switch',
+    cap: 'Toggle Panel (Space)',
+    bindKey: 'Space'
+};
 ```
 
 ### Reactive value bound to a container variable
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  vars: { featureEnabled: false },
-  components: [
-    {
-      type: 'switch',
-      cap: 'Feature Flag',
-      valueKey: 'featureEnabled'
-    },
-    {
-      type: 'indicator',
-      cap: 'Status',
-      value: '{{featureEnabled ? "ON" : "OFF"}}',
-      state: '{{featureEnabled ? "success" : "default"}}'
-    }
-  ]
-}
+    type: 'container',
+    vars: { featureEnabled: false },
+    components: [
+        {
+            type: 'switch',
+            cap: 'Feature Flag',
+            valueKey: 'featureEnabled'
+        },
+        {
+            type: 'indicator',
+            cap: 'Status',
+            value: '{{featureEnabled ? "ON" : "OFF"}}',
+            state: '{{featureEnabled ? "success" : "default"}}'
+        }
+    ]
+};
 ```
 
 ### Ghost and outline subtypes in a button bar
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "styles": ["wrapper.buttonwrapper"],
-  "components": [
-    { "type": "switch-ghost", "cap": "Ghost" },
-    { "type": "switch-outline", "cap": "Outline" }
-  ]
+    "type": "wrapper",
+    "styles": ["wrapper.buttonwrapper"],
+    "components": [
+        { "type": "switch-ghost", "cap": "Ghost" },
+        { "type": "switch-outline", "cap": "Outline" }
+    ]
 }
 ```
 
@@ -154,10 +154,10 @@ export default {
 
 ## Notes
 
-- Setting `value` to `true` automatically clears `indeterminate` to `false`.
-- The `checked` property is a direct alias for `value`. Reading `el.checked` returns the current boolean state; setting `el.checked = true` is equivalent to `el.setValue(true)`.
-- The `button`/`ghost`/`outline` subtypes apply `Stylize.button` and add `jam-ghost` for ghost mode.
-- For the `slider` subtype, the internal range input value is set to `100` when checked and `0` when unchecked.
+-   Setting `value` to `true` automatically clears `indeterminate` to `false`.
+-   The `checked` property is a direct alias for `value`. Reading `el.checked` returns the current boolean state; setting `el.checked = true` is equivalent to `el.setValue(true)`.
+-   The `button`/`ghost`/`outline` subtypes apply `Stylize.button` and add `jam-ghost` for ghost mode.
+-   For the `slider` subtype, the internal range input value is set to `100` when checked and `0` when unchecked.
 
 ## Slider focus, keyboard and accessibility
 
@@ -169,7 +169,9 @@ A caption names the host. For a captionless settings row, supply an accessible n
 export default {
     type: 'switch',
     value: false,
-    oninit() { this.getAgent().setAttribute('aria-label', 'Enable plugin'); }
+    oninit() {
+        this.getAgent().setAttribute('aria-label', 'Enable plugin');
+    }
 };
 ```
 

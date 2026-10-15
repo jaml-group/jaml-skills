@@ -12,9 +12,9 @@ The single base color that defines the entire UI palette. Every element's `color
 
 ```javascript
 jam.accolor; // → chroma.Color — current accent color
-jam.accolor = "red"; // set accent color globally
-jam.accolor = "#3b82f6"; // hex
-jam.accolor = "hsl(210, 70%, 55%)"; // HSL
+jam.accolor = 'red'; // set accent color globally
+jam.accolor = '#3b82f6'; // hex
+jam.accolor = 'hsl(210, 70%, 55%)'; // HSL
 ```
 
 For a branded first render, set `jam.accolor` before rendering. Descendants inherit that global color profile, and `jam.colorSet` is regenerated from it; later `jam.accolor` assignments update the active profile as well. Omit an element's `color` when it should use the global accent because setting `color` creates an intentional local accent profile. Use `jam.ac()` for CSS/style expressions and `jam.colorSet` for derived palette values; never pass the uncalled `jam.ac` builder as an element color.
@@ -50,7 +50,7 @@ The algorithm that generates the color set from the accent color. 12 schemes ava
 | `shade`              | Monochrome lightness gradient           |
 
 ```javascript
-jam.colorScheme = "pastel"; // switch scheme
+jam.colorScheme = 'pastel'; // switch scheme
 ```
 
 ### Dark mode (`jam.darkMode`)
@@ -61,7 +61,7 @@ Auto-detected from system preference. Can be forced per-element or globally.
 jam.darkMode; // → boolean — current mode (reads system preference)
 jam.darkMode = true; // force dark mode globally
 // Per-element via param:
-const lightCard = { type: "card", darkMode: false };
+const lightCard = { type: 'card', darkMode: false };
 ```
 
 When an example intentionally forces a global mode, set `jam.darkMode` before rendering so the first render uses that color profile. Otherwise leave it unset to follow the active system or theme state. Assigning it later is supported, but changes the profile after the initial paint.
@@ -104,13 +104,13 @@ jam.lumiO(5); // subtle offset from base
 ```javascript
 // ❌ Hardcoded — breaks in dark mode
 {
-  color: "#333333";
+    color: '#333333';
 }
 
 // ✅ lumiO — auto-adapts to light/dark mode
 {
-  background: jam.hsl(0, 0, jam.lumiO(48));
-  color: jam.lumiText(1); // same as jam.hsl(0, 0, jam.lumiO(1))
+    background: jam.hsl(0, 0, jam.lumiO(48));
+    color: jam.lumiText(1); // same as jam.hsl(0, 0, jam.lumiO(1))
 }
 
 // ✅ In a JavaScript-authored style string, interpolate the returned lightness component
@@ -160,9 +160,9 @@ The canonical style-string names are lowercase; matching is case-insensitive for
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Styled",
-  "styles": ["css(background:ac;color:onac;border:1px solid ac[1])"]
+    "type": "button",
+    "cap": "Styled",
+    "styles": ["css(background:ac;color:onac;border:1px solid ac[1])"]
 }
 ```
 
@@ -175,9 +175,9 @@ The canonical style-string names are lowercase; matching is case-insensitive for
 Parse any `ColorType` into a `chroma.Color`.
 
 ```javascript
-jam.color("red"); // → chroma.Color
-jam.color("#3b82f6"); // → chroma.Color
-jam.color("random"); // → random chroma.Color
+jam.color('red'); // → chroma.Color
+jam.color('#3b82f6'); // → chroma.Color
+jam.color('random'); // → random chroma.Color
 ```
 
 ### `jam.getColor(value)`
@@ -193,7 +193,7 @@ Resolve an element-scoped CSS color expression and parse it into a `chroma.Color
 Adjust a color's properties.
 
 ```javascript
-jam.adjustColor("red", { h: 30, s: 1.2, l: 0.9, a: 0.5 });
+jam.adjustColor('red', { h: 30, s: 1.2, l: 0.9, a: 0.5 });
 ```
 
 ### `jam.randomColor(option?)`
@@ -202,8 +202,8 @@ Generate a random color with constraints.
 
 ```javascript
 jam.randomColor(); // completely random
-jam.randomColor({ temp: "warm" }); // warm colors only
-jam.randomColor({ temp: "cool" }); // cool colors only
+jam.randomColor({ temp: 'warm' }); // warm colors only
+jam.randomColor({ temp: 'cool' }); // cool colors only
 jam.randomColor({ seq: true, bias: 35 }); // sequential (avoids similar consecutive)
 ```
 
@@ -233,7 +233,7 @@ Get the CSS named color string from a color value.
 Build a `ColorSet` array from a base color and scheme.
 
 ```javascript
-jam.buildColorSet(jam.color("green"), "monochromatic");
+jam.buildColorSet(jam.color('green'), 'monochromatic');
 ```
 
 ### `jam.scale(colors, count)`
@@ -241,7 +241,7 @@ jam.buildColorSet(jam.color("green"), "monochromatic");
 Interpolate a list of `ColorType` values in LCH space and return a normalized `ColorSet` of `count` colors.
 
 ```javascript
-const ramp = jam.scale(["#2563eb", "#22c55e"], 5);
+const ramp = jam.scale(['#2563eb', '#22c55e'], 5);
 ramp.toCSS();
 ```
 
@@ -261,7 +261,7 @@ Return a tuned `chroma.Color`.
 | `chromaFloor`   | `number`       | Minimum chroma after multiplication                  | Default: `0`                            |
 
 ```javascript
-const tuned = jam.tuneColor(jam.getColor("#4f46e5"), 1.5, 0.05, 0.08);
+const tuned = jam.tuneColor(jam.getColor('#4f46e5'), 1.5, 0.05, 0.08);
 ```
 
 ### Tuner Presets
@@ -282,12 +282,10 @@ const tuned = jam.tuneColor(jam.getColor("#4f46e5"), 1.5, 0.05, 0.08);
 Normalize `ColorType[]` input with `ColorSet.from(...)`, tune each resulting `chroma.Color`, and return a new `ColorSet`.
 
 ```javascript
-const source = ["#ef4444", "#3b82f6", "#22c55e"];
-const pastel = jam.tuneColorSet(source, "pastel");
+const source = ['#ef4444', '#3b82f6', '#22c55e'];
+const pastel = jam.tuneColorSet(source, 'pastel');
 
-const custom = jam.tuneColorSet(source, (color) =>
-  jam.tuneColor(color, 1.2, -0.04),
-);
+const custom = jam.tuneColorSet(source, (color) => jam.tuneColor(color, 1.2, -0.04));
 ```
 
 The callback receives each normalized `chroma.Color`. Input arrays and existing `ColorSet` instances are not mutated.
@@ -297,7 +295,7 @@ The callback receives each normalized `chroma.Color`. Input arrays and existing 
 Register custom named colors. Accepts a dictionary of `name: color-string`.
 
 ```javascript
-jam.registerCustomColors({ "1000kv": "#0000ff", "800kv": "#8800ff" });
+jam.registerCustomColors({ '1000kv': '#0000ff', '800kv': '#8800ff' });
 // Now usable anywhere: { color: '1000kv' }
 ```
 
@@ -318,8 +316,8 @@ Compare two colors with tolerance for equality.
 Convert a color string to structured formats.
 
 ```javascript
-jam.toHex("red"); // → '#ff0000'
-jam.toRGB("blue"); // → { r: 0, g: 0, b: 255 }
+jam.toHex('red'); // → '#ff0000'
+jam.toRGB('blue'); // → { r: 0, g: 0, b: 255 }
 ```
 
 ### `jam.toGradientObject(type, arg, ...colorStops)`
@@ -327,8 +325,8 @@ jam.toRGB("blue"); // → { r: 0, g: 0, b: 255 }
 Build a linear or radial ECharts gradient object. For `'linear'`, `arg` is a degree value and follows the direction rules below. For `'radial'`, `arg` is a CSS radial descriptor; a trailing `at <x> <y>` sets the normalized center and otherwise defaults to `0.5, 0.5`. Radial gradients use `r: 1`.
 
 ```javascript
-jam.toGradientObject("linear", -45, "#4f46e5", "#22d3ee");
-jam.toGradientObject("radial", "ellipse at 25% 75%", "#ffffff", "#4f46e5");
+jam.toGradientObject('linear', -45, '#4f46e5', '#22d3ee');
+jam.toGradientObject('radial', 'ellipse at 25% 75%', '#ffffff', '#4f46e5');
 ```
 
 ### `jam.toEchartsGradient(deg, ...colorStops)`
@@ -339,25 +337,19 @@ Compatibility helper for `jam.toGradientObject('linear', deg, ...colorStops)`.
 type EchartsGradientColorStop = ColorType | [ColorType, number | string];
 ```
 
-- A plain `ColorType` is normalized with `jam.getColor(color).css()` and receives an automatically calculated offset.
-- A tuple supplies `[color, offset]`. Numeric strings are parsed as numbers; percentages such as `'35%'` are converted to decimals with `jam.toNumber(offset, true)`.
-- Missing or invalid offsets are distributed evenly between the nearest explicit offsets. A leading run starts at `0`, a trailing run ends at `1`, and a list with no explicit offsets is spread evenly from `0` to `1`.
-- Explicit offsets are preserved as supplied. They are not clamped or reordered, so ECharts offsets should normally stay within `0`–`1` and in ascending order.
-- With one supplied stop, that color stays first and a transparent neutral `hsla(0, 0%, lumiO(50), 0)` stop is appended at the end. A plain first stop resolves to offset `0`; an explicit first offset is preserved.
+-   A plain `ColorType` is normalized with `jam.getColor(color).css()` and receives an automatically calculated offset.
+-   A tuple supplies `[color, offset]`. Numeric strings are parsed as numbers; percentages such as `'35%'` are converted to decimals with `jam.toNumber(offset, true)`.
+-   Missing or invalid offsets are distributed evenly between the nearest explicit offsets. A leading run starts at `0`, a trailing run ends at `1`, and a list with no explicit offsets is spread evenly from `0` to `1`.
+-   Explicit offsets are preserved as supplied. They are not clamped or reordered, so ECharts offsets should normally stay within `0`–`1` and in ascending order.
+-   With one supplied stop, that color stays first and a transparent neutral `hsla(0, 0%, lumiO(50), 0)` stop is appended at the end. A plain first stop resolves to offset `0`; an explicit first offset is preserved.
 
 ```javascript
-const gradient = jam.toEchartsGradient(
-  -45,
-  ["#4f46e5", "10%"],
-  "#22d3ee",
-  ["#f8fafc", 0.8],
-  "#0f172a",
-);
+const gradient = jam.toEchartsGradient(-45, ['#4f46e5', '10%'], '#22d3ee', ['#f8fafc', 0.8], '#0f172a');
 
 gradient.colorStops.map(({ offset }) => offset);
 // → [0.1, 0.45, 0.8, 1]
 
-jam.toEchartsGradient(90, "#4f46e5");
+jam.toEchartsGradient(90, '#4f46e5');
 // → first color at 0, transparent lumiO(50) neutral at 1
 ```
 
@@ -389,7 +381,7 @@ Each index `jam.ac[n]` returns a builder function for color set index `n`:
 ```javascript
 jam.ac(); // → 'var(--jam-ac-color)'
 jam.ac[0](); // → 'var(--jam-ac-color-01)' — first color-set entry
-jam.ac[0](1, 1, "85%"); // → 'hsl(...)' — accent color at 85% lightness
+jam.ac[0](1, 1, '85%'); // → 'hsl(...)' — accent color at 85% lightness
 jam.ac[2](1, 0.5, jam.lumiO(44)); // → color set[2], half saturation, lumi-adjusted
 jam.ac[3](1, 1, 0.8, 0.5); // → set[3], 80% lightness, 50% alpha
 ```
@@ -399,14 +391,7 @@ jam.ac[3](1, 1, 0.8, 0.5); // → set[3], 80% lightness, 50% alpha
 Theme modules use the token-aware equivalents exported by `@jam/jam-ui`: `acToken`, `colorTextToken`, `acLumiOPart`, `hslToken`, `lumiOPart`, and `surfaceToken`. They keep the same accent/color-set adaptation as `jam.ac`, while also retaining a `.build()` function for resolving a token against an active theme or swatch.
 
 ```javascript
-import {
-  acLumiOPart as acLumiO,
-  acToken as ac,
-  colorTextToken as colorText,
-  hslToken as hsl,
-  lumiOPart as lumiO,
-  surfaceToken as surface,
-} from "@jam/jam-ui";
+import { acLumiOPart as acLumiO, acToken as ac, colorTextToken as colorText, hslToken as hsl, lumiOPart as lumiO, surfaceToken as surface } from '@jam/jam-ui';
 
 const primary = ac();
 const secondary = ac[1]();
@@ -425,9 +410,9 @@ The equivalent JS API is `jam.acLumiText(level)` or `jam.getAcLumiText(color, le
 
 ```javascript jaml-playground
 export default {
-  type: "button",
-  cap: "Adaptive contrast",
-  styles: ["css(background:ac;color:onac)"],
+    type: 'button',
+    cap: 'Adaptive contrast',
+    styles: ['css(background:ac;color:onac)']
 };
 ```
 
@@ -456,14 +441,14 @@ jam.lumiText(46); // dark gray in dark mode, light gray in light mode
 
 Neutral text colors at a given lumi step whose lightness orientation follows the active accent or supplied color. Like `lumiText(level)`, the result has no accent hue or saturation; the difference is how its lightness direction is chosen.
 
-- **`jam.acLumiText(level)`** — accent text at step `level`. Indexed version: `jam.acLumiText[n](level)` for color-set index `n`.
-- **`jam.getAcLumiText(color, level)`** — lumi-adapted text for any color at step `level`.
-- **`jam.getAcLumiO(color, level)`** — the underlying lumiO value adjusted for whether `color` is dark or light. Used internally by `getAcLumiText`.
+-   **`jam.acLumiText(level)`** — accent text at step `level`. Indexed version: `jam.acLumiText[n](level)` for color-set index `n`.
+-   **`jam.getAcLumiText(color, level)`** — lumi-adapted text for any color at step `level`.
+-   **`jam.getAcLumiO(color, level)`** — the underlying lumiO value adjusted for whether `color` is dark or light. Used internally by `getAcLumiText`.
 
 ```javascript
 jam.acLumiText(5); // accent text at lumi step 5
 jam.getAcLumiText(someColor, 3); // lumi-adapted text for any color at step 3
-jam.getAcLumiO("#16213e", 1); // lumiO(1) adjusted for dark/light of given color
+jam.getAcLumiO('#16213e', 1); // lumiO(1) adjusted for dark/light of given color
 ```
 
 ### `jam.lumiO` / `jam.lumiL` / `jam.lumiA`
@@ -474,11 +459,11 @@ The optional `bias` string is appended to the calc expression for fine-tuning �
 
 ```javascript
 jam.lumiO(1); // base offset (light: +4.5%, dark: 106.5%)
-jam.lumiO(46, "+10%"); // high level → dark in dark mode, light in light mode — good for card/surface backgrounds, with '+10%' bias
+jam.lumiO(46, '+10%'); // high level → dark in dark mode, light in light mode — good for card/surface backgrounds, with '+10%' bias
 
 // Real-world usage in JAML:
-style: "background:" + jam.hsl(222, 0.48, jam.lumiO(46)); // dark card bg in dark mode
-style: "border-color:" + jam.hsl(218, 0.67, jam.lumiO(30)); // subtle border
+style: 'background:' + jam.hsl(222, 0.48, jam.lumiO(46)); // dark card bg in dark mode
+style: 'border-color:' + jam.hsl(218, 0.67, jam.lumiO(30)); // subtle border
 ```
 
 **`jam.lumiL(level, bias?)`** — "L" = level. A separate lightness profile with different base/dev values from lumiO. Unlike lumiO, its values do NOT auto-flip sign in dark mode — the base starts at a different offset per mode but the deviation moves in the same direction. Use when you need a lightness scale independent of lumiO's opposite-mode behavior.
@@ -487,7 +472,7 @@ The optional `bias` string works the same as lumiO's bias.
 
 ```javascript
 jam.lumiL(1); // light: ~25.5%, dark: ~-10.5%
-jam.lumiL(5, "+10%"); // further offset, with '+10%' bias
+jam.lumiL(5, '+10%'); // further offset, with '+10%' bias
 ```
 
 **`jam.lumiA(level)`** — Alpha values for semi-transparent overlays that adapt to mode.
@@ -530,9 +515,9 @@ Predefined named colors that auto-adapt to the accent theme:
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Success",
-  "color": "success"
+    "type": "button",
+    "cap": "Success",
+    "color": "success"
 }
 ```
 
@@ -553,7 +538,7 @@ When a generated color is fixed for dark mode, JAM-UI applies the lightness corr
 
 ```javascript
 ColorProfile.count = 6; // smaller color set
-ColorProfile.defaultColorScheme = "pastel"; // default to pastel
+ColorProfile.defaultColorScheme = 'pastel'; // default to pastel
 ```
 
 ---
@@ -587,7 +572,7 @@ ColorProfile.defaultColorScheme = "pastel"; // default to pastel
 Get mean, variance, and standard deviation for any color property.
 
 ```javascript
-const [mean, variance, stdDev] = jam.colorSet.getVariance("oklch.l");
+const [mean, variance, stdDev] = jam.colorSet.getVariance('oklch.l');
 ```
 
 ### `ColorSet.from(iterable)`
@@ -595,7 +580,7 @@ const [mean, variance, stdDev] = jam.colorSet.getVariance("oklch.l");
 Create a `ColorSet` from any iterable or array-like collection of `ColorType` values. Every entry is normalized to a `chroma.Color`.
 
 ```javascript
-const colors = ColorSet.from(["red", "#2563eb", chroma("gold")]);
+const colors = ColorSet.from(['red', '#2563eb', chroma('gold')]);
 ```
 
 ---
@@ -630,30 +615,30 @@ These values are injected as CSS custom properties on every element that calls `
 
 ```javascript jaml-playground
 export default {
-  type: "wrapper-vertical",
-  components: [
-    {
-      type: "button-cta",
-      cap: "Accent colored",
-      // Uses accent color — auto-adapts to dark mode
-      color: jam.accolor,
-    },
-    {
-      type: "tags",
-      cap: "Color set swatch",
-      template: { type: "input-color", value: "{value}" },
-      // Each indicator uses a different color from the set
-      data: jam.colorSet.toCSS(),
-    },
-    {
-      type: "input-color",
-      cap: "Change accent",
-      value: jam.accolor,
-      onvaluechange: function (v) {
-        jam.accolor = v; // updates entire UI palette
-      },
-    },
-  ],
+    type: 'wrapper-vertical',
+    components: [
+        {
+            type: 'button-cta',
+            cap: 'Accent colored',
+            // Uses accent color — auto-adapts to dark mode
+            color: jam.accolor
+        },
+        {
+            type: 'tags',
+            cap: 'Color set swatch',
+            template: { type: 'input-color', value: '{value}' },
+            // Each indicator uses a different color from the set
+            data: jam.colorSet.toCSS()
+        },
+        {
+            type: 'input-color',
+            cap: 'Change accent',
+            value: jam.accolor,
+            onvaluechange: function (v) {
+                jam.accolor = v; // updates entire UI palette
+            }
+        }
+    ]
 };
 ```
 

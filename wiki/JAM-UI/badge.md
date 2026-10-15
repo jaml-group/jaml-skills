@@ -10,10 +10,10 @@ A compact tag-style value display with icon, cap, and content/value slots. Typic
 
 ```json jaml-playground
 {
-  "type": "badge",
-  "cap": "Role",
-  "content": "Admin",
-  "color": "blue"
+    "type": "badge",
+    "cap": "Role",
+    "content": "Admin",
+    "color": "blue"
 }
 ```
 
@@ -23,20 +23,20 @@ A compact tag-style value display with icon, cap, and content/value slots. Typic
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement). Use `content` in examples for badge readability; it is an alias for the underlying value.
 
-| Param | Type | Description |
-|---|---|---|
-| `cap` | `string` | Label/prefix text. Fills the `cap` slot. |
-| `icon` | `string` | Icon content. Fills the `icon` slot. |
-| `content` | `any` | Alias for `value`. Primary value displayed in the default value slot. |
+| Param     | Type     | Description                                                           |
+| --------- | -------- | --------------------------------------------------------------------- |
+| `cap`     | `string` | Label/prefix text. Fills the `cap` slot.                              |
+| `icon`    | `string` | Icon content. Fills the `icon` slot.                                  |
+| `content` | `any`    | Alias for `value`. Primary value displayed in the default value slot. |
 
 ---
 
 ## Slots
 
-| Slot | Description |
-|---|---|
-| `icon` | Icon (left-most position) |
-| `cap` | Label text |
+| Slot              | Description                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `icon`            | Icon (left-most position)                                          |
+| `cap`             | Label text                                                         |
 | `value` (default) | Value display. `content` writes to this slot through the value API |
 
 ---
@@ -47,10 +47,10 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "badge",
-  "cap": "Status",
-  "content": "Active",
-  "color": "green"
+    "type": "badge",
+    "cap": "Status",
+    "content": "Active",
+    "color": "green"
 }
 ```
 
@@ -58,29 +58,29 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```javascript jaml-playground
 export default {
-  type: 'badge',
-  icon: '💰',
-  cap: 'Revenue',
-  content: '$1,234,567'
-}
+    type: 'badge',
+    icon: '💰',
+    cap: 'Revenue',
+    content: '$1,234,567'
+};
 ```
 
 ### Badge with states for dynamic color switching
 
 ```json jaml-playground
 {
-  "type": "badge",
-  "cap": "Priority",
-  "content": "High",
-  "states": {
-    "low":    { "color": "green" },
-    "medium": { "color": "orange" },
-    "high":   { "color": "red" },
-    "urgent": { "color": "purple" }
-  },
-  "stateStyles": {
-    "urgent": ["css(animation:pulse 1s infinite)"]
-  }
+    "type": "badge",
+    "cap": "Priority",
+    "content": "High",
+    "states": {
+        "low": { "color": "green" },
+        "medium": { "color": "orange" },
+        "high": { "color": "red" },
+        "urgent": { "color": "purple" }
+    },
+    "stateStyles": {
+        "urgent": ["css(animation:pulse 1s infinite)"]
+    }
 }
 ```
 
@@ -88,9 +88,9 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: 'badge',
-  cap: 'Level',
-  content: '{{userLevel}}',
-  color: '{{levelColor}}'
-}
+    type: 'badge',
+    cap: 'Level',
+    content: '{{userLevel}}',
+    color: '{{levelColor}}'
+};
 ```

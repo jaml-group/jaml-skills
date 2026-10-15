@@ -14,16 +14,16 @@ Load the ECharts browser library before mounting chart elements. The chart reads
 
 ```json jaml-playground
 {
-  "type": "chart-bar",
-  "cap": "Monthly Sales",
-  "styles": ["css(height:15rem;width:20rem)"],
-  "data": [
-    ["Month", "Sales"],
-    ["Jan", 120],
-    ["Feb", 200],
-    ["Mar", 150],
-    ["Apr", 280]
-  ]
+    "type": "chart-bar",
+    "cap": "Monthly Sales",
+    "styles": ["css(height:15rem;width:20rem)"],
+    "data": [
+        ["Month", "Sales"],
+        ["Jan", 120],
+        ["Feb", 200],
+        ["Mar", 150],
+        ["Apr", 280]
+    ]
 }
 ```
 
@@ -50,14 +50,14 @@ JSON/JAML uses a preset name:
 
 ```json jaml-playground
 {
-  "type": "chart-pie",
-  "tuner": "pastel",
-  "styles": ["css(height:15rem;width:22rem)"],
-  "data": [
-    ["Item", "Share"],
-    ["A", 40],
-    ["B", 60]
-  ]
+    "type": "chart-pie",
+    "tuner": "pastel",
+    "styles": ["css(height:15rem;width:22rem)"],
+    "data": [
+        ["Item", "Share"],
+        ["A", 40],
+        ["B", 60]
+    ]
 }
 ```
 
@@ -73,16 +73,16 @@ First row = column headers. Subsequent rows = data. Supported when ALL rows are 
 
 ```json jaml-playground
 {
-  "type": "chart-line",
-  "cap": "Revenue vs Cost",
-  "styles": ["css(height:15rem;width:20rem)"],
-  "data": [
-    ["Month", "Revenue", "Cost"],
-    ["Jan", 12000, 8000],
-    ["Feb", 15000, 9500],
-    ["Mar", 18000, 11000],
-    ["Apr", 22000, 13000]
-  ]
+    "type": "chart-line",
+    "cap": "Revenue vs Cost",
+    "styles": ["css(height:15rem;width:20rem)"],
+    "data": [
+        ["Month", "Revenue", "Cost"],
+        ["Jan", 12000, 8000],
+        ["Feb", 15000, 9500],
+        ["Mar", 18000, 11000],
+        ["Apr", 22000, 13000]
+    ]
 }
 ```
 
@@ -92,13 +92,13 @@ Each object becomes a separate ECharts series. The `name` field becomes the seri
 
 ```json jaml-playground
 {
-  "type": "chart-line",
-  "cap": "Trend",
-  "styles": ["css(height:15rem;width:20rem)"],
-  "data": [
-    { "name": "Revenue", "type": "line", "data": [120, 200, 150, 280] },
-    { "name": "Cost", "type": "bar", "data": [80, 95, 110, 130] }
-  ]
+    "type": "chart-line",
+    "cap": "Trend",
+    "styles": ["css(height:15rem;width:20rem)"],
+    "data": [
+        { "name": "Revenue", "type": "line", "data": [120, 200, 150, 280] },
+        { "name": "Cost", "type": "bar", "data": [80, 95, 110, 130] }
+    ]
 }
 ```
 
@@ -112,21 +112,15 @@ Chart styling is done through the `styles` array — NOT through a `config` para
 
 ```json jaml-playground
 {
-  "type": "chart-bar",
-  "cap": "Styled Bar",
-  "styles": [
-    "css(height:15rem;width:20rem)",
-    "echarts.legend",
-    "echarts.axis.x(name:Month;nameLocation:center)",
-    "echarts.axis.y(name:Sales)",
-    "echarts.bar.itemStyle.border(radius:[4,4,0,0])"
-  ],
-  "data": [
-    ["Month", "Sales"],
-    ["Jan", 120],
-    ["Feb", 200],
-    ["Mar", 150]
-  ]
+    "type": "chart-bar",
+    "cap": "Styled Bar",
+    "styles": ["css(height:15rem;width:20rem)", "echarts.legend", "echarts.axis.x(name:Month;nameLocation:center)", "echarts.axis.y(name:Sales)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
+    "data": [
+        ["Month", "Sales"],
+        ["Jan", 120],
+        ["Feb", 200],
+        ["Mar", 150]
+    ]
 }
 ```
 
@@ -136,30 +130,30 @@ Use `eopts` for non-series ECharts options (tooltip, grid, axes) and `eseries` f
 
 ```javascript jaml-playground
 export default {
-  type: "chart-bar",
-  cap: "Sales",
-  styles: [
-    "css(height:15rem;width:22rem)",
-    // Non-series options: axes, grid, tooltip
-    Styles.eopts({
-      tooltip: { trigger: "axis" },
-      yAxis: { name: "Revenue (USD)" },
-    }),
-    // Series config: each key matches a data object's `name`
-    Styles.eseries({
-      Revenue: {
-        type: "bar",
-        barMaxWidth: 32,
-        itemStyle: { borderRadius: [6, 6, 0, 0] },
-      },
-      Cost: { type: "line", smooth: true },
-    }),
-  ],
-  // Data stays independent — change freely without touching styles
-  data: [
-    { name: "Revenue", data: [120, 200, 150, 280] },
-    { name: "Cost", data: [80, 95, 110, 130] },
-  ],
+    type: 'chart-bar',
+    cap: 'Sales',
+    styles: [
+        'css(height:15rem;width:22rem)',
+        // Non-series options: axes, grid, tooltip
+        Styles.eopts({
+            tooltip: { trigger: 'axis' },
+            yAxis: { name: 'Revenue (USD)' }
+        }),
+        // Series config: each key matches a data object's `name`
+        Styles.eseries({
+            Revenue: {
+                type: 'bar',
+                barMaxWidth: 32,
+                itemStyle: { borderRadius: [6, 6, 0, 0] }
+            },
+            Cost: { type: 'line', smooth: true }
+        })
+    ],
+    // Data stays independent — change freely without touching styles
+    data: [
+        { name: 'Revenue', data: [120, 200, 150, 280] },
+        { name: 'Cost', data: [80, 95, 110, 130] }
+    ]
 };
 ```
 
@@ -171,8 +165,8 @@ When using `eseries` with named keys, use the series-object data format:
 
 ```javascript
 data: [
-  { name: "Revenue", data: [120, 200, 150] }, // merges with eseries.Revenue
-  { name: "Cost", data: [80, 95, 110] }, // merges with eseries.Cost
+    { name: 'Revenue', data: [120, 200, 150] }, // merges with eseries.Revenue
+    { name: 'Cost', data: [80, 95, 110] } // merges with eseries.Cost
 ];
 ```
 
@@ -184,50 +178,50 @@ Uses `eseries` to define two stacked series (`offset` for invisible spacing, `Ta
 
 ```javascript jaml-playground
 export default {
-  type: "chart-bar",
-  cap: "Project Schedule",
-  styles: [
-    "css(height:24rem;width:44rem)",
-    Styles.eopts({
-      grid: { left: "14%", right: "5%", top: "8%", bottom: "8%" },
-      xAxis: {
-        type: "value",
-        name: "Day",
-        nameLocation: "end",
-        max: 30,
-        splitLine: { lineStyle: { type: "dashed" } },
-      },
-      yAxis: {
-        type: "category",
-        inverse: true,
-        data: ["Planning", "Design", "Development", "Testing", "Deployment"],
-      },
-    }),
-    Styles.eseries({
-      // Invisible spacer — shifts each bar to its start position
-      offset: {
-        stack: "gantt",
-        silent: true,
-        itemStyle: { color: "transparent", borderColor: "transparent" },
-      },
-      // Actual task bar — renders the duration
-      Task: {
-        stack: "gantt",
-        barMaxWidth: 28,
-        label: {
-          show: true,
-          position: "insideLeft",
-          formatter: function (p) {
-            return p.value + "d";
-          },
-        },
-      },
-    }),
-  ],
-  data: [
-    { name: "offset", data: [0, 3, 7, 18, 25] },
-    { name: "Task", data: [3, 4, 11, 7, 5] },
-  ],
+    type: 'chart-bar',
+    cap: 'Project Schedule',
+    styles: [
+        'css(height:24rem;width:44rem)',
+        Styles.eopts({
+            grid: { left: '14%', right: '5%', top: '8%', bottom: '8%' },
+            xAxis: {
+                type: 'value',
+                name: 'Day',
+                nameLocation: 'end',
+                max: 30,
+                splitLine: { lineStyle: { type: 'dashed' } }
+            },
+            yAxis: {
+                type: 'category',
+                inverse: true,
+                data: ['Planning', 'Design', 'Development', 'Testing', 'Deployment']
+            }
+        }),
+        Styles.eseries({
+            // Invisible spacer — shifts each bar to its start position
+            offset: {
+                stack: 'gantt',
+                silent: true,
+                itemStyle: { color: 'transparent', borderColor: 'transparent' }
+            },
+            // Actual task bar — renders the duration
+            Task: {
+                stack: 'gantt',
+                barMaxWidth: 28,
+                label: {
+                    show: true,
+                    position: 'insideLeft',
+                    formatter: function (p) {
+                        return p.value + 'd';
+                    }
+                }
+            }
+        })
+    ],
+    data: [
+        { name: 'offset', data: [0, 3, 7, 18, 25] },
+        { name: 'Task', data: [3, 4, 11, 7, 5] }
+    ]
 };
 ```
 
@@ -237,17 +231,17 @@ If you're new to JAML and have an existing ECharts option object, use the `optio
 
 ```javascript jaml-playground
 export default {
-  type: "chart",
-  cap: "Custom Chart",
-  styles: ["css(height:15rem;width:22rem)"],
-  option: {
-    // Put everything here — exactly like a raw ECharts option
-    tooltip: { trigger: "axis" },
-    grid: { top: "10%", bottom: "10%" },
-    xAxis: { type: "category", data: ["Jan", "Feb", "Mar"] },
-    yAxis: { type: "value" },
-    series: [{ name: "Sales", type: "line", data: [120, 200, 150] }],
-  },
+    type: 'chart',
+    cap: 'Custom Chart',
+    styles: ['css(height:15rem;width:22rem)'],
+    option: {
+        // Put everything here — exactly like a raw ECharts option
+        tooltip: { trigger: 'axis' },
+        grid: { top: '10%', bottom: '10%' },
+        xAxis: { type: 'category', data: ['Jan', 'Feb', 'Mar'] },
+        yAxis: { type: 'value' },
+        series: [{ name: 'Sales', type: 'line', data: [120, 200, 150] }]
+    }
 };
 ```
 
@@ -259,9 +253,9 @@ Run a function right before `setOption()` to modify the chart option programmati
 
 ```javascript
 Styles.efuncs((chart, args) => {
-  chart.chartOption.series[0].markLine = {
-    data: [{ type: "average", name: "Avg" }],
-  };
+    chart.chartOption.series[0].markLine = {
+        data: [{ type: 'average', name: 'Avg' }]
+    };
 });
 ```
 
@@ -315,22 +309,16 @@ CashewChart.debounce = 100;
 
 ```json jaml-playground
 {
-  "type": "chart-bar",
-  "cap": "Monthly Sales",
-  "styles": [
-    "css(height:15rem;width:22rem)",
-    "echarts.legend",
-    "echarts.axis.x(name:Month;nameLocation:center)",
-    "echarts.axis.y(name:Revenue;nameLocation:end)",
-    "echarts.bar.itemStyle.border(radius:[4,4,0,0])"
-  ],
-  "data": [
-    ["Month", "Sales", "Returns"],
-    ["Jan", 120, 15],
-    ["Feb", 200, 22],
-    ["Mar", 150, 18],
-    ["Apr", 280, 30]
-  ]
+    "type": "chart-bar",
+    "cap": "Monthly Sales",
+    "styles": ["css(height:15rem;width:22rem)", "echarts.legend", "echarts.axis.x(name:Month;nameLocation:center)", "echarts.axis.y(name:Revenue;nameLocation:end)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
+    "data": [
+        ["Month", "Sales", "Returns"],
+        ["Jan", 120, 15],
+        ["Feb", 200, 22],
+        ["Mar", 150, 18],
+        ["Apr", 280, 30]
+    ]
 }
 ```
 
@@ -338,22 +326,16 @@ CashewChart.debounce = 100;
 
 ```json jaml-playground
 {
-  "type": "chart-line",
-  "cap": "Trend",
-  "styles": [
-    "css(height:15rem;width:22rem)",
-    "echarts.line(smooth:true)",
-    "echarts.line.areaStyle",
-    "echarts.line.gradientBg",
-    "echarts.axis.stripy.horizontal"
-  ],
-  "data": [
-    ["Quarter", "Revenue", "Cost"],
-    ["Q1", 12000, 8000],
-    ["Q2", 15000, 9500],
-    ["Q3", 18000, 11000],
-    ["Q4", 22000, 13000]
-  ]
+    "type": "chart-line",
+    "cap": "Trend",
+    "styles": ["css(height:15rem;width:22rem)", "echarts.line(smooth:true)", "echarts.line.areaStyle", "echarts.line.gradientBg", "echarts.axis.stripy.horizontal"],
+    "data": [
+        ["Quarter", "Revenue", "Cost"],
+        ["Q1", 12000, 8000],
+        ["Q2", 15000, 9500],
+        ["Q3", 18000, 11000],
+        ["Q4", 22000, 13000]
+    ]
 }
 ```
 
@@ -363,20 +345,15 @@ Pie data uses the dataset format (first row = name + value columns):
 
 ```json jaml-playground
 {
-  "type": "chart-pie",
-  "cap": "Market Share",
-  "styles": [
-    "css(height:15rem;width:22rem)",
-    "echarts.legend",
-    "echarts.pie.ring",
-    "echarts.pie.label(show:true)"
-  ],
-  "data": [
-    ["Product", "Share"],
-    ["Product A", 40],
-    ["Product B", 35],
-    ["Product C", 25]
-  ]
+    "type": "chart-pie",
+    "cap": "Market Share",
+    "styles": ["css(height:15rem;width:22rem)", "echarts.legend", "echarts.pie.ring", "echarts.pie.label(show:true)"],
+    "data": [
+        ["Product", "Share"],
+        ["Product A", 40],
+        ["Product B", 35],
+        ["Product C", 25]
+    ]
 }
 ```
 
@@ -384,20 +361,16 @@ Pie data uses the dataset format (first row = name + value columns):
 
 ```json jaml-playground
 {
-  "type": "chart-radar",
-  "cap": "Skills",
-  "styles": [
-    "css(height:18rem;width:22rem)",
-    "echarts.legend",
-    "echarts.Radar(shape:circle)"
-  ],
-  "data": [
-    ["Skill", "Team A", "Team B"],
-    ["Speed", 87, 80],
-    ["Power", 82, 89],
-    ["Accuracy", 95, 76],
-    ["Defense", 74, 90],
-    ["Agility", 88, 80]
-  ]
+    "type": "chart-radar",
+    "cap": "Skills",
+    "styles": ["css(height:18rem;width:22rem)", "echarts.legend", "echarts.Radar(shape:circle)"],
+    "data": [
+        ["Skill", "Team A", "Team B"],
+        ["Speed", 87, 80],
+        ["Power", 82, 89],
+        ["Accuracy", 95, 76],
+        ["Defense", 74, 90],
+        ["Agility", 88, 80]
+    ]
 }
 ```

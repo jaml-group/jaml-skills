@@ -101,9 +101,9 @@ Use a stable descriptive value when it makes the alternate purpose clear:
 
 ```json jaml-playground
 {
-  "type": "container",
-  "stylize": "list",
-  "variant": "legend"
+    "type": "container",
+    "stylize": "list",
+    "variant": "legend"
 }
 ```
 
@@ -131,25 +131,25 @@ Numeric values remain valid when they are the clearer contract. Because the valu
 
 ```javascript jaml-playground
 export default {
-  type: "indicator",
-  states: {
-    pass: { color: "green" },
-    fail: { color: "red" },
-    warning: { color: "orange" },
-  },
-  onstatechange: function (state, old) {
-    // this = the indicator element
-    console.log(`State: ${old} → ${state}`);
-  },
+    type: 'indicator',
+    states: {
+        pass: { color: 'green' },
+        fail: { color: 'red' },
+        warning: { color: 'orange' }
+    },
+    onstatechange: function (state, old) {
+        // this = the indicator element
+        console.log(`State: ${old} → ${state}`);
+    }
 };
 ```
 
 **Instance methods:**
 
-- `el.state = 'fail'` — set state directly
-- `el.resetState()` — return to `'default'`
-- `el.switchToNextState()` — cycle through defined states
-- `el.toggleState('fail')` — toggle between named state and `'default'`
+-   `el.state = 'fail'` — set state directly
+-   `el.resetState()` — return to `'default'`
+-   `el.switchToNextState()` — cycle through defined states
+-   `el.toggleState('fail')` — toggle between named state and `'default'`
 
 #### Pointer and focus presentation states
 
@@ -168,28 +168,22 @@ These are authored names, not built-in hover or expansion behavior. The followin
 const interactions = new WeakMap();
 
 function interaction(element, patch = {}) {
-  const value = {
-    ...(interactions.get(element) || {
-      hover: element.matches(":hover"),
-      focus: element.matches(":focus-within"),
-    }),
-    ...patch,
-  };
-  interactions.set(element, value);
-  return value;
+    const value = {
+        ...(interactions.get(element) || {
+            hover: element.matches(':hover'),
+            focus: element.matches(':focus-within')
+        }),
+        ...patch
+    };
+    interactions.set(element, value);
+    return value;
 }
 
 function selectDisclosureState(element) {
-  const expanded = !!element.props.expanded;
-  const { hover, focus } = interaction(element);
-  const interacting = hover || (focus && element.matches(":focus-visible"));
-  element.state = expanded
-    ? interacting
-      ? "expand-hover"
-      : "expand"
-    : interacting
-      ? "default-hover"
-      : "default";
+    const expanded = !!element.props.expanded;
+    const { hover, focus } = interaction(element);
+    const interacting = hover || (focus && element.matches(':focus-visible'));
+    element.state = expanded ? (interacting ? 'expand-hover' : 'expand') : interacting ? 'default-hover' : 'default';
 }
 ```
 
@@ -262,8 +256,8 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ```json jaml-playground
 {
-  "type": "input",
-  "disabled": "<b>This field is locked</b> — contact an admin to change it"
+    "type": "input",
+    "disabled": "<b>This field is locked</b> — contact an admin to change it"
 }
 ```
 
@@ -280,9 +274,9 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Danger",
-  "color": "red"
+    "type": "button",
+    "cap": "Danger",
+    "color": "red"
 }
 ```
 
@@ -299,10 +293,10 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Primary",
-  "class": "my-button jam-primary",
-  "style": { "marginTop": "1rem" }
+    "type": "button",
+    "cap": "Primary",
+    "class": "my-button jam-primary",
+    "style": { "marginTop": "1rem" }
 }
 ```
 
@@ -318,10 +312,10 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Email",
-  "tip": "Enter your work email address",
-  "help": "We use your email for account recovery only. It will not be shared."
+    "type": "input",
+    "cap": "Email",
+    "tip": "Enter your work email address",
+    "help": "We use your email for account recovery only. It will not be shared."
 }
 ```
 
@@ -363,13 +357,13 @@ For an existing Jam element or ordinary DOM element, pair the exported helpers w
 ```javascript
 // Imperative example: element is an existing HTMLElement.
 const onResize = (event) => {
-  const entry = event.detail;
-  console.info(entry.borderBoxSize);
+    const entry = event.detail;
+    console.info(entry.borderBoxSize);
 };
-jam.bindEvent(element, "passiveresize", onResize);
+jam.bindEvent(element, 'passiveresize', onResize);
 
 // When this subscription's owner is released:
-jam.unbindEvent(element, "passiveresize", onResize);
+jam.unbindEvent(element, 'passiveresize', onResize);
 ```
 
 Direct `element.on('passiveresize', callback)`, `addEventListener`, and a JAML `once` map do not start observation themselves. Direct `off`/`removeEventListener` also bypass observation cleanup. Use the paired helpers for imperative observation; do not call `disconnect()` on the shared observer.
@@ -406,9 +400,9 @@ Slot setters such as `cap` accept authored HTML strings as well as supplied `Tex
 
 ```javascript
 // Imperative example: label is an existing Jam-UI label element.
-label.cap = document.createTextNode("<b>Literal {{text}}</b>");
+label.cap = document.createTextNode('<b>Literal {{text}}</b>');
 // Authored HTML strings intentionally retain markup semantics:
-label.cap = "<b>Emphasized text</b>";
+label.cap = '<b>Emphasized text</b>';
 ```
 
 The updated development runtime preserves supplied Text as literal content when wrapping it for a slot, including nested/async binding results. Slot assignment can wrap or move nodes; it does not promise preservation of the Text node's identity. Elements retain their existing DOM content, so create them through text-safe APIs when needed. Older 1.6.0 bundles may reparse a supplied Text node as markup; verify the consuming runtime. This correction does not sanitize arbitrary HTML strings or Elements.
@@ -419,11 +413,11 @@ For a native input, textarea or select without a visible caption, provide an acc
 
 ```javascript jaml-playground
 export default {
-  type: "select",
-  data: [{ name: "Model A", value: "a" }],
-  oninit() {
-    this.getAgent().setAttribute("aria-label", "Model");
-  },
+    type: 'select',
+    data: [{ name: 'Model A', value: 'a' }],
+    oninit() {
+        this.getAgent().setAttribute('aria-label', 'Model');
+    }
 };
 ```
 
@@ -451,10 +445,10 @@ Native `slotchange` does bubble inside the shadow tree. Nested template slots ca
 
 #### Initialization and firing limits
 
-- Slots and their listeners are prepared on first connection, before `init` / `oninit` and `mount` / `onmount`. There is no unconditional initial named event or replay for a late subscriber. Read current state when attaching behavior, and use mount/render lifecycle when the behavior depends on attachment or completed child rendering.
-- Native notifications are asynchronous and can coalesce. Adding, removing, replacing or reassigning slotted nodes can notify; changing a descendant's text or attributes without changing assignment does not. JAM-UI can update an existing caption text node in place, so setting `cap` is not a guarantee of `capslotchange`. See the [DOM slot notification contract](https://dom.spec.whatwg.org/#signaling-slot-change).
-- A slot added after template initialization does not automatically receive this bridge. In particular, dynamically created `layer` / `extra` slots are not guaranteed to emit their own named host event.
-- A `value` property does not imply a `value` slot. Text inputs write their internal control, so use `valuechange` / `onvaluechange` for value changes; `valueslotchange` describes slot assignment only where a value slot exists.
+-   Slots and their listeners are prepared on first connection, before `init` / `oninit` and `mount` / `onmount`. There is no unconditional initial named event or replay for a late subscriber. Read current state when attaching behavior, and use mount/render lifecycle when the behavior depends on attachment or completed child rendering.
+-   Native notifications are asynchronous and can coalesce. Adding, removing, replacing or reassigning slotted nodes can notify; changing a descendant's text or attributes without changing assignment does not. JAM-UI can update an existing caption text node in place, so setting `cap` is not a guarantee of `capslotchange`. See the [DOM slot notification contract](https://dom.spec.whatwg.org/#signaling-slot-change).
+-   A slot added after template initialization does not automatically receive this bridge. In particular, dynamically created `layer` / `extra` slots are not guaranteed to emit their own named host event.
+-   A `value` property does not imply a `value` slot. Text inputs write their internal control, so use `valuechange` / `onvaluechange` for value changes; `valueslotchange` describes slot assignment only where a value slot exists.
 
 #### Reuse before observing DOM
 
@@ -464,24 +458,22 @@ This example marks whether the input has caption text on mount and whenever capt
 
 ```javascript jaml-playground
 function syncCaptionState(element, assigned) {
-  const _hasCaption = assigned.some(
-    (node) => (node.textContent ?? "").trim() !== "",
-  );
-  element.toggleAttribute("data-has-caption", _hasCaption);
+    const _hasCaption = assigned.some((node) => (node.textContent ?? '').trim() !== '');
+    element.toggleAttribute('data-has-caption', _hasCaption);
 }
 
 export default {
-  type: "input",
-  cap: "Account",
-  onmount() {
-    syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
-  },
-  on: {
-    capslotchange(event) {
-      const { assigned } = event.detail;
-      syncCaptionState(this, assigned);
+    type: 'input',
+    cap: 'Account',
+    onmount() {
+        syncCaptionState(this, this.slots.cap.assignedNodes({ flatten: true }));
     },
-  },
+    on: {
+        capslotchange(event) {
+            const { assigned } = event.detail;
+            syncCaptionState(this, assigned);
+        }
+    }
 };
 ```
 
@@ -509,19 +501,19 @@ The current development runtime corrects the ordinary `ondestroy` receiver to th
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  oninit: function () {
-    // this = the container element
-    // Fires ONCE — setup that should only run the first time
-    console.log("initialized");
-  },
-  onmount: function () {
-    // Fires on every connection
-    console.log("mounted");
-  },
-  ondestroy: function () {
-    console.log("container destroyed");
-  },
+    type: 'container',
+    oninit: function () {
+        // this = the container element
+        // Fires ONCE — setup that should only run the first time
+        console.log('initialized');
+    },
+    onmount: function () {
+        // Fires on every connection
+        console.log('mounted');
+    },
+    ondestroy: function () {
+        console.log('container destroyed');
+    }
 };
 ```
 
@@ -571,9 +563,9 @@ Extends `AbstractElement`. All elements with a user-settable `value` inherit fro
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Name",
-  "defaultValue": "Alice"
+    "type": "input",
+    "cap": "Name",
+    "defaultValue": "Alice"
 }
 ```
 
@@ -607,13 +599,13 @@ Define validation constraints. `getFormData()` throws if any fail. Rule keys are
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Email",
-  "rules": {
-    "required": true,
-    "pattern": "^[^@]+@[^@]+\\.[^@]+$",
-    "triggers": ["blur", "valuechange"]
-  }
+    "type": "input",
+    "cap": "Email",
+    "rules": {
+        "required": true,
+        "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+        "triggers": ["blur", "valuechange"]
+    }
 }
 ```
 
@@ -621,12 +613,12 @@ Rules can carry a custom `message`:
 
 ```javascript jaml-playground
 export default {
-  type: "input-number",
-  cap: "Score",
-  rules: {
-    min: { limit: 0, message: "Must be positive" },
-    max: { limit: 100, message: "Cannot exceed 100" },
-  },
+    type: 'input-number',
+    cap: 'Score',
+    rules: {
+        min: { limit: 0, message: 'Must be positive' },
+        max: { limit: 100, message: 'Cannot exceed 100' }
+    }
 };
 ```
 
@@ -644,11 +636,11 @@ Values flow through: `modifier` (normalize on set) → stored → `accessor` (tr
 
 ```javascript jaml-playground
 export default {
-  type: "input",
-  cap: "Price",
-  modifier: (v) => parseFloat(v), // store as number
-  formatter: (v) => `$${v?.toFixed(2)}`, // display as "$1.23"
-  accessor: (v) => v, // read as stored
+    type: 'input',
+    cap: 'Price',
+    modifier: (v) => parseFloat(v), // store as number
+    formatter: (v) => `$${v?.toFixed(2)}`, // display as "$1.23"
+    accessor: (v) => v // read as stored
 };
 ```
 
@@ -671,18 +663,18 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "indicator",
-  cap: "Score",
-  value: "{{score}}",
-  valueStates: {
-    pass: (value) => value >= 60,
-    failed: (value) => value < 60,
-  },
-  descStyles: {
-    ":scope[state=pass]": ["color(green)"],
-    ":scope[state=failed]": ["color(red)"],
-  },
-  vars: { score: 43 },
+    type: 'indicator',
+    cap: 'Score',
+    value: '{{score}}',
+    valueStates: {
+        pass: (value) => value >= 60,
+        failed: (value) => value < 60
+    },
+    descStyles: {
+        ':scope[state=pass]': ['color(green)'],
+        ':scope[state=failed]': ['color(red)']
+    },
+    vars: { score: 43 }
 };
 ```
 
@@ -745,13 +737,13 @@ Extends `AbstractInputElement`. Elements where the value is selected from a list
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Category",
-  "data": [
-    { "name": "Electronics", "value": "electronics", "group": "Products" },
-    { "name": "Clothing", "value": "clothing", "group": "Products" },
-    { "name": "Books", "value": "books", "group": "Media" }
-  ]
+    "type": "select",
+    "cap": "Category",
+    "data": [
+        { "name": "Electronics", "value": "electronics", "group": "Products" },
+        { "name": "Clothing", "value": "clothing", "group": "Products" },
+        { "name": "Books", "value": "books", "group": "Media" }
+    ]
 }
 ```
 
@@ -763,14 +755,14 @@ In the current development runtime, set `optionTextPolicy: 'literal'` for extern
 
 ```javascript jaml-playground
 export default {
-  type: "buttongroup-radio",
-  optionTextPolicy: "literal",
-  autoTip: false,
-  onafterrender({ element }) {
-    // Pass incoming labels as data, outside JAML expression authoring.
-    const choices = [{ name: "<model> {{literal}} {name}", value: "model-id" }];
-    element.setOptions(choices.map(({ name, value }) => ({ name, value })));
-  },
+    type: 'buttongroup-radio',
+    optionTextPolicy: 'literal',
+    autoTip: false,
+    onafterrender({ element }) {
+        // Pass incoming labels as data, outside JAML expression authoring.
+        const choices = [{ name: '<model> {{literal}} {name}', value: 'model-id' }];
+        element.setOptions(choices.map(({ name, value }) => ({ name, value })));
+    }
 };
 ```
 
@@ -791,12 +783,12 @@ Use a composite select type to choose single- or multi-selection.
 
 ```json jaml-playground
 {
-  "type": "select-checkbox",
-  "cap": "Toppings",
-  "data": [
-    { "name": "Cheese", "value": "cheese" },
-    { "name": "Mushrooms", "value": "mushrooms" }
-  ]
+    "type": "select-checkbox",
+    "cap": "Toppings",
+    "data": [
+        { "name": "Cheese", "value": "cheese" },
+        { "name": "Mushrooms", "value": "mushrooms" }
+    ]
 }
 ```
 
@@ -851,5 +843,5 @@ This is a boundary for the generated native-input listener, not a whole-framewor
 ```javascript
 // Imperative usage (outside JAML playground)
 await el.optionReady;
-console.log("Options are ready:", el.getCheckedValue());
+console.log('Options are ready:', el.getCheckedValue());
 ```

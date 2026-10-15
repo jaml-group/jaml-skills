@@ -1,4 +1,22 @@
-# Publisher bytes and generated references have deterministic source formatting.
-jaml/catalog/
-wiki/API/
+# Preserve verified publisher bytes and generated build outputs.
+scripts/authoring/catalog/
 dist/
+
+# Native authoring owns generated guides; format the curated exceptions below.
+wiki/Styles/**/*.md
+!wiki/Styles/layers/loader.md
+!wiki/Styles/locator-style.md
+!wiki/Styles/shortcuts-style.md
+!wiki/Styles/styles.md
+wiki/Styles/examples/
+wiki/Plugins/index*.md
+wiki/Plugins/composable-plugins*.md
+wiki/Plugins/event*.md
+wiki/Plugins/follow-scroll*.md
+wiki/Plugins/i18n*.md
+wiki/Plugins/interact-plugins*.md
+wiki/Plugins/observe*.md
+wiki/Plugins/popup*.md
+wiki/Plugins/router-plugins*.md
+wiki/Plugins/shortcut*.md
+wiki/Plugins/subRouter*.md

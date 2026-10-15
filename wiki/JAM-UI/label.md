@@ -10,9 +10,9 @@ A text label element with optional icon. Commonly used as a static display or he
 
 ```json jaml-playground
 {
-  "type": "label",
-  "cap": "Status",
-  "icon": "📋"
+    "type": "label",
+    "cap": "Status",
+    "icon": "📋"
 }
 ```
 
@@ -58,8 +58,8 @@ Use a real text caption for a label, or [`vanilla-img`](vanilla.md#image-preview
 
 ```json jaml-playground
 {
-  "type": "label",
-  "cap": "Total Revenue"
+    "type": "label",
+    "cap": "Total Revenue"
 }
 ```
 
@@ -67,9 +67,9 @@ Use a real text caption for a label, or [`vanilla-img`](vanilla.md#image-preview
 
 ```json jaml-playground
 {
-  "type": "label",
-  "icon": "📊",
-  "cap": "Monthly Report"
+    "type": "label",
+    "icon": "📊",
+    "cap": "Monthly Report"
 }
 ```
 
@@ -77,9 +77,9 @@ Use a real text caption for a label, or [`vanilla-img`](vanilla.md#image-preview
 
 ```json jaml-playground
 {
-  "type": "label",
-  "icon": "✓",
-  "color": "green"
+    "type": "label",
+    "icon": "✓",
+    "color": "green"
 }
 ```
 
@@ -87,35 +87,35 @@ Use a real text caption for a label, or [`vanilla-img`](vanilla.md#image-preview
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  vars: { status: 'idle' },
-  components: [
-    {
-      type: 'label',
-      cap: '{{status}}',
-      states: {
-        idle:    { color: 'gray'  },
-        running: { color: 'blue'  },
-        done:    { color: 'green' },
-        error:   { color: 'red'   }
-      },
-      stateWatcher: 'status'
-    }
-  ]
-}
+    type: 'container',
+    vars: { status: 'idle' },
+    components: [
+        {
+            type: 'label',
+            cap: '{{status}}',
+            states: {
+                idle: { color: 'gray' },
+                running: { color: 'blue' },
+                done: { color: 'green' },
+                error: { color: 'red' }
+            },
+            stateWatcher: 'status'
+        }
+    ]
+};
 ```
 
 ### Tag and outline subtypes
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "styles": ["wrapper.buttonwrapper"],
-  "components": [
-    { "type": "label-tag", "cap": "New", "color": "blue" },
-    { "type": "label-tag", "cap": "Deprecated", "color": "orange" },
-    { "type": "label-outline", "cap": "View Details" }
-  ]
+    "type": "wrapper",
+    "styles": ["wrapper.buttonwrapper"],
+    "components": [
+        { "type": "label-tag", "cap": "New", "color": "blue" },
+        { "type": "label-tag", "cap": "Deprecated", "color": "orange" },
+        { "type": "label-outline", "cap": "View Details" }
+    ]
 }
 ```
 
@@ -123,11 +123,11 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "container",
-  "components": [
-    { "type": "label-tag", "cap": "Admin", "color": "purple", "icon": "👤" },
-    { "type": "label-tag", "cap": "Active", "color": "green" },
-    { "type": "label-outline", "cap": "Edit Profile", "icon": "✏️" }
-  ]
+    "type": "container",
+    "components": [
+        { "type": "label-tag", "cap": "Admin", "color": "purple", "icon": "👤" },
+        { "type": "label-tag", "cap": "Active", "color": "green" },
+        { "type": "label-outline", "cap": "Edit Profile", "icon": "✏️" }
+    ]
 }
 ```

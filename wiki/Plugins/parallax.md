@@ -6,10 +6,10 @@ PineappleParallax computes mouse-driven tilt or translation and depth offsets fo
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "Move the pointer across the card",
-  "styles": ["css(width:20rem;height:10rem)", "hover.parallax(intensity:5)"],
-  "components": [{ "type": "label", "cap": "Depth follows the content tree" }]
+    "type": "card",
+    "cap": "Move the pointer across the card",
+    "styles": ["css(width:20rem;height:10rem)", "hover.parallax(intensity:5)"],
+    "components": [{ "type": "label", "cap": "Depth follows the content tree" }]
 }
 ```
 

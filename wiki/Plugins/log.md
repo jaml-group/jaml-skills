@@ -6,37 +6,37 @@
 
 Log levels are defined on `LimeLog.LEVEL` and control which messages are emitted.
 
-| Level   | `value` | Name       |
-|---------|---------|------------|
-| PROMPT  | `0`     | `PROMPT`   |
-| DEBUG   | `1`     | `DEBUG`    |
-| TRACE   | `2`     | `TRACE`    |
-| INFO    | `2`     | `INFO`     |
-| WARN    | `3`     | `WARN`     |
-| ERROR   | `4`     | `ERROR`    |
+| Level  | `value` | Name     |
+| ------ | ------- | -------- |
+| PROMPT | `0`     | `PROMPT` |
+| DEBUG  | `1`     | `DEBUG`  |
+| TRACE  | `2`     | `TRACE`  |
+| INFO   | `2`     | `INFO`   |
+| WARN   | `3`     | `WARN`   |
+| ERROR  | `4`     | `ERROR`  |
 
 Messages with a level value below the current `logLevel` are still dispatched (the level controls prefix behaviour); `debugMode` gates prompter output and the `unreachable` helper.
 
 ## Global API: `lime.*`
 
-| Method / Property    | Type / Signature                       | Description                                                |
-|----------------------|----------------------------------------|------------------------------------------------------------|
-| `lime.log(...args)`  | `(...args: any[]) => void`             | Log at INFO level with timestamp prefix.                   |
-| `lime.info(...args)` | `(...args: any[]) => void`             | Log at INFO level.                                         |
-| `lime.warn(...args)` | `(...args: any[]) => void`             | Log at WARN level.                                         |
-| `lime.error(...args)`| `(...args: any[]) => void`             | Log at ERROR level.                                        |
-| `lime.debug(...args)`| `(...args: any[]) => void`             | Log at DEBUG level.                                        |
-| `lime.trace(...args)`| `(...args: any[]) => void`             | Log at TRACE level.                                        |
-| `lime.prompt(...args)`| `(...args: any[]) => void`            | Log at PROMPT level; no-op unless `debugMode && development` mode. |
-| `lime.print(...args)`| `(...args: any[]) => void`             | Plain `console.log` without prefix.                        |
-| `lime.unreachable()` | `(...args: any[]) => void`             | Triggers `debugger` in debug mode, then logs at ERROR level.|
+| Method / Property      | Type / Signature           | Description                                                        |
+| ---------------------- | -------------------------- | ------------------------------------------------------------------ |
+| `lime.log(...args)`    | `(...args: any[]) => void` | Log at INFO level with timestamp prefix.                           |
+| `lime.info(...args)`   | `(...args: any[]) => void` | Log at INFO level.                                                 |
+| `lime.warn(...args)`   | `(...args: any[]) => void` | Log at WARN level.                                                 |
+| `lime.error(...args)`  | `(...args: any[]) => void` | Log at ERROR level.                                                |
+| `lime.debug(...args)`  | `(...args: any[]) => void` | Log at DEBUG level.                                                |
+| `lime.trace(...args)`  | `(...args: any[]) => void` | Log at TRACE level.                                                |
+| `lime.prompt(...args)` | `(...args: any[]) => void` | Log at PROMPT level; no-op unless `debugMode && development` mode. |
+| `lime.print(...args)`  | `(...args: any[]) => void` | Plain `console.log` without prefix.                                |
+| `lime.unreachable()`   | `(...args: any[]) => void` | Triggers `debugger` in debug mode, then logs at ERROR level.       |
 
 ## Static Configuration
 
-| Property                        | Type                  | Description                                              |
-|---------------------------------|-----------------------|----------------------------------------------------------|
-| `LimeLog.logLevel`              | `number \| Level`     | Get / set the current log level. Setting with a number looks up the closest `Level`. |
-| `LimeLog.debugMode`             | `boolean`             | Convenience getter/setter. Sets level to `DEBUG` (true) or `INFO` (false). |
+| Property            | Type              | Description                                                                          |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------ |
+| `LimeLog.logLevel`  | `number \| Level` | Get / set the current log level. Setting with a number looks up the closest `Level`. |
+| `LimeLog.debugMode` | `boolean`         | Convenience getter/setter. Sets level to `DEBUG` (true) or `INFO` (false).           |
 
 ## Color-name Proxy Behaviour
 
@@ -88,8 +88,8 @@ lime.debug('This will now appear');
 
 // Use numeric level
 LimeLog.logLevel = 3; // WARN
-lime.info('Hidden');       // not shown (info < warn)
-lime.warn('Visible');      // shown
+lime.info('Hidden'); // not shown (info < warn)
+lime.warn('Visible'); // shown
 lime.error('Also visible');
 ```
 
@@ -97,7 +97,7 @@ lime.error('Also visible');
 
 ```ts
 function exhaustiveCheck(x: never): never {
-  return lime.unreachable('Unexpected value:', x);
+    return lime.unreachable('Unexpected value:', x);
 }
 ```
 

@@ -49,37 +49,34 @@ This native input and button composition adapts the jam-dsh host fixture, restor
 ```javascript jaml-playground-result
 const savedState = agui.state;
 export default {
-  type: "container",
-  stylize: "form",
-  vars: { name: "Quiet workspace" },
-  onafterrender({ element }) {
-    if (typeof savedState?.name === "string") {
-      element.model.vars.name = savedState.name;
-    }
-  },
-  styles: [
-    "container.layout(display:grid)",
-    "container.grid(templateColumns:minmax(0,1fr))",
-  ],
-  components: [
-    {
-      type: "input",
-      cap: "Workspace name",
-      styles: ["label.atTop", "label.cap.text(whitespace:normal)"],
-      value: "{{name}}",
-      onchange() {
-        this.model.vars.name = this.value;
-        agui.setState({ name: this.value });
-      },
+    type: 'container',
+    stylize: 'form',
+    vars: { name: 'Quiet workspace' },
+    onafterrender({ element }) {
+        if (typeof savedState?.name === 'string') {
+            element.model.vars.name = savedState.name;
+        }
     },
-    {
-      type: "button-cta",
-      cap: "Continue",
-      onclick() {
-        agui.submit("continue", { name: this.model.vars.name });
-      },
-    },
-  ],
+    styles: ['container.layout(display:grid)', 'container.grid(templateColumns:minmax(0,1fr))'],
+    components: [
+        {
+            type: 'input',
+            cap: 'Workspace name',
+            styles: ['label.atTop', 'label.cap.text(whitespace:normal)'],
+            value: '{{name}}',
+            onchange() {
+                this.model.vars.name = this.value;
+                agui.setState({ name: this.value });
+            }
+        },
+        {
+            type: 'button-cta',
+            cap: 'Continue',
+            onclick() {
+                agui.submit('continue', { name: this.model.vars.name });
+            }
+        }
+    ]
 };
 ```
 

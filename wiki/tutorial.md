@@ -219,7 +219,7 @@ Shorthand: `valueWatcher`, `stateWatcher`, `dataWatcher` automatically wire a ke
 {
     "type": "button-ghost",
     "cap": "Styled Button",
-    "styles": [ "css(padding:xs l)", "hover(color:ac)", "active(backgroundColor:ac;color:onac)"]
+    "styles": ["css(padding:xs l)", "hover(color:ac)", "active(backgroundColor:ac;color:onac)"]
 }
 ```
 

@@ -10,8 +10,8 @@ A lightweight generic element wrapper with a single value slot and no pre-built 
 
 ```json jaml-playground
 {
-  "type": "element",
-  "value": "Hello, JAM-UI!"
+    "type": "element",
+    "value": "Hello, JAM-UI!"
 }
 ```
 
@@ -21,8 +21,8 @@ A lightweight generic element wrapper with a single value slot and no pre-built 
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement).
 
-| Param | Type | Description |
-|---|---|---|
+| Param   | Type  | Description                                                |
+| ------- | ----- | ---------------------------------------------------------- |
 | `value` | `any` | The element's value. Rendered in the default `value` slot. |
 
 Use a composite type such as `"element-placeholder"` or `"element-divider"` to select an element specialization. Each specialization adds its `jam-{name}` attribute for styling.
@@ -37,8 +37,8 @@ Owner elements prepare magnet children for the dynamic `layer` slot and destroy 
 
 ## Slots
 
-| Slot | Description |
-|---|---|
+| Slot              | Description                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------- |
 | `value` (default) | The main content slot. The `jam-with-value` CSS class is toggled for divider subtypes when this slot is filled. |
 
 ---
@@ -49,8 +49,8 @@ Owner elements prepare magnet children for the dynamic `layer` slot and destroy 
 
 ```json jaml-playground
 {
-  "type": "element",
-  "value": "Some content here"
+    "type": "element",
+    "value": "Some content here"
 }
 ```
 
@@ -58,8 +58,8 @@ Owner elements prepare magnet children for the dynamic `layer` slot and destroy 
 
 ```json jaml-playground
 {
-  "type": "element-placeholder",
-  "value": "Loading..."
+    "type": "element-placeholder",
+    "value": "Loading..."
 }
 ```
 
@@ -69,8 +69,8 @@ Without an explicit `stylize`, the placeholder specialization keeps the default 
 
 ```json jaml-playground
 {
-  "type": "element-divider",
-  "value": "Details"
+    "type": "element-divider",
+    "value": "Details"
 }
 ```
 
@@ -80,51 +80,48 @@ A divider specialization selects the built-in `divider` stylize profile. When it
 
 ```javascript jaml-playground
 export default {
-  type: 'element',
-  value: 'Custom styled element',
-  styles: [
-    'css(padding:1rem;border:1px dashed #ccc;border-radius:8px)',
-    'text.mono'
-  ]
-}
+    type: 'element',
+    value: 'Custom styled element',
+    styles: ['css(padding:1rem;border:1px dashed #ccc;border-radius:8px)', 'text.mono']
+};
 ```
 
 ### Reactive value binding
 
 ```javascript jaml-playground
 export default {
-  type: 'container',
-  vars: { message: 'Initial message' },
-  components: [
-    {
-      type: 'element',
-      value: '{{message}}',
-      styles: ['css(padding:0.5rem;font-style:italic)']
-    },
-    {
-      type: 'input',
-      cap: 'Edit message',
-      value: '{{message}}'
-    }
-  ]
-}
+    type: 'container',
+    vars: { message: 'Initial message' },
+    components: [
+        {
+            type: 'element',
+            value: '{{message}}',
+            styles: ['css(padding:0.5rem;font-style:italic)']
+        },
+        {
+            type: 'input',
+            cap: 'Edit message',
+            value: '{{message}}'
+        }
+    ]
+};
 ```
 
 ### Element with value formatting
 
 ```javascript jaml-playground
 export default {
-  type: 'element',
-  value: 1234.5678,
-  formatter: (v) => `$${v.toFixed(2)}`,
-  modifier: (v) => parseFloat(v)
-}
+    type: 'element',
+    value: 1234.5678,
+    formatter: (v) => `$${v.toFixed(2)}`,
+    modifier: (v) => parseFloat(v)
+};
 ```
 
 ---
 
 ## Notes
 
-- `EndiveElement` is the simplest value-carrying element. It has no icon, cap, label, or agent — just a single `value` slot.
-- A composite type splits its specialization on `-` and adds `jam-{part}` attributes to the element for CSS targeting.
-- Use it as a lightweight container when you need value handling without chrome.
+-   `EndiveElement` is the simplest value-carrying element. It has no icon, cap, label, or agent — just a single `value` slot.
+-   A composite type splits its specialization on `-` and adds `jam-{part}` attributes to the element for CSS targeting.
+-   Use it as a lightweight container when you need value handling without chrome.

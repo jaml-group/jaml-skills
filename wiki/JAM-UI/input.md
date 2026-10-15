@@ -10,11 +10,11 @@ A versatile text input supporting plain text, textarea, number, password, color 
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Username",
-  "placeholder": "Enter your username",
-  "rules": { "required": true, "minLength": 3 },
-  "valueKey": "username"
+    "type": "input",
+    "cap": "Username",
+    "placeholder": "Enter your username",
+    "rules": { "required": true, "minLength": 3 },
+    "valueKey": "username"
 }
 ```
 
@@ -140,14 +140,13 @@ Newlines keep the configured `newlineKey` and submission priority below. An admi
 
 ```javascript jaml-playground
 export default {
-  type: "input-compose",
-  cap: "Draft",
-  rows: "auto",
-  minRows: 4,
-  maxRows: 12,
-  value:
-    "## Draft\n\n- First item\n- Second item\n\nSelect words and press Cmd-B or Ctrl-B.",
-  compose: { markdown: true, newlineKey: "Enter" },
+    type: 'input-compose',
+    cap: 'Draft',
+    rows: 'auto',
+    minRows: 4,
+    maxRows: 12,
+    value: '## Draft\n\n- First item\n- Second item\n\nSelect words and press Cmd-B or Ctrl-B.',
+    compose: { markdown: true, newlineKey: 'Enter' }
 };
 ```
 
@@ -172,9 +171,9 @@ A source receives `{ text, from, to, query, token?, signal }` and returns `[{ la
 
 Each token has `{ from, to, kind, label?, icon?, contentFrom?, contentTo?, info?, replace? }`. Offsets are UTF-16, `to` is exclusive, and ranges must be nonempty, in bounds and single-line. The first returned range wins overlaps. Invalid ranges are ignored; recognition errors leave ordinary text visible.
 
-- `kind: 'atomic'` displays a native label with an optional `icon` over an indivisible source range. Click or adjacent arrows highlight it; the next arrow exits, and deletion acts on the whole token. Navigation does not reopen autocomplete. Undo restores its source.
-- `kind: 'inline'` keeps text editable with inline-code presentation. Optional content bounds hide delimiters outside editing. Deleting the final editable character removes delimiters in the same transaction.
-- `info` supplies a plain-text explanation; omit it when token hover/keyboard explanations are unwanted. Optional `replace` opens a replacement source from a dropdown or Enter on the fully selected token. Omit `replace` for selectable/deletable references without replacement controls.
+-   `kind: 'atomic'` displays a native label with an optional `icon` over an indivisible source range. Click or adjacent arrows highlight it; the next arrow exits, and deletion acts on the whole token. Navigation does not reopen autocomplete. Undo restores its source.
+-   `kind: 'inline'` keeps text editable with inline-code presentation. Optional content bounds hide delimiters outside editing. Deleting the final editable character removes delimiters in the same transaction.
+-   `info` supplies a plain-text explanation; omit it when token hover/keyboard explanations are unwanted. Optional `replace` opens a replacement source from a dropdown or Enter on the fully selected token. Omit `replace` for selectable/deletable references without replacement controls.
 
 Suggestion labels and icons default to `var(--jam-color-fg-muted)`; descriptions and group indicators use `var(--jam-color-fg-faint)`. Group indicators retain the faint role independently of candidate color overrides. Their default size is `var(--jam-typography-font-size-s)`. Set these optional CSS properties on the compose input or an ancestor to scope its picker presentation:
 
@@ -193,42 +192,37 @@ Inline and resting atomic token text uses `var(--jam-color-fg-primary)` for read
 This self-contained example uses an application-defined demonstration grammar; replace its grammar and catalog with the receiving application's canonical references. All token and candidate content remains data.
 
 ```javascript
-const references = [{ id: "guide", label: "Guide" }];
-const source = ({ query }) =>
-  references
-    .filter((item) => item.label.toLowerCase().startsWith(query.toLowerCase()))
-    .map((item) => ({ label: item.label, insertText: `[[ref:${item.id}]] ` }));
+const references = [{ id: 'guide', label: 'Guide' }];
+const source = ({ query }) => references.filter((item) => item.label.toLowerCase().startsWith(query.toLowerCase())).map((item) => ({ label: item.label, insertText: `[[ref:${item.id}]] ` }));
 
 const composer = {
-  type: "input-compose",
-  valueKey: "draft",
-  rows: "auto",
-  minRows: 2,
-  maxRows: 18,
-  attrs: { "aria-label": "Message" },
-  styles: ["input.ghost"],
-  compose: {
-    compact: false,
-    newlineKey: "Alt-Enter",
-    triggers: [{ pattern: /(?<![\w@])@([a-z]*)$/i, source }],
-    recognize(text) {
-      return Array.from(text.matchAll(/\[\[ref:([a-z]+)\]\]/g)).flatMap(
-        (match) => {
-          const item = references.find((entry) => entry.id === match[1]);
-          return item
-            ? [
-                {
-                  from: match.index,
-                  to: match.index + match[0].length,
-                  kind: "atomic",
-                  label: item.label,
-                },
-              ]
-            : [];
-        },
-      );
-    },
-  },
+    type: 'input-compose',
+    valueKey: 'draft',
+    rows: 'auto',
+    minRows: 2,
+    maxRows: 18,
+    attrs: { 'aria-label': 'Message' },
+    styles: ['input.ghost'],
+    compose: {
+        compact: false,
+        newlineKey: 'Alt-Enter',
+        triggers: [{ pattern: /(?<![\w@])@([a-z]*)$/i, source }],
+        recognize(text) {
+            return Array.from(text.matchAll(/\[\[ref:([a-z]+)\]\]/g)).flatMap((match) => {
+                const item = references.find((entry) => entry.id === match[1]);
+                return item
+                    ? [
+                          {
+                              from: match.index,
+                              to: match.index + match[0].length,
+                              kind: 'atomic',
+                              label: item.label
+                          }
+                      ]
+                    : [];
+            });
+        }
+    }
 };
 ```
 
@@ -266,15 +260,15 @@ In the updated development runtime, use the native [`input.ghost` style](../Styl
 
 ```javascript jaml-playground
 export default {
-  type: "input-textarea",
-  placeholder: "Message",
-  rows: "auto",
-  minRows: 1,
-  maxRows: 8,
-  styles: ["input.ghost"],
-  oninit() {
-    this.getAgent().setAttribute("aria-label", "Message");
-  },
+    type: 'input-textarea',
+    placeholder: 'Message',
+    rows: 'auto',
+    minRows: 1,
+    maxRows: 8,
+    styles: ['input.ghost'],
+    oninit() {
+        this.getAgent().setAttribute('aria-label', 'Message');
+    }
 };
 ```
 
@@ -288,14 +282,14 @@ The ghost style is a new development capability; verify the delivered runtime, i
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Email",
-  "rules": {
-    "required": true,
-    "pattern": "^[^@]+@[^@]+\\.[^@]+$",
-    "triggers": ["blur"]
-  },
-  "valueKey": "email"
+    "type": "input",
+    "cap": "Email",
+    "rules": {
+        "required": true,
+        "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+        "triggers": ["blur"]
+    },
+    "valueKey": "email"
 }
 ```
 
@@ -303,13 +297,13 @@ The ghost style is a new development capability; verify the delivered runtime, i
 
 ```json jaml-playground
 {
-  "type": "input-number",
-  "cap": "Threshold",
-  "step": 0.01,
-  "defaultValue": 0.35,
-  "rules": { "min": 0, "max": 1 },
-  "styles": ["interact.clearable", "interact.resettable"],
-  "valueKey": "threshold"
+    "type": "input-number",
+    "cap": "Threshold",
+    "step": 0.01,
+    "defaultValue": 0.35,
+    "rules": { "min": 0, "max": 1 },
+    "styles": ["interact.clearable", "interact.resettable"],
+    "valueKey": "threshold"
 }
 ```
 
@@ -317,11 +311,11 @@ The ghost style is a new development capability; verify the delivered runtime, i
 
 ```json jaml-playground
 {
-  "type": "input-textarea",
-  "cap": "Description",
-  "rows": 5,
-  "defaultValue": "Enter description here...",
-  "valueKey": "description"
+    "type": "input-textarea",
+    "cap": "Description",
+    "rows": 5,
+    "defaultValue": "Enter description here...",
+    "valueKey": "description"
 }
 ```
 
@@ -329,12 +323,12 @@ The ghost style is a new development capability; verify the delivered runtime, i
 
 ```javascript jaml-playground
 export default {
-  type: "input-code",
-  cap: "Configuration",
-  lang: "JSON",
-  autoFormat: true,
-  tabWidth: 2,
-  valueKey: "config",
+    type: 'input-code',
+    cap: 'Configuration',
+    lang: 'JSON',
+    autoFormat: true,
+    tabWidth: 2,
+    valueKey: 'config'
 };
 ```
 
@@ -348,23 +342,23 @@ Keep external content out of authored `vars`, handlers and interpolated JAML. Th
 
 ```javascript
 const model = new jam.Model({
-  type: "container",
-  vars: { recordedDiff: "" },
-  components: [
-    {
-      type: "input-code",
-      cap: "Recorded changes",
-      lang: "diff",
-      readOnly: true,
-      eagerEditor: true,
-      autoFormat: false,
-      autoCompletion: false,
-      useVim: false,
-      emptyLineAtEnd: false,
-      value: "{{recordedDiff}}",
-      styles: ["css(display:block;width:100%;height:20rem)"],
-    },
-  ],
+    type: 'container',
+    vars: { recordedDiff: '' },
+    components: [
+        {
+            type: 'input-code',
+            cap: 'Recorded changes',
+            lang: 'diff',
+            readOnly: true,
+            eagerEditor: true,
+            autoFormat: false,
+            autoCompletion: false,
+            useVim: false,
+            emptyLineAtEnd: false,
+            value: '{{recordedDiff}}',
+            styles: ['css(display:block;width:100%;height:20rem)']
+        }
+    ]
 });
 model.vars.recordedDiff = externalDiffText;
 model.render(host);
@@ -380,13 +374,13 @@ LF text retains trailing spaces and whether a final newline is present when form
 
 ```javascript jaml-playground
 export default {
-  type: "input-file",
-  cap: "Upload File",
-  dropzone: "#drop-area",
-  onfileread: function (fileInfo) {
-    console.log("File loaded:", fileInfo.name, fileInfo.size);
-    this.model.vars.fileContent = fileInfo.data;
-  },
+    type: 'input-file',
+    cap: 'Upload File',
+    dropzone: '#drop-area',
+    onfileread: function (fileInfo) {
+        console.log('File loaded:', fileInfo.name, fileInfo.size);
+        this.model.vars.fileContent = fileInfo.data;
+    }
 };
 ```
 
@@ -394,12 +388,12 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "input-color",
-  cap: "Theme Color",
-  defaultValue: "#4a90d9",
-  onvaluechange: function (color) {
-    document.documentElement.style.setProperty("--primary-color", color);
-  },
+    type: 'input-color',
+    cap: 'Theme Color',
+    defaultValue: '#4a90d9',
+    onvaluechange: function (color) {
+        document.documentElement.style.setProperty('--primary-color', color);
+    }
 };
 ```
 
@@ -407,13 +401,13 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "input-range",
-  "cap": "Volume",
-  "min": 0,
-  "max": 100,
-  "defaultValue": 50,
-  "showValueTip": true,
-  "valueKey": "volume"
+    "type": "input-range",
+    "cap": "Volume",
+    "min": 0,
+    "max": 100,
+    "defaultValue": 50,
+    "showValueTip": true,
+    "valueKey": "volume"
 }
 ```
 
@@ -421,10 +415,10 @@ export default {
 
 ## Notes
 
-- For `type: 'file'`, the element renders as a button — clicking it opens the native file picker. The `onfileread` callback receives a `FileInfo` object with `path`, `name`, `size`, `mime`, `data`, `time` and `orig` fields. `data` is text for supported text MIME types and a data URL otherwise; `time` is the original last-modified timestamp and `orig` retains the browser `File`. `path` is normally the relative path (or an empty string); an Electron bridge may supply a filesystem path. The callback runs after reading the file contents.
-- For `type: 'code'`, `input.editorReady` resolves when the editor is initialized. Use `await input.editorReady` before interacting with the editor.
-- Use `eagerEditor: true` or `await input.initializeEditor()` to bypass deferred initialization. Destruction cancels pending initialization. Browser Print uses a literal source fallback while a deferred editor loads and removes the fallback after printing; Markdown documents can await [scoped print preparation](../Plugins/markdown.md#printing).
-- Passing an object value to a non-color input auto-serializes it as JSON.
+-   For `type: 'file'`, the element renders as a button — clicking it opens the native file picker. The `onfileread` callback receives a `FileInfo` object with `path`, `name`, `size`, `mime`, `data`, `time` and `orig` fields. `data` is text for supported text MIME types and a data URL otherwise; `time` is the original last-modified timestamp and `orig` retains the browser `File`. `path` is normally the relative path (or an empty string); an Electron bridge may supply a filesystem path. The callback runs after reading the file contents.
+-   For `type: 'code'`, `input.editorReady` resolves when the editor is initialized. Use `await input.editorReady` before interacting with the editor.
+-   Use `eagerEditor: true` or `await input.initializeEditor()` to bypass deferred initialization. Destruction cancels pending initialization. Browser Print uses a literal source fallback while a deferred editor loads and removes the fallback after printing; Markdown documents can await [scoped print preparation](../Plugins/markdown.md#printing).
+-   Passing an object value to a non-color input auto-serializes it as JSON.
 
 ## File-read ownership
 
@@ -444,30 +438,30 @@ File mode currently hides its internal input and does not provide the native but
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  id: "attachment-composer",
-  vars: { fileNames: [] },
-  components: [
-    {
-      type: "button",
-      cap: "Add files",
-      onclick() {
-        document.getElementById("attachment-picker").click();
-      },
-    },
-    {
-      type: "input-file",
-      id: "attachment-picker",
-      multiple: true,
-      dropzone: "#attachment-composer",
-      styles: ["css(display:none)"],
-      onfileselect(files, source) {
-        this.model.vars.fileNames = files.map((file) => file.name);
-        // Hand raw files to the application's validation/queue owner here.
-        return false;
-      },
-    },
-  ],
+    type: 'container',
+    id: 'attachment-composer',
+    vars: { fileNames: [] },
+    components: [
+        {
+            type: 'button',
+            cap: 'Add files',
+            onclick() {
+                document.getElementById('attachment-picker').click();
+            }
+        },
+        {
+            type: 'input-file',
+            id: 'attachment-picker',
+            multiple: true,
+            dropzone: '#attachment-composer',
+            styles: ['css(display:none)'],
+            onfileselect(files, source) {
+                this.model.vars.fileNames = files.map((file) => file.name);
+                // Hand raw files to the application's validation/queue owner here.
+                return false;
+            }
+        }
+    ]
 };
 ```
 

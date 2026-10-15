@@ -10,10 +10,10 @@ A standard click button with icon and cap slots. Supports keyboard binding, hold
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Submit",
-  "icon": "✓",
-  "color": "green"
+    "type": "button",
+    "cap": "Submit",
+    "icon": "✓",
+    "color": "green"
 }
 ```
 
@@ -68,15 +68,9 @@ Explicit `bindKey` shortcuts are separate: their click is generated on keydown, 
 
 ```javascript jaml-playground
 export default {
-  type: "button-ghost",
-  cap: "Chat title",
-  styles: [
-    "icon.bar",
-    "icon.css(width:0.25em;height:1em;aspect-ratio:auto)",
-    "align(left-middle)",
-    "cap.text(align:left)",
-    "css(width:100%)",
-  ],
+    type: 'button-ghost',
+    cap: 'Chat title',
+    styles: ['icon.bar', 'icon.css(width:0.25em;height:1em;aspect-ratio:auto)', 'align(left-middle)', 'cap.text(align:left)', 'css(width:100%)']
 };
 ```
 
@@ -85,16 +79,12 @@ export default {
 For font icons, package matching CSS and webfonts in the application and load the CSS with [`jam.addResource`](../utils.md#jamaddresourceurl). Then use a bare icon name and the native variant:
 
 ```javascript
-await jam.addResource("/assets/fontawesome/css/all.min.css");
+await jam.addResource('/assets/fontawesome/css/all.min.css');
 const chatsButton = {
-  type: "button-ghost",
-  icon: "comment",
-  cap: "Chats",
-  styles: [
-    "icon.solid(color:currentColor;strokeWidth:0px)",
-    "align(left-middle)",
-    "cap.text(align:left)",
-  ],
+    type: 'button-ghost',
+    icon: 'comment',
+    cap: 'Chats',
+    styles: ['icon.solid(color:currentColor;strokeWidth:0px)', 'align(left-middle)', 'cap.text(align:left)']
 };
 ```
 
@@ -106,9 +96,9 @@ For row commands, use separate native buttons and [contextual action popups](../
 
 ```json jaml-playground
 {
-  "type": "button-cta",
-  "cap": "Get Started",
-  "icon": "→"
+    "type": "button-cta",
+    "cap": "Get Started",
+    "icon": "→"
 }
 ```
 
@@ -116,14 +106,14 @@ For row commands, use separate native buttons and [contextual action popups](../
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "styles": ["wrapper.buttonwrapper"],
-  "components": [
-    { "type": "button-ghost", "cap": "Ghost" },
-    { "type": "button-outline", "cap": "Outline" },
-    { "type": "button-link", "cap": "Link" },
-    { "type": "button-fab", "icon": "✏️" }
-  ]
+    "type": "wrapper",
+    "styles": ["wrapper.buttonwrapper"],
+    "components": [
+        { "type": "button-ghost", "cap": "Ghost" },
+        { "type": "button-outline", "cap": "Outline" },
+        { "type": "button-link", "cap": "Link" },
+        { "type": "button-fab", "icon": "✏️" }
+    ]
 }
 ```
 
@@ -131,10 +121,10 @@ For row commands, use separate native buttons and [contextual action popups](../
 
 ```javascript jaml-playground
 export default {
-  type: "button",
-  cap: "Confirm",
-  bindKey: "Enter",
-  onclick: () => console.log("Enter pressed or clicked"),
+    type: 'button',
+    cap: 'Confirm',
+    bindKey: 'Enter',
+    onclick: () => console.log('Enter pressed or clicked')
 };
 ```
 
@@ -142,9 +132,9 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Delete",
-  "disabled": "<b>Deletion is disabled</b> — you do not have permission"
+    "type": "button",
+    "cap": "Delete",
+    "disabled": "<b>Deletion is disabled</b> — you do not have permission"
 }
 ```
 
@@ -152,20 +142,20 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  vars: { count: 0 },
-  components: [
-    { type: "indicator", cap: "Count", value: "{{count}}" },
-    {
-      type: "button",
-      icon: "+",
-      repeat: 100,
-      repeatDelay: 400,
-      onclick: function () {
-        this.model.vars.count++;
-      },
-    },
-  ],
+    type: 'container',
+    vars: { count: 0 },
+    components: [
+        { type: 'indicator', cap: 'Count', value: '{{count}}' },
+        {
+            type: 'button',
+            icon: '+',
+            repeat: 100,
+            repeatDelay: 400,
+            onclick: function () {
+                this.model.vars.count++;
+            }
+        }
+    ]
 };
 ```
 
@@ -173,6 +163,6 @@ export default {
 
 ## Notes
 
-- When `disabled` is set to a string, a popup with that message appears on hover or click.
-- `bindKey` activates on keydown; keyup clears `jam-active` and stops repetition. See [focused activation](#focused-keyboard-activation) for the separate button-host behavior.
-- `repeat` + `repeatDelay` enable auto-repeat. Useful for increment/decrement buttons.
+-   When `disabled` is set to a string, a popup with that message appears on hover or click.
+-   `bindKey` activates on keydown; keyup clears `jam-active` and stops repetition. See [focused activation](#focused-keyboard-activation) for the separate button-host behavior.
+-   `repeat` + `repeatDelay` enable auto-repeat. Useful for increment/decrement buttons.

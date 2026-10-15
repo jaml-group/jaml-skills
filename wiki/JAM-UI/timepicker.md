@@ -10,9 +10,9 @@ A time input that uses the browser's native `<input type="time">` UI, with confi
 
 ```json jaml-playground
 {
-  "type": "timepicker",
-  "cap": "Start Time",
-  "defaultValue": "09:00"
+    "type": "timepicker",
+    "cap": "Start Time",
+    "defaultValue": "09:00"
 }
 ```
 
@@ -22,27 +22,27 @@ A time input that uses the browser's native `<input type="time">` UI, with confi
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement).
 
-| Param | Type | Default | Description |
-|---|---|---|---|
+| Param     | Type     | Default   | Description                                                |
+| --------- | -------- | --------- | ---------------------------------------------------------- |
 | `pattern` | `string` | `'HH:mm'` | Output format pattern. Supported tokens: `HH`, `mm`, `ss`. |
 
 ---
 
 ## Slots
 
-| Slot | Description |
-|---|---|
-| `label` | Label area via `Templates.label` (icon + cap). |
+| Slot    | Description                                                    |
+| ------- | -------------------------------------------------------------- |
+| `label` | Label area via `Templates.label` (icon + cap).                 |
 | `value` | Value display slot (auto-populated by `AbstractInputElement`). |
 
 ---
 
 ## Value handling
 
-- Accepts `'HH:mm'` string values or numeric timestamps (milliseconds since epoch).
-- Numeric values are converted using `formatTime(new Date(value), pattern)`.
-- The native `<input type="time">` always displays in `HH:mm` format regardless of the `pattern` setting.
-- The `pattern` controls **output** formatting when `getValue()` is read.
+-   Accepts `'HH:mm'` string values or numeric timestamps (milliseconds since epoch).
+-   Numeric values are converted using `formatTime(new Date(value), pattern)`.
+-   The native `<input type="time">` always displays in `HH:mm` format regardless of the `pattern` setting.
+-   The `pattern` controls **output** formatting when `getValue()` is read.
 
 ---
 
@@ -52,9 +52,9 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "timepicker",
-  "cap": "Meeting Time",
-  "defaultValue": "09:00"
+    "type": "timepicker",
+    "cap": "Meeting Time",
+    "defaultValue": "09:00"
 }
 ```
 
@@ -62,10 +62,10 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "timepicker",
-  "cap": "Timestamp",
-  "pattern": "HH:mm:ss",
-  "defaultValue": "14:30:00"
+    "type": "timepicker",
+    "cap": "Timestamp",
+    "pattern": "HH:mm:ss",
+    "defaultValue": "14:30:00"
 }
 ```
 
@@ -73,9 +73,9 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "timepicker",
-  "cap": "Current Time",
-  "defaultValue": "()=>Date.now()"
+    "type": "timepicker",
+    "cap": "Current Time",
+    "defaultValue": "()=>Date.now()"
 }
 ```
 
@@ -83,20 +83,20 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "container",
-  "cap": "Appointment",
-  "components": [
-    {
-      "type": "datepicker",
-      "cap": "Date",
-      "defaultValue": "()=>Date.now()"
-    },
-    {
-      "type": "timepicker",
-      "cap": "Time",
-      "defaultValue": "()=>Date.now()"
-    }
-  ]
+    "type": "container",
+    "cap": "Appointment",
+    "components": [
+        {
+            "type": "datepicker",
+            "cap": "Date",
+            "defaultValue": "()=>Date.now()"
+        },
+        {
+            "type": "timepicker",
+            "cap": "Time",
+            "defaultValue": "()=>Date.now()"
+        }
+    ]
 }
 ```
 
@@ -104,12 +104,12 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ```json jaml-playground
 {
-  "type": "timepicker",
-  "cap": "Start Time",
-  "rules": {
-    "required": true,
-    "triggers": ["blur"]
-  }
+    "type": "timepicker",
+    "cap": "Start Time",
+    "rules": {
+        "required": true,
+        "triggers": ["blur"]
+    }
 }
 ```
 
@@ -117,6 +117,6 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 ## Notes
 
-- The native browser time picker is used — appearance varies by browser and platform.
-- If `value` is a numeric timestamp it is converted via `formatTime()`. Non-numeric values are passed through as-is to the native input.
-- The `pattern` defaults to `'HH:mm'`. Include `HH:mm:ss` for seconds-level precision.
+-   The native browser time picker is used — appearance varies by browser and platform.
+-   If `value` is a numeric timestamp it is converted via `formatTime()`. Non-numeric values are passed through as-is to the native input.
+-   The `pattern` defaults to `'HH:mm'`. Include `HH:mm:ss` for seconds-level precision.

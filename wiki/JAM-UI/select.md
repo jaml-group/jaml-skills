@@ -15,14 +15,14 @@ A native `<select>` dropdown with `<optgroup>` support, a configurable placehold
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Country",
-  "data": [
-    { "name": "USA", "value": "us" },
-    { "name": "China", "value": "cn" },
-    { "name": "France", "value": "fr" }
-  ],
-  "defaultValue": "us"
+    "type": "select",
+    "cap": "Country",
+    "data": [
+        { "name": "USA", "value": "us" },
+        { "name": "China", "value": "cn" },
+        { "name": "France", "value": "fr" }
+    ],
+    "defaultValue": "us"
 }
 ```
 
@@ -54,14 +54,14 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Location",
-  "data": [
-    { "name": "New York", "value": "ny", "group": "North America" },
-    { "name": "Los Angeles", "value": "la", "group": "North America" },
-    { "name": "Paris", "value": "par", "group": "Europe" },
-    { "name": "London", "value": "lon", "group": "Europe" }
-  ]
+    "type": "select",
+    "cap": "Location",
+    "data": [
+        { "name": "New York", "value": "ny", "group": "North America" },
+        { "name": "Los Angeles", "value": "la", "group": "North America" },
+        { "name": "Paris", "value": "par", "group": "Europe" },
+        { "name": "London", "value": "lon", "group": "Europe" }
+    ]
 }
 ```
 
@@ -69,14 +69,14 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ```json jaml-playground
 {
-  "type": "select-checkbox",
-  "cap": "Permissions",
-  "data": [
-    { "name": "Read", "value": "read" },
-    { "name": "Write", "value": "write" },
-    { "name": "Admin", "value": "admin" }
-  ],
-  "defaultValue": ["read"]
+    "type": "select-checkbox",
+    "cap": "Permissions",
+    "data": [
+        { "name": "Read", "value": "read" },
+        { "name": "Write", "value": "write" },
+        { "name": "Admin", "value": "admin" }
+    ],
+    "defaultValue": ["read"]
 }
 ```
 
@@ -84,10 +84,10 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "App Type",
-  "dataUrl": "assets/appTypes.json",
-  "defaultValue": "1"
+    "type": "select",
+    "cap": "App Type",
+    "dataUrl": "assets/appTypes.json",
+    "defaultValue": "1"
 }
 ```
 
@@ -95,10 +95,10 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Category",
-  "tip": "Loaded from messenger data",
-  "dataWatcher": "categoryList"
+    "type": "select",
+    "cap": "Category",
+    "tip": "Loaded from messenger data",
+    "dataWatcher": "categoryList"
 }
 ```
 
@@ -106,14 +106,14 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ```json jaml-playground
 {
-  "type": "select",
-  "cap": "Tags",
-  "placeholder": false,
-  "styles": ["size.fullwidth"],
-  "data": [
-    { "name": "Urgent", "value": "urgent", "color": "red" },
-    { "name": "Normal", "value": "normal", "color": "blue" }
-  ]
+    "type": "select",
+    "cap": "Tags",
+    "placeholder": false,
+    "styles": ["size.fullwidth"],
+    "data": [
+        { "name": "Urgent", "value": "urgent", "color": "red" },
+        { "name": "Normal", "value": "normal", "color": "blue" }
+    ]
 }
 ```
 
@@ -123,6 +123,6 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 For a select without a visible caption, provide an accessible name through host `attrs` in the updated development runtime. See [native-agent naming](JAM-UI.md#naming-native-input-agents) for the bounded forwarding contract and a direct `oninit` fallback for older bundles.
 
-- The placeholder entry is always the first `<option>` and is hidden when `placeholder: false` or `placeholder: ''`.
-- The `jam-selected` CSS class is toggled when a non-null value is selected.
-- In multi-select mode (`"select-checkbox"`), the `<select>` element gets the native `multiple` attribute and the placeholder is automatically hidden.
+-   The placeholder entry is always the first `<option>` and is hidden when `placeholder: false` or `placeholder: ''`.
+-   The `jam-selected` CSS class is toggled when a non-null value is selected.
+-   In multi-select mode (`"select-checkbox"`), the `<select>` element gets the native `multiple` attribute and the placeholder is automatically hidden.

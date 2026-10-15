@@ -16,9 +16,9 @@ Entry slides outward from the actual edge in 200ms and exit returns in 150ms. Se
 
 ```javascript
 jam.flyout(composerElement, suggestionContent, {
-  position: "top",
-  showAnima: "none",
-  hideAnima: "none",
+    position: 'top',
+    showAnima: 'none',
+    hideAnima: 'none'
 });
 ```
 
@@ -47,27 +47,27 @@ This example uses the button's owned popup. Click the content to grow or shrink 
 
 ```javascript jaml-playground
 export default {
-  type: "button",
-  cap: "Open resizing flyout",
-  style: { marginTop: "12rem", width: "18rem" },
-  onclick: function () {
-    const content = document.createElement("button");
-    content.textContent = "Click to grow / shrink";
-    content.style.width = "16rem";
-    content.style.height = "3rem";
-    content.onclick = () => {
-      content.style.height = content.style.height === "3rem" ? "8rem" : "3rem";
-    };
-    this.popup(content, {
-      type: "flyout",
-      position: "top",
-      moreSteady: true,
-      autoFlip: false,
-      click2Hide: false,
-      showAnima: "none",
-      hideAnima: "none",
-    });
-  },
+    type: 'button',
+    cap: 'Open resizing flyout',
+    style: { marginTop: '12rem', width: '18rem' },
+    onclick: function () {
+        const content = document.createElement('button');
+        content.textContent = 'Click to grow / shrink';
+        content.style.width = '16rem';
+        content.style.height = '3rem';
+        content.onclick = () => {
+            content.style.height = content.style.height === '3rem' ? '8rem' : '3rem';
+        };
+        this.popup(content, {
+            type: 'flyout',
+            position: 'top',
+            moreSteady: true,
+            autoFlip: false,
+            click2Hide: false,
+            showAnima: 'none',
+            hideAnima: 'none'
+        });
+    }
 };
 ```
 
@@ -87,8 +87,8 @@ In the current development runtime, a live `moveToTarget()` update that flips to
 
 ```javascript
 // Show a popup anchored to a button
-const btn = document.querySelector("#my-button");
-papaya.show(btn, "Hello from popup!");
+const btn = document.querySelector('#my-button');
+papaya.show(btn, 'Hello from popup!');
 
 // Hide it
 papaya.hide();
@@ -123,9 +123,9 @@ Every JAM-UI element has a `popup()` and `closePopup()` method inherited from `A
 
 ```javascript
 const input = model.ref.emailInput;
-input.popup("Please enter a valid email address", {
-  position: "bottom",
-  showDelay: 0,
+input.popup('Please enter a valid email address', {
+    position: 'bottom',
+    showDelay: 0
 });
 
 // Close it after 2 seconds
@@ -136,16 +136,16 @@ Inside an element hook (`onclick`, etc.) use `this` directly:
 
 ```javascript jaml-playground
 export default {
-  type: "input",
-  cap: "Email",
-  onvaluechange: function (value) {
-    // this = the input element
-    if (!value.includes("@")) {
-      this.popup("Please enter a valid email address", { position: "bottom" });
-    } else {
-      this.closePopup();
+    type: 'input',
+    cap: 'Email',
+    onvaluechange: function (value) {
+        // this = the input element
+        if (!value.includes('@')) {
+            this.popup('Please enter a valid email address', { position: 'bottom' });
+        } else {
+            this.closePopup();
+        }
     }
-  },
 };
 ```
 
@@ -170,16 +170,16 @@ For common use cases, use the declarative `tip` and `help` params instead of cal
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Password",
-  "plugins": ["popup.tip", "popup.helper"],
-  "tip": "Hover to see requirements",
-  "help": "Password must be at least 8 characters with one number."
+    "type": "input",
+    "cap": "Password",
+    "plugins": ["popup.tip", "popup.helper"],
+    "tip": "Hover to see requirements",
+    "help": "Password must be at least 8 characters with one number."
 }
 ```
 
-- `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
-- `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
+-   `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
+-   `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
 
 ---
 
@@ -256,14 +256,14 @@ Predefined type profiles with specific default options.
 | `PopupType.dropDown`    | `click`      | `'dropDown'`    | Dropdown menu with expand/collapse animation |
 
 ```javascript
-import { PapayaPopup, PopupType } from "jam-ui";
+import { PapayaPopup, PopupType } from 'jam-ui';
 
 papaya.show(target, content, {
-  ...getPopupProfile(PopupType.tip),
-  showDelay: 500,
+    ...getPopupProfile(PopupType.tip),
+    showDelay: 500
 });
 // Shorthand for dropdown
-jam.dropDown(target, content, { position: "bottom" });
+jam.dropDown(target, content, { position: 'bottom' });
 ```
 
 ---
@@ -314,15 +314,15 @@ jam.dropDown(target, content, { position: "bottom" });
 For a persistent or specially configured popup, create a `PapayaPopup` instance directly:
 
 ```javascript
-import { PapayaPopup, PopupType } from "jam-ui";
+import { PapayaPopup, PopupType } from 'jam-ui';
 
 const myPopup = new PapayaPopup({
-  type: PopupType.contextMenu,
-  removeOnHiding: false,
+    type: PopupType.contextMenu,
+    removeOnHiding: false
 });
 
 myPopup.bindEvents(); // if using eventTarget
-myPopup.show(target, content, { position: "bottom" });
+myPopup.show(target, content, { position: 'bottom' });
 ```
 
 ---
@@ -333,14 +333,14 @@ myPopup.show(target, content, { position: "bottom" });
 
 ```javascript jaml-playground
 export default {
-  type: "input",
-  cap: "Show Info",
-  onfocus: function () {
-    this.popup("This field accepts text input", {
-      position: "top",
-      showDelay: 0,
-    });
-  },
+    type: 'input',
+    cap: 'Show Info',
+    onfocus: function () {
+        this.popup('This field accepts text input', {
+            position: 'top',
+            showDelay: 0
+        });
+    }
 };
 ```
 
@@ -348,24 +348,24 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  components: [
-    {
-      type: "input",
-      cap: "Password",
-      rules: { required: true, minLength: 8 },
-      onvaluechange: function (value) {
-        if (value && value.length < 8) {
-          this.popup("At least 8 characters required", {
-            position: "bottom",
-            color: "warn",
-          });
-        } else {
-          this.closePopup();
+    type: 'container',
+    components: [
+        {
+            type: 'input',
+            cap: 'Password',
+            rules: { required: true, minLength: 8 },
+            onvaluechange: function (value) {
+                if (value && value.length < 8) {
+                    this.popup('At least 8 characters required', {
+                        position: 'bottom',
+                        color: 'warn'
+                    });
+                } else {
+                    this.closePopup();
+                }
+            }
         }
-      },
-    },
-  ],
+    ]
 };
 ```
 
@@ -373,26 +373,26 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  components: [
-    {
-      type: "wrapper",
-      cap: "Right-click me",
-      id: "context-target",
-      styles: ["css(padding:1rem;border:1px dashed var(--jam-border))"],
-      onmount: function () {
-        // Bind a context-menu popup on mount
-        papaya.eventTarget = this;
-        papaya.type = "contextMenu";
-        papaya.content = `
+    type: 'container',
+    components: [
+        {
+            type: 'wrapper',
+            cap: 'Right-click me',
+            id: 'context-target',
+            styles: ['css(padding:1rem;border:1px dashed var(--jam-border))'],
+            onmount: function () {
+                // Bind a context-menu popup on mount
+                papaya.eventTarget = this;
+                papaya.type = 'contextMenu';
+                papaya.content = `
           <div style="padding:0.5rem 1rem;cursor:pointer">Edit</div>
           <div style="padding:0.5rem 1rem;cursor:pointer">Copy</div>
           <div style="padding:0.5rem 1rem;cursor:pointer">Delete</div>
         `;
-        papaya.bindEvents();
-      },
-    },
-  ],
+                papaya.bindEvents();
+            }
+        }
+    ]
 };
 ```
 
@@ -400,16 +400,16 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "input",
-  cap: "Hover for details",
-  onfocus: function () {
-    this.popup("This popup follows your mouse", {
-      dynamic: true,
-      position: "bottom-right",
-      showArrow: false,
-      showDelay: 0,
-    });
-  },
+    type: 'input',
+    cap: 'Hover for details',
+    onfocus: function () {
+        this.popup('This popup follows your mouse', {
+            dynamic: true,
+            position: 'bottom-right',
+            showArrow: false,
+            showDelay: 0
+        });
+    }
 };
 ```
 
@@ -417,10 +417,10 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "input",
-  "cap": "Submit",
-  "plugins": ["popup.tip", "popup.helper"],
-  "tip": "Save and continue to the next step",
-  "help": "This action cannot be undone. Make sure all fields are correct."
+    "type": "input",
+    "cap": "Submit",
+    "plugins": ["popup.tip", "popup.helper"],
+    "tip": "Save and continue to the next step",
+    "help": "This action cannot be undone. Make sure all fields are correct."
 }
 ```

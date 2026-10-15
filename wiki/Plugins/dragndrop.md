@@ -8,8 +8,8 @@ A comprehensive drag-and-drop engine supporting moving (dragging to reposition) 
 
 ```json jaml-playground
 {
-  "type": "card",
-  "styles": ["interact.movable", "interact.resizable"]
+    "type": "card",
+    "styles": ["interact.movable", "interact.resizable"]
 }
 ```
 
@@ -18,23 +18,23 @@ A comprehensive drag-and-drop engine supporting moving (dragging to reposition) 
 ## Types
 
 ```ts
-type DndState = "default" | "ready" | "start" | "dragging";
+type DndState = 'default' | 'ready' | 'start' | 'dragging';
 
-type HandlePos = "top" | "right" | "bottom" | "left";
+type HandlePos = 'top' | 'right' | 'bottom' | 'left';
 
 type DndEvent = {
-  x: number; // pageX
-  y: number; // pageY
-  dx: number; // delta x since last event
-  dy: number; // delta y since last event
-  ox: number; // total offset x from origin
-  oy: number; // total offset y from origin
-  lockAxis?: "x" | "y" | "none";
-  rect?: Rect; // current rect (resize only)
-  deltaRect?: Rect; // rect deltas (resize only)
-  origEvent: MouseEvent;
-  target: HTMLElement;
-  stopPropagation: () => void;
+    x: number; // pageX
+    y: number; // pageY
+    dx: number; // delta x since last event
+    dy: number; // delta y since last event
+    ox: number; // total offset x from origin
+    oy: number; // total offset y from origin
+    lockAxis?: 'x' | 'y' | 'none';
+    rect?: Rect; // current rect (resize only)
+    deltaRect?: Rect; // rect deltas (resize only)
+    origEvent: MouseEvent;
+    target: HTMLElement;
+    stopPropagation: () => void;
 };
 ```
 
@@ -268,62 +268,56 @@ makeUndroppable(target: HTMLElement | string): void
 ## Imperative Examples
 
 ```ts
-import {
-  makeMovable,
-  makeResizable,
-  makeDraggable,
-  makeDroppable,
-} from "jam-ui";
+import { makeMovable, makeResizable, makeDraggable, makeDroppable } from 'jam-ui';
 
 // Movable element
-makeMovable(document.getElementById("drag-me")!, {
-  contain: true,
-  movestart(pos) {
-    console.log("start at", pos);
-  },
-  moving(pos) {
-    console.log("moving to", pos.x, pos.y);
-    // return false to cancel
-  },
-  moveend(pos) {
-    console.log("ended at", pos);
-  },
+makeMovable(document.getElementById('drag-me')!, {
+    contain: true,
+    movestart(pos) {
+        console.log('start at', pos);
+    },
+    moving(pos) {
+        console.log('moving to', pos.x, pos.y);
+        // return false to cancel
+    },
+    moveend(pos) {
+        console.log('ended at', pos);
+    }
 });
 
 // Resizable panel
-makeResizable(document.getElementById("panel")!, {
-  minWidth: 100,
-  minHeight: 100,
-  edges: { left: true, right: true, bottom: true, top: false },
-  resizestart(size) {
-    console.log("initial size", size);
-  },
-  resizing(size) {
-    console.log("new size", size);
-  },
-  resizeend(detail) {
-    console.log("resize done", detail);
-  },
-  reset() {
-    console.log("double-click reset");
-  },
+makeResizable(document.getElementById('panel')!, {
+    minWidth: 100,
+    minHeight: 100,
+    edges: { left: true, right: true, bottom: true, top: false },
+    resizestart(size) {
+        console.log('initial size', size);
+    },
+    resizing(size) {
+        console.log('new size', size);
+    },
+    resizeend(detail) {
+        console.log('resize done', detail);
+    },
+    reset() {
+        console.log('double-click reset');
+    }
 });
 
 // HTML5 drag-and-drop
-makeDraggable(document.getElementById("source")!, {
-  data: () => ({ id: "source-1", type: "item" }),
-  dragstart(e) {
-    console.log("drag start", e);
-  },
+makeDraggable(document.getElementById('source')!, {
+    data: () => ({ id: 'source-1', type: 'item' }),
+    dragstart(e) {
+        console.log('drag start', e);
+    }
 });
 
-makeDroppable(document.getElementById("dropzone")!, {
-  accept: (event) =>
-    Array.from(event.dataTransfer?.types ?? []).includes("application/json"),
-  prompt: "Drop item here",
-  dataHandler(data) {
-    console.log("received", data);
-  },
+makeDroppable(document.getElementById('dropzone')!, {
+    accept: (event) => Array.from(event.dataTransfer?.types ?? []).includes('application/json'),
+    prompt: 'Drop item here',
+    dataHandler(data) {
+        console.log('received', data);
+    }
 });
 ```
 
@@ -333,16 +327,16 @@ makeDroppable(document.getElementById("dropzone")!, {
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "Drag me",
-  "styles": ["interact.movable"]
+    "type": "card",
+    "cap": "Drag me",
+    "styles": ["interact.movable"]
 }
 ```
 
 ```json jaml-playground
 {
-  "type": "card",
-  "cap": "Resize me",
-  "styles": ["interact.resizable"]
+    "type": "card",
+    "cap": "Resize me",
+    "styles": ["interact.resizable"]
 }
 ```

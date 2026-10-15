@@ -54,22 +54,22 @@ The singular `style` param applies native inline CSS directly to the element. It
 
 ```javascript jaml-playground
 export default {
-  type: "wrapper",
-  components: [
-    {
-      type: "label",
-      cap: "CSS string",
-      style: "font-size:1.5rem;font-weight:700",
-    },
-    {
-      type: "label",
-      cap: "CSS dictionary",
-      style: {
-        fontSize: "1.25rem",
-        fontWeight: 600,
-      },
-    },
-  ],
+    type: 'wrapper',
+    components: [
+        {
+            type: 'label',
+            cap: 'CSS string',
+            style: 'font-size:1.5rem;font-weight:700'
+        },
+        {
+            type: 'label',
+            cap: 'CSS dictionary',
+            style: {
+                fontSize: '1.25rem',
+                fontWeight: 600
+            }
+        }
+    ]
 };
 ```
 
@@ -83,12 +83,9 @@ Every JAM-UI element and JAML component accepts a `styles` array. Each entry is 
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Styled",
-  "styles": [
-    "hover.brighter",
-    "animation.entry.frombottom(delay:100;duration:300)"
-  ]
+    "type": "button",
+    "cap": "Styled",
+    "styles": ["hover.brighter", "animation.entry.frombottom(delay:100;duration:300)"]
 }
 ```
 
@@ -113,12 +110,12 @@ The `{ desc, plugins }` form describes an anonymous plugin-backed style for the 
 
 ```javascript jaml-playground
 export default {
-  type: "button",
-  styles: [
-    "hover.brighter", // string path
-    Styles.animation.entry.frombottom({ delay: 100 }), // factory call
-    { desc: "Custom", plugins: [Styles.css({ letterSpacing: "0.05em" })] }, // object literal
-  ],
+    type: 'button',
+    styles: [
+        'hover.brighter', // string path
+        Styles.animation.entry.frombottom({ delay: 100 }), // factory call
+        { desc: 'Custom', plugins: [Styles.css({ letterSpacing: '0.05em' })] } // object literal
+    ]
 };
 ```
 
@@ -135,13 +132,9 @@ Arguments are semicolon-separated key-value pairs inside parentheses. Types are 
 
 ```json jaml-playground
 {
-  "type": "label",
-  "cap": "Animated label",
-  "styles": [
-    "size.fullwidth",
-    "layout.overflow(animaDelay:400)",
-    "animation.entry.frombottom(delay:seq(25,100);easing:bouncing;distance:5rem;duration:400)"
-  ]
+    "type": "label",
+    "cap": "Animated label",
+    "styles": ["size.fullwidth", "layout.overflow(animaDelay:400)", "animation.entry.frombottom(delay:seq(25,100);easing:bouncing;distance:5rem;duration:400)"]
 }
 ```
 
@@ -159,22 +152,22 @@ Apply arbitrary CSS properties directly to the element. Accepts a semicolon-sepa
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Custom CSS",
-  "styles": ["css(padding:s l;border-radius:m;font-weight:bold)"]
+    "type": "button",
+    "cap": "Custom CSS",
+    "styles": ["css(padding:s l;border-radius:m;font-weight:bold)"]
 }
 ```
 
 ```javascript jaml-playground
 export default {
-  type: "wrapper",
-  styles: [
-    Styles.css({
-      padding: "1.5rem",
-      backgroundColor: "hsl(0 0% 96%)",
-      borderRadius: "0.5rem",
-    }),
-  ],
+    type: 'wrapper',
+    styles: [
+        Styles.css({
+            padding: '1.5rem',
+            backgroundColor: 'hsl(0 0% 96%)',
+            borderRadius: '0.5rem'
+        })
+    ]
 };
 ```
 
@@ -198,13 +191,9 @@ Plain `css(...)` writes inline declarations too. If a state variant sets the sam
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Interactive",
-  "styles": [
-    "css(method:rule;background:hsl(0 0% 93%);transition:all 0.2s)",
-    "hover(background:hsl(0 0% 87%);transform:scale(1.02))",
-    "active(background:hsl(0 0% 80%);transform:scale(0.98))"
-  ]
+    "type": "button",
+    "cap": "Interactive",
+    "styles": ["css(method:rule;background:hsl(0 0% 93%);transition:all 0.2s)", "hover(background:hsl(0 0% 87%);transform:scale(1.02))", "active(background:hsl(0 0% 80%);transform:scale(0.98))"]
 }
 ```
 
@@ -214,14 +203,14 @@ For cases where `css()` inline styles aren't enough, `Styles.stylesheet` injects
 
 ```javascript jaml-playground
 export default {
-  type: "button",
-  cap: "Animated",
-  styles: [
-    Styles.stylesheet({
-      "&::after": { content: '" →"', transition: "opacity 0.3s" },
-      "&:hover::after": { opacity: 1 },
-    }),
-  ],
+    type: 'button',
+    cap: 'Animated',
+    styles: [
+        Styles.stylesheet({
+            '&::after': { content: '" →"', transition: 'opacity 0.3s' },
+            '&:hover::after': { opacity: 1 }
+        })
+    ]
 };
 ```
 
@@ -238,19 +227,19 @@ In the current development runtime, object-form stylesheets support the followin
 
 ```javascript jaml-playground
 export default {
-  type: "label",
-  cap: "Working",
-  styles: [
-    Styles.stylesheet({
-      "@keyframes statusPulse": {
-        from: { opacity: 0.5 },
-        to: { opacity: 1 },
-      },
-      "@media (prefers-reduced-motion: no-preference)": {
-        "&": { animation: "statusPulse 2s linear infinite alternate" },
-      },
-    }),
-  ],
+    type: 'label',
+    cap: 'Working',
+    styles: [
+        Styles.stylesheet({
+            '@keyframes statusPulse': {
+                from: { opacity: 0.5 },
+                to: { opacity: 1 }
+            },
+            '@media (prefers-reduced-motion: no-preference)': {
+                '&': { animation: 'statusPulse 2s linear infinite alternate' }
+            }
+        })
+    ]
 };
 ```
 
@@ -262,18 +251,18 @@ In the current development runtime, element-attached stylesheets apply the same 
 
 ```css
 & .sidebar {
-  display: block;
+    display: block;
 }
 & .header {
-  display: block;
+    display: block;
 }
 @media (max-width: 50rem) {
-  & .sidebar {
-    display: none;
-  }
-  & .header {
-    display: flex;
-  }
+    & .sidebar {
+        display: none;
+    }
+    & .header {
+        display: flex;
+    }
 }
 ```
 
@@ -373,11 +362,11 @@ Beyond the `styles` array (which targets the element itself), JAML provides scop
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  descStyles: {
-    wrapper: ["layout.alignlabel"],
-    "table,tags,input": ["animation.entry.frombottom(delay:seq(50,100))"],
-  },
+    type: 'container',
+    descStyles: {
+        wrapper: ['layout.alignlabel'],
+        'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
+    }
 };
 ```
 
@@ -387,24 +376,24 @@ This shorthand belongs to the `descStyles` dictionary and theme `index.mjs` `sty
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  state: "active",
-  descStyles: {
-    // :scope — targets this container host
-    ":scope[state=active]": ["color.primary"],
-    // Bare element name — targets all wrappers
-    wrapper: ["layout.alignlabel"],
-    // Element type selector — targets jam-input inside .branch-item
-    ".branch-item jam-input": ["agent.css(borderRadius:0.4rem)"],
-    // Attribute selector — specific input subtype
-    ".branch-item jam-input[type=textarea]": ["agent.css(minHeight:4rem)"],
-    // Pseudo-element
-    ".branch::after": ['css(content:"";display:block;width:100%;height:1px)'],
-    // Class selector
-    ".port.in": ["css(backgroundColor:green)"],
-    // Compound selector
-    "table,tags,input": ["animation.entry.frombottom(delay:seq(50,100))"],
-  },
+    type: 'container',
+    state: 'active',
+    descStyles: {
+        // :scope — targets this container host
+        ':scope[state=active]': ['color.primary'],
+        // Bare element name — targets all wrappers
+        wrapper: ['layout.alignlabel'],
+        // Element type selector — targets jam-input inside .branch-item
+        '.branch-item jam-input': ['agent.css(borderRadius:0.4rem)'],
+        // Attribute selector — specific input subtype
+        '.branch-item jam-input[type=textarea]': ['agent.css(minHeight:4rem)'],
+        // Pseudo-element
+        '.branch::after': ['css(content:"";display:block;width:100%;height:1px)'],
+        // Class selector
+        '.port.in': ['css(backgroundColor:green)'],
+        // Compound selector
+        'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
+    }
 };
 ```
 
@@ -418,14 +407,10 @@ Target named slots on an element using dot-path notation. Works with any style f
 
 ```json jaml-playground
 {
-  "type": "button",
-  "cap": "Styled",
-  "icon": "★",
-  "styles": [
-    "icon.css(size:1.5rem;color:gold)",
-    "cap.css(font-weight:bold)",
-    "cap.hover(text-decoration:underline)"
-  ]
+    "type": "button",
+    "cap": "Styled",
+    "icon": "★",
+    "styles": ["icon.css(size:1.5rem;color:gold)", "cap.css(font-weight:bold)", "cap.hover(text-decoration:underline)"]
 }
 ```
 
@@ -510,14 +495,10 @@ Global registration honors a style plugin's `selector` argument or content key. 
 **Custom style plugin example:**
 
 ```javascript
-Styles.registerPlugin("my.title", {
-  desc: "Title style",
-  args: { fontSize: { desc: "Font size", type: "string", default: "1.8rem" } },
-  plugins: [
-    Styles.css({ display: "flex", alignItems: "center", gap: "0.5rem" }),
-    (args) =>
-      Styles.label.cap.css({ fontSize: args.fontSize, fontWeight: "bold" }),
-  ],
+Styles.registerPlugin('my.title', {
+    desc: 'Title style',
+    args: { fontSize: { desc: 'Font size', type: 'string', default: '1.8rem' } },
+    plugins: [Styles.css({ display: 'flex', alignItems: 'center', gap: '0.5rem' }), (args) => Styles.label.cap.css({ fontSize: args.fontSize, fontWeight: 'bold' })]
 });
 
 // Now usable via string path:
@@ -533,8 +514,8 @@ Styles.registerPlugin("my.title", {
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "childStyles": ["size.fullsize", "layout.overflow(hidden)"]
+    "type": "wrapper",
+    "childStyles": ["size.fullsize", "layout.overflow(hidden)"]
 }
 ```
 
@@ -544,14 +525,14 @@ Styles.registerPlugin("my.title", {
 
 ```typescript
 interface IStyle {
-  desc: string;
-  comment?: string;
-  plugins: AbstractPlugin[];
-  path?: string[];
+    desc: string;
+    comment?: string;
+    plugins: AbstractPlugin[];
+    path?: string[];
 
-  mergeWith(style: IStyle): this;
-  applyTo(target: any, revertable?: boolean | string): Dictionary;
-  revert(target: any): void;
+    mergeWith(style: IStyle): this;
+    applyTo(target: any, revertable?: boolean | string): Dictionary;
+    revert(target: any): void;
 }
 ```
 
@@ -563,17 +544,17 @@ interface IStyle {
 
 ```javascript
 const myStyle = {
-  desc: "My glow effect",
-  plugins: [myGlowPlugin],
-  applyTo(el) {
-    this.plugins.forEach((p) => p.plug(el));
-  },
-  revert(el) {
-    this.plugins.forEach((p) => p.unplug(el));
-  },
-  mergeWith(other) {
-    return { ...this, plugins: [...this.plugins, ...other.plugins] };
-  },
+    desc: 'My glow effect',
+    plugins: [myGlowPlugin],
+    applyTo(el) {
+        this.plugins.forEach((p) => p.plug(el));
+    },
+    revert(el) {
+        this.plugins.forEach((p) => p.unplug(el));
+    },
+    mergeWith(other) {
+        return { ...this, plugins: [...this.plugins, ...other.plugins] };
+    }
 };
 
 // { type: 'button', styles: [myStyle] }
@@ -582,21 +563,21 @@ const myStyle = {
 ### Using `style()` builder
 
 ```javascript
-import { style } from "jam-ui";
+import { style } from 'jam-ui';
 
 const myGlow = style({
-  desc: "Golden glow",
-  args: { intensity: { desc: "Glow intensity", type: "number", default: 5 } },
-  plugins: [
-    func(
-      (el, args) => {
-        el.style.boxShadow = `0 0 ${args.intensity * 2}px gold`;
-      },
-      (el) => {
-        el.style.boxShadow = "";
-      },
-    ),
-  ],
+    desc: 'Golden glow',
+    args: { intensity: { desc: 'Glow intensity', type: 'number', default: 5 } },
+    plugins: [
+        func(
+            (el, args) => {
+                el.style.boxShadow = `0 0 ${args.intensity * 2}px gold`;
+            },
+            (el) => {
+                el.style.boxShadow = '';
+            }
+        )
+    ]
 });
 
 // Register globally
@@ -613,16 +594,13 @@ Styles.global.myGlow = myGlow;
 
 ```javascript
 // Apply a revertable style group
-el.applyStylesSync("highlight", [
-  "hover.brighter",
-  "border(width:2px;color:gold)",
-]);
+el.applyStylesSync('highlight', ['hover.brighter', 'border(width:2px;color:gold)']);
 
 // Revert it later
-el.revertStyles("highlight");
+el.revertStyles('highlight');
 
 // Toggle it
-el.toggleStyles("highlight", ["hover.brighter"]);
+el.toggleStyles('highlight', ['hover.brighter']);
 ```
 
 ---

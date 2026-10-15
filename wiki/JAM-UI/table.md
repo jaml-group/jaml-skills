@@ -16,13 +16,13 @@ A feature-rich data table with column headers, sorting, filtering, frozen column
 
 ```json jaml-playground
 {
-  "type": "table",
-  "cap": "Users",
-  "data": [
-    { "name": "Alice", "role": "Admin", "score": 98 },
-    { "name": "Bob", "role": "User", "score": 72 },
-    { "name": "Charlie", "role": "User", "score": 85 }
-  ]
+    "type": "table",
+    "cap": "Users",
+    "data": [
+        { "name": "Alice", "role": "Admin", "score": 98 },
+        { "name": "Bob", "role": "User", "score": 72 },
+        { "name": "Charlie", "role": "User", "score": 85 }
+    ]
 }
 ```
 
@@ -109,45 +109,42 @@ When `type` is a JAM-UI element type (e.g. `"indicator"`, `"switch"`, `"checkbox
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Rich Columns",
-  dataDef: [
-    { cap: "Name", key: "name" },
-    {
-      cap: "Active",
-      key: "active",
-      type: "switch",
-      onvaluechange: function (value) {
-        // each cell is a <jam-switch> element
-        // `this` refers to the switch element
-        console.log("Toggled:", value, "at row:", this.jamtd.pKey);
-      },
-    },
-    {
-      cap: "Status",
-      key: "status",
-      type: "indicator",
-      styles: [
-        "indicator.circle",
-        'color.stateMap({colors:{good:"green",bad:"red"}})',
-      ],
-      valueStates: {
-        good: (value) => value === "good",
-        bad: (value) => value === "bad",
-      },
-    },
-  ],
-  data: [
-    { name: "Alice", active: true, status: "good" },
-    { name: "Bob", active: false, status: "bad" },
-  ],
+    type: 'table',
+    cap: 'Rich Columns',
+    dataDef: [
+        { cap: 'Name', key: 'name' },
+        {
+            cap: 'Active',
+            key: 'active',
+            type: 'switch',
+            onvaluechange: function (value) {
+                // each cell is a <jam-switch> element
+                // `this` refers to the switch element
+                console.log('Toggled:', value, 'at row:', this.jamtd.pKey);
+            }
+        },
+        {
+            cap: 'Status',
+            key: 'status',
+            type: 'indicator',
+            styles: ['indicator.circle', 'color.stateMap({colors:{good:"green",bad:"red"}})'],
+            valueStates: {
+                good: (value) => value === 'good',
+                bad: (value) => value === 'bad'
+            }
+        }
+    ],
+    data: [
+        { name: 'Alice', active: true, status: 'good' },
+        { name: 'Bob', active: false, status: 'bad' }
+    ]
 };
 ```
 
 In the example above:
 
-- The `Active` column uses `type: 'switch'`, so each cell is a `<jam-switch>`. The `onvaluechange` handler and any other non-control params are forwarded to the switch element.
-- The `Status` column uses `type: 'indicator'`, so each cell is a `<jam-indicator>`. `valueStates` derives `good` or `bad` from the cell value, and the `color.stateMap` style maps that state to the indicator's accent color.
+-   The `Active` column uses `type: 'switch'`, so each cell is a `<jam-switch>`. The `onvaluechange` handler and any other non-control params are forwarded to the switch element.
+-   The `Status` column uses `type: 'indicator'`, so each cell is a `<jam-indicator>`. `valueStates` derives `good` or `bad` from the cell value, and the `color.stateMap` style maps that state to the indicator's accent color.
 
 ### formatter returning JAML elements
 
@@ -155,29 +152,29 @@ The `formatter` function in a `ThOption` can return not just a string label, but
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Actions",
-  dataDef: [
-    { cap: "Name", key: "name" },
-    {
-      cap: "Actions",
-      key: "actions",
-      formatter: function (value, rowData) {
-        // Return a JAML element option, not just a string
-        return jame({
-          type: "checkbox",
-          cap: value,
-          onvaluechange: function () {
-            console.log("Row:", this.jamtd.pKey, "Action:", value);
-          },
-        });
-      },
-    },
-  ],
-  data: [
-    { name: "Alice", actions: "Approve" },
-    { name: "Bob", actions: "Review" },
-  ],
+    type: 'table',
+    cap: 'Actions',
+    dataDef: [
+        { cap: 'Name', key: 'name' },
+        {
+            cap: 'Actions',
+            key: 'actions',
+            formatter: function (value, rowData) {
+                // Return a JAML element option, not just a string
+                return jame({
+                    type: 'checkbox',
+                    cap: value,
+                    onvaluechange: function () {
+                        console.log('Row:', this.jamtd.pKey, 'Action:', value);
+                    }
+                });
+            }
+        }
+    ],
+    data: [
+        { name: 'Alice', actions: 'Approve' },
+        { name: 'Bob', actions: 'Review' }
+    ]
 };
 ```
 
@@ -322,18 +319,18 @@ Each cell is a `TomatoTd` instance, accessible via `this.jamtd` or the return va
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Employees",
-  theads: [
-    { cap: "Name", key: "name", sortable: true },
-    { cap: "Role", key: "role", filterable: true },
-    { cap: "Score", key: "score", sortable: true, type: "number" },
-  ],
-  data: [
-    { name: "Alice", role: "Admin", score: 98 },
-    { name: "Bob", role: "User", score: 72 },
-    { name: "Carol", role: "Admin", score: 85 },
-  ],
+    type: 'table',
+    cap: 'Employees',
+    theads: [
+        { cap: 'Name', key: 'name', sortable: true },
+        { cap: 'Role', key: 'role', filterable: true },
+        { cap: 'Score', key: 'score', sortable: true, type: 'number' }
+    ],
+    data: [
+        { name: 'Alice', role: 'Admin', score: 98 },
+        { name: 'Bob', role: 'User', score: 72 },
+        { name: 'Carol', role: 'Admin', score: 85 }
+    ]
 };
 ```
 
@@ -341,19 +338,19 @@ export default {
 
 ```json jaml-playground
 {
-  "type": "table-checkbox",
-  "cap": "Select Items",
-  "click2Check": true,
-  "theads": [
-    { "cap": "ID", "key": "id", "isKey": true },
-    { "cap": "Name", "key": "name" }
-  ],
-  "data": [
-    { "id": 1, "name": "Alice" },
-    { "id": 2, "name": "Bob" },
-    { "id": 3, "name": "Carol" }
-  ],
-  "valueIndex": 0
+    "type": "table-checkbox",
+    "cap": "Select Items",
+    "click2Check": true,
+    "theads": [
+        { "cap": "ID", "key": "id", "isKey": true },
+        { "cap": "Name", "key": "name" }
+    ],
+    "data": [
+        { "id": 1, "name": "Alice" },
+        { "id": 2, "name": "Bob" },
+        { "id": 3, "name": "Carol" }
+    ],
+    "valueIndex": 0
 }
 ```
 
@@ -361,28 +358,28 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Scoreboard",
-  freezeLeft: 1,
-  freezeRight: 1,
-  theads: [
-    { cap: "#", key: "rank", width: "50px" },
-    { cap: "Name", key: "name", width: "120px" },
-    { cap: "Score", key: "score", width: "80px", align: "right" },
-    { cap: "Status", key: "status", width: "100px" },
-    { cap: "Actions", key: "actions", width: "100px" },
-  ],
-  data: [
-    { rank: 1, name: "Alice", score: 98, status: "Pass", actions: "..." },
-    { rank: 2, name: "Bob", score: 72, status: "Retake", actions: "..." },
-  ],
-  ontdbuild: function (td) {
-    if (td.colIdx === 2) {
-      const score = td.value;
-      if (score >= 90) td.dom.style.color = "green";
-      else if (score < 75) td.dom.style.color = "red";
+    type: 'table',
+    cap: 'Scoreboard',
+    freezeLeft: 1,
+    freezeRight: 1,
+    theads: [
+        { cap: '#', key: 'rank', width: '50px' },
+        { cap: 'Name', key: 'name', width: '120px' },
+        { cap: 'Score', key: 'score', width: '80px', align: 'right' },
+        { cap: 'Status', key: 'status', width: '100px' },
+        { cap: 'Actions', key: 'actions', width: '100px' }
+    ],
+    data: [
+        { rank: 1, name: 'Alice', score: 98, status: 'Pass', actions: '...' },
+        { rank: 2, name: 'Bob', score: 72, status: 'Retake', actions: '...' }
+    ],
+    ontdbuild: function (td) {
+        if (td.colIdx === 2) {
+            const score = td.value;
+            if (score >= 90) td.dom.style.color = 'green';
+            else if (score < 75) td.dom.style.color = 'red';
+        }
     }
-  },
 };
 ```
 
@@ -390,20 +387,20 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Orders",
-  startRow: 1,
-  theads: [
-    { cap: "Category", key: "cat", mergable: true },
-    { cap: "Item", key: "item" },
-    { cap: "Price", key: "price", align: "right" },
-  ],
-  data: [
-    { cat: "Electronics", item: "Laptop", price: 1299 },
-    { cat: "Electronics", item: "Mouse", price: 29 },
-    { cat: "Books", item: "Novel", price: 15 },
-    { cat: "Books", item: "Guide", price: 25 },
-  ],
+    type: 'table',
+    cap: 'Orders',
+    startRow: 1,
+    theads: [
+        { cap: 'Category', key: 'cat', mergable: true },
+        { cap: 'Item', key: 'item' },
+        { cap: 'Price', key: 'price', align: 'right' }
+    ],
+    data: [
+        { cat: 'Electronics', item: 'Laptop', price: 1299 },
+        { cat: 'Electronics', item: 'Mouse', price: 29 },
+        { cat: 'Books', item: 'Novel', price: 15 },
+        { cat: 'Books', item: 'Guide', price: 25 }
+    ]
 };
 ```
 
@@ -411,16 +408,16 @@ export default {
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  cap: "Inventory",
-  data: [
-    { name: "Widget A", stock: 42, sku: "W-001" },
-    { name: "Widget B", stock: 15, sku: "W-002" },
-  ],
-  onrowclick: function (rowData) {
-    console.log("Row clicked:", rowData);
-    // rowData is the array of cell values for the clicked row
-  },
+    type: 'table',
+    cap: 'Inventory',
+    data: [
+        { name: 'Widget A', stock: 42, sku: 'W-001' },
+        { name: 'Widget B', stock: 15, sku: 'W-002' }
+    ],
+    onrowclick: function (rowData) {
+        console.log('Row clicked:', rowData);
+        // rowData is the array of cell values for the clicked row
+    }
 };
 ```
 
@@ -428,12 +425,12 @@ export default {
 
 ## Notes
 
-- Primary keys (`pKeys`) are computed from row indices or from columns marked `isKey` in the theads definition.
-- The `checkAll` switch in the header toggles all visible rows. It appears in `indeterminate` state when a subset of rows is checked.
-- Sorting and filtering are applied cumulatively. Filters use `Map<number, FilterCallback>` by column index.
-- When `mergable` is set on a column, consecutive rows (after sorting) with the same value are visually merged into a single cell.
-- Column widths are user-adjustable via drag handles between headers. `widthAdjustLimit` sets the minimum width in px.
-- The `alternateDraw` hook (from `AbstractElement`) can be assigned for custom rendering strategies (e.g., virtual scrolling).
+-   Primary keys (`pKeys`) are computed from row indices or from columns marked `isKey` in the theads definition.
+-   The `checkAll` switch in the header toggles all visible rows. It appears in `indeterminate` state when a subset of rows is checked.
+-   Sorting and filtering are applied cumulatively. Filters use `Map<number, FilterCallback>` by column index.
+-   When `mergable` is set on a column, consecutive rows (after sorting) with the same value are visually merged into a single cell.
+-   Column widths are user-adjustable via drag handles between headers. `widthAdjustLimit` sets the minimum width in px.
+-   The `alternateDraw` hook (from `AbstractElement`) can be assigned for custom rendering strategies (e.g., virtual scrolling).
 
 ## Grouped headers
 
@@ -441,13 +438,13 @@ Set `group` on adjacent `dataDef` entries to place them under one shared header.
 
 ```json jaml-playground
 {
-  "type": "table",
-  "dataDef": [
-    { "key": "name", "cap": "Name" },
-    { "key": "load", "cap": "Load", "group": "Operation" },
-    { "key": "status", "cap": "Status", "group": "Operation" }
-  ],
-  "data": [{ "name": "Station A", "load": 72, "status": "Online" }]
+    "type": "table",
+    "dataDef": [
+        { "key": "name", "cap": "Name" },
+        { "key": "load", "cap": "Load", "group": "Operation" },
+        { "key": "status", "cap": "Status", "group": "Operation" }
+    ],
+    "data": [{ "name": "Station A", "load": 72, "status": "Online" }]
 }
 ```
 
@@ -457,26 +454,26 @@ Set `group` on adjacent `dataDef` entries to place them under one shared header.
 
 ```javascript jaml-playground
 export default {
-  type: "table",
-  styles: ["table.gridline"],
-  dataDef: [
-    { key: "id", cap: "ID", isKey: true },
-    { key: "name", cap: "Name" },
-    {
-      key: "detail",
-      cap: "Details",
-      type: "wrapper",
-      components: [{ usage: "toggleRowDetail" }],
-    },
-  ],
-  data: [{ id: "station-a", name: "Station A" }],
-  onrowdetailbuild(container, pKey) {
-    jam.render(container, {
-      type: "input-textarea",
-      cap: `Notes for ${pKey}`,
-      rows: 3,
-    });
-  },
+    type: 'table',
+    styles: ['table.gridline'],
+    dataDef: [
+        { key: 'id', cap: 'ID', isKey: true },
+        { key: 'name', cap: 'Name' },
+        {
+            key: 'detail',
+            cap: 'Details',
+            type: 'wrapper',
+            components: [{ usage: 'toggleRowDetail' }]
+        }
+    ],
+    data: [{ id: 'station-a', name: 'Station A' }],
+    onrowdetailbuild(container, pKey) {
+        jam.render(container, {
+            type: 'input-textarea',
+            cap: `Notes for ${pKey}`,
+            rows: 3
+        });
+    }
 };
 ```
 

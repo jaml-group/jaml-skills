@@ -12,18 +12,18 @@ Tree uses the table rendering, selection, filtering, and row-detail APIs with a 
 
 ```json jaml-playground
 {
-  "type": "tree",
-  "cap": "File Browser",
-  "data": [
-    {
-      "name": "Root",
-      "value": "root",
-      "children": [
-        { "name": "Child A", "value": "a" },
-        { "name": "Child B", "value": "b" }
-      ]
-    }
-  ]
+    "type": "tree",
+    "cap": "File Browser",
+    "data": [
+        {
+            "name": "Root",
+            "value": "root",
+            "children": [
+                { "name": "Child A", "value": "a" },
+                { "name": "Child B", "value": "b" }
+            ]
+        }
+    ]
 }
 ```
 
@@ -59,25 +59,25 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 
 ```json jaml-playground
 {
-  "type": "tree",
-  "cap": "Documents",
-  "data": [
-    {
-      "name": "Documents",
-      "value": "docs",
-      "children": [
+    "type": "tree",
+    "cap": "Documents",
+    "data": [
         {
-          "name": "Work",
-          "value": "work",
-          "children": [
-            { "name": "Report.pdf", "value": "report" },
-            { "name": "Notes.txt", "value": "notes" }
-          ]
-        },
-        { "name": "Personal", "value": "personal" }
-      ]
-    }
-  ]
+            "name": "Documents",
+            "value": "docs",
+            "children": [
+                {
+                    "name": "Work",
+                    "value": "work",
+                    "children": [
+                        { "name": "Report.pdf", "value": "report" },
+                        { "name": "Notes.txt", "value": "notes" }
+                    ]
+                },
+                { "name": "Personal", "value": "personal" }
+            ]
+        }
+    ]
 }
 ```
 
@@ -85,19 +85,19 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 
 ```json jaml-playground
 {
-  "type": "tree-checkbox",
-  "cap": "Permissions",
-  "data": [
-    {
-      "name": "User Management",
-      "value": "users",
-      "children": [
-        { "name": "Create Users", "value": "create", "checked": true },
-        { "name": "Edit Users", "value": "edit" },
-        { "name": "Delete Users", "value": "delete" }
-      ]
-    }
-  ]
+    "type": "tree-checkbox",
+    "cap": "Permissions",
+    "data": [
+        {
+            "name": "User Management",
+            "value": "users",
+            "children": [
+                { "name": "Create Users", "value": "create", "checked": true },
+                { "name": "Edit Users", "value": "edit" },
+                { "name": "Delete Users", "value": "delete" }
+            ]
+        }
+    ]
 }
 ```
 
@@ -105,19 +105,19 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 
 ```json jaml-playground
 {
-  "type": "tree",
-  "styles": ["tree.gridline", "tree.hoverhighlight"],
-  "nodeDef": { "styles": ["css(font-weight:600)"] },
-  "data": [
-    {
-      "id": "devices",
-      "name": "Devices",
-      "children": [
-        { "id": "meter", "name": "Meter" },
-        { "id": "sensor", "name": "Sensor" }
-      ]
-    }
-  ]
+    "type": "tree",
+    "styles": ["tree.gridline", "tree.hoverhighlight"],
+    "nodeDef": { "styles": ["css(font-weight:600)"] },
+    "data": [
+        {
+            "id": "devices",
+            "name": "Devices",
+            "children": [
+                { "id": "meter", "name": "Meter" },
+                { "id": "sensor", "name": "Sensor" }
+            ]
+        }
+    ]
 }
 ```
 
@@ -125,13 +125,13 @@ Supply stable, unique `id` values when data can be reordered. Initial node `chec
 
 ```json jaml-playground
 {
-  "type": "tree-radio",
-  "cap": "Select Category",
-  "data": [
-    { "name": "Technology", "value": "tech" },
-    { "name": "Science", "value": "science" }
-  ],
-  "defaultValue": "tech"
+    "type": "tree-radio",
+    "cap": "Select Category",
+    "data": [
+        { "name": "Technology", "value": "tech" },
+        { "name": "Science", "value": "science" }
+    ],
+    "defaultValue": "tech"
 }
 ```
 

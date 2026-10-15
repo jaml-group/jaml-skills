@@ -75,11 +75,11 @@ Parameters are defined in the route path using `:paramName` syntax:
 
 ```ts
 rambutan.addRoute({
-  path: '/users/:id',
-  name: 'User Detail',
-  render: (router, params) => {
-    console.log('User ID:', params.id); // extracted from URL
-  }
+    path: '/users/:id',
+    name: 'User Detail',
+    render: (router, params) => {
+        console.log('User ID:', params.id); // extracted from URL
+    }
 });
 
 // Navigate: rambutan.switchTo('/users/42');
@@ -118,16 +118,16 @@ rambutan.use('history');
 rambutan.container = '#app';
 
 rambutan.addRoutes([
-  {
-    path: '/',
-    name: 'Home',
-    render: () => jaml('#app', { type: 'text', value: 'Welcome' })
-  },
-  {
-    path: '/about',
-    name: 'About',
-    render: () => jaml('#app', { type: 'text', value: 'About page' })
-  }
+    {
+        path: '/',
+        name: 'Home',
+        render: () => jaml('#app', { type: 'text', value: 'Welcome' })
+    },
+    {
+        path: '/about',
+        name: 'About',
+        render: () => jaml('#app', { type: 'text', value: 'About page' })
+    }
 ]);
 ```
 
@@ -135,25 +135,25 @@ rambutan.addRoutes([
 
 ```ts
 rambutan.addRoute({
-  path: '/products/:category/:id',
-  name: 'Product Detail',
-  title: 'Product',
-  params: { tab: 'details' },
-  onEnter: (router, params) => {
-    console.log('Entering product:', params.category, params.id);
-  },
-  onLeave: (router, params) => {
-    saveFormState(params.id);
-  },
-  render: (router, { category, id, tab }) => {
-    jaml('#app', {
-      type: 'container',
-      components: [
-        { type: 'text', value: `Category: ${category}, Product: ${id}` },
-        { type: 'tabs', value: tab }
-      ]
-    });
-  }
+    path: '/products/:category/:id',
+    name: 'Product Detail',
+    title: 'Product',
+    params: { tab: 'details' },
+    onEnter: (router, params) => {
+        console.log('Entering product:', params.category, params.id);
+    },
+    onLeave: (router, params) => {
+        saveFormState(params.id);
+    },
+    render: (router, { category, id, tab }) => {
+        jaml('#app', {
+            type: 'container',
+            components: [
+                { type: 'text', value: `Category: ${category}, Product: ${id}` },
+                { type: 'tabs', value: tab }
+            ]
+        });
+    }
 });
 
 // Navigate: rambutan.switchTo('/products/electronics/42', { tab: 'specs' });
@@ -189,13 +189,13 @@ const current = rambutan.routeDataSnapshot.current;
 
 ```ts
 rambutan.addRoute({
-  path: '/dashboard/:view',
-  name: 'Dashboard',
-  syncParams: ['view'],
-  render: (router, { view }) => {
-    // The 'view' parameter is published to the messenger
-    // Other components can subscribe to 'view' changes
-  }
+    path: '/dashboard/:view',
+    name: 'Dashboard',
+    syncParams: ['view'],
+    render: (router, { view }) => {
+        // The 'view' parameter is published to the messenger
+        // Other components can subscribe to 'view' changes
+    }
 });
 ```
 
@@ -203,13 +203,13 @@ rambutan.addRoute({
 
 ```ts
 rambutan.addRoute({
-  path: '/editor',
-  name: 'Editor',
-  preserveParams: true, // 7-day persistence
-  // Or: preserveParams: 3600000 (1 hour)
-  render: (router, params) => {
-    // params.draft is restored on return
-  }
+    path: '/editor',
+    name: 'Editor',
+    preserveParams: true, // 7-day persistence
+    // Or: preserveParams: 3600000 (1 hour)
+    render: (router, params) => {
+        // params.draft is restored on return
+    }
 });
 
 rambutan.switchTo('/editor', { draft: 'my-document' });
@@ -220,13 +220,13 @@ rambutan.switchTo('/editor', { draft: 'my-document' });
 
 ```ts
 rambutan.addRoute({
-  path: '/admin',
-  name: 'Admin Panel',
-  resources: ['/modules/admin-panel.mjs'],
-  render: (router, params) => {
-    // render() is called after resources are loaded
-    // The .mjs module can export a `render` function or a `default` component
-  }
+    path: '/admin',
+    name: 'Admin Panel',
+    resources: ['/modules/admin-panel.mjs'],
+    render: (router, params) => {
+        // render() is called after resources are loaded
+        // The .mjs module can export a `render` function or a `default` component
+    }
 });
 ```
 
@@ -234,10 +234,10 @@ rambutan.addRoute({
 
 ```ts
 if (rambutan.is('/dashboard')) {
-  console.log('Currently on dashboard');
+    console.log('Currently on dashboard');
 }
 
 if (rambutan.currPath === '/users' && rambutan.currParams.role === 'admin') {
-  showAdminControls();
+    showAdminControls();
 }
 ```

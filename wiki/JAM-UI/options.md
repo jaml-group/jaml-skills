@@ -10,15 +10,15 @@ An inline radio or checkbox option list. Renders each option as a styled `<input
 
 ```json jaml-playground
 {
-  "type": "radio",
-  "cap": "Priority",
-  "data": [
-    { "name": "Low", "value": 1 },
-    { "name": "Medium", "value": 2 },
-    { "name": "High", "value": 3 }
-  ],
-  "defaultValue": 2,
-  "valueKey": "priority"
+    "type": "radio",
+    "cap": "Priority",
+    "data": [
+        { "name": "Low", "value": 1 },
+        { "name": "Medium", "value": 2 },
+        { "name": "High", "value": 3 }
+    ],
+    "defaultValue": 2,
+    "valueKey": "priority"
 }
 ```
 
@@ -57,17 +57,17 @@ Add a `group` field to options to create collapsible group sections:
 
 ```json jaml-playground
 {
-  "type": "checkbox",
-  "cap": "Permissions",
-  "chooseAll": false,
-  "data": [
-    { "name": "Read", "value": "read", "group": "Data" },
-    { "name": "Write", "value": "write", "group": "Data" },
-    { "name": "Delete", "value": "delete", "group": "Data" },
-    { "name": "Login", "value": "login", "group": "Auth" },
-    { "name": "Logout", "value": "logout", "group": "Auth" }
-  ],
-  "valueKey": "permissions"
+    "type": "checkbox",
+    "cap": "Permissions",
+    "chooseAll": false,
+    "data": [
+        { "name": "Read", "value": "read", "group": "Data" },
+        { "name": "Write", "value": "write", "group": "Data" },
+        { "name": "Delete", "value": "delete", "group": "Data" },
+        { "name": "Login", "value": "login", "group": "Auth" },
+        { "name": "Logout", "value": "logout", "group": "Auth" }
+    ],
+    "valueKey": "permissions"
 }
 ```
 
@@ -83,24 +83,24 @@ Use `data` for the standard option rendering. When a custom control is needed, p
 
 ```javascript jaml-playground
 export default {
-  type: "checkbox",
-  group: "wiki-custom-numbers",
-  vars: { items: [1, 2, 3] },
-  descStyles: {
-    ".jam-checked": ["css(background-color:ac;color:onAc)"],
-  },
-  components: [
-    { type: "button", cap: "Select all", usage: "checkAll" },
-    {
-      type: "button",
-      buildFor: "item in items",
-      cap: "{{ 'opt-' + item }}",
-      usage: "option",
-      props: {
-        option: { value: "{{item}}", name: "{{ 'opt-' + item }}" },
-      },
+    type: 'checkbox',
+    group: 'wiki-custom-numbers',
+    vars: { items: [1, 2, 3] },
+    descStyles: {
+        '.jam-checked': ['css(background-color:ac;color:onAc)']
     },
-  ],
+    components: [
+        { type: 'button', cap: 'Select all', usage: 'checkAll' },
+        {
+            type: 'button',
+            buildFor: 'item in items',
+            cap: "{{ 'opt-' + item }}",
+            usage: 'option',
+            props: {
+                option: { value: '{{item}}', name: "{{ 'opt-' + item }}" }
+            }
+        }
+    ]
 };
 ```
 
@@ -129,15 +129,15 @@ The property bridge does not guarantee selection reconciliation after every nest
 
 ```json jaml-playground
 {
-  "type": "radio",
-  "cap": "Gender",
-  "data": [
-    { "name": "Male", "value": "m" },
-    { "name": "Female", "value": "f" },
-    { "name": "Other", "value": "x" }
-  ],
-  "defaultValue": "m",
-  "valueKey": "gender"
+    "type": "radio",
+    "cap": "Gender",
+    "data": [
+        { "name": "Male", "value": "m" },
+        { "name": "Female", "value": "f" },
+        { "name": "Other", "value": "x" }
+    ],
+    "defaultValue": "m",
+    "valueKey": "gender"
 }
 ```
 
@@ -145,18 +145,18 @@ The property bridge does not guarantee selection reconciliation after every nest
 
 ```json jaml-playground
 {
-  "type": "checkbox",
-  "cap": "Work Days",
-  "chooseAll": true,
-  "data": [
-    { "name": "Mon", "value": 1 },
-    { "name": "Tue", "value": 2 },
-    { "name": "Wed", "value": 3 },
-    { "name": "Thu", "value": 4 },
-    { "name": "Fri", "value": 5 }
-  ],
-  "defaultValue": [1, 2, 3, 4, 5],
-  "valueKey": "workDays"
+    "type": "checkbox",
+    "cap": "Work Days",
+    "chooseAll": true,
+    "data": [
+        { "name": "Mon", "value": 1 },
+        { "name": "Tue", "value": 2 },
+        { "name": "Wed", "value": 3 },
+        { "name": "Thu", "value": 4 },
+        { "name": "Fri", "value": 5 }
+    ],
+    "defaultValue": [1, 2, 3, 4, 5],
+    "valueKey": "workDays"
 }
 ```
 
@@ -164,16 +164,16 @@ The property bridge does not guarantee selection reconciliation after every nest
 
 ```json jaml-playground
 {
-  "type": "checkbox",
-  "cap": "Tech Stack",
-  "styles": ["checkbox.alignoption(width:10rem)", "checkbox.checkmark"],
-  "data": [
-    { "name": "TypeScript", "value": "ts" },
-    { "name": "React", "value": "react" },
-    { "name": "Vue", "value": "vue" },
-    { "name": "Svelte", "value": "svelte" }
-  ],
-  "valueKey": "techStack"
+    "type": "checkbox",
+    "cap": "Tech Stack",
+    "styles": ["checkbox.alignoption(width:10rem)", "checkbox.checkmark"],
+    "data": [
+        { "name": "TypeScript", "value": "ts" },
+        { "name": "React", "value": "react" },
+        { "name": "Vue", "value": "vue" },
+        { "name": "Svelte", "value": "svelte" }
+    ],
+    "valueKey": "techStack"
 }
 ```
 
@@ -181,10 +181,10 @@ The property bridge does not guarantee selection reconciliation after every nest
 
 ```json jaml-playground
 {
-  "type": "radio",
-  "cap": "Select User",
-  "dataUrl": "/api/users",
-  "valueKey": "userId"
+    "type": "radio",
+    "cap": "Select User",
+    "dataUrl": "/api/users",
+    "valueKey": "userId"
 }
 ```
 
@@ -192,9 +192,9 @@ Assuming `/api/users` returns:
 
 ```json
 [
-  { "name": "Alice Johnson", "value": 1 },
-  { "name": "Bob Smith", "value": 2 },
-  { "name": "Carol Davis", "value": 3 }
+    { "name": "Alice Johnson", "value": 1 },
+    { "name": "Bob Smith", "value": 2 },
+    { "name": "Carol Davis", "value": 3 }
 ]
 ```
 
@@ -202,30 +202,30 @@ Assuming `/api/users` returns:
 
 ```javascript jaml-playground
 export default {
-  type: "container",
-  vars: { search: "" },
-  components: [
-    {
-      type: "input",
-      cap: "Filter",
-      valueKey: "search",
-      placeholder: "Type to filter options...",
-    },
-    {
-      type: "checkbox",
-      cap: "Fruits",
-      keyword: "{{search}}",
-      data: [
-        { name: "Apple", value: "apple" },
-        { name: "Banana", value: "banana" },
-        { name: "Cherry", value: "cherry" },
-        { name: "Grape", value: "grape" },
-        { name: "Orange", value: "orange" },
-        { name: "Strawberry", value: "strawberry" },
-      ],
-      valueKey: "selectedFruits",
-    },
-  ],
+    type: 'container',
+    vars: { search: '' },
+    components: [
+        {
+            type: 'input',
+            cap: 'Filter',
+            valueKey: 'search',
+            placeholder: 'Type to filter options...'
+        },
+        {
+            type: 'checkbox',
+            cap: 'Fruits',
+            keyword: '{{search}}',
+            data: [
+                { name: 'Apple', value: 'apple' },
+                { name: 'Banana', value: 'banana' },
+                { name: 'Cherry', value: 'cherry' },
+                { name: 'Grape', value: 'grape' },
+                { name: 'Orange', value: 'orange' },
+                { name: 'Strawberry', value: 'strawberry' }
+            ],
+            valueKey: 'selectedFruits'
+        }
+    ]
 };
 ```
 
@@ -233,9 +233,9 @@ export default {
 
 ## Notes
 
-- Use `keyword` param to filter options by text match in real time.
-- Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
-- The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).
+-   Use `keyword` param to filter options by text match in real time.
+-   Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
+-   The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).
 
 ## Native names and disabled choices
 

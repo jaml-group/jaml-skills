@@ -10,59 +10,59 @@ new CurrantComposable(oldConfig?, config?, closedCard?, cvsRect?, cellSize?, mul
 
 All constructor parameters are optional and can be set later via properties.
 
-| Parameter     | Type                    | Default     | Description                                         |
-|---------------|-------------------------|-------------|-----------------------------------------------------|
-| `oldConfig`   | `any`                   | `undefined` | Snapshot of the original config (used for reset).   |
-| `config`      | `any`                   | `undefined` | Current layout configuration.                       |
-| `closedCard`  | `CardInfo[]`            | `[]`        | Cards that have been closed (restorable).           |
-| `cvsRect`     | `any`                   | `undefined` | Layout canvas bounding rect.                        |
-| `cellSize`    | `number[]`              | `[]`        | Calculated cell dimensions `[width, height]`.       |
-| `multiple`    | `number`                | `2`         | Card size multiplier for grid placement.            |
-| `center`      | `HTMLElement \| null`   | `null`      | Center reference element (for centering new cards). |
+| Parameter    | Type                  | Default     | Description                                         |
+| ------------ | --------------------- | ----------- | --------------------------------------------------- |
+| `oldConfig`  | `any`                 | `undefined` | Snapshot of the original config (used for reset).   |
+| `config`     | `any`                 | `undefined` | Current layout configuration.                       |
+| `closedCard` | `CardInfo[]`          | `[]`        | Cards that have been closed (restorable).           |
+| `cvsRect`    | `any`                 | `undefined` | Layout canvas bounding rect.                        |
+| `cellSize`   | `number[]`            | `[]`        | Calculated cell dimensions `[width, height]`.       |
+| `multiple`   | `number`              | `2`         | Card size multiplier for grid placement.            |
+| `center`     | `HTMLElement \| null` | `null`      | Center reference element (for centering new cards). |
 
 ## Properties
 
-| Property                    | Type                   | Description                                              |
-|-----------------------------|------------------------|----------------------------------------------------------|
-| `config`                    | `any`                  | Current layout configuration object.                     |
-| `oldConfig`                 | `any`                  | Original config snapshot (for reset).                    |
-| `closedCard`                | `CardInfo[]`           | Accumulator for closed cards.                            |
-| `cvsRect`                   | `any`                  | Layout canvas bounding rect (auto-calculated).           |
-| `gridSize`                  | `number[]`             | Grid dimensions `[rows, cols]` (default `[24, 12]`).    |
-| `cellSize`                  | `number[]`             | Cell pixel dimensions `[width, height]` (auto-calculated).|
-| `multiple`                  | `number`               | Card size scale factor (default `2`).                    |
-| `center`                    | `HTMLElement \| null`  | Element used as visual center for new card placement.    |
+| Property     | Type                  | Description                                                |
+| ------------ | --------------------- | ---------------------------------------------------------- |
+| `config`     | `any`                 | Current layout configuration object.                       |
+| `oldConfig`  | `any`                 | Original config snapshot (for reset).                      |
+| `closedCard` | `CardInfo[]`          | Accumulator for closed cards.                              |
+| `cvsRect`    | `any`                 | Layout canvas bounding rect (auto-calculated).             |
+| `gridSize`   | `number[]`            | Grid dimensions `[rows, cols]` (default `[24, 12]`).       |
+| `cellSize`   | `number[]`            | Cell pixel dimensions `[width, height]` (auto-calculated). |
+| `multiple`   | `number`              | Card size scale factor (default `2`).                      |
+| `center`     | `HTMLElement \| null` | Element used as visual center for new card placement.      |
 
 ## Storage Keys
 
-| Constant                      | Value                       | Description                                    |
-|-------------------------------|-----------------------------|------------------------------------------------|
-| `CurrantComposable.confStorageName` | `'jam-layout-config'` | localStorage key for layout configuration.     |
+| Constant                             | Value                       | Description                                     |
+| ------------------------------------ | --------------------------- | ----------------------------------------------- |
+| `CurrantComposable.confStorageName`  | `'jam-layout-config'`       | localStorage key for layout configuration.      |
 | `CurrantComposable.propsStorageName` | `'jam-layout-props-config'` | localStorage key for component property config. |
 
 ## Methods
 
-| Method                               | Description                                                             |
-|--------------------------------------|-------------------------------------------------------------------------|
-| `buildLayoutCanvas(pageInfo)`        | Create the grid canvas overlay for a page. The container must be `#jam-layout-container`. |
-| `clearLayoutCanvas()`                | Remove the grid canvas and moving shadow elements.                      |
-| `makePageEditable()`                 | Enable editing (drag, resize, close) for all cards on the current page. Builds the layout canvas first. |
-| `removePageEditable()`               | Disable editing for all cards on the current page and remove the layout canvas. |
-| `makeComponentEditable(page, card)`  | Enable drag, resize, and close for a single card within a page.         |
-| `makeUnComponentEditable(card)`      | Disable drag, resize, and close for a single card.                      |
-| `putNewCardInCanvas(resource)`       | Add a new card to the canvas — accepts a `.mjs` resource URL or a component option object. |
-| `sortCardsImmutable(pageInfos)`      | *(static)* Return a new sorted copy of the config with cards ordered by grid position (row-first, then column). |
-| `findPageByPath(pageInfos, path)`    | *(static)* Recursively find a page configuration by its path.           |
-| `findRegistryComponentById(id)`      | *(static)* Look up a component from the props config stored in localStorage. |
-| `getLayoutCanvas()`                  | Get the current layout canvas element (or `null`).                      |
-| `getMovingShadow()`                  | Get the current moving shadow element (or `null`).                      |
-| `isLayoutCanvasBuilt()`              | Check whether the layout canvas and moving shadow have been built.       |
-| `reset()`                            | Reset all state (closedCard, cvsRect, config, cellSize, multiple, center, layout canvas). |
-| `resetConfig()`                      | Restore config to the original `oldConfig` snapshot.                    |
-| `getCenter()`                        | Get the center reference element.                                       |
-| `setCenter(center)`                  | Set the center reference element.                                       |
-| `showCenter()`                       | Show the center element (animate into view).                            |
-| `hideCenter()`                       | Hide the center element (animate out of view).                          |
+| Method                              | Description                                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `buildLayoutCanvas(pageInfo)`       | Create the grid canvas overlay for a page. The container must be `#jam-layout-container`.                       |
+| `clearLayoutCanvas()`               | Remove the grid canvas and moving shadow elements.                                                              |
+| `makePageEditable()`                | Enable editing (drag, resize, close) for all cards on the current page. Builds the layout canvas first.         |
+| `removePageEditable()`              | Disable editing for all cards on the current page and remove the layout canvas.                                 |
+| `makeComponentEditable(page, card)` | Enable drag, resize, and close for a single card within a page.                                                 |
+| `makeUnComponentEditable(card)`     | Disable drag, resize, and close for a single card.                                                              |
+| `putNewCardInCanvas(resource)`      | Add a new card to the canvas — accepts a `.mjs` resource URL or a component option object.                      |
+| `sortCardsImmutable(pageInfos)`     | _(static)_ Return a new sorted copy of the config with cards ordered by grid position (row-first, then column). |
+| `findPageByPath(pageInfos, path)`   | _(static)_ Recursively find a page configuration by its path.                                                   |
+| `findRegistryComponentById(id)`     | _(static)_ Look up a component from the props config stored in localStorage.                                    |
+| `getLayoutCanvas()`                 | Get the current layout canvas element (or `null`).                                                              |
+| `getMovingShadow()`                 | Get the current moving shadow element (or `null`).                                                              |
+| `isLayoutCanvasBuilt()`             | Check whether the layout canvas and moving shadow have been built.                                              |
+| `reset()`                           | Reset all state (closedCard, cvsRect, config, cellSize, multiple, center, layout canvas).                       |
+| `resetConfig()`                     | Restore config to the original `oldConfig` snapshot.                                                            |
+| `getCenter()`                       | Get the center reference element.                                                                               |
+| `setCenter(center)`                 | Set the center reference element.                                                                               |
+| `showCenter()`                      | Show the center element (animate into view).                                                                    |
+| `hideCenter()`                      | Hide the center element (animate out of view).                                                                  |
 
 ## Config Format
 
@@ -70,16 +70,16 @@ All constructor parameters are optional and can be set later via properties.
 
 ```ts
 type PageInfo = {
-  path: string;       // Page route path
-  name: string;       // Page display name
-  size: number[];     // Grid dimensions [rows, cols]
-  icon?: string;      // Page icon
-  gap?: number;       // Grid gap in rem units
-  group?: string;     // Group for route organisation
-  switchable?: boolean; // Whether route is switchable
-  multiple?: number;  // Card size multiplier (default 2)
-  pages?: PageInfo[]; // Child pages (recursive)
-  cards?: CardInfo[]; // Cards on this page
+    path: string; // Page route path
+    name: string; // Page display name
+    size: number[]; // Grid dimensions [rows, cols]
+    icon?: string; // Page icon
+    gap?: number; // Grid gap in rem units
+    group?: string; // Group for route organisation
+    switchable?: boolean; // Whether route is switchable
+    multiple?: number; // Card size multiplier (default 2)
+    pages?: PageInfo[]; // Child pages (recursive)
+    cards?: CardInfo[]; // Cards on this page
 };
 ```
 
@@ -87,9 +87,9 @@ type PageInfo = {
 
 ```ts
 type CardInfo = {
-  id: string;         // Card element ID
-  resource: any;      // Resource path (string) or component config (object)
-  coord: number[];    // Grid position: [colStart, rowStart, colSpan, rowSpan]
+    id: string; // Card element ID
+    resource: any; // Resource path (string) or component config (object)
+    coord: number[]; // Grid position: [colStart, rowStart, colSpan, rowSpan]
 };
 ```
 
@@ -104,23 +104,33 @@ const composable = new CurrantComposable();
 
 // Page configuration
 const pageConfig = {
-  path: '/dashboard',
-  name: 'Dashboard',
-  size: [24, 12],
-  gap: 1,
-  multiple: 2,
-  cards: [
-    {
-      id: 'chart-card',
-      resource: { type: 'container', components: [/* ... */] },
-      coord: [1, 1, 12, 6] // colStart, rowStart, colSpan, rowSpan
-    },
-    {
-      id: 'stats-card',
-      resource: { type: 'container', components: [/* ... */] },
-      coord: [13, 1, 12, 6]
-    }
-  ]
+    path: '/dashboard',
+    name: 'Dashboard',
+    size: [24, 12],
+    gap: 1,
+    multiple: 2,
+    cards: [
+        {
+            id: 'chart-card',
+            resource: {
+                type: 'container',
+                components: [
+                    /* ... */
+                ]
+            },
+            coord: [1, 1, 12, 6] // colStart, rowStart, colSpan, rowSpan
+        },
+        {
+            id: 'stats-card',
+            resource: {
+                type: 'container',
+                components: [
+                    /* ... */
+                ]
+            },
+            coord: [13, 1, 12, 6]
+        }
+    ]
 };
 
 composable.config = pageConfig;
@@ -154,12 +164,10 @@ await composable.putNewCardInCanvas('/modules/widgets/weather-widget.mjs');
 
 ```ts
 const cardConfig = {
-  type: 'container',
-  id: 'custom-card',
-  size: [3, 2], // width_multiple, height_multiple
-  components: [
-    { type: 'text', value: 'Hello World' }
-  ]
+    type: 'container',
+    id: 'custom-card',
+    size: [3, 2], // width_multiple, height_multiple
+    components: [{ type: 'text', value: 'Hello World' }]
 };
 
 await composable.putNewCardInCanvas(cardConfig);
@@ -202,10 +210,10 @@ currant.makePageEditable();
 
 // On route change, save and switch
 rambutan.beforeSwitch = () => {
-  // Save will be called on the next page navigation
-  currant.removePageEditable();
-  const nextPage = CurrantComposable.findPageByPath(currant.config, rambutan.currPath);
-  currant.buildLayoutCanvas(nextPage);
-  currant.makePageEditable(nextPage);
+    // Save will be called on the next page navigation
+    currant.removePageEditable();
+    const nextPage = CurrantComposable.findPageByPath(currant.config, rambutan.currPath);
+    currant.buildLayoutCanvas(nextPage);
+    currant.makePageEditable(nextPage);
 };
 ```

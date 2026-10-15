@@ -32,7 +32,7 @@ export default {
         {
             type: 'vanilla-img',
             attrs: {
-                src: jaml.var('attachmentPreview', source => source || null),
+                src: jaml.var('attachmentPreview', (source) => source || null),
                 alt: 'Attachment preview'
             },
             showIf: '!!{{attachmentPreview}}',

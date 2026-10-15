@@ -4,13 +4,13 @@ Use [`interact.sortable`](../Styles/interact.md#interactsortable) to reorder dir
 
 ```json jaml-playground
 {
-  "type": "wrapper",
-  "styles": ["interact.sortable(placement:deferred)"],
-  "components": [
-    { "type": "label", "cap": "First" },
-    { "type": "label", "cap": "Second" },
-    { "type": "label", "cap": "Third" }
-  ]
+    "type": "wrapper",
+    "styles": ["interact.sortable(placement:deferred)"],
+    "components": [
+        { "type": "label", "cap": "First" },
+        { "type": "label", "cap": "Second" },
+        { "type": "label", "cap": "Third" }
+    ]
 }
 ```
 

@@ -8,9 +8,9 @@ Use this checklist when designing or reviewing a JAML theme.
 
 Whenever a new design or a replacement for an existing style must adapt to the active theme, consume a runtime token instead of copying a literal theme value:
 
-- In JavaScript, use the flat `sys` runtime path directly, such as `Tokens.space.xs`, `Tokens.border.radius.m`, or `Tokens.color.surface.lower`; component and chart layers use `Tokens.cmpt.*` and `Tokens.chart.*`.
-- In CSS or SCSS, use the emitted custom property, such as `var(--jam-space-xs)`, `var(--jam-border-radius-m)`, or `var(--jam-color-surface-lower)`.
-- In the singular JAML `style` property, token-aware compact CSS, or style dictionaries, use a property-aware shorthand such as `style: 'padding:xs;gap:xs;box-shadow:xl'`, `css(padding:xs;gap:xs;box-shadow:xl)`, or `{ padding: 'xs', gap: 'xs', boxShadow: 'xl' }`.
+-   In JavaScript, use the flat `sys` runtime path directly, such as `Tokens.space.xs`, `Tokens.border.radius.m`, or `Tokens.color.surface.lower`; component and chart layers use `Tokens.cmpt.*` and `Tokens.chart.*`.
+-   In CSS or SCSS, use the emitted custom property, such as `var(--jam-space-xs)`, `var(--jam-border-radius-m)`, or `var(--jam-color-surface-lower)`.
+-   In the singular JAML `style` property, token-aware compact CSS, or style dictionaries, use a property-aware shorthand such as `style: 'padding:xs;gap:xs;box-shadow:xl'`, `css(padding:xs;gap:xs;box-shadow:xl)`, or `{ padding: 'xs', gap: 'xs', boxShadow: 'xl' }`.
 
 Property-aware replacement follows [supported property-aware values](../Styles/common/css.md#property-aware-token-values). It runs for an element's singular JAML `style`, `Styles.css(...)`, state-prefixed CSS styles, `Styles.props(...)`, and dictionary-form `Styles.stylesheet({...})`. It does not parse a compiled stylesheet string passed as `Styles.stylesheet(indexStyle)`, so theme SCSS must use `var(--jam-...)` directly.
 
@@ -20,12 +20,12 @@ Literal values remain appropriate for mechanics that are not theme decisions, su
 
 Selectors in a theme's `index.scss` must be limited to the framework vocabulary:
 
-- `body`
-- runtime `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, and `.jam-tile-style`
-- role variants such as `.jam-list-style[jam-variant='legend']`, which remain specializations of the `list` role
-- JAML element selectors such as `jam-table`
-- built-in style-plugin classes from the rule below
-- combinations of those selectors connected and refined through nesting, combinators, framework attributes, slots, parts, and states
+-   `body`
+-   runtime `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, and `.jam-tile-style`
+-   role variants such as `.jam-list-style[jam-variant='legend']`, which remain specializations of the `list` role
+-   JAML element selectors such as `jam-table`
+-   built-in style-plugin classes from the rule below
+-   combinations of those selectors connected and refined through nesting, combinators, framework attributes, slots, parts, and states
 
 Theme-local custom properties are allowed. Project-dependent custom classes such as `.dashboard-card` or `.customer-summary` are not: they couple a reusable theme to one application. When one framework role needs a stable alternate recipe, use its native `variant` hook instead of inventing a class.
 
@@ -61,10 +61,10 @@ jam-table > .jam-td {
 
 Use the framework's reusable style contracts before creating a new selector or utility class:
 
-- surface treatments: [`with.accent`, `with.tint`, `with.elevation`](../Styles/common/trait.md#with)
-- caption roles: [`cap.main`, `cap.sub`](../Styles/common/cap.md#caption-role-presets)
-- value roles: [`value.major`, `value.main`, `value.sub`, `value.minor`](../Styles/common/value.md#value-role-presets)
-- child-group layouts: [`group.bento`, `group.gridline`, `group.stripy`, `group.divider`](../Styles/group.md)
+-   surface treatments: [`with.accent`, `with.tint`, `with.elevation`](../Styles/common/trait.md#with)
+-   caption roles: [`cap.main`, `cap.sub`](../Styles/common/cap.md#caption-role-presets)
+-   value roles: [`value.major`, `value.main`, `value.sub`, `value.minor`](../Styles/common/value.md#value-role-presets)
+-   child-group layouts: [`group.bento`, `group.gridline`, `group.stripy`, `group.divider`](../Styles/group.md)
 
 Attach these plugins directly in JAML or through the theme's `styles` map. Theme SCSS may tune their framework-owned roles, but it must not recreate their classes, child management, or runtime behavior under a project-specific name.
 
@@ -105,13 +105,13 @@ Only this JavaScript `styles` dictionary runs `refineSelector()`: `list-legend >
 
 Keep `ref` boring:
 
-- one numeric `space` scale shared by padding, margin, and gap recipes
-- numeric `border.radius` and `border.width` scales
-- absolute `shadow.x|y|blur` geometry and font-relative `shadow.relX|relY|relBlur` geometry
-- typography scales
-- line styles
-- geometry constants
-- non-theme primitive numbers
+-   one numeric `space` scale shared by padding, margin, and gap recipes
+-   numeric `border.radius` and `border.width` scales
+-   absolute `shadow.x|y|blur` geometry and font-relative `shadow.relX|relY|relBlur` geometry
+-   typography scales
+-   line styles
+-   geometry constants
+-   non-theme primitive numbers
 
 Do not put semantic color palettes in `ref`.
 
@@ -123,19 +123,19 @@ Export `ref` as plain authoring data. Consume it while building `sys`, `cmpt`, `
 
 Put theme/swatch semantic decisions in `sys`:
 
-- `color`
-- `space`
-- `border.radius`
-- `border.width`
-- `density`
-- `typography`
-- `height`
-- `opacity`
-- `border.style`
-- `shadow`
-- `textShadow`
-- `motion`
-- `timing`
+-   `color`
+-   `space`
+-   `border.radius`
+-   `border.width`
+-   `density`
+-   `typography`
+-   `height`
+-   `opacity`
+-   `border.style`
+-   `shadow`
+-   `textShadow`
+-   `motion`
+-   `timing`
 
 For `sys.color`, use adaptive color builders and consult [Color System](../color.md) for exact function usage.
 
@@ -168,13 +168,13 @@ Do not add `cap` or `value` token trees. The native roles are `cap.main|sub` and
 
 Before adding signature styling, enforce these invariants:
 
-- `group`, `field`, and `actions` own child arrangement and `gap`; `section` or another content owner carries inset spacing.
-- Color choices are semantic and contextual, including borders. Tune `sys.color` before adding element-specific declarations.
-- A primary background always pairs with `on.primary` foreground.
-- `surface.lowest` belongs on `app` only; do not also apply it to `main`.
-- Selection leaves the foreground untouched and uses only an optional translucent background.
-- Checked styling either covers the complete button/switch subtype matrix or targets one narrow role through `.jam-checked`.
-- Font family and weight are free theme choices, but caption/value size, weight, line height, letter spacing, opacity, and foreground context are tuned together.
+-   `group`, `field`, and `actions` own child arrangement and `gap`; `section` or another content owner carries inset spacing.
+-   Color choices are semantic and contextual, including borders. Tune `sys.color` before adding element-specific declarations.
+-   A primary background always pairs with `on.primary` foreground.
+-   `surface.lowest` belongs on `app` only; do not also apply it to `main`.
+-   Selection leaves the foreground untouched and uses only an optional translucent background.
+-   Checked styling either covers the complete button/switch subtype matrix or targets one narrow role through `.jam-checked`.
+-   Font family and weight are free theme choices, but caption/value size, weight, line height, letter spacing, opacity, and foreground context are tuned together.
 
 If the supported tokens cannot express an intentional signature treatment, write the complete recipe in `index.scss` using the selector and specificity rules above.
 
@@ -225,50 +225,50 @@ Use swatches for meaningful variations. Do not create a swatch just to compensat
 
 A theme is reasonably complete when it has intentional coverage for these areas:
 
-- app shell: `app`, `header`, `footer`, `sidebar`, `nav`, `main`
-- surfaces: `panel`, `popup`, `modal`, `tile`, `card`
-- content composition: `section`, `group`, `list`, `item`; `item` also identifies coordinate-owned peer children under a map or calendar
-- commands and forms: `toolbar`, `form`, `field`, `actions`
-- role ownership: `group`, `field`, and `actions` arrange children; `section` owns a cohesive content region
-- peer collections: `list > item` for repeated content, `map > item` for geographic coordinates, and `calendar > item` for date coordinates
-- style variants: the default role works without one, and supported `jam-variant` selectors are explicit
-- common elements without custom `stylize`: button, input, label, indicator, card, popup, options/select, switch, table
-- adaptive values: runtime tokens or supported property-aware shorthands, with no duplicated theme literals
-- stylesheet boundary: unwrapped low-specificity selectors aligned with `basic.scss`, with no project-dependent custom classes
-- built-in plugins: surface, optical-role, and child-group contracts reused before custom selectors
-- key states where relevant: `hover`, `active`, `focus`, `disabled`, `checked`, `indeterminate`
-- surface/foreground pairing: app owns `surface.lowest`; primary backgrounds use `on.primary`
-- selection: translucent background only, no foreground override
-- checked subtypes: complete matrix or one deliberately scoped `.jam-checked` recipe
-- optical roles: both cap levels and all four value levels are coherent combinations
-- chart defaults: text, axis, grid, legend, tooltip, plus the adaptive color-set palette
-- swatches: accent/color-set variants, optional mode-specific token exceptions, optional per-swatch dark mode intent
-- demo coverage: a small page showing structural stylize values, common elements, and at least one chart
+-   app shell: `app`, `header`, `footer`, `sidebar`, `nav`, `main`
+-   surfaces: `panel`, `popup`, `modal`, `tile`, `card`
+-   content composition: `section`, `group`, `list`, `item`; `item` also identifies coordinate-owned peer children under a map or calendar
+-   commands and forms: `toolbar`, `form`, `field`, `actions`
+-   role ownership: `group`, `field`, and `actions` arrange children; `section` owns a cohesive content region
+-   peer collections: `list > item` for repeated content, `map > item` for geographic coordinates, and `calendar > item` for date coordinates
+-   style variants: the default role works without one, and supported `jam-variant` selectors are explicit
+-   common elements without custom `stylize`: button, input, label, indicator, card, popup, options/select, switch, table
+-   adaptive values: runtime tokens or supported property-aware shorthands, with no duplicated theme literals
+-   stylesheet boundary: unwrapped low-specificity selectors aligned with `basic.scss`, with no project-dependent custom classes
+-   built-in plugins: surface, optical-role, and child-group contracts reused before custom selectors
+-   key states where relevant: `hover`, `active`, `focus`, `disabled`, `checked`, `indeterminate`
+-   surface/foreground pairing: app owns `surface.lowest`; primary backgrounds use `on.primary`
+-   selection: translucent background only, no foreground override
+-   checked subtypes: complete matrix or one deliberately scoped `.jam-checked` recipe
+-   optical roles: both cap levels and all four value levels are coherent combinations
+-   chart defaults: text, axis, grid, legend, tooltip, plus the adaptive color-set palette
+-   swatches: accent/color-set variants, optional mode-specific token exceptions, optional per-swatch dark mode intent
+-   demo coverage: a small page showing structural stylize values, common elements, and at least one chart
 
 ## Review Questions
 
-- Is this name a role or a visual recipe?
-- Is this truly an alternate style of the same role, and is its numeric or descriptive `variant` stable, meaningful, and selector-friendly?
-- Does this token vary by theme or swatch?
-- If this value varies by theme or swatch, is it in `sys`?
-- Is this CSS selector logic instead of a token?
-- Does every theme-adaptive declaration consume `Tokens.*`, `var(--jam-*)`, or a supported property-aware shorthand?
-- Is this selector part of the framework vocabulary, and is it as low-specificity as the equivalent `basic.scss` selector?
-- Is the stylesheet unwrapped and free of project-dependent custom classes?
-- Does a built-in surface, cap/value, or group plugin already own this behavior?
-- Is this design-spec variable a useful semantic idea, or just a Figma naming artifact?
-- Is this `ref` value resolved before runtime registration?
-- Is this `cmpt` token reused, referenced elsewhere, or needed for calculation?
-- Is this one of the supported `cmpt` seams, or should it stay in `index.scss`?
-- Does each light/dark mode token have the same root fallback path, and is only one mode branch authored?
-- Is `swatch.darkMode` being used only as a preferred body mode rather than as a token-value bucket?
-- Does the composition follow [role ownership](./stylize.md#content-composition-values), with explicit layout where the base recipe needs it?
-- Does every primary background set an `on.primary` foreground?
-- Is `surface.lowest` applied only to `app`?
-- Does selection preserve its foreground?
-- Is checked styling complete across subtypes or deliberately scoped?
-- Are cap/value typography dimensions tuned as a combination rather than one property at a time?
-- Is this recipe path design-time metadata rather than runtime CSS?
-- Does this recipe path declare traits only as `-[trait]` on a node?
-- Does this recipe path end with a real camelCase CSS property or an approved Figma-split composite part?
-- Does the theme still look acceptable when an element has no custom `stylize` and only its element type?
+-   Is this name a role or a visual recipe?
+-   Is this truly an alternate style of the same role, and is its numeric or descriptive `variant` stable, meaningful, and selector-friendly?
+-   Does this token vary by theme or swatch?
+-   If this value varies by theme or swatch, is it in `sys`?
+-   Is this CSS selector logic instead of a token?
+-   Does every theme-adaptive declaration consume `Tokens.*`, `var(--jam-*)`, or a supported property-aware shorthand?
+-   Is this selector part of the framework vocabulary, and is it as low-specificity as the equivalent `basic.scss` selector?
+-   Is the stylesheet unwrapped and free of project-dependent custom classes?
+-   Does a built-in surface, cap/value, or group plugin already own this behavior?
+-   Is this design-spec variable a useful semantic idea, or just a Figma naming artifact?
+-   Is this `ref` value resolved before runtime registration?
+-   Is this `cmpt` token reused, referenced elsewhere, or needed for calculation?
+-   Is this one of the supported `cmpt` seams, or should it stay in `index.scss`?
+-   Does each light/dark mode token have the same root fallback path, and is only one mode branch authored?
+-   Is `swatch.darkMode` being used only as a preferred body mode rather than as a token-value bucket?
+-   Does the composition follow [role ownership](./stylize.md#content-composition-values), with explicit layout where the base recipe needs it?
+-   Does every primary background set an `on.primary` foreground?
+-   Is `surface.lowest` applied only to `app`?
+-   Does selection preserve its foreground?
+-   Is checked styling complete across subtypes or deliberately scoped?
+-   Are cap/value typography dimensions tuned as a combination rather than one property at a time?
+-   Is this recipe path design-time metadata rather than runtime CSS?
+-   Does this recipe path declare traits only as `-[trait]` on a node?
+-   Does this recipe path end with a real camelCase CSS property or an approved Figma-split composite part?
+-   Does the theme still look acceptable when an element has no custom `stylize` and only its element type?

@@ -59,13 +59,11 @@ Read [property-aware CSS values](../Styles/common/css.md#property-aware-token-va
 
 ```json jaml-playground
 {
-  "type": "card",
-  "stylize": "tile",
-  "cap": "Token-backed spacing",
-  "style": "padding:m;gap:s;border-radius:l",
-  "components": [
-    { "type": "label", "cap": "The active swatch supplies these values." }
-  ]
+    "type": "card",
+    "stylize": "tile",
+    "cap": "Token-backed spacing",
+    "style": "padding:m;gap:s;border-radius:l",
+    "components": [{ "type": "label", "cap": "The active swatch supplies these values." }]
 }
 ```
 
@@ -74,20 +72,20 @@ Read [property-aware CSS values](../Styles/common/css.md#property-aware-token-va
 A theme may author one sparse `light` or `dark` override inside a swatch's tokens. Never author both; Jam-UI throws when both branches are present:
 
 ```js
-import { shadowToken, tokenize } from "@jam/jam-ui";
+import { shadowToken, tokenize } from '@jam/jam-ui';
 
 const darkSysLit = {
-  shadow: {
-    s: shadowToken("0rem", "0.125rem", "0.5rem", "hsl(210 80% 20% / 0.33)"),
-  },
+    shadow: {
+        s: shadowToken('0rem', '0.125rem', '0.5rem', 'hsl(210 80% 20% / 0.33)')
+    }
 };
 const darkSys = tokenize(darkSysLit);
 
 const tokens = {
-  sys,
-  cmpt,
-  chart,
-  dark: { sys: darkSys },
+    sys,
+    cmpt,
+    chart,
+    dark: { sys: darkSys }
 };
 ```
 
@@ -109,65 +107,65 @@ Only the body-global mode selects these pairs. Applying light/dark mode to a nes
 
 Put in `ref`:
 
-- numeric scales
-- shared `space`, `border.radius`, and `border.width` geometry scales
-- opacity, type, and font scales
-- absolute shadow primitives under `shadow.x`, `shadow.y`, and `shadow.blur`
-- font-relative shadow primitives under `shadow.relX`, `shadow.relY`, and `shadow.relBlur`
-- non-color geometry constants, such as gradient angles, z-index values, and elevation numbers
-- minimal literal CSS constants when needed, such as `transparent`, `currentColor`, `none`, border styles, and font family names
+-   numeric scales
+-   shared `space`, `border.radius`, and `border.width` geometry scales
+-   opacity, type, and font scales
+-   absolute shadow primitives under `shadow.x`, `shadow.y`, and `shadow.blur`
+-   font-relative shadow primitives under `shadow.relX`, `shadow.relY`, and `shadow.relBlur`
+-   non-color geometry constants, such as gradient angles, z-index values, and elevation numbers
+-   minimal literal CSS constants when needed, such as `transparent`, `currentColor`, `none`, border styles, and font family names
 
 Do not put in `ref`:
 
-- page roles, such as sidebar or panel
-- product or domain decisions
-- theme-specific semantic decisions
-- visual recipes
-- static semantic color palettes such as `blue[500]`, `gray[900]`, or `red[400]`
+-   page roles, such as sidebar or panel
+-   product or domain decisions
+-   theme-specific semantic decisions
+-   visual recipes
+-   static semantic color palettes such as `blue[500]`, `gray[900]`, or `red[400]`
 
 Good:
 
 ```js
 const ref = {
-  space: {
-    2: "0.125rem",
-    4: "0.25rem",
-    8: "0.5rem",
-    12: "0.75rem",
-  },
-  gradient: {
-    angle: {
-      horizontal: "90deg",
-      vertical: "180deg",
-      diagonal: "135deg",
+    space: {
+        2: '0.125rem',
+        4: '0.25rem',
+        8: '0.5rem',
+        12: '0.75rem'
     },
-  },
-  shadow: {
-    x: { 0: "0rem", 3: "0.1875rem", 5: "0.3125rem" },
-    y: { 0: "0rem", 1: "0.0625rem", 3: "0.1875rem" },
-    blur: { 0: "0rem", 2: "0.125rem", 16: "1rem" },
-    relX: { 0: "0em", 1: "0.0625em", 3: "0.1875em" },
-    relY: { 0: "0em", 1: "0.0625em", 3: "0.1875em" },
-    relBlur: { 0: "0em", 2: "0.125em", 4: "0.25em" },
-  },
-  border: {
-    style: {
-      solid: "solid",
-      dashed: "dashed",
-      none: "none",
+    gradient: {
+        angle: {
+            horizontal: '90deg',
+            vertical: '180deg',
+            diagonal: '135deg'
+        }
     },
-    radius: {
-      2: "0.125rem",
-      4: "0.25rem",
-      8: "0.5rem",
-      12: "0.75rem",
+    shadow: {
+        x: { 0: '0rem', 3: '0.1875rem', 5: '0.3125rem' },
+        y: { 0: '0rem', 1: '0.0625rem', 3: '0.1875rem' },
+        blur: { 0: '0rem', 2: '0.125rem', 16: '1rem' },
+        relX: { 0: '0em', 1: '0.0625em', 3: '0.1875em' },
+        relY: { 0: '0em', 1: '0.0625em', 3: '0.1875em' },
+        relBlur: { 0: '0em', 2: '0.125em', 4: '0.25em' }
     },
-    width: {
-      1: "0.0625rem",
-      2: "0.125rem",
-      4: "0.25rem",
-    },
-  },
+    border: {
+        style: {
+            solid: 'solid',
+            dashed: 'dashed',
+            none: 'none'
+        },
+        radius: {
+            2: '0.125rem',
+            4: '0.25rem',
+            8: '0.5rem',
+            12: '0.75rem'
+        },
+        width: {
+            1: '0.0625rem',
+            2: '0.125rem',
+            4: '0.25rem'
+        }
+    }
 };
 ```
 
@@ -183,17 +181,17 @@ What does this theme consider primary surface, normal text, weak border, dangero
 
 Put in `sys`:
 
-- semantic color decisions
-- semantic space, border radius/width/style, density, typography, shadow, text-shadow, motion, timing, and opacity decisions
-- theme-wide state decisions
-- values derived from custom or business colors
+-   semantic color decisions
+-   semantic space, border radius/width/style, density, typography, shadow, text-shadow, motion, timing, and opacity decisions
+-   theme-wide state decisions
+-   values derived from custom or business colors
 
 Do not put in `sys`:
 
-- component parts such as card title or input helper
-- parent-child recipes such as sidebar button hover
-- values that never change by theme or swatch
-- direct page layout recipes
+-   component parts such as card title or input helper
+-   parent-child recipes such as sidebar button hover
+-   values that never change by theme or swatch
+-   direct page layout recipes
 
 Recommended non-color `sys` groups:
 
@@ -219,41 +217,31 @@ Use design-system inventories as vocabulary, then adapt them to JAML object path
 
 Keep the distinction between categories:
 
-- `space`: the shared semantic scale consumed by padding, margin, gap, and compact layout recipes. Those CSS properties remain different layout responsibilities even though they share one scale.
-- `border.radius`: corner shape decisions.
-- `border.width`: stroke thickness decisions.
-- `height`: fixed or baseline control heights.
-- `typography`: font size, line height, font family, and font weight.
-- `opacity`: semantic transparency levels.
-- `border.style`: reusable stroke styles such as solid, dashed, or none.
-- `shadow`: complete theme-specific box-shadow values built from absolute ref geometry and shadow colors.
-- `textShadow`: complete font-relative text-shadow values, including `primary` and `onPrimary` families when the foreground context needs them.
-- `motion`: interaction duration decisions such as fast, default, and slow.
-- `timing`: named easing curves exposed as complete CSS timing-function values.
+-   `space`: the shared semantic scale consumed by padding, margin, gap, and compact layout recipes. Those CSS properties remain different layout responsibilities even though they share one scale.
+-   `border.radius`: corner shape decisions.
+-   `border.width`: stroke thickness decisions.
+-   `height`: fixed or baseline control heights.
+-   `typography`: font size, line height, font family, and font weight.
+-   `opacity`: semantic transparency levels.
+-   `border.style`: reusable stroke styles such as solid, dashed, or none.
+-   `shadow`: complete theme-specific box-shadow values built from absolute ref geometry and shadow colors.
+-   `textShadow`: complete font-relative text-shadow values, including `primary` and `onPrimary` families when the foreground context needs them.
+-   `motion`: interaction duration decisions such as fast, default, and slow.
+-   `timing`: named easing curves exposed as complete CSS timing-function values.
 
 The built-in baseline provides `typography.fontSize` keys `xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`, `3xl`, and `4xl`; `typography.fontWeight` keys `regular`, `medium`, `semibold`, and `bold`; and `typography.lineHeight` keys `tight`, `default`, and `loose`. Its `timing` keys mirror the named curves in [TimingBeziers](../Plugins/animation.md#timingbeziers--named-easing-curves).
 
 Build shadows in `sys.mjs`, not by reassembling private `x`/`y`/`blur` variables in SCSS:
 
 ```js
-import { shadowToken } from "@jam/jam-ui";
+import { shadowToken } from '@jam/jam-ui';
 
 const shadow = {
-  none: "none",
-  s: shadowToken(
-    ref.shadow.x[0],
-    ref.shadow.y[2],
-    ref.shadow.blur[5],
-    ref.shadow.color[10],
-  ),
-  primary: {
-    s: shadowToken(
-      ref.shadow.x[0],
-      ref.shadow.y[2],
-      ref.shadow.blur[5],
-      ref.shadow.color.primary[15],
-    ),
-  },
+    none: 'none',
+    s: shadowToken(ref.shadow.x[0], ref.shadow.y[2], ref.shadow.blur[5], ref.shadow.color[10]),
+    primary: {
+        s: shadowToken(ref.shadow.x[0], ref.shadow.y[2], ref.shadow.blur[5], ref.shadow.color.primary[15])
+    }
 };
 ```
 
@@ -353,13 +341,13 @@ node[.node-or-type-or-state*].compositeProperty.part
 
 Rules:
 
-- `node` is a role, element, slot, part, or predefined child target used by the importer. Role nodes come from `stylize` and compile to `.jam-[stylize]-style`; element nodes use the tag name without `jam-`, such as `indicator` for `jam-indicator`. When a role and element share a name, the role node wins, so `button` compiles to `.jam-button-style`. A node may include a predefined `-[trait]`, such as `button-withacbg` or `td-odd`.
-- `type` is an enumerable element `type` value, such as `default`, `ghost`, `range`, or `checkbox`.
-- `state` is a supported `CSSStates` key such as `hover`, `active`, `focus`, `disabled`, `indeterminate`, or `checked`.
-- normal recipe paths end with a real CSS property name in camelCase.
-- Figma-split composite paths may end with approved parts: `gradient.type`, `gradient.color1`, `gradient.color2`, `shadow.x`, `shadow.y`, `shadow.blur`, `shadow.spread`, `shadow.inset`, `textShadow.x`, `textShadow.y`, or `textShadow.blur`.
-- do not split CSS properties into nested aliases such as `background.color`; use `backgroundColor`.
-- ambiguous segments must fail validation instead of being guessed.
+-   `node` is a role, element, slot, part, or predefined child target used by the importer. Role nodes come from `stylize` and compile to `.jam-[stylize]-style`; element nodes use the tag name without `jam-`, such as `indicator` for `jam-indicator`. When a role and element share a name, the role node wins, so `button` compiles to `.jam-button-style`. A node may include a predefined `-[trait]`, such as `button-withacbg` or `td-odd`.
+-   `type` is an enumerable element `type` value, such as `default`, `ghost`, `range`, or `checkbox`.
+-   `state` is a supported `CSSStates` key such as `hover`, `active`, `focus`, `disabled`, `indeterminate`, or `checked`.
+-   normal recipe paths end with a real CSS property name in camelCase.
+-   Figma-split composite paths may end with approved parts: `gradient.type`, `gradient.color1`, `gradient.color2`, `shadow.x`, `shadow.y`, `shadow.blur`, `shadow.spread`, `shadow.inset`, `textShadow.x`, `textShadow.y`, or `textShadow.blur`.
+-   do not split CSS properties into nested aliases such as `background.color`; use `backgroundColor`.
+-   ambiguous segments must fail validation instead of being guessed.
 
 Good:
 
@@ -377,7 +365,7 @@ These are recipe paths. Their values may point at `sys`:
 
 ```json
 {
-  "button.default.hover.backgroundColor": "sys.color.primary.film"
+    "button.default.hover.backgroundColor": "sys.color.primary.film"
 }
 ```
 
@@ -393,7 +381,7 @@ can compile to:
 
 ```scss
 .jam-button-style:not([type]):hover {
-  background-color: var(--jam-color-primary-film);
+    background-color: var(--jam-color-primary-film);
 }
 ```
 
@@ -414,9 +402,9 @@ The first two use unsupported states. The third uses a standalone trait; write t
 
 Use `chart` for:
 
-- ECharts theme override shape
-- axis, grid, legend, and tooltip defaults
-- chart text colors, split lines, mark geometry, and typography
+-   ECharts theme override shape
+-   axis, grid, legend, and tooltip defaults
+-   chart text colors, split lines, mark geometry, and typography
 
 Do not duplicate `sys` semantics in `chart`. Pull text, axis, and surface decisions from `sys`. The built-in builder owns the palette and derives it from the chart element's active JAML color set, so normal theme overrides should not declare a static `color` array.
 
@@ -424,18 +412,18 @@ The built-in chart tree and overrides are merged before adaptive leaves are cook
 
 ```js
 const chart = {
-  textStyle: {
-    color: sys.color.fg.default,
-  },
-  axisPointer: {
-    lineStyle: {
-      color: sys.color.outline.subtle,
+    textStyle: {
+        color: sys.color.fg.default
     },
-  },
-  tooltip: {
-    backgroundColor: sys.color.surface.highest,
-    borderColor: sys.color.outline.muted,
-  },
+    axisPointer: {
+        lineStyle: {
+            color: sys.color.outline.subtle
+        }
+    },
+    tooltip: {
+        backgroundColor: sys.color.surface.highest,
+        borderColor: sys.color.outline.muted
+    }
 };
 ```
 
@@ -458,9 +446,9 @@ Do not call `tokenize()` for `ref`.
 Runtime token modules should export both the literal object and the tokenized object when possible:
 
 ```js
-import { sysLit as builtIn, merge, tokenize } from "@jam/jam-ui";
+import { sysLit as builtIn, merge, tokenize } from '@jam/jam-ui';
 
-const sysLit = merge(builtIn, { space: { s: "0.5rem" } });
+const sysLit = merge(builtIn, { space: { s: '0.5rem' } });
 const sys = tokenize(sysLit);
 
 export { sys, sysLit };

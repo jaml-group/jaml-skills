@@ -8,8 +8,8 @@ Provides interactive panning (via drag) and zooming (via scroll wheel) on any HT
 
 ```json jaml-playground
 {
-  "type": "container",
-  "styles": ["interact.panNZoom(minScale:0.5;maxScale:5;scaleStep:0.01)"]
+    "type": "container",
+    "styles": ["interact.panNZoom(minScale:0.5;maxScale:5;scaleStep:0.01)"]
 }
 ```
 
@@ -21,23 +21,23 @@ Provides interactive panning (via drag) and zooming (via scroll wheel) on any HT
 new PearPanNZoom(el: HTMLElement, option: Partial<PearPanNZoom>)
 ```
 
-| Arg | Type | Description | Notes |
-|-----|------|-------------|-------|
-| `el` | `HTMLElement` | The element that will be panned/zoomed. Must have a positioned parent. | Required. The parent receives the wheel listener. |
-| `option` | `Partial<PearPanNZoom>` | Partial config — see instance properties below. | Optional. Merged onto the instance via `assign`. |
+| Arg      | Type                    | Description                                                            | Notes                                             |
+| -------- | ----------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
+| `el`     | `HTMLElement`           | The element that will be panned/zoomed. Must have a positioned parent. | Required. The parent receives the wheel listener. |
+| `option` | `Partial<PearPanNZoom>` | Partial config — see instance properties below.                        | Optional. Merged onto the instance via `assign`.  |
 
 ---
 
 ## Instance Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `target` | `HTMLElement` | — | The element being transformed. Set by constructor. |
-| `parent` | `HTMLElement` | `el.parentElement` | The parent element that receives the wheel listener. |
-| `minScale` | `number` | `0.5` | Minimum allowed scale. |
-| `maxScale` | `number` | `5.0` | Maximum allowed scale. |
-| `scaleStep` | `number` | `0.01` | Zoom increment per wheel tick. Ctrl-drags reduce sensitivity (×0.25 factor). |
-| `state` | `PanZoomState` | `'default'` | Current state: `'default'` | `'panning'` | `'zooming'`. |
+| Property    | Type           | Default            | Description                                                                  |
+| ----------- | -------------- | ------------------ | ---------------------------------------------------------------------------- | ----------- | ------------ |
+| `target`    | `HTMLElement`  | —                  | The element being transformed. Set by constructor.                           |
+| `parent`    | `HTMLElement`  | `el.parentElement` | The parent element that receives the wheel listener.                         |
+| `minScale`  | `number`       | `0.5`              | Minimum allowed scale.                                                       |
+| `maxScale`  | `number`       | `5.0`              | Maximum allowed scale.                                                       |
+| `scaleStep` | `number`       | `0.01`             | Zoom increment per wheel tick. Ctrl-drags reduce sensitivity (×0.25 factor). |
+| `state`     | `PanZoomState` | `'default'`        | Current state: `'default'`                                                   | `'panning'` | `'zooming'`. |
 
 ---
 
@@ -47,23 +47,23 @@ All callbacks receive a `PanZoomEvent`:
 
 ```ts
 type PanZoomEvent = {
-  x: number;          // pageX
-  y: number;          // pageY
-  scale: number;      // current scale
-  dx: number;         // delta x since last event
-  dy: number;         // delta y since last event
-  dscale: number;     // delta scale since last event
-  origEvent: WheelEvent | MouseEvent;
-  stopPropagation: () => void;
+    x: number; // pageX
+    y: number; // pageY
+    scale: number; // current scale
+    dx: number; // delta x since last event
+    dy: number; // delta y since last event
+    dscale: number; // delta scale since last event
+    origEvent: WheelEvent | MouseEvent;
+    stopPropagation: () => void;
 };
 ```
 
-| Callback | Signature | Fires |
-|----------|-----------|-------|
-| `start` | `(e: PanZoomEvent) => void` | When drag panning begins (mousedown). |
-| `pan` | `(e: PanZoomEvent) => void` | During drag panning (mousemove). |
-| `zoom` | `(e: PanZoomEvent) => void` | On each wheel zoom step. |
-| `end` | `(e: PanZoomEvent) => void` | When drag panning ends (mouseup). |
+| Callback | Signature                   | Fires                                 |
+| -------- | --------------------------- | ------------------------------------- |
+| `start`  | `(e: PanZoomEvent) => void` | When drag panning begins (mousedown). |
+| `pan`    | `(e: PanZoomEvent) => void` | During drag panning (mousemove).      |
+| `zoom`   | `(e: PanZoomEvent) => void` | On each wheel zoom step.              |
+| `end`    | `(e: PanZoomEvent) => void` | When drag panning ends (mouseup).     |
 
 ### Change event
 
@@ -71,9 +71,9 @@ When panning or zooming changes the transform, a `pannzoom` custom event fires o
 
 ```ts
 el.addEventListener('pannzoom', (e: CustomEvent) => {
-  const { scale, position } = e.detail
-  // scale: current scale, position: { x, y } offset
-})
+    const { scale, position } = e.detail;
+    // scale: current scale, position: { x, y } offset
+});
 ```
 
 ---
@@ -90,11 +90,11 @@ Animate both scale and translation so that a child element's centroid is centere
 locateZoom(el?: HTMLElement, targetScale?: number, duration?: number): void
 ```
 
-| Param | Type | Default | Description |
-|-------|------|---------|-------------|
-| `el` | `HTMLElement` | `undefined` | Child element to center. If omitted only scale changes. |
-| `targetScale` | `number` | current scale | Desired scale (clamped to `[minScale, maxScale]`). |
-| `duration` | `number` | `350` | Animation duration in ms. |
+| Param         | Type          | Default       | Description                                             |
+| ------------- | ------------- | ------------- | ------------------------------------------------------- |
+| `el`          | `HTMLElement` | `undefined`   | Child element to center. If omitted only scale changes. |
+| `targetScale` | `number`      | current scale | Desired scale (clamped to `[minScale, maxScale]`).      |
+| `duration`    | `number`      | `350`         | Animation duration in ms.                               |
 
 ### `recover(duration?)`
 
@@ -104,9 +104,9 @@ Animate back to scale `1.0` and zero translation (original state).
 recover(duration?: number): void
 ```
 
-| Param | Type | Default | Description |
-|-------|------|---------|-------------|
-| `duration` | `number` | `350` | Animation duration in ms. |
+| Param      | Type     | Default | Description               |
+| ---------- | -------- | ------- | ------------------------- |
+| `duration` | `number` | `350`   | Animation duration in ms. |
 
 ---
 
@@ -120,9 +120,9 @@ Enable pan+zoom on an element. Attaches wheel listener on the parent and sets up
 static enable(el: HTMLElement, option?: Partial<PearPanNZoom>): void
 ```
 
-- Adds CSS class `jam-pan-n-zoom`.
-- Sets `cursor: grab` (changes to `grabbing` while panning).
-- Stores `jampanzoom` reference on the element.
+-   Adds CSS class `jam-pan-n-zoom`.
+-   Sets `cursor: grab` (changes to `grabbing` while panning).
+-   Stores `jampanzoom` reference on the element.
 
 ### `PearPanNZoom.disable(el)`
 
@@ -132,7 +132,7 @@ Remove all pan+zoom listeners and reset inline styles.
 static disable(el: HTMLElement): void
 ```
 
-- Removes wheel listener, destroys DnD, clears `cursor` and `transform`, removes `--jam-zoom-scale`.
+-   Removes wheel listener, destroys DnD, clears `cursor` and `transform`, removes `--jam-zoom-scale`.
 
 ---
 
@@ -178,11 +178,11 @@ Calls `PearPanNZoom.disable(el)`.
 
 ## Global Helpers (`pear.*`)
 
-| Global | Signature | Description |
-|--------|-----------|-------------|
-| `pear.zoom` | `(el: HTMLElement, scale: number, duration?: number) => void` | Zoom to a specific scale, centering on the element itself. |
-| `pear.locate` | `(el: HTMLElement, scale?: number, duration?: number) => void` | Locate a specific child element at the given scale (centers it in the viewport). |
-| `pear.recover` | `(el: HTMLElement, duration?: number) => void` | Animate back to the original state (scale 1, zero translation). |
+| Global         | Signature                                                      | Description                                                                      |
+| -------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `pear.zoom`    | `(el: HTMLElement, scale: number, duration?: number) => void`  | Zoom to a specific scale, centering on the element itself.                       |
+| `pear.locate`  | `(el: HTMLElement, scale?: number, duration?: number) => void` | Locate a specific child element at the given scale (centers it in the viewport). |
+| `pear.recover` | `(el: HTMLElement, duration?: number) => void`                 | Animate back to the original state (scale 1, zero translation).                  |
 
 Each scans up the DOM for the nearest `.jam-pan-n-zoom` ancestor and calls the corresponding instance method.
 
@@ -195,11 +195,15 @@ import { PearPanNZoom, makePannable, makeZoomable } from 'jam-ui';
 
 // Full pan + zoom
 PearPanNZoom.enable(document.getElementById('canvas')!, {
-  minScale: 0.25,
-  maxScale: 8,
-  scaleStep: 0.02,
-  start(e) { console.log('start pan', e); },
-  zoom(e)  { console.log('zoomed to', e.scale); }
+    minScale: 0.25,
+    maxScale: 8,
+    scaleStep: 0.02,
+    start(e) {
+        console.log('start pan', e);
+    },
+    zoom(e) {
+        console.log('zoomed to', e.scale);
+    }
 });
 
 // Pan-only
@@ -225,8 +229,8 @@ pz.recover(300);
 
 ```json jaml-playground
 {
-  "type": "container",
-  "styles": ["interact.panNZoom"]
+    "type": "container",
+    "styles": ["interact.panNZoom"]
 }
 ```
 
@@ -234,7 +238,7 @@ Or with all defaults explicitly set:
 
 ```json jaml-playground
 {
-  "type": "container",
-  "styles": ["interact.panNZoom(minScale:0.5;maxScale:5;scaleStep:0.01)"]
+    "type": "container",
+    "styles": ["interact.panNZoom(minScale:0.5;maxScale:5;scaleStep:0.01)"]
 }
 ```

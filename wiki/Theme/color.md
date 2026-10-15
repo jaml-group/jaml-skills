@@ -35,14 +35,14 @@ Add a domain-specific family only when the product needs a durable semantic role
 
 Family meanings:
 
-- `primary`, `secondary`, `tertiary`, `quaternary`: accent sequence colors for primary action, secondary action, highlighted information, selected states, and decorative hierarchy.
-- `surface`: layered container backgrounds for page, main, tile, card, panel, popup, modal, and floating surfaces.
-- `neutral`: non-emotional filled treatments such as neutral backgrounds, weak fills, disabled fills, and low-emphasis areas.
-- `outline`: neutral borders, outlines, separators, and other structural edge marks.
-- `tint`: transparent accent-tinted fills for selected or supporting UI.
-- `elevated`: transparent elevation fills and hover layers.
-- `fg`: normal foreground text and icons.
-- `on`: contrast foreground text and icons placed on filled or colored backgrounds.
+-   `primary`, `secondary`, `tertiary`, `quaternary`: accent sequence colors for primary action, secondary action, highlighted information, selected states, and decorative hierarchy.
+-   `surface`: layered container backgrounds for page, main, tile, card, panel, popup, modal, and floating surfaces.
+-   `neutral`: non-emotional filled treatments such as neutral backgrounds, weak fills, disabled fills, and low-emphasis areas.
+-   `outline`: neutral borders, outlines, separators, and other structural edge marks.
+-   `tint`: transparent accent-tinted fills for selected or supporting UI.
+-   `elevated`: transparent elevation fills and hover layers.
+-   `fg`: normal foreground text and icons.
+-   `on`: contrast foreground text and icons placed on filled or colored backgrounds.
 
 `surface.lowest` is the application canvas. Apply it to `.jam-app-style` only; do not repeat it on `.jam-main-style`. Main content should inherit the app canvas unless it intentionally creates a higher surface.
 
@@ -153,13 +153,13 @@ alterHover
 
 Meanings:
 
-- `lowest`: application canvas; apply it to `app` only and let `main` inherit it
-- `lower`: low, recessed, or embedded structural surface
-- `default`: ordinary contained surface
-- `higher`: raised or hovered surface
-- `highest`: topmost floating, dialog, or callout surface
-- `alter`: alternate surface, transparent in the built-in baseline
-- `alterHover`: hover layer for that alternate surface
+-   `lowest`: application canvas; apply it to `app` only and let `main` inherit it
+-   `lower`: low, recessed, or embedded structural surface
+-   `default`: ordinary contained surface
+-   `higher`: raised or hovered surface
+-   `highest`: topmost floating, dialog, or callout surface
+-   `alter`: alternate surface, transparent in the built-in baseline
+-   `alterHover`: hover layer for that alternate surface
 
 This order describes semantic elevation, not a mandatory luminance direction. A theme may make higher surfaces lighter, darker, or more chromatic as long as the layer relationship remains clear.
 
@@ -194,7 +194,7 @@ For readable primary-accented text or icons on an ordinary surface, use `color: 
 
 ```css
 .accent-reference {
-  color: var(--jam-color-fg-primary);
+    color: var(--jam-color-fg-primary);
 }
 ```
 
@@ -232,8 +232,8 @@ Whenever a primary color is used as a background, set its foreground to `on.prim
 
 ```scss
 .jam-sidebar-style > .jam-title-style {
-  background-color: var(--jam-color-primary-default);
-  color: var(--jam-color-on-primary);
+    background-color: var(--jam-color-primary-default);
+    color: var(--jam-color-on-primary);
 }
 ```
 
@@ -243,7 +243,7 @@ Selection is a background-only theme seam. Do not set a selection foreground: em
 
 ```javascript
 const selection = {
-  backgroundColor: sys.color.primary.veil,
+    backgroundColor: sys.color.primary.veil
 };
 ```
 
@@ -266,18 +266,18 @@ Do not write `--jam-sys-*` variables. Theme color tokens are emitted beneath the
 Consume the exported baseline and override only the semantic decisions your theme changes. This example intentionally defines theme-specific values; it is not a copy of the framework palette.
 
 ```javascript
-import { sysLit, acToken, tokenize } from "@jam/jam-ui";
+import { sysLit, acToken, tokenize } from '@jam/jam-ui';
 
 const sys = tokenize({
-  ...sysLit,
-  color: {
-    ...sysLit.color,
-    primary: {
-      ...sysLit.color.primary,
-      film: acToken(1, 1, 1, 0.12),
-      veil: acToken(1, 1, 1, 0.24),
-    },
-  },
+    ...sysLit,
+    color: {
+        ...sysLit.color,
+        primary: {
+            ...sysLit.color.primary,
+            film: acToken(1, 1, 1, 0.12),
+            veil: acToken(1, 1, 1, 0.24)
+        }
+    }
 });
 ```
 

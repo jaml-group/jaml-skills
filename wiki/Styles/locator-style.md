@@ -7,6 +7,7 @@
 ## Variants
 
 ### `locator.crosshair`
+
 Crosshair corner-bracket style used to highlight target elements. Commonly applied via `logan.show()` or `element.locate()`.
 
 ```json jaml-playground

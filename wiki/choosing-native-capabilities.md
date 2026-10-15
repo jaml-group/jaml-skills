@@ -18,13 +18,13 @@ Keep selection state with the native option owner. Plain `buttongroup-radio` own
 
 ```javascript jaml-playground
 export default {
-  type: "buttongroup-radio",
-  cap: "View",
-  defaultValue: "overview",
-  data: [
-    { name: "Overview", value: "overview" },
-    { name: "Details", value: "details" },
-  ],
+    type: 'buttongroup-radio',
+    cap: 'View',
+    defaultValue: 'overview',
+    data: [
+        { name: 'Overview', value: 'overview' },
+        { name: 'Details', value: 'details' }
+    ]
 };
 ```
 
