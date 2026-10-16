@@ -4,6 +4,8 @@ Start here when writing, explaining, or diagnosing JAML. These documents are sha
 
 For style/plugin contracts, use the [style index](Styles/index.md) or [plugin index](Plugins/index.md) and read the selected family guide directly. Each guide combines usage, prerequisites and examples with generated argument types, order, defaults and option values. Check the documented framework baseline against the target runtime; missing facts remain unknown.
 
+For new UI or reusable modules, start with [Think in JAML: purpose and composition](JAML/purpose-and-composition.md). It shows how to choose a semantic owner, reuse its native parts and compose independent business modules before choosing their geometry.
+
 ## What the layers do
 
 | Concept                 | What it owns                                                       | Read when                                                                                                                                               |
@@ -24,7 +26,7 @@ For state ownership, private requests and shared datasets, see [State and data c
 
 ## Choose the owner before the API
 
-1. Select the element that owns the behavior and check its inheritance. An input's `value` contract does not make `value` a parameter of every element.
+1. Identify the business purpose and data, then select the element or module that owns it. Reuse its native parts and check its inheritance. An input's `value` contract does not make `value` a parameter of every element.
 2. Give structural regions their [semantic roles](./Theme/stylize.md#common-choices). Use the active theme's `variant` only for a supported alternate recipe.
 3. Use a public style when it already owns the requested appearance or interaction. For example, moving a card uses `interact.movable`; sorting children uses `interact.sortable`. See the [plugin decision table](./Plugins/plugins.md#choose-an-entry-point).
 4. Use token-backed styles for theme decisions. [Tokens](./Theme/tokens.md#consuming-tokens) explains which paths work in JavaScript, JAML CSS, and SCSS.

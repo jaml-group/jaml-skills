@@ -6,7 +6,7 @@ license: MIT
 
 # JAML
 
-Build with native Jam-UI capabilities and extend supported abstractions when a verified gap calls for it. Reason broadly during knowledge maintenance; retrieve narrowly during use. Resolve resources relative to this installed skill.
+Describe purpose with native Jam-UI capabilities, then specialize their existing composition. Extend supported abstractions when a verified gap calls for it. Reason broadly during knowledge maintenance; retrieve narrowly during use. Resolve resources relative to this installed skill.
 
 ## Start and route
 
@@ -28,7 +28,7 @@ Load the workflow for the requested work. New apps normally use Design → Compo
 
 Read the installed Markdown under `references/`, resolving paths relative to this `SKILL.md`. Use normal file reads and, when useful, `rg` to locate a capability or heading within the selected family. A heading search locates the contract; read its argument table, surrounding prerequisites and related examples before composing.
 
--   **Choose — ambiguous intent.** Read the relevant topic in [Choose native capabilities](references/choosing-native-capabilities.md), compare candidates and no-fit conditions, then follow the selected capability. A known capability skips this step.
+-   **Choose — ambiguous intent.** Read the relevant topic in [Choose native capabilities](references/choosing-native-capabilities.md), compare candidates and no-fit conditions, then follow the selected capability. A known capability skips this step once its purpose and native parts fit the requirement; familiarity with a container or label alone is not that assessment.
 -   **Compose — current contract.** Use the [style index](references/Styles/index.md) or [plugin index](references/Plugins/index.md) to find the family guide, then read the selected entry and its shared family context. For example, [check styles](references/Styles/check.md) keeps `check.underscore` arguments, checked-state ownership and examples together. Read each participating capability, including defaults, positional order, constraints and dependencies. Compare the documented framework baseline with the target runtime.
 -   **Explain — requested depth.** Expand the relevant sections or complete guide when concepts, rationale, examples or editor hints matter. The guides include English and Chinese references where available; preserve executable argument and option values when explaining translated labels.
 -   **Maintain — requested knowledge work.** Native framework knowledge maintenance follows the private Jam-UI checkout’s `jamldoc` and `jaml-knowledge` skills. Other packages keep their own maintenance workflow. Normal app composition does not start this workflow.
@@ -40,6 +40,10 @@ Elements, builders, CCs, usages and suffixes have their own guides: [elements](r
 Stop retrieval once the selected contract answers the task's inputs, owner, prerequisites and relevant cleanup. Expand only a specific unresolved fact; a missing callback input requires its exact contract or a precise gap report before executable code. A structural no-fit such as server authorization belongs to the application/backend and does not require searching unrelated families. On contradiction or failure, expand the affected guide or current source/runtime evidence. A visual underline does not establish a complete tabs interaction. Investigate the affected capability without converting an ordinary task into a whole-library audit.
 
 ## Application philosophy
+
+Start with the business purpose and data, then choose the element or module that owns it. An input already composes its caption, icon and control (plus a unit in number mode); an indicator composes a metric's icon, caption, value and unit. Specialize native parts through parameters, roles, ordered styles/plugins and bindings; extend the same purpose through slots/layers. Use containers for meaningful relationships between purposes. For new UI, module design or structural refactoring, read [Think in JAML](references/JAML/purpose-and-composition.md) and its worked input, metric, CC and shared-data examples before drawing the tree.
+
+A reusable business module exposes its own props/data contract; the page supplies aliases and composes instances without knowing their internals. Styles can arrange, enrich and attach behavior. Reuse presentation through styles and recurring business composition through CCs/builders; a different appearance alone does not require a new widget.
 
 Ask who owns, publishes and consumes state. Prefer native semantic owners and state-consuming peers over unnecessary cross-component orchestration; direct event-driven control remains supported. Renderers may own private requests; prefer a dedicated `data` owner for a shared logical dataset. Plain `buttongroup-radio` already shows checked selection; `check.*` is optional presentation. Load [state/data composition](references/JAML/state-and-data.md) only when those relationships or request/refresh behavior matter.
 

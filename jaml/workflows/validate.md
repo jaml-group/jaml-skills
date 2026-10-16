@@ -5,6 +5,7 @@ Use `validate_jaml` as the static baseline when available. Omit `fileName` for u
 Inspect:
 
 -   Element types, inheritance, parameters, control keys, argument forms and render contracts.
+-   [Purpose and composition](../references/JAML/purpose-and-composition.md): check whether captions, icons, values and units reuse their native owner; additions use appropriate slots; containers express a real relationship; CCs expose caller-independent contracts. Assess responsibilities rather than enforcing a wrapper count. Exercise independent instances or additional consumers when reuse is claimed.
 -   Bindings, instance state, updates, localization, lifecycle and event ownership.
 -   Custom-property plumbing: prefer [automatic `props` bridges](../references/JAML/jaml-format.md#props) over build hooks that only attach data/descriptors; check member collisions, post-`onafterbuild` timing, and the distinction between fresh reads and reactive notifications.
 -   [Intent-first capability selection](../references/building-ui.md#choose-elements-by-user-intent): infer the actual operation and coordinated controls, compare native owners and verify any claimed gap. Check the promised selection, keyboard/focus and navigation/panel contract; visual grouping, syntax or an ARIA role alone is insufficient. Retain justified adapters and reusable extensions.

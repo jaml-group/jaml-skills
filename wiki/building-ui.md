@@ -15,6 +15,8 @@ Before implementation, the design should name capability owners, structural role
 
 ## JAML composition principles
 
+Start with **purpose and data → native owner and parts → specialization → composition**. An input already owns its caption and edit control; an indicator already represents a metric with caption, icon, value and unit. Styles, parameters and named slots specialize those compositions. Containers express relationships between independent purposes. Read [Think in JAML](JAML/purpose-and-composition.md) for worked input, metric, reusable-module and shared-data examples before designing a new tree.
+
 Ask: **Who owns this state, who publishes it, and who consumes it?** Use the native semantic owner when one exists. Prefer published state and listening consumers for shared application state; direct events and cross-component control remain supported when simpler or more appropriate. A renderer may fetch its own runtime data. For one dataset shared by several consumers, prefer a dedicated `data` owner; conditional request sharing is an efficiency mechanism, not a substitute for ownership. Avoid unnecessary orchestration and rebuilding native behavior from generic containers.
 
 See [state and data composition](JAML/state-and-data.md) for actionable examples and request limits. These are preferred patterns, not restrictions on valid JAML.
@@ -58,19 +60,13 @@ This embedded tile demonstrates roles, local geometry, reactive state and semant
 export default {
     type: 'card',
     stylize: 'tile',
+    cap: 'Local activity',
     vars: { count: 0 },
+    styles: ['css(gap:s)'],
     components: [
-        {
-            type: 'container',
-            stylize: 'section',
-            styles: ['css(display:flex;flex-direction:column;gap:s)'],
-            components: [
-                { type: 'label', stylize: 'title', cap: 'Local activity' },
-                { type: 'indicator', cap: 'Recorded presses', value: '{{count}}' },
-                { type: 'label', cap: '{{count > 0 ? "Recorded" : "Ready"}}', color: '{{count > 0 ? "success" : "info"}}' },
-                { type: 'button', cap: 'Record a press', onclick: 'this.model.vars.count++' }
-            ]
-        }
+        { type: 'indicator', cap: 'Recorded presses', value: '{{count}}' },
+        { type: 'label', cap: '{{count > 0 ? "Recorded" : "Ready"}}', color: '{{count > 0 ? "success" : "info"}}' },
+        { type: 'button', cap: 'Record a press', onclick: 'this.model.vars.count++' }
     ]
 };
 ```

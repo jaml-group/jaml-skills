@@ -1,6 +1,7 @@
 ## JAML application conventions
 
 -   Use the installed `jaml` skill for JAML design, composition, refactoring, validation, explanation and debugging. For new dashboards, landing pages, forms or apps, read its Building a JAML UI guide and selected scenario before composition.
+-   Start with business purposes and data, then select native owners and reuse their built-in parts. Specialize with parameters, slots and styles; group independent purposes and expose reusable modules through their own props contracts. Read the skill's Think in JAML examples for new composition or structural refactoring.
 -   Follow semantic roles and theme tokens from design onward. Reuse existing elements, public styles/plugins, bindings, localization and lifecycle behavior where their contracts fit.
 -   Apply the skill's style-ownership guidance: theme-worthy appearance uses the theme contract; local presentation stays with its component, shared recipes have named owners, and repeated composition uses the smallest fitting extension. Reuse native semantic feedback colors; justify domain palettes, adapters and retained pixel contracts.
 -   Keep project refactoring and theme-definition refactoring explicitly scoped. Verify custom replacements against concrete requirements and preserve agreed behavior/state.

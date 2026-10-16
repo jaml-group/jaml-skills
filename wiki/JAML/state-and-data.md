@@ -2,11 +2,13 @@
 
 Use the native semantic owner, then decide who publishes state and who consumes it. Prefer listening consumers for shared application state. JAML is opinionated but permissive: direct event handlers, component-to-component calls, private fetches and shared data owners are all supported. Choose the simplest ownership model that fits the relationship.
 
+For the larger composition model, see [purpose and independent business modules](purpose-and-composition.md#compose-independent-business-modules). A module declares its own data/state contract; the page connects it without taking over its internals.
+
 ## Selection and content
 
 For tab-like navigation, start with `buttongroup-radio`. It owns mutually exclusive selection, the selected value and checked state, including native visible checked presentation. `check.*` is optional alternative presentation; an underline does not create selection or complete tabs behavior.
 
-The preferred relationship is **selection owner → published value → listening content**. Generic buttons with click handlers that locate and change a panel can work, but rebuilding native exclusive selection adds unnecessary orchestration. This example publishes `page` through `valueKey`; containers consume it through `showIf`:
+The preferred relationship is **selection owner → published value → listening content**. This is inversion of control through state: the publisher does not locate its consumers, and consumers depend on the published value rather than the identity of its publisher. Another consumer can join without editing the selector. Generic buttons with click handlers that locate and change a panel can work, but rebuilding native exclusive selection adds unnecessary orchestration. This example publishes `page` through `valueKey`; containers consume it through `showIf`:
 
 ```javascript jaml-playground
 export default {
