@@ -4,6 +4,8 @@
 
 ---
 
+For runtime setup, Wiki linking and live checks, start with [Run and test JAML](running-and-testing.md).
+
 For the design-to-verification path and scenario choices, see [Building a JAML UI](building-ui.md). This tutorial introduces the language pieces used by that workflow.
 
 ## JAML at a glance
@@ -222,6 +224,8 @@ Shorthand: `valueWatcher`, `stateWatcher`, `dataWatcher` automatically wire a ke
     "styles": ["css(padding:xs l)", "hover(color:ac)", "active(backgroundColor:ac;color:onac)"]
 }
 ```
+
+`css(padding:xs l)` uses theme spacing tokens: `xs` for top/bottom and `l` for left/right. Token expansion depends on the CSS property; `xs` can mean spacing, radius, border width or font size in the corresponding property, while `ac`/`onac` are color aliases. These are JAML CSS shorthands, not raw browser CSS values. See the [property/token table and replacement limits](Styles/common/css.md#property-aware-token-values) before using them inside expressions.
 
 String styles support arguments in parentheses: `"styleName(key:value;key2:value2)"`. Built-in styles are accessible via the global `Styles` object. You can also use the `css` style to apply inline CSS, or use `hover`, `active`, `before`, `after` to apply styles to specific states.
 

@@ -219,7 +219,7 @@ These describe content and auxiliary surfaces:
 -   `panel`: auxiliary work surface for a distinct task or context. It may be docked, slide-in, floating, movable, or resizable.
 -   `popup`, normally selected by `type: 'popup'`: interaction-positioned floating surface, such as a context menu, hint, small confirm, or transient progress surface.
 -   `tooltip`: compact informational or completion surface, separate from the richer popup element surface.
--   `modal`: centered blocking overlay surface.
+-   `modal`: semantic identity for a centered blocking overlay surface. The host/helper and layout own blocking and positioning; the role alone does not create or center an overlay. See [confirmation and editing choices](../choosing-native-capabilities.md#confirmations-and-editing-dialogs).
 -   `card`, normally selected by `type: 'card'`: portable content object with its own internal structure.
 -   `tile`: dashboard or bento grid unit. Tiles form a flat set of direct children in a dashboard `main`.
 

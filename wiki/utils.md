@@ -96,7 +96,9 @@ const option = jam.parseJSONAsJAML(myData);
 
 ### `jam.renderModal(container, option, config?)`
 
-Render a JAML object as a modal dialog. Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`.
+Render a JAML object as a modal dialog. The caller's host/layout and content styles determine placement and sizing; this helper does not center the content. A native `card` with `cap` already supplies its header. For a Yes/No decision, prefer the [confirmation helpers](choosing-native-capabilities.md#confirmations-and-editing-dialogs) and their managed ownership where appropriate.
+
+Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`.
 
 `curtainMode: 'active'` is the default: one reused curtain blocks lower sibling modals while leaving the top modal interactive. `'shared'` keeps sibling modals above the shared curtain. The first modal selects the container’s mode until the last modal is removed. Curtain effect strengths also remain those of the first curtain; later opens do not accumulate darkness or replace its effects.
 

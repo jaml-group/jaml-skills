@@ -4,6 +4,8 @@ The `jaml` skill designs, builds, refactors, validates, explains and debugs Jam-
 
 Start with native elements and existing styles/plugins, semantic roles and theme tokens. Add reusable builders, components, styles and plugins when a requirement needs an extension. Project refactoring and theme refactoring have separate workflows.
 
+For setup, linking, building and live verification, start with [Run and test JAML](wiki/running-and-testing.md). It separates existing applications, packaged playgrounds and framework source checkouts. For native composition decisions, start with [Think in JAML](wiki/JAML/purpose-and-composition.md).
+
 ## Install
 
 With Node.js and npm available, install through the [skills CLI](https://github.com/vercel-labs/skills):
@@ -38,7 +40,7 @@ JAML expressions, handlers and plugins are executable application code. Follow t
 
 ## Check and package
 
-Node.js 22+ and `tar` are required for repository tooling.
+Node.js 22+ and `tar` are required for repository tooling. Run these commands from the jaml-skills root; they check/package documentation and the skill, not the Jam-UI runtime. Here `npm test` is a finite test suite. The framework repository uses different build and development-server commands in its own README.
 
 ```sh
 npm run check
@@ -74,6 +76,19 @@ The [MIT license](LICENSE) covers authored documentation, examples and repositor
 
 ## Linked local documentation builds
 
-Register this checkout with `npm link`, then link `@jam/skills` from the consuming Jam-UI checkout. The local consumer reads `wiki/`, `LICENSE` and `compatibility.json` directly; editing documentation does not require `npm run build` or copying a vendor archive before the next consumer build. This package link is separate from agent skill-folder links. In an existing dependency tree, preview npm's changes before linking and avoid unrelated dependency rewrites.
+Select the documentation revision reviewed for your framework, then register this checkout and preview the consumer link. Replace both placeholder paths with existing checkouts:
+
+```sh
+JAML_SKILLS_ROOT="/absolute/path/to/jaml-skills"
+JAM_UI_ROOT="/absolute/path/to/jam-ui"
+cd "$JAML_SKILLS_ROOT"
+npm link
+cd "$JAM_UI_ROOT"
+npm link @jam/skills --no-save --dry-run
+```
+
+After reviewing the preview, run `npm link @jam/skills --no-save` in the consumer. Follow its README, **Build & Test**, to verify the resolved source, handle unrelated npm dependency changes, build and start the real playground. The resolver must identify the intended documentation checkout and compatible framework baseline; recheck after changing Node/npm or reinstalling dependencies.
+
+The local consumer reads `wiki/`, `LICENSE` and `compatibility.json` directly; editing documentation does not require `npm run build` or copying a vendor archive before the next consumer build. This package link is separate from agent skill-folder links. In an existing dependency tree, preview npm's changes before linking and avoid unrelated dependency rewrites.
 
 Jam-UI requires `node_modules/@jam/skills` to link to this source checkout in every build environment. A missing or broken link raises a setup error; there is no lock/vendor/cache fallback. CI and release setup must provide a reviewed documentation revision and link it before building. Final outputs copy public wiki assets, so shipped packages do not depend on that local link. The maintenance skill remains outside consumer artifacts and MCP output.

@@ -6,6 +6,8 @@ For style/plugin contracts, use the [style index](Styles/index.md) or [plugin in
 
 For new UI or reusable modules, start with [Think in JAML: purpose and composition](JAML/purpose-and-composition.md). It shows how to choose a semantic owner, reuse its native parts and compose independent business modules before choosing their geometry.
 
+For setup, Wiki linking, builds, a first runnable example or a page that fails to load, start with [Run and test JAML](running-and-testing.md).
+
 ## What the layers do
 
 | Concept                 | What it owns                                                       | Read when                                                                                                                                               |

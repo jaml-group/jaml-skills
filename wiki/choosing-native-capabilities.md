@@ -110,6 +110,20 @@ For Pin/Archive and similar commands, compose [native action buttons in a dropdo
 
 See [popup composition](Plugins/popup.md), [observers](Plugins/observe.md), [notifications](Styles/notify-style.md) and [shortcuts](Plugins/shortcut.md). Prefer a native popup's lifecycle over independently managed floating DOM. Use `popup.title` to replace existing native titles, or `popup.tip` for explicit tip content; read their target-matching and restoration contracts. Keep required help reachable through the product's keyboard/focus flow.
 
+## Confirmations and editing dialogs
+
+Choose the interaction owner before its appearance:
+
+| Purpose                                         | Choose                                                                                                                                                                                                             | What remains with the application                                                                                            |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Confirm beside the triggering control           | [`jam.popupYesNo`](utils.md#jampopupyesnotarget-prompt-onyes-onno-option)                                                                                                                                          | The action and any required focus/keyboard flow around the popup.                                                            |
+| Ask a modal Yes/No question                     | [`jam.modalYesNo`](utils.md#jammodalyesnocontainer-prompt-onyes-onno-styles-option)                                                                                                                                | The action, presentation host and focus policy; the helper owns dismissal and settles the decision once.                     |
+| Customize the confirmation definition           | [`jaml.yesNoDialog`](utils.md#jamlyesnodialogprompt-onyes-onno-styles-options)                                                                                                                                     | Mounting, dismissal and decision lifetime through a popup/modal owner.                                                       |
+| Edit a business value, such as a workspace path | A native [`card`](JAM-UI/card.md) with `cap`, the appropriate native [`input`](JAM-UI/input.md), and the task action; present with [`jam.renderModal`](utils.md#jamrendermodalcontainer-option-config) when needed | Validation, submission, placement, dismissal and focus policy. The card owns its header; the input owns its caption/control. |
+| Provide a movable/resizable card window         | [`card.modal`](Styles/card-style.md)                                                                                                                                                                               | The window's content and business actions; this style is not a Yes/No decision owner.                                        |
+
+`stylize: 'modal'` identifies a semantic surface. It does not by itself mount an overlay, center it, block the background or manage a decision. Read the selected helper's host, positioning and lifecycle contract. Add extra structure only when it represents a distinct purpose; use native slots for additions to the existing element.
+
 ## Scrolling, deferred rendering and tables
 
 | Content model                                 | Choose                                               | Why                                                                                           |

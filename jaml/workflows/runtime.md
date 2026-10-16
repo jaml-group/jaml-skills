@@ -2,6 +2,8 @@
 
 Use current MCP schemas and the package README supplied by the server as the operating contract. Resolve the installed package and skill from the current environment.
 
+For setup from an existing app, a packaged playground or a framework checkout, follow [Run and test JAML](../references/running-and-testing.md). It also provides the first smoke test and build/resource troubleshooting.
+
 ## Skill verification
 
 At first MCP use in a conversation, run `jaml-playground-mcp skill-info --json` and compare the installed skill's `version.json` → `framework.version` with the reported `framework.version`. Share this check between playground and copilot; recheck only in a new conversation or after a relevant package change. New MCP releases retain framework-baseline metadata and install the skill separately; older releases also report a bundled path. The result is an expected baseline, not a scan of the installed skill or a live latest-version query.
