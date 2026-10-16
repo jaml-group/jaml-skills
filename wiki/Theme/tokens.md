@@ -30,7 +30,7 @@ Use this split:
 
 Jam-UI registers built-in `{ sys, cmpt, chart }` token layers when `initTheme()` runs, before it loads or applies a theme. The runtime projects `sys` at the top level and keeps component and chart values under `Tokens.cmpt` and `Tokens.chart`. Therefore paths such as `Tokens.space.xl`, `Tokens.border.width.m`, `Tokens.cmpt.gridline.color`, and `Tokens.chart.textStyle.color` are available during normal app rendering and after a theme is unapplied. `Tokens.sys`, `Tokens.ref`, `Tokens.light`, and `Tokens.dark` do not exist.
 
-On current `main`, a swatch supplies the complete active `sys` tree. `setRuntimeTokens()` spreads that tree directly onto `Tokens`; it deep-merges only `cmpt` and `chart` over their built-in layers. Build a complete `sys` in the authoring module by merging exported `sysLit` with your changes before `tokenize()`, as shown in [Token Module Contract](#token-module-contract). A sparse `sys` registration can leave JavaScript consumers such as `Tokens.color` undefined even while the built-in CSS variables remain available.
+In the documented runtime, a swatch supplies the complete active `sys` tree. `setRuntimeTokens()` spreads that tree directly onto `Tokens`; it deep-merges only `cmpt` and `chart` over their built-in layers. Build a complete `sys` in the authoring module by merging exported `sysLit` with your changes before `tokenize()`, as shown in [Token Module Contract](#token-module-contract). A sparse `sys` registration can leave JavaScript consumers such as `Tokens.color` undefined even while the built-in CSS variables remain available.
 
 `Theme.currTokenLayers` exposes the selected swatch's resolved registration layers. Its `sys` and `cmpt` contain the selected mode overrides, while optional `light` and `dark` hold generated sparse pairs. It is not a complete built-in fallback view. Unapplying a theme restores the built-in `Tokens` projection and clears these inspection layers to an empty object; `Theme.currTokenDarkMode` becomes `undefined`. Use `Tokens` for normal active values.
 
@@ -231,16 +231,16 @@ Keep the distinction between categories:
 
 The built-in baseline provides `typography.fontSize` keys `xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`, `3xl`, and `4xl`; `typography.fontWeight` keys `regular`, `medium`, `semibold`, and `bold`; and `typography.lineHeight` keys `tight`, `default`, and `loose`. Its `timing` keys mirror the named curves in [TimingBeziers](../Plugins/animation.md#timingbeziers--named-easing-curves).
 
-Build shadows in `sys.mjs`, not by reassembling private `x`/`y`/`blur` variables in SCSS:
+Build shadows in `sys.mjs` using the geometry primitives above and semantic shadow-color decisions owned here. This example uses a neutral translucent shadow and an accent-derived primary shadow. Keep colors out of `ref`, and do not reassemble private `x`/`y`/`blur` variables in SCSS:
 
 ```js
-import { shadowToken } from '@jam/jam-ui';
+import { acToken, shadowToken } from '@jam/jam-ui';
 
 const shadow = {
     none: 'none',
-    s: shadowToken(ref.shadow.x[0], ref.shadow.y[2], ref.shadow.blur[5], ref.shadow.color[10]),
+    s: shadowToken(ref.shadow.x[0], ref.shadow.y[1], ref.shadow.blur[2], 'hsl(0 0% 0% / 0.1)'),
     primary: {
-        s: shadowToken(ref.shadow.x[0], ref.shadow.y[2], ref.shadow.blur[5], ref.shadow.color.primary[15])
+        s: shadowToken(ref.shadow.x[0], ref.shadow.y[1], ref.shadow.blur[2], acToken(1, 1, 1, 0.15))
     }
 };
 ```
@@ -279,7 +279,7 @@ Do not add `size` or `sys` to the emitted CSS variable name. Use `s`, `m`, and `
 | ---------------------------------------- | ----------------------------------------------------------- |
 | `button`                                 | `.jam-button-style, .jam-tag-style, jam-input[type="code"]` |
 | `bslot`                                  | `jam-calendar`                                              |
-| `table`                                  | `jam-table`                                                 |
+| `table`                                  | `jam-table, jam-tree`                                       |
 | `checked`                                | `.jam-button-style, jam-switch`                             |
 | `bento`, `gridline`, `stripy`, `divider` | Their corresponding `.jam-*-group` class                    |
 

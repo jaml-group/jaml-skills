@@ -294,7 +294,7 @@ export default {
 
 需要有界的 body 视口和稳定的已配置行高。
 
-使用受支持的动画名称字符串或 false；当前动画回调会对真值调用字符串方法。可变高度详情不使用相同的固定行虚拟化路径。
+将 animation 设为受支持的动画名称字符串或 false；不支持 true。展开的详情高度可变时会暂停固定行虚拟化。
 
 位置参数顺序: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection`.
 

@@ -160,9 +160,9 @@ Because `descStyles` is declared on the indicator itself, `:scope[state=...]` ta
 
 ---
 
-### World clocks with live interval
+### Local clock variants with live interval
 
-Live-updating world clock indicators using `jam.bindInterval()` and `indicator.clock` styles:
+`indicator.clock` displays the browser's local time. The following variants share the same current timestamp; `jam.bindInterval()` ties updates to each element's lifetime. A fixed timestamp offset does not provide named-time-zone or daylight-saving handling.
 
 ```javascript jaml-playground
 export default {
@@ -171,32 +171,26 @@ export default {
     components: [
         {
             type: 'indicator-datetime',
-            icon: '🇨🇳',
-            cap: 'Nanjing',
+            cap: 'Local time',
             styles: ['indicator.clock()'],
-            unit: '+8HRS',
             onmount() {
                 jam.bindInterval(this, () => (this.value = Date.now()), 1000, true, true);
             }
         },
         {
             type: 'indicator-datetime',
-            icon: '🇬🇧',
-            cap: 'UTC',
+            cap: 'Local time — square',
             styles: ['indicator.clock(square:true;labelall:true;continuous:true)'],
-            unit: '+0HRS',
             onmount() {
-                jam.bindInterval(this, () => (this.value = Date.now() - 8 * 60 * 60 * 1000), 1000, true, true);
+                jam.bindInterval(this, () => (this.value = Date.now()), 1000, true, true);
             }
         },
         {
             type: 'indicator-datetime',
-            icon: '🇺🇸',
-            cap: 'Cupertino',
+            cap: 'Local time — digits',
             styles: ['indicator.clock(square:true;continuous:true;digits:true)'],
-            unit: '-15HRS',
             onmount() {
-                jam.bindInterval(this, () => (this.value = Date.now() - 15 * 60 * 60 * 1000), 1000, true, true);
+                jam.bindInterval(this, () => (this.value = Date.now()), 1000, true, true);
             }
         }
     ]

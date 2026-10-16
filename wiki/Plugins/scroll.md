@@ -1,6 +1,6 @@
 # SaigonScroll — Virtual Scrolling Plugin
 
-A virtual scrolling engine that renders only visible rows (plus a configurable padding buffer) within a scrollable container. Ideal for large lists, grids, and tables where rendering all rows would be prohibitively expensive.
+A row-window engine that mounts visible rows and an optional buffer, and removes rows outside that range. Prefer the native table/style integration for ordinary JAML. Direct engine use requires an application-owned layout that preserves total scroll extent and positions each mounted row; the engine does not create spacers or a complete list layout.
 
 ---
 
@@ -28,7 +28,7 @@ interface LazyChild {
 }
 ```
 
-Each row is represented by a `LazyChild` that lazily creates its DOM via `buildDom()`. The engine calls `buildDom` only when the row enters the visible viewport.
+Each row is represented by a `LazyChild` that lazily creates its DOM via `buildDom()`. The base engine calls `buildDom` when an included row has no cached `dom`, including rows in the padding buffer. Keep each `LazyChild` object stable across queries and assign its `dom` in `buildDom`; returning a node alone does not populate the cache.
 
 ---
 
@@ -40,33 +40,35 @@ new SaigonScroll(option: SaigonScrollOption)
 
 ### SaigonScrollOption (extends `RequiredPartial<SaigonScroll, 'fixHeight' | 'getChildrenByRow' | 'getRowNum'>`)
 
-| Option             | Type                                                   | Default     | Description                                                                                      |
-| ------------------ | ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------ |
-| `container`        | `HTMLElement`                                          | —           | The scrollable container element. Required.                                                      |
-| `fixHeight`        | `number`                                               | `0`         | Fixed row height in px. Required. Used to calculate visible rows.                                |
-| `getChildrenByRow` | `(container: HTMLElement, row: number) => LazyChild[]` | —           | Factory for a given row's children. Required.                                                    |
-| `getRowNum`        | `(container: HTMLElement) => number`                   | —           | Returns total number of rows. Required.                                                          |
-| `scrollTarget`     | `HTMLElement`                                          | `container` | Element that receives the scroll event. Use a child if the container has a separate scroll-body. |
-| `throttle`         | `number`                                               | `10`        | Throttle interval (ms) for scroll callback.                                                      |
-| `padding`          | `number`                                               | `0`         | Extra rows rendered above and below the visible range as a buffer.                               |
-| `startRow`         | `number`                                               | `1`         | Initial row to begin rendering from.                                                             |
+| Option             | Type                                                   | Default      | Description                                                                                                                 |
+| ------------------ | ------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `container`        | `HTMLElement`                                          | —            | The scrollable container element. Required.                                                                                 |
+| `fixHeight`        | `number`                                               | `0`          | Fixed row height in CSS pixels. Supply a positive measured value.                                                           |
+| `gap`              | `number`                                               | `0`          | Gap between rows in CSS pixels; included in row pitch and capacity.                                                         |
+| `getChildrenByRow` | `(container: HTMLElement, row: number) => LazyChild[]` | —            | Factory for a given row's children. Required.                                                                               |
+| `getRowNum`        | `(container: HTMLElement) => number`                   | —            | Returns total number of rows. Required.                                                                                     |
+| `scrollTarget`     | `HTMLElement`                                          | Not supplied | Set explicitly, even when it is the same element as `container`. Receives scroll events and supplies viewport measurements. |
+| `throttle`         | `number`                                               | `10`         | Throttle interval (ms) for scroll callback.                                                                                 |
+| `padding`          | `number`                                               | `0`          | Extra rows rendered above and below the visible range as a buffer.                                                          |
+| `startRow`         | `number`                                               | `1`          | Initial row to begin rendering from.                                                                                        |
 
 ---
 
 ## Instance Properties
 
-| Property        | Type          | Default     | Description                                                            |
-| --------------- | ------------- | ----------- | ---------------------------------------------------------------------- |
-| `container`     | `HTMLElement` | —           | Scrollable container.                                                  |
-| `scrollTarget`  | `HTMLElement` | `container` | Scroll event target.                                                   |
-| `fixHeight`     | `number`      | `0`         | Row height in px.                                                      |
-| `throttle`      | `number`      | `10`        | Scroll throttle ms.                                                    |
-| `padding`       | `number`      | `0`         | Buffer rows.                                                           |
-| `startRow`      | `number`      | `1`         | First visible row.                                                     |
-| `scrollingDown` | `boolean`     | `true`      | Whether the user is scrolling downward.                                |
-| `rowCapacity`   | `number`      | `0`         | Number of rows that fit in the visible area. Computed on init.         |
-| `colCapacity`   | `number`      | `0`         | Column capacity (for grid layouts).                                    |
-| `virtual`       | `boolean`     | `true`      | Set to `false` to draw all rows and bypass scroll-window calculations. |
+| Property        | Type          | Default      | Description                                                                                     |
+| --------------- | ------------- | ------------ | ----------------------------------------------------------------------------------------------- |
+| `container`     | `HTMLElement` | —            | Scrollable container.                                                                           |
+| `scrollTarget`  | `HTMLElement` | Not supplied | Explicit scroll event and measurement target.                                                   |
+| `fixHeight`     | `number`      | `0`          | Row height in CSS pixels.                                                                       |
+| `gap`           | `number`      | `0`          | Gap between rows in CSS pixels.                                                                 |
+| `throttle`      | `number`      | `10`         | Scroll throttle ms.                                                                             |
+| `padding`       | `number`      | `0`          | Buffer rows.                                                                                    |
+| `startRow`      | `number`      | `1`          | First visible row.                                                                              |
+| `scrollingDown` | `boolean`     | `true`       | Whether the user is scrolling downward.                                                         |
+| `rowCapacity`   | `number`      | `0`          | Number of rows that fit in the visible area. Calculated on the first draw or a resize callback. |
+| `colCapacity`   | `number`      | `0`          | Column capacity (for grid layouts).                                                             |
+| `virtual`       | `boolean`     | `true`       | Set to `false` to draw all rows and bypass scroll-window calculations.                          |
 
 ### Computed Properties
 
@@ -82,7 +84,7 @@ new SaigonScroll(option: SaigonScrollOption)
 
 ### `init(): this`
 
-Start the virtual scroll engine. Attaches scroll and resize listeners and performs the initial lazy draw. Returns `this` for chaining.
+Attach the scroll listener to `scrollTarget` and a `resize` event listener to `container`. Returns `this` for chaining. Call `await lazyDraw(false)` explicitly for the initial draw. Plain DOM elements do not emit framework resize events automatically; the integration must forward relevant size changes to `resizeCallback`.
 
 ```typescript signature
 init(): this
@@ -90,7 +92,7 @@ init(): this
 
 ### `destroy(): void`
 
-Tear down — removes scroll and resize listeners.
+Remove the scroll and resize listeners. This does not remove rendered rows or cancel row insertions already scheduled by `lazyDraw(true)`; the application owns its host and draw lifetime.
 
 ```typescript signature
 destroy(): void
@@ -108,12 +110,12 @@ lazyDraw(scrolling: boolean): Promise<void>
 | ----------- | --------- | --------------------------------------------------------------------- |
 | `scrolling` | `boolean` | Whether this draw is triggered by scrolling (affects DOM scheduling). |
 
-### `appendRow(row: number, scrolling: boolean): void`
+### `appendRow(row: number, scrolling: boolean): Promise<void>`
 
-Build and append all children for a specific row.
+Build and append children for a row if it is still included when the work runs. With `scrolling: true`, insertion is delayed by `throttle`; the returned promise settles after that work.
 
 ```typescript signature
-appendRow(row: number, scrolling: boolean): void
+appendRow(row: number, scrolling: boolean): Promise<void>
 ```
 
 ### `append(child: LazyChild, scrolling: boolean): void`
@@ -126,7 +128,7 @@ Remove a single `LazyChild`'s DOM from the container.
 
 ### `calcRowCapacity(): number`
 
-Calculate how many rows fit in the visible area (based on `scrollTarget.clientHeight / fixHeight`).
+Calculate how many rows fit in the visible area (based on `Math.ceil(scrollTarget.clientHeight / (fixHeight + gap))`).
 
 ### `shouldDraw(row: number): boolean`
 
@@ -142,7 +144,7 @@ Returns `true` if the row is outside the padded range.
 
 ### `scrollCallback`
 
-Throttled scroll handler. Recalculates `startRow` based on `scrollTop / fixHeight` and triggers `lazyDraw`. Automatically bound via `makeThrottle`.
+Throttled scroll handler. Recalculates `startRow` as `Math.floor(scrollTop / (fixHeight + gap)) + 1` and triggers `lazyDraw`. Automatically bound via `makeThrottle`.
 
 ### `resizeCallback`
 
@@ -150,87 +152,33 @@ Handles container resize. Recalculates `rowCapacity` and triggers `lazyDraw` if 
 
 ---
 
-## Imperative Examples
+## Direct integration
+
+The following adapter assumes the application has already created a bounded scroll viewport, preserved the total scroll extent, and positioned its stable row objects at their logical row offsets. Supply `fixHeight` and `gap` as measured CSS pixels at this API boundary. Author the surrounding layout in `rem`; this is an integration fragment, not a standalone virtual-list example.
 
 ```ts
-import { SaigonScroll } from 'jam-ui';
+import { type LazyChild, SaigonScroll } from '@jam/jam-ui';
 
-class MyItem implements LazyChild {
-    dom?: HTMLElement;
-    constructor(
-        public row: number,
-        private text: string
-    ) {}
+async function mountRows(container: HTMLElement, scrollTarget: HTMLElement, rows: LazyChild[][], fixHeight: number, gap = 0) {
+    const _scroll = new SaigonScroll({
+        container,
+        scrollTarget,
+        fixHeight,
+        gap,
+        padding: 5,
+        throttle: 16,
+        getChildrenByRow: (target, row) => rows[row - 1] ?? [],
+        getRowNum: () => rows.length
+    });
 
-    buildDom(): HTMLElement {
-        const div = document.createElement('div');
-        div.className = 'virtual-row';
-        div.textContent = `${this.text} (row ${this.row})`;
-        this.dom = div;
-        return div;
-    }
-}
-
-// Create 10,000 rows of data
-const allData: MyItem[] = Array.from({ length: 10000 }, (_, i) => new MyItem(i + 1, `Item ${i + 1}`));
-
-const vs = new SaigonScroll({
-    container: document.getElementById('scroll-container')!,
-    fixHeight: 40,
-    padding: 5,
-    throttle: 16,
-    getChildrenByRow: (container, row) => {
-        const item = allData[row - 1];
-        return item ? [item] : [];
-    },
-    getRowNum: () => allData.length
-});
-
-vs.init();
-
-// Later, tear down
-// vs.destroy();
-```
-
-### Table-style virtual scroll
-
-```ts
-const vs = new SaigonScroll({
-    container: document.getElementById('table-body')!,
-    scrollTarget: document.getElementById('table-wrapper')!,
-    fixHeight: 36,
-    padding: 3,
-    getChildrenByRow: (container, row) => {
-        const data = dataset[row - 1];
-        const cells = data.map((value) => {
-            const td = document.createElement('td');
-            td.textContent = value;
-            return { buildDom: () => td, dom: td, row };
-        });
-        return cells;
-    },
-    getRowNum: () => dataset.length
-});
-
-vs.init();
-```
-
----
-
-## Style Examples
-
-```json jaml-playground
-{
-    "type": "table",
-    "styles": ["interact.virtualScroll(height:2.5rem;padding:5)"],
-    "data": [["col1"], ["row1"]]
+    _scroll.init();
+    await _scroll.lazyDraw(false);
+    return _scroll;
 }
 ```
 
-With table-specific overrides:
+Each child’s `row` is one-based, and repeated queries must return the same child objects. When viewport geometry changes, forward the change through the native resize event or call `scroll.resizeCallback()`. When data changes, update the integration’s row identities, geometry and total extent before redrawing. Stop scheduling new draws and account for any pending draw promises before releasing the host; then call `scroll.destroy()` and remove application-owned observation and layout resources.
 
-```javascript
-// Table with fixed layout and virtual scroll enabled
-```
+For native tables, use the [fixed row-height style](../Styles/table-style.md#entry-table-fixedrowheight), which supplies the table’s cell lookup and layout integration. Do not attach a second engine to a table already owned by that style.
 
-`appendRow(row, scrolling)` and `lazyDraw(scrolling)` return promises that resolve after the requested rows are appended. With `virtual: false`, the padded range covers all rows.
+`appendRow(row, scrolling)` and `lazyDraw(scrolling)` return promises that resolve after their requested insertion work. With `virtual: false`, the padded range covers all rows.

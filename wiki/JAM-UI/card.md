@@ -56,9 +56,9 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
     "cap": "Server Status",
     "icon": "🖥️",
     "components": [
-        { "type": "indicator", "cap": "CPU", "value": "45%", "color": "green" },
-        { "type": "indicator", "cap": "Memory", "value": "72%", "color": "orange" },
-        { "type": "indicator", "cap": "Disk", "value": "28%", "color": "blue" }
+        { "type": "indicator", "cap": "CPU", "value": "45%", "color": "hsl(120 100% 25%)" },
+        { "type": "indicator", "cap": "Memory", "value": "72%", "color": "hsl(39 100% 50%)" },
+        { "type": "indicator", "cap": "Disk", "value": "28%", "color": "hsl(240 100% 50%)" }
     ]
 }
 ```
@@ -69,16 +69,17 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 export default {
     type: 'card',
     cap: 'Data Panel',
+    vars: { refreshCount: 0 },
     components: [
         {
             type: 'button-cta',
             cap: 'Refresh',
             slot: 'extra',
             onclick: function () {
-                this.model.reload();
+                this.model.vars.refreshCount++;
             }
         },
-        { type: 'table', data: [] }
+        { type: 'indicator', cap: 'Refresh count', value: '{{refreshCount}}' }
     ]
 };
 ```
@@ -88,7 +89,7 @@ export default {
 ```json jaml-playground
 {
     "type": "card",
-    "components": [{ "type": "chart", "cap": "Pie", "data": [] }]
+    "components": [{ "type": "label", "cap": "Body content without a card title" }]
 }
 ```
 
@@ -101,7 +102,7 @@ When title, icon, and cap content are all absent, the card collapses its title r
     "type": "card",
     "cap": "Styled Card",
     "icon": "🎨",
-    "styles": ["css(max-width:400px;margin:1rem)", "shadow.m"],
+    "styles": ["css(max-width:25rem;margin:1rem)", "shadow.m"],
     "components": [{ "type": "element", "value": "Content inside a styled card" }]
 }
 ```

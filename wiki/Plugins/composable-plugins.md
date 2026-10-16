@@ -14,23 +14,24 @@ Composable layout editing
 
 Install a configuration-driven dashboard/card composition.
 
-Loads a supplied configuration array or the stored configuration, builds a CurrantComposable instance and registers generated routes on the global router.
+Requires an explicitly supplied configuration array, creates the dashboard composition and registers generated routes on the global router. Missing or non-array config skips initialization; no stored configuration is loaded automatically.
 
 Requires the composable configuration shape and global router; resource cards may load declared modules.
 
 This is an application composition facility with shared/global state, not a small local layout decorator. There is no matching route-removal callback in this plugin.
 
-Positional order: `config`.
+Positional order: `config` → `basePath`.
 
 | Argument | Type | Contract |
 | --- | --- | --- |
 | `config` | `any` | Composable layout configuration |
+| `basePath` | `functionOrString` | Base URL prefix for module-group JSON resources, or a function returning that prefix. Include the trailing separator required by the resource path. |
 
-A dashboard composition engine that renders an editable grid-based layout. Cards (widgets) can be dragged, resized, and closed by end users. Layout configuration is persisted to localStorage and auto-loaded on subsequent visits.
+A dashboard composition engine that renders an editable grid-based layout. Cards (widgets) can be dragged, resized, and closed by end users. The application owns saving and restoring its layout configuration.
 
-Internally creates a `CurrantComposable` instance and registers routes for each page configuration via `rambutan.addRoutes()`.
+Registers routes for each page configuration through the shared router.
 
-When configuration is omitted, it is loaded from localStorage.
+Supply `config` explicitly as an array; missing or non-array configuration skips initialization. `basePath` optionally selects the module-group resource prefix. Route lifetime and persistence remain application-owned.
 
 Each page config supports:
 
@@ -54,7 +55,9 @@ Each card in `cards`:
 
 Every rendered card is assigned `stylize: 'tile'`, so it receives the active theme's tile role styling regardless of whether it comes from an inline resource, a lazy-loaded resource, or an iframe.
 
-```javascript jaml-playground
+This integration requires an application-owned router and navigation to the configured route; it does not render a standalone preview.
+
+```javascript
 export default {
     type: 'container',
     styles: ['size.fullsize'],
@@ -90,4 +93,5 @@ export default {
         })
     ]
 };
+
 ```

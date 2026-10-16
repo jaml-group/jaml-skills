@@ -67,29 +67,32 @@ Positional order: `display` → `position` → `width` → `height` → `minWidt
 
 Hover marquee
 
-Pointer hover moves overflowing single-line text from its start to its end at constant speed, holds for 1000 ms by default, then jumps to the start and repeats forward. Default speed is 48 pixels/s. Pointer leave resets immediately. RTL uses its negative scroll origin.
+Waits 500 ms by default before initial movement. Later loop iterations do not repeat this startup delay. Pointer hover moves overflowing single-line text from its start to its end at constant speed, holds for 1000 ms by default, then jumps to the start and repeats forward. Default speed is 48 pixels/s. Pointer leave resets immediately. RTL uses its negative scroll origin.
 
-Unmount/unplug cancels pending animation and removes pointer/media subscriptions. Layout changes restart only when geometry changes; fitting text stays still. Live reduced-motion preference stops motion and retains the static fade.
+Unmount/unplug cancels pending animation and restores target styles/mask. Selector replacement or removal releases the previous target and follows a later match; each new target gets the initial delay. Layout changes restart only when geometry changes; fitting text stays still. Live reduced motion stops movement and retains the static fade.
 
-Includes mask.overflow with listenScroll:false and a default 1.5rem fade. The animation refreshes overflow state directly without a native scroll listener. Apply to the actual bounded clipping element; no extra moving wrapper, duplicate text or separate mask is needed.
+Uses the native overflow mask and shared geometry observer, with a default 1.5rem fade and no native scroll listener. Hover belongs to the styled owner; selector chooses the scrolling descendant. For a native caption use selector: ":scope > [slot=cap]" so nested action captions are excluded. No extra label, duplicate text or separate mask is needed.
 
-Sets overflow:hidden, white-space:nowrap and scroll-behavior:auto while applied. Supply the target width. Does not target a nested caption automatically or expose child/slot/agent menu variants. Nonpositive or nonfinite speed disables motion; negative/nonfinite hold becomes zero. Do not combine with another owner that moves the same scroll position.
+Sets clipping, nowrap and immediate scroll behavior while mounted. A selected descendant additionally gets display:block and min-width:0; the caller supplies bounded owner geometry. A missing selector match is inactive, never a fallback to scrolling the owner. Selectors search light DOM only; there are no child/slot/agent menu variants. Nonpositive or nonfinite speed disables motion; negative/nonfinite hold becomes zero. Avoid competing scroll-position owners.
 
-Positional order: `speed` → `hold` → `size`.
+Positional order: `speed` → `hold` → `size` → `delay` → `selector`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
 | `speed` | `number` | `48` | Constant speed in pixels per second |
 | `hold` | `number` | `1000` | End hold in milliseconds |
 | `size` | `numberOrString` | `1.5` | Mask fade length; numeric values use rem<br>Unit: `rem` |
+| `delay` | `number` | `500` | Initial delay in milliseconds; default 500, zero starts immediately |
+| `selector` | `string` | Not supplied | CSS selector for the first light-DOM descendant to scroll; omitted uses the hovered owner |
 
-For sidebar conversation names, use `hover.marquee(speed:48;hold:5000)` on the actual bounded title element. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
+For sidebar conversation names, use `Styles.hover.marquee({ selector: ":scope > [slot=cap]", speed: 48, hold: 5000 })` on the owning native label or button. Hovering the owner scrolls only its direct caption. Omit selector when the owner itself is the clipping box. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
 
 ```javascript jaml-playground
 export default {
-    type: 'container',
-    styles: ['css(display:block;width:16rem;height:2rem;padding:0)', 'hover.marquee(speed:48;hold:5000;size:1.5rem)'],
-    components: [{ type: 'label', cap: 'A conversation title that needs more room in the sidebar', styles: ['css(display:inline;white-space:nowrap)'] }]
+    type: 'label',
+    icon: '💬',
+    cap: 'A conversation title that needs more room in the sidebar',
+    styles: ['css(width:16rem)', Styles.hover.marquee({ selector: ':scope > [slot=cap]', speed: 48, hold: 5000 })]
 };
 ```
 

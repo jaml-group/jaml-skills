@@ -1,10 +1,10 @@
 # LimeLog — Logging Utility
 
-`LimeLog` is a structured logging utility that wraps `console.*` methods with timestamped, level-based prefixes. It is exposed globally as `lime`, which additionally acts as a `Proxy` that accepts any valid [W3C CSS color name](https://www.w3.org/TR/css-color-3/#svg-color) as a method — useful for color-coded debug output.
+`LimeLog` wraps `console.*` methods with timestamped, level-based prefixes. The browser singleton `lime` also accepts color strings as method names for colored debug output. Access the class as `jam.LimeLog`, or import it from `@jam/jam-ui`.
 
 ## Log Levels
 
-Log levels are defined on `LimeLog.LEVEL` and control which messages are emitted.
+Log levels are defined on `LimeLog.LEVEL`. They label messages and configure debug behavior; they are not an output threshold for ordinary log methods.
 
 | Level  | `value` | Name     |
 | ------ | ------- | -------- |
@@ -15,7 +15,7 @@ Log levels are defined on `LimeLog.LEVEL` and control which messages are emitted
 | WARN   | `3`     | `WARN`   |
 | ERROR  | `4`     | `ERROR`  |
 
-Messages with a level value below the current `logLevel` are still dispatched (the level controls prefix behaviour); `debugMode` gates prompter output and the `unreachable` helper.
+Ordinary `log`, `info`, `warn`, `error`, `debug` and `trace` calls are dispatched regardless of `logLevel`; the browser console may apply its own filters. `debugMode` enables the debugger stop in `unreachable` and, together with development mode, enables `prompt`. `unreachable` still logs an error when debug mode is off and never throws by itself.
 
 ## Global API: `lime.*`
 
@@ -33,19 +33,19 @@ Messages with a level value below the current `logLevel` are still dispatched (t
 
 ## Static Configuration
 
-| Property            | Type              | Description                                                                          |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------ |
-| `LimeLog.logLevel`  | `number \| Level` | Get / set the current log level. Setting with a number looks up the closest `Level`. |
-| `LimeLog.debugMode` | `boolean`         | Convenience getter/setter. Sets level to `DEBUG` (true) or `INFO` (false).           |
+| Property            | Type              | Description                                                                                          |
+| ------------------- | ----------------- | ---------------------------------------------------------------------------------------------------- |
+| `LimeLog.logLevel`  | `number \| Level` | Get the current `Level`; set a `Level` or an exact numeric value. Unknown numbers fall back to INFO. |
+| `LimeLog.debugMode` | `boolean`         | Convenience getter/setter. Sets level to `DEBUG` (true) or `INFO` (false).                           |
 
-## Color-name Proxy Behaviour
+## Color-based proxy behavior
 
-When `lime` is called with a property name that is a valid W3C CSS color name (e.g. `lime.limegreen(...)`), the proxy intercepts the call and renders the arguments with a coloured background badge at PROMPT level:
+A valid color string can select a colored background badge. These calls use `console.debug` with a PROMPT label, independently of `lime.prompt` gating:
 
 ```js
-lime.limegreen('Server started on port', 8080);
+lime['hsl(120 61% 50%)']('Server started on port', 8080);
 // => [2025-06-15 10:30:00.123][PROMPT][module.js] Server started on port 8080
-//    (rendered with a limegreen-tinted background badge via chroma-js)
+//    (rendered with a tinted, translucent background badge)
 ```
 
 ## Constructor
@@ -61,7 +61,7 @@ If no `logger` name is provided, the calling file path is automatically inferred
 Named exports are also available for direct import:
 
 ```ts
-import { log, info, warn, error, debug, trace, unreachable, print } from 'jam-ui/plugins/LimeLog';
+import { debug, error, info, log, print, trace, unreachable, warn } from '@jam/jam-ui';
 ```
 
 ## Examples
@@ -75,7 +75,7 @@ lime.info('Loading module', moduleName);
 lime.warn('Deprecated API used');
 lime.error('Failed to connect', err);
 
-// DEBUG level (only visible when debugMode is on)
+// Dispatched to console.debug regardless of debugMode
 lime.debug('State tree:', state);
 ```
 
@@ -83,30 +83,31 @@ lime.debug('State tree:', state);
 
 ```ts
 // Enable debug mode
-LimeLog.debugMode = true;
-lime.debug('This will now appear');
+jam.LimeLog.debugMode = true;
+lime.prompt('Shown in development mode with debugMode enabled');
 
 // Use numeric level
-LimeLog.logLevel = 3; // WARN
-lime.info('Hidden'); // not shown (info < warn)
-lime.warn('Visible'); // shown
-lime.error('Also visible');
+jam.LimeLog.logLevel = 3; // WARN; disables debugMode
+lime.info('Still dispatched'); // Ordinary methods are not filtered
+lime.warn('Warning');
+lime.error('Error');
 ```
 
 ### Using unreachable
 
 ```ts
 function exhaustiveCheck(x: never): never {
-    return lime.unreachable('Unexpected value:', x);
+    lime.unreachable('Unexpected value:', x);
+    throw new Error('Unexpected value');
 }
 ```
 
 ### Color-coded debug markers
 
-```ts
-lime.crimson('Critical path entered');
-lime.seagreen('Optimization applied');
-lime.goldenrod('Timer fired');
+```js
+lime['hsl(348 83% 47%)']('Critical path entered');
+lime['hsl(146 50% 36%)']('Optimization applied');
+lime['hsl(43 74% 49%)']('Timer fired');
 ```
 
 ### Creating a scoped logger
@@ -114,6 +115,8 @@ lime.goldenrod('Timer fired');
 New instances can be created for a specific module:
 
 ```ts
+import { LimeLog } from '@jam/jam-ui';
+
 const logger = new LimeLog('MyModule');
 logger.info('Module initialised');
 ```

@@ -28,7 +28,7 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 | -------------- | ------------------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `value`        | `string \| number`             | —              | Selected date. Accepts a date string (`yyyy-MM-dd`) or numeric timestamp (ms). Timestamps are converted to the pattern format on set. |
 | `defaultValue` | `string \| number \| Function` | —              | Initial date value. Pass `"()=>Date.now()"` for the current date.                                                                     |
-| `pattern`      | `string`                       | `'yyyy-MM-dd'` | Output format pattern. Applied when a numeric timestamp is passed as `value`.                                                         |
+| `pattern`      | `string`                       | `'yyyy-MM-dd'` | Conversion pattern used when assigning a numeric timestamp; use the native date syntax `yyyy-MM-dd`.                                  |
 | `cap`          | `string`                       | —              | Label text above the input.                                                                                                           |
 
 ---
@@ -36,8 +36,8 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 ## Value handling
 
 -   If `value` is a numeric timestamp, it is converted via `formatTime(new Date(value), pattern)`.
--   The underlying `<input type="date">` always stores values in `yyyy-MM-dd` format internally.
--   The `pattern` param affects only the formatted output; the native agent input format is unchanged.
+-   Strings pass through to the native input. The browser requires `yyyy-MM-dd`; an incompatible converted or supplied string can leave the native control empty.
+-   `pattern` acts during numeric assignment, not when reading `getValue()`. Use a separate display formatter when a human-readable date must differ from the native input value.
 
 ---
 

@@ -134,7 +134,7 @@ export default [
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `width` | `numberOrString` | 运行时决定 (number) | 下划线粗细，不是长度。传入以 px 为单位的数字，或 auto（取选中目标的边框宽度，至少 2 px）。默认值为运行时换算为像素的 0.25 rem；opaque 数字 defaultMetadata 表示计算所得默认值，不代表缺失或必填参数。 |
+| `width` | `numberOrString` | 运行时决定 (number) | 下划线粗细，不是长度。传入以 px 为单位的数字，或 auto（取选中目标的边框宽度，至少 2 px）。默认值为运行时换算为像素的 0.25rem；此参数可省略。 |
 | `glow` | `number` | `false` | 发光模糊半径，单位 px。正数启用，0 关闭；解析后的默认值 false 同样关闭发光，这是运行时默认值，不表示必须传入布尔值。 |
 
 Optional underline below the checked option. Same args as `frame`, with `width` default `'0.25rem'`. This is a visual treatment, not a tab/panel or keyboard contract.

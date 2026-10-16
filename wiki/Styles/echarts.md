@@ -5476,7 +5476,7 @@ Control animation for a mark-line or mark-point annotation.
 
 Writes animation enabled, delay, duration and easing at the chosen annotation owner.
 
-The type profile misspells optKey as optKet, so type is emitted literally instead of animationType; do not promise that mapping.
+The type argument does not configure animationType in this runtime; do not use it to select that animation effect.
 
 Positional order: `animation` → `delay` → `duration` → `type` → `easing`.
 
@@ -5572,7 +5572,7 @@ Control animation for a mark-line or mark-point annotation.
 
 Writes animation enabled, delay, duration and easing at the chosen annotation owner.
 
-The type profile misspells optKey as optKet, so type is emitted literally instead of animationType; do not promise that mapping.
+The type argument does not configure animationType in this runtime; do not use it to select that animation effect.
 
 Positional order: `animation` → `delay` → `duration` → `type` → `easing`.
 

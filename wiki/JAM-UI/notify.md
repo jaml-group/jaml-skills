@@ -184,9 +184,11 @@ Override via `NutmegNotify.config({ levels: { info: { icon: 'ℹ️', cap: 'Info
 
 ## Examples
 
-### Notification on button click
+### Notification after saving
 
-```javascript jaml-playground
+Integration example: provide an application `save()` function that returns a promise. The success message appears after it resolves; a rejected save displays an error.
+
+```javascript
 export default {
     type: 'button',
     cap: 'Save',

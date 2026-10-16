@@ -83,9 +83,31 @@ Set `stylize` in the JAML definition so the framework processes it and supplies 
 
 An embedded widget, preview, or Jam application inside another page can intentionally render into an existing host, for example `jaml('#widget-host', view)`. Preserve that host's sizing, lifecycle and ownership boundary, and check theme selectors against the actual embedding structure. Direct-body shell recipes do not automatically apply there. This is an explicit integration choice; ordinary JAML containers remain appropriate for content composition.
 
+### Application inspector region
+
+On development runtimes supporting `inspector`, pass a normal JAML option to `jaml.application({ main, inspector, ... }, rootOptions)`. The builder places it at the right of the entire application shell, including header and footer, as a direct child of the single application root. It stays outside an optional `frame` and can coexist with the left `sidebar`. Mount the builder result directly into the existing integration host; no extra native or HTML wrapper is needed.
+
+```js
+jaml.application({
+    sidebar: { components: [{ type: 'label', cap: 'Navigation' }] },
+    header: { components: [{ type: 'label', cap: 'Workspace' }] },
+    main: { components: [{ type: 'label', cap: 'Document' }] },
+    scroll: 'regions',
+    inspector: {
+        stylize: 'panel',
+        styles: ['css(width:20rem;overflow:auto)'],
+        components: [{ type: 'label', cap: 'Inspector' }]
+    }
+});
+```
+
+The inspector retains its authored role, class bindings, children and plugins; the layout adds its placement class. The application owns width, responsive behavior, visibility, resize interaction and inspector scrolling. Use normal visibility bindings or `display:none` to release the occupied width while preserving the model; resizing its authored width reallocates the shell width. The layout stretches the inspector to the full application height. `scroll: 'content'` and `scroll: 'regions'` retain their existing body ownership and do not select inspector scrolling. Supply a width appropriate to the viewport; there is no automatic breakpoint or default panel width.
+
+Omitting `inspector` preserves the existing layout. This capability is development-runtime dependent; verify the target runtime rather than relying on the package version alone. Older runtimes reject the input. Do not append or reparent builder-owned children to emulate it.
+
 ### Composite application hosts
 
-When an application needs a peer region that the selected layout does not provide, an ordinary native `container` may host one `jaml.application(...)` result and that peer, such as a sibling `stylize: 'panel'` inspector. This lets the inspector sit beside the entire application layout, including its header. Keep exactly one `app` role; the composite host does not receive another `stylize: 'app'`. Do not append children to, replace, or reparent the builder's managed regions to invent an unsupported slot.
+When an application needs a peer region that the selected layout does not provide, an ordinary native `container` may host one `jaml.application(...)` result and that peer, such as a custom peer arrangement beyond the supported inspector region. This lets the peer sit beside the entire application layout, including its header. Keep exactly one `app` role; the composite host does not receive another `stylize: 'app'`. Do not append children to, replace, or reparent the builder's managed regions to invent an unsupported slot.
 
 The composite host owns its available size, outer flex/grid arrangement, responsive peer placement and overall lifetime. Give the child layout a bounded region and retain `viewport: false` (the application builder default) so it sizes within the host rather than fixing itself to the browser viewport. Keep its internal region identities, scrolling and lifecycle under the layout owner. Preserve both children when only peer visibility or width changes; release them through the owning model when the host is disposed. Use supported layout options for managed regions. A deliberate override of their grid placement is a separately qualified application layout recipe, not merely a theme appearance change.
 
@@ -629,14 +651,14 @@ jaml.registry.entry('userCard'); // → current registered option or factory
 
 JAM-UI ships a small built-in component registry. These names can be used directly as the JAML `type` value.
 
-| Type                | Description                                                                             | Props                                                         |
-| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `notifycntr`        | Notification container that applies `NutmegNotify.config()` before build                | —                                                             |
-| `themepanel`        | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                                             |
-| `composablebuttons` | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath`                       |
-| `breadcrumb`        | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`, `items`, `onactivate`       |
-| `minimap`           | [Ordered navigation rail with multiple visible items](#minimap-navigation)              | `items`, `orientation`, `tickAlign`, dimensions and callbacks |
-| `dropdown`          | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                                               |
+| Type                        | Description                                                                             | Props                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `notifycntr`                | Notification container that applies `NutmegNotify.config()` before build                | —                                                             |
+| `themebutton`, `themepanel` | [Theme and color-scheme panel](#theme-panel-composition-and-readiness)                  | —                                                             |
+| `composablebuttons`         | Toolbar actions for composable dashboards                                               | `addPageModalPath`, `registerModalPath`                       |
+| `breadcrumb`                | Router breadcrumb built from the nearest installed router or `rambutan`                 | `separator`, `subpath`, `scoped`, `items`, `onactivate`       |
+| `minimap`                   | [Ordered navigation rail with multiple visible items](#minimap-navigation)              | `items`, `orientation`, `tickAlign`, dimensions and callbacks |
+| `dropdown`                  | Tags-based multi-select control that opens a hidden checkbox menu with `jam.dropDown()` | `value`, `data`                                               |
 
 ```javascript jaml-playground
 export default {
@@ -877,28 +899,36 @@ export default jaml.wrapper(
 );
 ```
 
+### Confirmation dialog builder
+
+Use [`jaml.yesNoDialog(prompt, onYes?, onNo?, styles?, options?)`](../utils.md#jamlyesnodialogprompt-onyes-onno-styles-options) for a complete editable confirmation dialog. Its optional `yesCap` and `noCap` fields configure action captions without depending on component positions. `jam.yesNoDialog` remains the same callable for existing integrations. The builder returns JAML; presentation and dismissal belong to the caller.
+
 ### Theme panel composition and readiness
 
-`themepanel` is a registered composition backed by a factory, not an already-expanded element definition. Prefer `{ type: 'themepanel' }` and let the registry expand it when the application builds. The factory reads current theme state, including the body color context, at invocation time; obtaining or calling it during module initialization can be too early. `jaml.registry.entry('themepanel')` returns the registered factory; `jaml.registry.get('themepanel')` invokes it immediately. Neither call is a readiness barrier.
+`jaml.themePanel(options)` returns a complete editable JAML panel definition. Call it after theme readiness, then customize its styles or components before building. The returned definition builds inline by default. For a deferred popup panel, explicitly set `build: false`. For a standard palette button with its own deferred panel, use the `themebutton` CC. The downstream name `themepanel` is an alias of this same opening button; it does not return the editable panel. Use `jaml.themePanel()` when you need the panel definition.
 
 Build the composition after the application's normal framework startup and theme readiness. For this composition, await `jam.themeReady` using the [runtime readiness contract](../utils.md#jamthemeready). The updated development entry exposes that promise synchronously and starts initialization at `DOMContentLoaded` for loading documents or in a microtask for an already-ready document. Older bundles assign it later; awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
 
-The built-in panel defaults to `build: false` for popup use. Set `build: true` for an inline panel. This runnable example assumes the playground's already-initialized runtime:
+The builder defaults to `build: true` for inline use. This runnable example assumes the playground's already-initialized runtime:
 
 ```javascript jaml-playground
 export default {
     type: 'container',
-    components: [{ type: 'themepanel', build: true }]
+    components: [jaml.themePanel()]
 };
 ```
 
 The panel reads and publishes the framework's saved theme choices, including `jam-darkmode@milo` (`true`, `false`, or `'auto'`). Integrate it with the application's existing preference owner; opening it is not a reason to overwrite saved light/dark or system choices with a second default. See [system theme and saved choices](../color.md#system-theme-and-saved-choices). Full-page mounting still follows the [standalone application root](#standalone-application-root); embedded surfaces retain their [host boundary](#embedded-application-hosts).
 
-The factory also accepts an optional `confirmation` object for both theme-switch and theme-reset dialogs. After readiness, use `jaml.registry.get('themepanel', [{ confirmation: { dimmer: true, blur: false } }])` for dimming without blur. This can be combined with `icons` and `iconStyles`; keep the native `theme-config` reference and set `build: true` when embedding the resulting definition inline. Omitting `confirmation` preserves the current curtain defaults. The panel keeps ownership of applying the saved theme on confirmation and restoring its previous selection on cancellation. See [`jam.modalYesNo`](../utils.md#jammodalyesnocontainer-prompt-onyes-onno-styles-option) for the shared presentation options. This option requires a runtime that includes confirmation forwarding.
+The factory also accepts an optional `confirmation` object for both theme-switch and theme-reset dialogs. After readiness, use `jaml.themePanel({ confirmation: { dimmer: true, blur: false } })` for dimming without blur. This can be combined with `icons` and `iconStyles`; keep the native `theme-config` reference used by modal confirmation. Supplying `confirmation` selects the modal presentation; `{}` uses its default curtain effects. The panel owns applying the saved theme on confirmation and restoring its previous selection on cancellation. See [`jam.modalYesNo`](../utils.md#jammodalyesnocontainer-prompt-onyes-onno-styles-option) for the shared presentation options. This option requires a runtime that includes confirmation forwarding.
 
-For a packaged runtime, confirm its artifact identity and registration (for example `jaml.registry.has('themepanel')`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.
+On development runtimes with popup-based theme confirmation, omitting `confirmation` uses an anchored popup with Cancel and Proceed. A pending confirmation also closes when its owner or an ancestor is hidden, unmounted, or destroyed. The current theme remains selected until Proceed; Cancel, Escape, or clicking outside dismisses without changing the saved theme. Proceed invokes the existing theme preference and page-reload flow. Runtimes that support confirmation forwarding but predate popup-based confirmation use a modal with the default curtain effects when the option is omitted. Verify the target runtime's confirmation behavior; the package version alone does not identify this change.
 
-A header button can open the existing panel model using its native reference. Keep both components in the same owning model and create them after theme readiness:
+For a packaged runtime, confirm its artifact identity and registration (for example `typeof jaml.themePanel === 'function'`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.
+
+Use `{ type: 'themebutton' }` for the standard opening button. Its optional factory argument accepts the same `icons`, `iconStyles`, and `confirmation` panel options. Each button owns its panel.
+
+A custom header button can open the existing panel model using its native reference. Keep both components in the same owning model and create them after theme readiness:
 
 ```javascript jaml-playground
 export default {
@@ -911,7 +941,7 @@ export default {
                 jam.popup(this, this.ref('theme-config'));
             }
         },
-        { type: 'themepanel' }
+        { ...jaml.themePanel(), build: false }
     ]
 };
 ```

@@ -642,7 +642,7 @@ For request ownership, option-object refresh and conditional request sharing, se
 
 **Reactive vars loading with `varsURL`**
 
-Load initial `vars` from a remote URL. The response object is assigned to `vars` wholesale on arrival. Unlike the inner `[key]URL` shorthand above, `varsURL` replaces the _entire_ vars dictionary when it resolves.
+Load model data from a remote URL. Each key in the response object is assigned and published through `vars`; existing keys omitted from the response remain. An incoming object-valued key replaces that key’s value, not the entire model dictionary.
 
 ```json
 {
@@ -657,7 +657,9 @@ Any top-level key inside `vars` can be fetched remotely by appending `URL` to th
 
 You can use binder syntax `{{key}}` within these URLs — when the referenced binder keys change, the data is automatically re-fetched. (Be careful not to reference the same key it populates to avoid an infinite loop!)
 
-```javascript jaml-playground
+This integration requires `/api/users/:id` to return an object with a `name` field.
+
+```javascript
 export default {
     type: 'container',
     vars: {
@@ -672,7 +674,9 @@ export default {
 
 The URL value can also be a **request option object** to control method, headers, polling interval, mock fallback, and more:
 
-```javascript jaml-playground
+This integration requires `/api/users` and `mock/users.json` to return `{ list: [...] }`.
+
+```javascript
 export default {
     type: 'table',
     dataURL: {
@@ -681,18 +685,17 @@ export default {
         data: { page: 1, size: 20 },
         headers: { 'X-Token': 'abc' },
         debounce: 300, // debounce rapid re-triggers
-        cacheTime: 5000, // cache response for 5s
+        cacheTime: 5000, // retain a compatible shared request promise after completion
         transform: (res) => res.list,
         mock: 'mock/users.json', // fallback on 404
-        onsuccess(data) {
-            nutmeg.success(`Loaded ${data.length} users`);
-        },
         onerror(err) {
             nutmeg.error('Failed to load users');
         }
     }
 };
 ```
+
+For a `[key]URL` request, retain the default success callback to populate the target. Supplying `onsuccess` replaces automatic assignment; use `transform` to reshape data while preserving delivery. See [request callbacks and errors](../Plugins/request.md).
 
 **Request option fields:**
 
@@ -703,7 +706,7 @@ export default {
 | `data`      | `any`              | Request body or query params                                                                                                         |
 | `headers`   | `Dictionary`       | Additional HTTP headers                                                                                                              |
 | `transform` | `(data) => any`    | Transform the response before applying to the param                                                                                  |
-| `onsuccess` | `(data) => void`   | Called on success                                                                                                                    |
+| `onsuccess` | `(data) => void`   | Replaces automatic param assignment; the callback must deliver the result                                                            |
 | `onerror`   | `(err) => void`    | Called on error                                                                                                                      |
 | `onaborted` | `() => void`       | Called when request is aborted                                                                                                       |
 | `interval`  | `number`           | Polling interval in ms. When set, `cacheTime` is forced to `0`                                                                       |
@@ -711,7 +714,7 @@ export default {
 | `cacheTime` | `number`           | Shared-promise retention after completion (default: 400ms); see [sharing limits](state-and-data.md#request-sharing-and-cache-limits) |
 | `mock`      | `string \| object` | Mock URL or object to use as fallback on 404 / network error                                                                         |
 | `useForm`   | `boolean`          | Serialize `data` as `FormData` (auto-sets method to `POST`)                                                                          |
-| `urls`      | `array`            | Multiple sequential/parallel requests                                                                                                |
+| `urls`      | `array`            | Parallel requests; a batch transform receives results as positional arguments                                                        |
 
 ---
 
@@ -760,44 +763,30 @@ Mark a component as shared so descendant elements can reach its properties via `
 ```javascript jaml-playground
 export default {
     type: 'container',
-    vars: { theme: 'dark' },
+    vars: { dark: false },
     components: [
         {
             type: 'wrapper',
             cap: 'Theme Controller',
-            share: true, // exposed to descendants
+            share: true,
             components: [
-                { type: 'switch', cap: 'Dark Mode', value: '{{theme}}' },
+                { type: 'switch', cap: 'Dark Mode', value: '{{dark}}' },
+                { type: 'indicator', cap: 'Current Theme', value: '{{dark ? "Dark" : "Light"}}' },
                 {
-                    type: 'wrapper',
-                    components: [
-                        {
-                            type: 'indicator',
-                            cap: 'Current Theme',
-                            // Access the shared ancestor's cap
-                            value: '{{theme}}',
-                            state: '{{theme}}',
-                            styles: [
-                                // Reactive style reading from shared element
-                                'css(backgroundColor:{{theme === "dark" ? "#1a1a2e" : "#f0f0f0"}})'
-                            ]
-                        }
-                    ]
+                    type: 'button',
+                    cap: 'Log Shared',
+                    onclick() {
+                        const _shared = this.shared();
+                        nutmeg.info(`Shared cap: ${_shared.cap}`);
+                    }
                 }
             ]
-        },
-        {
-            type: 'button',
-            cap: 'Log Shared',
-            onclick: function () {
-                // this.shared finds nearest share:true ancestor
-                const sharedEl = this.shared();
-                nutmeg.info(`Shared cap: ${sharedEl.cap}`);
-            }
         }
     ]
 };
 ```
+
+The button belongs inside the shared wrapper. A sibling cannot discover that wrapper through an ancestor lookup.
 
 `this.shared` is a proxy that also supports property access — reading `this.shared.someProp` walks up the tree to find a shared element that has `someProp` and returns its current value. Setting a property writes back to the shared element. Methods defined on a shared ancestor are available through `this.shared.methods`, so a descendant can call `this.shared.methods.methodName()`. A non-conflicting method name is also installed directly and remains callable as `this.shared.methodName()`.
 

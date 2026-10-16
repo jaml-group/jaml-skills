@@ -134,7 +134,7 @@ Additions and overrides:
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `width` | `numberOrString` | Runtime-determined (number) | Underline thickness, not length. Supply a number in px or auto (checked target border width, at least 2 px). The default is 0.25 rem resolved to pixels at runtime; an opaque numeric defaultMetadata entry records a computed default, not a missing or required argument. |
+| `width` | `numberOrString` | Runtime-determined (number) | Underline thickness, not length. Supply a number in px or auto (checked target border width, at least 2 px). The default is 0.25rem resolved to pixels at runtime; the argument is optional. |
 | `glow` | `number` | `false` | Glow blur radius in px. Positive numbers enable glow; 0 disables it. The resolved default false also disables glow; it is a runtime default, not a requirement to pass a boolean. |
 
 Optional underline below the checked option. Same args as `frame`, with `width` default `'0.25rem'`. This is a visual treatment, not a tab/panel or keyboard contract.

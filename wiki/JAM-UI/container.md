@@ -2,7 +2,7 @@
 
 **Class:** `CoconutContainer` · **Type:** `"container"` · **Extends:** `AbstractElement`
 
-The root layout container with a single default slot for children. Commonly used as the outermost element of a JAML render tree. Supports child mutation observation and a stable-state promise for dynamic content.
+The root layout container with a single default slot for children. Commonly used as the outermost element of a JAML render tree. Supports child mutation observation and an initial child-stability promise.
 
 ---
 
@@ -42,10 +42,10 @@ Inherits all params from [AbstractElement](./JAM-UI.md).
 
 ## Instance methods and properties
 
-| Member               | Description                                                                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `container.clear()`  | Remove all slotted children.                                                                                                                      |
-| `container.isStable` | `Promise<void>` that resolves when no children have been added or removed for 10 ms. Useful for knowing when dynamic children are done rendering. |
+| Member               | Description                                                                                                                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `container.clear()`  | Remove all slotted children.                                                                                                                                                                   |
+| `container.isStable` | `Promise<void>` that resolves once, after the first 10 ms without observed child changes. It stays resolved after later changes; it does not wait for requests, images, layout, or animations. |
 
 ---
 
@@ -97,6 +97,6 @@ export default {
 
 ## Notes
 
--   `isStable` is useful for knowing when all dynamic children have been added (e.g. after a `buildFor` loop).
+-   Use `isStable` for the initial quiet period. Use `onstable` for subsequent child-change quiet periods; neither is an application-wide readiness signal.
 -   `CoconutContainer` is also the base for `CherryCard` and `WalnutWrapper`.
 -   Child observation is enabled by default (`observeChild: true`), unlike most other elements.

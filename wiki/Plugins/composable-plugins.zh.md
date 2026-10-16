@@ -14,23 +14,24 @@
 
 安装由配置驱动的仪表盘或卡片组合。
 
-加载提供的配置数组或已存储的配置，构建 CurrantComposable 实例，并在全局路由器上注册生成的路由。
+需要显式传入配置数组，创建仪表盘组合并在全局路由器注册生成的路由。缺少 config 或其值不是数组时跳过初始化，不会自动加载已存储的配置。
 
 需要可组合配置结构和全局路由器；资源卡片可能加载声明的模块。
 
 这是具有共享或全局状态的应用组合设施，不是小型局部布局装饰器。此插件没有对应的路由移除回调。
 
-位置参数顺序: `config`.
+位置参数顺序: `config` → `basePath`.
 
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
 | `config` | `any` | 组态化配置 |
+| `basePath` | `functionOrString` | 模块组 JSON 资源的基础 URL 前缀，或返回该前缀的函数。保留资源路径所需的末尾分隔符。 |
 
-A dashboard composition engine that renders an editable grid-based layout. Cards (widgets) can be dragged, resized, and closed by end users. Layout configuration is persisted to localStorage and auto-loaded on subsequent visits.
+A dashboard composition engine that renders an editable grid-based layout. Cards (widgets) can be dragged, resized, and closed by end users. The application owns saving and restoring its layout configuration.
 
-Internally creates a `CurrantComposable` instance and registers routes for each page configuration via `rambutan.addRoutes()`.
+Registers routes for each page configuration through the shared router.
 
-When configuration is omitted, it is loaded from localStorage.
+Supply `config` explicitly as an array; missing or non-array configuration skips initialization. `basePath` optionally selects the module-group resource prefix. Route lifetime and persistence remain application-owned.
 
 Each page config supports:
 
@@ -54,7 +55,9 @@ Each card in `cards`:
 
 Every rendered card is assigned `stylize: 'tile'`, so it receives the active theme's tile role styling regardless of whether it comes from an inline resource, a lazy-loaded resource, or an iframe.
 
-```javascript jaml-playground
+This integration requires an application-owned router and navigation to the configured route; it does not render a standalone preview.
+
+```javascript
 export default {
     type: 'container',
     styles: ['size.fullsize'],
@@ -90,4 +93,5 @@ export default {
         })
     ]
 };
+
 ```

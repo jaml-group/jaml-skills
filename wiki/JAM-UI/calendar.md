@@ -36,24 +36,24 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 
 ## View types
 
-| View       | `showType`    | Columns | Title shows  |
-| ---------- | ------------- | ------- | ------------ |
-| Day view   | `0` (default) | 7       | `yyyy年MM月` |
-| Month view | `1`           | 3       | Current year |
-| Year view  | `2`           | 4       | Decade range |
+| View       | `showType`    | Columns | Title shows              |
+| ---------- | ------------- | ------- | ------------------------ |
+| Day view   | `0` (default) | 7       | Localized month and year |
+| Month view | `1`           | 3       | Current year             |
+| Year view  | `2`           | 4       | Decade range             |
 
 ---
 
 ## Slots
 
-| Slot             | Description                                                                                          |
-| ---------------- | ---------------------------------------------------------------------------------------------------- |
-| `label`          | Standard label area (icon, cap, extra) via `Templates.label`.                                        |
-| `ctitle`         | Title/header text in the controller row (auto-populated).                                            |
-| `current`        | Center button showing the current period label (auto-populated). Click resets to today.              |
-| `weekday`        | Weekday header cells. Pre-populated with day names from `weekConst`.                                 |
-| `date` (binder)  | Date cell grid. Auto-populated by options rendering.                                                 |
-| `mark` (default) | Mark/indicator overlay content. Direct children with `coord` auto-position onto matching date cells. |
+| Slot             | Description                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `label`          | Standard label area (icon, cap, extra) via `Templates.label`.                                                           |
+| `ctitle`         | Title/header text in the controller row (auto-populated).                                                               |
+| `current`        | Center button showing the current period label (auto-populated). Click resets to today.                                 |
+| `weekday`        | Weekday header cells. Pre-populated with day names from `weekConst`.                                                    |
+| `date` (binder)  | Date cell grid. Auto-populated by options rendering.                                                                    |
+| `mark` (default) | Mark/indicator overlay content. Use `coord` and the redraw handler below to position children onto matching date cells. |
 
 Coordinate-positioned calendar children use `stylize: 'item'`. The `calendar > item` parent context identifies date-owned labels, indicators, and marks without introducing a separate calendar-only role.
 
@@ -75,12 +75,9 @@ Coordinate-positioned calendar children use `stylize: 'item'`. The `calendar > i
 
 ---
 
-## Static configuration
+## Localization
 
-```javascript
-// Localize weekday names (default: ['日','一','二','三','四','五','六'])
-CarambolaCalendar.weekConst = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-```
+Weekday names, month/year titles, and navigation labels follow the active JAML locale. `CarambolaCalendar.weekConst` is a read-only, locale-derived array; assigning to it is unsupported. See [i18n](../Plugins/i18n.md) for locale configuration.
 
 ---
 
@@ -102,14 +99,28 @@ export default {
 
 ### Calendar with event marks
 
+The calendar owns its date-cell `data` and rebuilds it during initialization and navigation. Add event content as children with `coord`; do not replace `data` with an event list. Recalculate existing marks after `redraw`: initial child creation can precede the date grid, and navigation does not automatically reposition existing marks. Hide marks when their date is outside the visible day grid.
+
 ```javascript jaml-playground
 export default {
     type: 'calendar',
     cap: 'Events',
-    data: [
-        { date: new Date('2024-03-15'), name: 'Meeting', color: 'blue' },
-        { date: new Date('2024-03-20'), name: 'Deadline', color: 'red' },
-        { date: new Date('2024-03-25'), name: 'Holiday', color: 'green' }
+    styles: ['css(width:35rem;max-width:100%;height:28rem)'],
+    showDate: '2024-03-01',
+    on: {
+        redraw() {
+            for (const mark of this.querySelectorAll(':scope > [jam-coord]')) {
+                mark.style.removeProperty('grid-row-start');
+                mark.style.removeProperty('grid-column-start');
+                this.calculatePos(mark);
+                mark.style.display = this.showType !== 0 || !mark.style.gridRowStart ? 'none' : '';
+            }
+        }
+    },
+    components: [
+        { type: 'label', stylize: 'item', coord: '2024-03-15', cap: 'Meeting', styles: ['css(align-self:end;justify-self:center;font-size:0.75rem;margin-bottom:0.25rem)'] },
+        { type: 'label', stylize: 'item', coord: '2024-03-20', cap: 'Deadline', styles: ['css(align-self:end;justify-self:center;font-size:0.75rem;margin-bottom:0.25rem)'] },
+        { type: 'label', stylize: 'item', coord: '2024-03-25', cap: 'Holiday', styles: ['css(align-self:end;justify-self:center;font-size:0.75rem;margin-bottom:0.25rem)'] }
     ],
     valueKey: 'eventDate'
 };
@@ -117,7 +128,9 @@ export default {
 
 ### Coordinate-positioned items
 
-```json jaml-playground
+Use the same redraw handler above when adding indicators instead of text labels:
+
+```json
 {
     "type": "calendar",
     "cap": "Maintenance Schedule",

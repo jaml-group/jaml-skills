@@ -97,7 +97,9 @@ export default {
 
 ### Value-driven tags (synced with another element)
 
-```json jaml-playground
+The owning selection control must publish `targetChecked` and its option data as `targetChecked-data` in the same scope.
+
+```json
 {
     "type": "tags",
     "cap": "Your Selections",

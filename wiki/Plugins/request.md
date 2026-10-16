@@ -17,20 +17,26 @@
 
 ## RequestOption
 
-| Field          | Type                                   | Description                                                   | Notes                                                                                |
-| -------------- | -------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `url`          | `string`                               | The request URL.                                              | Required.                                                                            |
-| `method`       | `string`                               | HTTP method (`GET`, `POST`, `PUT`, `DELETE`, etc.).           | Default: `'GET'`.                                                                    |
-| `type`         | `string`                               | Override the request engine type for this call.               | e.g. `'fetch'` or `'axios'`. Defaults to the globally configured type.               |
-| `data`         | `any`                                  | Request body.                                                 | Objects are JSON-stringified (not GET); `FormData` sent as-is.                       |
-| `params`       | `Record<string, any>`                  | URL query parameters.                                         | Merged into the URL.                                                                 |
-| `headers`      | `Record<string, string>`               | Custom HTTP headers.                                          | Keys are train-cased automatically.                                                  |
-| `timeout`      | `number`                               | Request timeout in ms.                                        | Only used by axios backend.                                                          |
-| `responseType` | `'blob'`                               | Force a Blob response instead of content-type auto-detection. | Supported by fetch and axios; included in the request cache identity.                |
-| `urls`         | `(string \| Partial<RequestOption>)[]` | Batch URLs — `request()` sends all in parallel.               | Each item is either a URL string or a partial option that is merged with the parent. |
-| `transform`    | `(results: any[]) => any`              | Transform function called with all results after batch fetch. | Only for `urls` batch requests.                                                      |
-| `onsuccess`    | `(results: any[]) => any`              | Success callback after transform.                             | Only for `urls` batch requests.                                                      |
-| `mock`         | `() => any`                            | Mock response function.                                       | Called when `shouldUseMock` returns true.                                            |
+| Field          | Type                                   | Description                                                                       | Notes                                                                                |
+| -------------- | -------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `url`          | `string`                               | The request URL.                                                                  | Required.                                                                            |
+| `method`       | `string`                               | HTTP method (`GET`, `POST`, `PUT`, `DELETE`, etc.).                               | Default: `'GET'`.                                                                    |
+| `type`         | `string`                               | Override the request engine type for this call.                                   | e.g. `'fetch'` or `'axios'`. Defaults to the globally configured type.               |
+| `data`         | `any`                                  | Request body.                                                                     | Objects are JSON-stringified (not GET); `FormData` sent as-is.                       |
+| `params`       | `Record<string, any>`                  | URL query parameters.                                                             | Merged into the URL.                                                                 |
+| `headers`      | `Record<string, string>`               | Custom HTTP headers.                                                              | Keys are train-cased automatically.                                                  |
+| `timeout`      | `number`                               | Request timeout in ms.                                                            | Applies to fetch and axios through the connection timeout.                           |
+| `responseType` | `'blob'`                               | Force a Blob response instead of content-type auto-detection.                     | Supported by fetch and axios; included in the request cache identity.                |
+| `urls`         | `(string \| Partial<RequestOption>)[]` | Batch URLs — `request()` sends all in parallel.                                   | Each item is either a URL string or a partial option that is merged with the parent. |
+| `transform`    | `Function`                             | Transform one response, or batch results passed as separate positional arguments. | Single: `(data) => value`; batch: `(first, second, ...) => value`.                   |
+| `onsuccess`    | `(data: any) => any`                   | Success callback after transform for single and batch requests.                   | Its return value becomes the fulfilled request value.                                |
+| `mock`         | `string \| object`                     | Mock resource URL or response object.                                             | Used after an eligible failure; functions are not invoked.                           |
+
+For a single request, `transform(data)` receives the parsed response. For `urls`, `transform(first, second, ...)` receives each result as a separate argument. `onsuccess(data)` receives the transformed value in either case; return it if later callers need it.
+
+Handle failures through `onerror(error)`. Without a throwing handler, an ordinary request failure can fulfill with an error or handler result rather than reject. HTTP connection errors expose `code` and `message`; abort and timeout hooks have their own paths. A fulfilled promise alone is not proof of a successful HTTP response. Batch requests use `Promise.all`, so their rejection behavior depends on the individual request handlers. Use the application’s request/lifetime policy for cancellation and stale-result publication.
+
+All examples here require the named endpoints, data and optional libraries supplied by the application.
 
 ## Content-Type Handling
 
@@ -56,8 +62,11 @@ raspberry.request({
     method: 'GET',
     headers: { Authorization: 'Bearer token' },
     urls: ['/api/users', '/api/posts', { url: '/api/comments', params: { limit: 10 } }],
-    transform: ([users, posts, comments]) => ({ users, posts, comments }),
-    onsuccess: (data) => console.log('All data:', data)
+    transform: (users, posts, comments) => ({ users, posts, comments }),
+    onsuccess: (data) => {
+        console.log('All data:', data);
+        return data;
+    }
 });
 ```
 
@@ -70,7 +79,7 @@ raspberry.shouldUseMock((error) => {
 
 raspberry.request({
     url: '/api/data',
-    mock: () => ({ id: 1, name: 'Mock User' })
+    mock: { id: 1, name: 'Mock User' }
 });
 ```
 
@@ -163,7 +172,14 @@ raspberry
 ### Error handling
 
 ```ts
-raspberry.request({ url: '/api/protected' }).catch((error) => {
-    console.error('Request failed:', error.status, error.message);
-});
+raspberry
+    .request({
+        url: '/api/protected',
+        onerror(error) {
+            throw error; // Make failure reject for this caller.
+        }
+    })
+    .catch((error) => {
+        console.error('Request failed:', error.code, error.message);
+    });
 ```

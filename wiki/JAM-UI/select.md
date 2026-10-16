@@ -82,7 +82,9 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ### Remote data source
 
-```json jaml-playground
+Provide `assets/appTypes.json` containing the select option data before using this integration.
+
+```json
 {
     "type": "select",
     "cap": "App Type",
@@ -93,7 +95,9 @@ Use the `group` field on options to create `<optgroup>` sections:
 
 ### Data watcher (reactive options)
 
-```json jaml-playground
+The application must publish option data to `categoryList` in this component’s messenger scope.
+
+```json
 {
     "type": "select",
     "cap": "Category",

@@ -6,8 +6,7 @@ A labeled container with a title row (icon + cap + extra) and a default body slo
 
 | Type shorthand        | `type`       | Behavior                                                |
 | --------------------- | ------------ | ------------------------------------------------------- |
-| `"wrapper"` (default) | `"default"`  | Standard labeled wrapper                                |
-| `"wrapper-list"`      | `"list"`     | Applies `Styles.wrapper.list` for list-style layout     |
+| `"wrapper"` (default) | —            | Standard labeled wrapper                                |
 | `"wrapper-vertical"`  | `"vertical"` | Applies `Styles.wrapper.vertical` for vertical stacking |
 
 ---
@@ -32,19 +31,19 @@ A labeled container with a title row (icon + cap + extra) and a default body slo
 
 Inherits all params from [CoconutContainer](./container.md) and [AbstractElement](./JAM-UI.md#section-1--abstractelement).
 
-| Param  | Type     | Default     | Description                                                                                                                     |
-| ------ | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `string` | `'default'` | Layout specialization: `'default'`, `'list'`, or `'vertical'`. Select it with `"wrapper-list"` or `"wrapper-vertical"` in JAML. |
+| Param  | Type     | Default | Description                                                                                                                            |
+| ------ | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` | `string` | —       | Use `"wrapper-vertical"` for automatic vertical styling. For a list, keep `"wrapper"` and apply `styles: ["wrapper.list"]` explicitly. |
 
 ---
 
 ## Slots
 
-| Slot            | Description                    |
-| --------------- | ------------------------------ |
-| `icon`          | Icon in the header row.        |
-| `cap` (default) | Title text in the header row.  |
-| `default`       | Body content (child elements). |
+| Slot      | Description                    |
+| --------- | ------------------------------ |
+| `icon`    | Icon in the header row.        |
+| `cap`     | Title text in the header row.  |
+| `default` | Body content (child elements). |
 
 ---
 
@@ -83,10 +82,11 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 
 ```json jaml-playground
 {
-    "type": "wrapper-list",
+    "type": "wrapper",
     "cap": "Recent Items",
-    "buildFor": "(item) in items",
-    "components": [{ "type": "label", "cap": "{{item.name}}" }]
+    "styles": ["wrapper.list"],
+    "vars": { "items": [{ "name": "Alpha" }, { "name": "Beta" }] },
+    "components": [{ "type": "label", "buildFor": "item in items", "cap": "{{item.name}}" }]
 }
 ```
 
@@ -141,6 +141,6 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 ## Notes
 
 -   A bare wrapper with no visible slot content or children has no intrinsic content size and can collapse in centered or shrink-to-fit layouts. Add children or explicit sizing; use `indicator`, `label`, or `button` for a standalone visible value, label, or action.
--   `WalnutWrapper` extends `CoconutContainer`, which provides `observeChild: true` by default and an `isStable` promise that resolves when no child changes have occurred for 10ms.
--   Composite types such as `"wrapper-list"` and `"wrapper-vertical"` select a layout specialization.
+-   `WalnutWrapper` inherits the one-time initial `isStable` promise and recurring `onstable` callback from [container](container.md#instance-methods-and-properties).
+-   `"wrapper-vertical"` applies the vertical style automatically. List styling requires an explicit `wrapper.list` style.
 -   When title, icon, and cap content are all absent, the wrapper collapses its header so its body can occupy the available layout.

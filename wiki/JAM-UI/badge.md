@@ -13,7 +13,7 @@ A compact tag-style value display with icon, cap, and content/value slots. Typic
     "type": "badge",
     "cap": "Role",
     "content": "Admin",
-    "color": "blue"
+    "color": "hsl(240 100% 50%)"
 }
 ```
 
@@ -50,7 +50,7 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
     "type": "badge",
     "cap": "Status",
     "content": "Active",
-    "color": "green"
+    "color": "hsl(120 100% 25%)"
 }
 ```
 
@@ -72,14 +72,12 @@ export default {
     "type": "badge",
     "cap": "Priority",
     "content": "High",
+    "state": "high",
     "states": {
-        "low": { "color": "green" },
-        "medium": { "color": "orange" },
-        "high": { "color": "red" },
-        "urgent": { "color": "purple" }
-    },
-    "stateStyles": {
-        "urgent": ["css(animation:pulse 1s infinite)"]
+        "low": { "color": "hsl(120 100% 25%)" },
+        "medium": { "color": "hsl(39 100% 50%)" },
+        "high": { "color": "hsl(0 100% 50%)" },
+        "urgent": { "color": "hsl(300 100% 25%)" }
     }
 }
 ```
@@ -89,6 +87,7 @@ export default {
 ```javascript jaml-playground
 export default {
     type: 'badge',
+    vars: { userLevel: 'Advanced', levelColor: 'hsl(210 70% 45%)' },
     cap: 'Level',
     content: '{{userLevel}}',
     color: '{{levelColor}}'

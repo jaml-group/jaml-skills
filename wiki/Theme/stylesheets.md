@@ -8,7 +8,7 @@ In a theme file, the `styles` section is not only for raw CSS. It registers glob
 -   `Styles.css(...)`, `Styles.rule(...)`, style strings, or custom style objects for normal CSS style work.
 -   style plugins that add classes, layers, runtime listeners, measurements, animation helpers, or other JavaScript behavior.
 
-The `styles` object uses the same selector-to-style-array grammar as an element's `descStyles` dictionary, but at theme scope. At runtime, `Theme.buildStyles()` parses each entry, then `Theme.apply()` passes the parsed map through `registerGlobalStyle(this.styles, '')`. Theme attachment order controls cascade priority; a theme-root selector is not added.
+The `styles` object uses the same selector-to-style-array grammar as an element's `descStyles` dictionary, but at theme scope. Each selector key scopes its registered styles. Use the reserved `document.header` entry for a complete document-level stylesheet. Theme-owned registrations are removed when that theme is unapplied, and attachment order controls cascade priority; a theme-root selector is not added.
 
 Selector refinement stops at that JavaScript dictionary boundary:
 
@@ -114,7 +114,7 @@ jam-table > .jam-td {
 
 ## Complete Stylesheets
 
-`Styles.stylesheet(importedStyle)` appends a complete stylesheet to `document.head`. It is not scoped to the style key that references it.
+`Styles.stylesheet(importedStyle)` in a theme’s `document.header` entry attaches a complete document-level stylesheet. Other registration keys scope its element selectors to that key, for both imported strings and dictionary-form sheets. Use `document.header` for a complete theme sheet; registering that same sheet under `button`, for example, changes its selector scope.
 
 Keep the imported theme stylesheet unwrapped. Jam-UI attaches the compiled CSS when the theme is applied, so attachment time—not a theme-root selector—controls priority. The imported string does not pass through `refineSelector()`; use the literal role selectors described above.
 
@@ -175,7 +175,7 @@ export default {
 };
 ```
 
-`document.header` is only a convenient style key for attaching the complete stylesheet. `button` and `tile` are style keys that apply style plugins when matching elements resolve external theme styles.
+`document.header` is the reserved registration key that keeps a complete stylesheet at document scope. `button` and `tile` are style keys that apply style plugins when matching elements resolve external theme styles.
 
 Think of this as a theme-level `descStyles` map: each key is a selector, and each value is the same `StyleOption[]` grammar used by normal JAML element styles.
 
@@ -333,4 +333,4 @@ export default {
 };
 ```
 
-`document.header` is a pseudo-role key used to attach the complete stylesheet. The stylesheet itself is appended globally, without a theme wrapper, when the theme is applied.
+`document.header` is the reserved registration key for attaching the complete stylesheet without selector scoping. The stylesheet itself is appended globally, without a theme wrapper, when the theme is applied.

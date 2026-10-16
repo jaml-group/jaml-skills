@@ -5476,7 +5476,7 @@ label border 影响标签盒；itemStyle/backgroundStyle border 影响图形。�
 
 在选定标注所有者上写入动画启用状态、delay、duration 和 easing。
 
-type 定义将 optKey 错拼为 optKet，因此 type 按原名输出，不转换为 animationType；不要承诺该映射。
+此运行时中的 type 参数不会配置 animationType；不要用它选择该动画效果。
 
 位置参数顺序: `animation` → `delay` → `duration` → `type` → `easing`.
 
@@ -5572,7 +5572,7 @@ label border 影响标签盒；itemStyle/backgroundStyle border 影响图形。�
 
 在选定标注所有者上写入动画启用状态、delay、duration 和 easing。
 
-type 定义将 optKey 错拼为 optKet，因此 type 按原名输出，不转换为 animationType；不要承诺该映射。
+此运行时中的 type 参数不会配置 animationType；不要用它选择该动画效果。
 
 位置参数顺序: `animation` → `delay` → `duration` → `type` → `easing`.
 

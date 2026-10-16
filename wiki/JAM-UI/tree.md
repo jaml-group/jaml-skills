@@ -39,6 +39,17 @@ Inherits [table params and row methods](./table.md).
 | `click2Check` | `boolean`           | Select a node by clicking its row                                     | Default: `true`                                                                               |
 | `data`        | `object[]`          | Nested nodes with `children` arrays                                   | `name` falls back to `cap`; `id` defaults to the node's index path; `value` defaults to `id`. |
 
+The updated development runtime also supports:
+
+| Param                | Type                                              | Default | Contract                                                         |
+| -------------------- | ------------------------------------------------- | ------- | ---------------------------------------------------------------- |
+| `keyboardNavigation` | `boolean`                                         | `false` | Opt into native row keyboard navigation.                         |
+| `checkParents`       | `boolean`                                         | `true`  | Allow ordinary selection toggles on nodes with children.         |
+| `allowUncheck`       | `boolean`                                         | `true`  | Allow an ordinary toggle to clear a checked node.                |
+| `toggleIcons`        | `{ collapsed: string, expanded: string } \| null` | `null`  | Override the native disclosure icons; null retains the defaults. |
+
+With keyboard navigation enabled, Up/Down and Home/End move through visible rows; Right expands or enters children, and Left collapses or moves to the parent. Enter/Space follows the row’s selection action. Modified, composing, handled, disabled and read-only interactions retain their normal boundaries. The selection restrictions govern ordinary toggles; explicit force arguments and value writes remain authoritative. This does not establish a complete checkbox accessibility contract. Verify keyboard behavior against the target runtime before relying on this opt-in capability.
+
 Supply stable, unique `id` values when data can be reordered. Initial node `checked` values seed selection when no value has been set. Selection applies to individual nodes; checking a parent does not automatically check its descendants.
 
 ---

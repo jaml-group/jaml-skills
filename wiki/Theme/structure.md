@@ -108,10 +108,10 @@ src/[theme]/tokens/cmpt.mjs
 src/[theme]/tokens/chart.mjs
 ```
 
-Then import it from the authoring modules that consume it:
+From `src/[theme]/tokens/*.mjs`, import the shared foundation two levels above:
 
 ```js
-import { ref } from '../ref.mjs';
+import { ref } from '../../ref.mjs';
 ```
 
 Do not call `tokenize(ref, 'ref')` or create `[theme]/tokens/ref.mjs`. Export `ref` as plain data outside the runtime token folder so its values compile into `sys`, `cmpt`, `chart`, or generated stylesheet output before registration.

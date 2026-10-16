@@ -23,11 +23,12 @@ A progress bar backed by a native `<progress>` element. Accepts values from `0` 
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement), including `value`, `defaultValue`, `formatter`, `rules`, and the state machine.
 
-| Param       | Type                | Default | Description                                                                    |
-| ----------- | ------------------- | ------- | ------------------------------------------------------------------------------ |
-| `value`     | `number \| string`  | —       | Progress value: `0`–`1` (e.g. `0.75`) or percent string (e.g. `"75%"`).        |
-| `cap`       | `string`            | —       | Label text above the bar.                                                      |
-| `formatter` | `(value) => string` | —       | Transform value for display text (shown as `formatted` attribute on progress). |
+| Param           | Type                | Default | Description                                                                                                                            |
+| --------------- | ------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`         | `number \| string`  | —       | Progress value: `0`–`1` (e.g. `0.75`) or percent string (e.g. `"75%"`).                                                                |
+| `indeterminate` | `boolean`           | `false` | Show unknown progress by removing the native value attribute; the stored value is retained and restored when determinate mode resumes. |
+| `cap`           | `string`            | —       | Label text above the bar.                                                                                                              |
+| `formatter`     | `(value) => string` | —       | Transform value for display text (shown as `formatted` attribute on progress).                                                         |
 
 ---
 
@@ -80,7 +81,9 @@ Inherits all `AbstractInputElement` methods, plus:
 
 ### Reactive via valueWatcher
 
-```json jaml-playground
+The application must publish a numeric progress value to `uploadProgress` in this component’s messenger scope.
+
+```json
 {
     "type": "progress",
     "cap": "Upload",
@@ -141,7 +144,7 @@ export default {
             cap: 'Task Progress',
             valueWatcher: 'progress',
             formatter: '(v) => `${Math.round(v * 100)}%`',
-            styles: ['color.stateMap({colors:{idle:"gray",slow:"orange",fast:"green",done:"blue"}})'],
+            styles: ['color.stateMap({colors:{idle:"hsl(0 0% 50%)",slow:"hsl(39 100% 50%)",fast:"hsl(120 100% 25%)",done:"hsl(240 100% 50%)"}})'],
             valueStates: {
                 idle: (value) => value <= 0,
                 slow: (value) => value > 0 && value < 0.33,
@@ -153,12 +156,23 @@ export default {
             type: 'button',
             cap: 'Simulate Progress',
             onclick: function () {
-                let p = 0;
-                const interval = setInterval(() => {
-                    p += 0.1;
-                    this.model.progress = Math.min(p, 1);
-                    if (p >= 1) clearInterval(interval);
+                if (this.progressTimer != null) {
+                    return;
+                }
+                this.vars.progress = 0;
+                this.progressTimer = window.setInterval(() => {
+                    this.vars.progress = Math.min(this.vars.progress + 0.1, 1);
+                    if (this.vars.progress >= 1) {
+                        window.clearInterval(this.progressTimer);
+                        this.progressTimer = null;
+                    }
                 }, 500);
+            },
+            on: {
+                unmount() {
+                    window.clearInterval(this.progressTimer);
+                    this.progressTimer = null;
+                }
             }
         }
     ]

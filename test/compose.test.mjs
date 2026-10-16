@@ -56,8 +56,8 @@ test('known limitations, state ownership and open-contract uncertainty remain al
     assert.match(_check, /hide the existing locator when none is checked/);
     assert.match(_check, /delay is used before the first locator is created/);
     const _table = section(_projection, 'style', 'table.fixedrowheight');
-    assert.match(_table, /supported animation name string or false/);
-    assert.match(_table, /current animation callback calls string methods on a truthy value/);
+    assert.match(_table, /supported animation-name string or false/);
+    assert.match(_table, /true is not supported/);
     assert.match(_table, /Expanded detail rows disable the fixed virtual path/);
     const _drop = section(_projection, 'plugin', 'interact.droppable');
     assert.match(_drop, /[Nn]on-function accept values currently fall back to accepting drags/);

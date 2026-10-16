@@ -96,7 +96,11 @@ const option = jam.parseJSONAsJAML(myData);
 
 ### `jam.renderModal(container, option, config?)`
 
-Render a JAML object as a modal dialog. Shows a blur/dimmer curtain behind it. Accepts `click2Close` (boolean, default `true`) or a config object with `onclose` callback.
+Render a JAML object as a modal dialog. Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`.
+
+`curtainMode: 'active'` is the default: one reused curtain blocks lower sibling modals while leaving the top modal interactive. `'shared'` keeps sibling modals above the shared curtain. The first modal selects the container’s mode until the last modal is removed. Curtain effect strengths also remain those of the first curtain; later opens do not accumulate darkness or replace its effects.
+
+While physical modals remain, the supplied container prevents user scrolling; its previous overflow styling resumes after the last modal unmounts, including exit animation. Other ancestors are not locked, programmatic scrolling remains possible, and modal content owns its own scroll region. This does not provide a focus trap or background-inertness guarantee. See [curtain effects](#jamshowcurtainel-option) and [confirmation ownership](#jammodalyesnocontainer-prompt-onyes-onno-styles-option). These stacking/effect contracts require the updated development runtime; verify the consuming bundle.
 
 ```javascript
 const model = jam.renderModal(
@@ -117,9 +121,9 @@ const model = jam.renderModal(
 
 Close the topmost modal popup.
 
-### `jam.popupYesNo(target, prompt, onYes, onNo, styles?)`
+### `jam.popupYesNo(target, prompt, onYes, onNo, option?)`
 
-Show a Yes/No confirmation popup. Returns the popup element.
+Show a Yes/No confirmation popup. The fifth argument is a popup options object; this helper returns `undefined`. Callbacks receive the dialog model. It uses the [shared popup owner](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing); do not retain its return value as a popup handle.
 
 ```javascript
 jam.popupYesNo(
@@ -249,9 +253,27 @@ Keep an ordinary click/keyboard entry point even when right-click is supported. 
 
 For this helper path, a top-level `onafterrender` callback inside the popup content definition is not a visible-readiness hook: content is built directly rather than rendered through that Model hook. Use the popup's owned `showing` event and verify focus eligibility; cancel deferred focus when ownership ends. The `hiding` event follows exit completion, while `papaya.showing` becomes false earlier. See [popup content, focus and dismissal timing](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) before implementing initial focus or expanded-state synchronization.
 
+### `jaml.yesNoDialog(prompt, onYes?, onNo?, styles?, options?)`
+
+Build a complete editable confirmation-dialog JAML definition. This helper creates the definition without mounting it; use your existing popup or modal owner to present it. `jam.yesNoDialog` remains an alias of the same function with the same argument order.
+
+The prompt can be text, an existing DOM element, a JAML definition, or an array of JAML definitions. Yes/No callbacks receive the dialog model. The optional fifth argument accepts `yesCap` and `noCap`; omitted or nullish captions use the existing Confirm and Cancel translations. Caption values retain the normal JAML cap contract, including translation strings, bindings, and explicit empty text. Existing callers using four arguments retain their defaults.
+
+```javascript
+const dialog = jaml.yesNoDialog(
+    'Apply these changes?',
+    (model) => applyChanges(model),
+    () => cancelChanges(),
+    [],
+    { yesCap: 'Apply', noCap: 'Keep editing' }
+);
+```
+
+Focused native buttons retain their own Enter action. Enter elsewhere confirms; Escape cancels; prevented or composing key events do not decide. The builder does not close its host, trap focus, or settle callbacks once: those remain responsibilities of the popup/modal presentation owner. Use [`jam.modalYesNo`](#jammodalyesnocontainer-prompt-onyes-onno-styles-option) when you need its managed modal lifetime instead of an editable definition.
+
 ### `jam.modalYesNo(container, prompt, onYes, onNo, styles?, option?)`
 
-Show a confirmation modal with Yes/No buttons. The optional sixth argument configures `dimmer` and `blur`; the fifth argument remains a styles array. For a dimmed background without blur, use `jam.modalYesNo(container, prompt, onYes, onNo, [], { dimmer: true, blur: false })`. Omitted effects retain the existing curtain defaults. The helper owns the dismissal callback and settles the decision once; these presentation options cannot replace that callback. Focused native Cancel and Confirm buttons keep their own Enter action. The dialog ignores prevented/composing key events; Enter elsewhere in the dialog confirms. This helper does not add focus trapping or focus restoration.
+Show a confirmation modal with Yes/No buttons. The optional sixth argument configures the boolean-or-number [`dimmer` and `blur` effects](#jamshowcurtainel-option); the fifth argument remains a styles array. For a dimmed background without blur, use `jam.modalYesNo(container, prompt, onYes, onNo, [], { dimmer: true, blur: false })`. Omitted effects retain the existing curtain defaults. The helper owns the dismissal callback and settles the decision once; these presentation options cannot replace that callback. Focused native Cancel and Confirm buttons keep their own Enter action. The dialog ignores prevented/composing key events; Enter elsewhere in the dialog confirms. This helper does not add focus trapping or focus restoration.
 
 ```javascript
 jam.modalYesNo(
@@ -268,7 +290,11 @@ Close the topmost modal.
 
 ### `jam.showCurtain(el, option?)`
 
-Show a blur/dimmer overlay on an element. Returns the curtain element.
+Show a blur/dimmer overlay on an element. Returns the new curtain element; if one already exists or the target is missing, returns `undefined`. Repeated calls retain the existing curtain’s effects.
+
+`blur` and `dimmer` accept booleans or numbers. `blur: true` selects a 10-pixel radius; a numeric blur is a nonnegative radius in pixels because this API consumes geometry, not a CSS length string. `dimmer: true` selects `hsl(0 0% 0% / 0.2)`; a numeric dimmer is opacity clamped to 0–1. Both effects can compose. Negative blur clamps to zero and nonfinite numeric effects are disabled. `css` overrides the computed curtain declarations; modals use `curtainCSS` for the same purpose.
+
+Omitting both selects blur. Disabling only blur selects the default dimmer; disabling only dimmer selects default blur. Set both to `false` (or `0`) for a clear curtain. Removing it releases those choices. `resetCurtain` changes content and click handling, not effect strengths.
 
 ```javascript
 const curtain = jam.showCurtain('#app', {
@@ -573,7 +599,7 @@ For CSS, this loads a stylesheet link and caches its promise. Await `jam.addReso
 
 ### `jam.toEval(str, context?)`
 
-Parse and evaluate a string expression safely.
+Evaluate a trusted JavaScript expression. The optional context supplies named values and `this`; it is not a sandbox. Never pass external input as an expression. Evaluation can throw, and a Content Security Policy that blocks dynamic evaluation can prevent it. Use `JSON.parse()` for external JSON data.
 
 ```javascript
 const fn = jam.toEval('(a, b) => a + b');
@@ -584,20 +610,20 @@ jam.toEval('this.value * 2', { value: 5 }); // → 10
 
 ### `jam.serialize(value)`
 
-Serialize any value to a string (handles circular refs, functions, etc.).
+Convert a supported value into a JavaScript expression string, or use its serializable representation. This is not a lossless object-graph format: cycles produce non-restorable markers, undefined array entries can be omitted, and prototypes or shared identity are not preserved. Optional `encodeURI` and `base64` encode the result; they do not make it safe to evaluate.
 
 ### `jam.deserialize(str)`
 
-Deserialize a string back to its original value.
+Decode the requested `encodeURI`/`base64` layers and evaluate the resulting trusted JavaScript expression. This is not a JSON parser or sandbox. Invalid expressions, cycle markers and blocked evaluation throw; arbitrary values are not guaranteed to round-trip. Use `JSON.parse()` for external JSON.
 
-### `jam.random(min?, max?)`
+### `jam.random(start?, end?)`
 
-Generate a random number. No args: 0–1. One arg: 0–max. Two args: min–max.
+Return `start + Math.round(Math.random() * (end - start))`, with `start = 0` and `end = start + 100`. For integer endpoints, results are integers and both endpoints are possible. A single argument sets the start, not the maximum. Rounded sampling is not uniform across the endpoints.
 
 ```javascript
-jam.random(); // 0.5432...
-jam.random(100); // 42
-jam.random(10, 20); // 15.7
+jam.random(); // integer from 0 through 100
+jam.random(100); // integer from 100 through 200
+jam.random(10, 20); // integer from 10 through 20
 ```
 
 ### `jam.isJamElement(el)`
@@ -713,19 +739,19 @@ lime.green('Success in green');
 
 ### Number utilities
 
-| Method                                 | Description                                                                     |
-| -------------------------------------- | ------------------------------------------------------------------------------- |
-| `jam.random(start?, end?)`             | Random integer. No args: 0–100. One arg: 0–max. Two args: min–max.              |
-| `jam.randomValue(min, max)`            | Alias for `jam.random` — random integer in range.                               |
-| `jam.randomIn(...args)`                | Pick a random argument from the list.                                           |
-| `jam.toNumber(value, parsePct?)`       | Extract number from any value (string, CSS unit, percent).                      |
-| `jam.isNumber(value)`                  | Strict type check — is value a valid number (not NaN, not leading-zero string). |
-| `jam.clamp(value, min, max)`           | Clamp a number to the inclusive `min`–`max` range.                              |
-| `jam.round(number, decimalPlace?)`     | Round a number to the specified decimal places.                                 |
-| `jam.toInteger(value)`                 | Round to integer.                                                               |
-| `jam.toFixed(number, decimalPlace?)`   | Round and return fixed-point string.                                            |
-| `jam.toPercent(value, decimalPlace?)`  | Convert to percentage string (e.g., 0.5 → `"50.00%"`).                          |
-| `jam.seq(end)` / `jam.seq(start, end)` | Generate an array of sequential integers.                                       |
+| Method                                 | Description                                                                                                     |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `jam.random(start?, end?)`             | Rounded random offset from start. Defaults: start=0, end=start+100; integer endpoints yield inclusive integers. |
+| `jam.randomValue(start?, end?)`        | Alias for `jam.random` — random integer in range.                                                               |
+| `jam.randomIn(...args)`                | Pick a random argument from the list.                                                                           |
+| `jam.toNumber(value, parsePct?)`       | Extract number from any value (string, CSS unit, percent).                                                      |
+| `jam.isNumber(value)`                  | Strict type check — is value a valid number (not NaN, not leading-zero string).                                 |
+| `jam.clamp(value, min, max)`           | Clamp a number to the inclusive `min`–`max` range.                                                              |
+| `jam.round(number, decimalPlace?)`     | Round a number to the specified decimal places.                                                                 |
+| `jam.toInteger(value)`                 | Round to integer.                                                                                               |
+| `jam.toFixed(number, decimalPlace?)`   | Round and return fixed-point string.                                                                            |
+| `jam.toPercent(value, decimalPlace?)`  | Convert to percentage string (e.g., 0.5 → `"50.00%"`).                                                          |
+| `jam.seq(end)` / `jam.seq(start, end)` | Generate an array of sequential integers.                                                                       |
 
 ### Date & time utilities
 
@@ -803,37 +829,37 @@ The registration API is part of the development runtime; verify availability in 
 
 ### Type utilities
 
-| Method                                     | Description                                                                  |
-| ------------------------------------------ | ---------------------------------------------------------------------------- |
-| `jam.toArray(value, separator?, type?)`    | Convert string to array (split by separator), or wrap single value in array. |
-| `jam.toBoolean(value)`                     | Coerce value to boolean.                                                     |
-| `jam.toFunction(value, context?, ...args)` | Convert string or value into a Function.                                     |
-| `jam.toEval(str, context?)`                | Safely evaluate a string expression.                                         |
-| `jam.toDictionary(value)`                  | Convert entries array or string to a dictionary.                             |
-| `jam.toString(value)`                      | Convert any value to string.                                                 |
-| `jam.toLiteral(value, replacer?)`          | Serialize any value to a JavaScript literal expression string.               |
-| `jam.castTo(value, type)`                  | Cast value to a target type.                                                 |
+| Method                                     | Description                                                                                      |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `jam.toArray(value, separator?, type?)`    | Convert string to array (split by separator), or wrap single value in array.                     |
+| `jam.toBoolean(value)`                     | Coerce value to boolean.                                                                         |
+| `jam.toFunction(value, context?, ...args)` | Convert string or value into a Function.                                                         |
+| `jam.toEval(str, context?)`                | Evaluate trusted JavaScript; no sandbox or error suppression. See the evaluation contract above. |
+| `jam.toDictionary(value)`                  | Convert entries array or string to a dictionary.                                                 |
+| `jam.toString(value)`                      | Convert any value to string.                                                                     |
+| `jam.toLiteral(value, replacer?)`          | Serialize any value to a JavaScript literal expression string.                                   |
+| `jam.castTo(value, type)`                  | Cast value to a target type.                                                                     |
 
 ### Runtime & async
 
-| Method                                                                                                        | Description                                                                                 |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `jam.Runtime.env`                                                                                             | Runtime environment info: `os`, `browser`, `build`, `mode`, `laterThan()`, `earlierThan()`. |
-| `jam.Constants`                                                                                               | Internal constants: `a2Z0`, `jamlogo`, `jamuilogo`, `State` enum, and more.                 |
-| `jam.asyncCall(fn, context?, ...args)`                                                                        | Schedule function call via microtask (queueMicrotask).                                      |
-| `jam.riskCall(fn, context?, ...args)`                                                                         | Safely call a function — catches and logs any errors.                                       |
-| `jam.safeCall(fn, context?, ...args)`                                                                         | Call function if it's a function (does not catch errors).                                   |
-| `jam.beforeNextRepaint(callback?)`                                                                            | Schedule callback before next repaint (rAF).                                                |
-| `jam.afterNextRepaint(callback?)`                                                                             | Schedule callback after next repaint (double rAF).                                          |
-| `jam.sleep(ms)`                                                                                               | Async sleep (Promise-based timeout).                                                        |
-| `jam.until(fn, interval?, retryCount?, check?)`                                                               | Poll a function until it returns a truthy value.                                            |
-| `jam.windowLoaded`                                                                                            | Promise that resolves when `window.load` fires.                                             |
-| `jam.getSessionId()`                                                                                          | Get or generate a unique session ID.                                                        |
-| `jam.isBrowser()` / `jam.isNode()` / `jam.isElectron()` / `jam.isMac()` / `jam.isSafari()` / `jam.isChrome()` | Environment detection helpers.                                                              |
-| `jam.makeThrottle(fn, delay, finish?, context?)`                                                              | Create a throttled function wrapper.                                                        |
-| `jam.rafThrottle(fn, context?, withLock?)`                                                                    | Create a rAF-throttled function wrapper.                                                    |
-| `jam.makeDebounce(fn, delay, context?)`                                                                       | Create a debounced function wrapper.                                                        |
-| `jam.bindInterval(el, callback, interval, fixedRate?, alignToInterval?)`                                      | Start an interval tied to element lifecycle (auto-cleared on unmount).                      |
+| Method                                                                                                        | Description                                                                                               |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `jam.Runtime.env`                                                                                             | Runtime environment info: `os`, `browser`, `build`, `mode`, `laterThan()`, `earlierThan()`.               |
+| `jam.Constants`                                                                                               | Internal constants: `a2Z0`, `jamlogo`, `jamuilogo`, `State` enum, and more.                               |
+| `jam.asyncCall(fn, context?, ...args)`                                                                        | Invoke immediately in Runtime.syncMode; otherwise schedule a microtask. Does not await returned promises. |
+| `jam.riskCall(fn, context?, ...args)`                                                                         | Catch and log synchronous invocation errors; returned promise rejections are not caught.                  |
+| `jam.safeCall(fn, context?, ...args)`                                                                         | Call function if it's a function (does not catch errors).                                                 |
+| `jam.beforeNextRepaint(callback?)`                                                                            | Schedule callback before next repaint (rAF).                                                              |
+| `jam.afterNextRepaint(callback?)`                                                                             | Schedule callback after next repaint (double rAF).                                                        |
+| `jam.sleep(ms)`                                                                                               | Async sleep (Promise-based timeout).                                                                      |
+| `jam.until(fn, interval?, retryCount?, check?)`                                                               | Poll a function until it returns a truthy value.                                                          |
+| `jam.windowLoaded`                                                                                            | Promise that resolves when `window.load` fires.                                                           |
+| `jam.getSessionId()`                                                                                          | Get or generate a unique session ID.                                                                      |
+| `jam.isBrowser()` / `jam.isNode()` / `jam.isElectron()` / `jam.isMac()` / `jam.isSafari()` / `jam.isChrome()` | Environment detection helpers.                                                                            |
+| `jam.makeThrottle(fn, delay, finish?, context?)`                                                              | Create a throttled function wrapper.                                                                      |
+| `jam.rafThrottle(fn, context?, withLock?)`                                                                    | Create a rAF-throttled function wrapper.                                                                  |
+| `jam.makeDebounce(fn, delay, context?)`                                                                       | Create a debounced function wrapper.                                                                      |
+| `jam.bindInterval(el, callback, interval, fixedRate?, alignToInterval?)`                                      | Start an interval tied to element lifecycle (auto-cleared on unmount).                                    |
 
 ### Easing
 
@@ -856,14 +882,14 @@ The registration API is part of the development runtime; verify availability in 
 
 ### Copy & storage
 
-| Method                                                 | Description                                       |
-| ------------------------------------------------------ | ------------------------------------------------- |
-| `jam.copyText(text)` / `jam.copy2Clipboard(text)`      | Copy text to clipboard.                           |
-| `jam.save2Storage(key, value, storageType?)`           | Save to localStorage (default) or sessionStorage. |
-| `jam.getFromStorage(key, defaultValue?, storageType?)` | Read from storage (auto-deserializes).            |
-| `jam.removeFromStorage(key)`                           | Remove key from storage.                          |
-| `jam.serialize(value, options?)`                       | Serialize any value to string.                    |
-| `jam.deserialize(str, options?)`                       | Deserialize string back to value.                 |
+| Method                                                 | Description                                                               |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `jam.copyText(text)` / `jam.copy2Clipboard(text)`      | Copy text to clipboard.                                                   |
+| `jam.save2Storage(key, value, storageType?)`           | Save to localStorage (default) or sessionStorage.                         |
+| `jam.getFromStorage(key, defaultValue?, storageType?)` | Read from storage (auto-deserializes).                                    |
+| `jam.removeFromStorage(key)`                           | Remove key from storage.                                                  |
+| `jam.serialize(value, options?)`                       | Serialize a supported value as an expression; round-trip limits apply.    |
+| `jam.deserialize(str, options?)`                       | Evaluate a trusted serialized expression; can throw and is not a sandbox. |
 
 ### Web utilities
 
@@ -977,6 +1003,16 @@ if (ready && !controller.signal.aborted && scrollRoot.isConnected) {
 ```
 
 Keep a request identity check as well when a reused connected root changes conversations. Hidden roots can wait until visible or aborted. This prepares framework row construction, not arbitrary Markdown streams, fonts, images or later layout growth. An immediate `measureScrollRow` is only a synchronous snapshot; constructing cold rich content can still change geometry afterward. It is not a hidden-element `scrollIntoView` or row-key lookup API. Coordinate later measurements through the application's single position owner. Do not add pixel-mode `auto.keepScrollPosition` as a second owner when the application already persists offsets; its delegated bookmark mode below keeps restoration with the application.
+
+### Semantic navigation through arrival
+
+Development runtimes providing `jam.navigateScrollPosition(scrollRoot, request, signal, behavior = 'auto')` also expose `store.navigate(request, signal, behavior)` through delegated bookmark storage. The request uses the semantic row or `edge: 'end'`, owner, offset and optional loading contract described below. `behavior` accepts `auto` or `instant`.
+
+Use this operation for explicit minimap or Latest navigation. It owns preparation and movement together; do not perform an additional scroll write afterward. `auto` smooth-scrolls only when the destination and the whole travel interval are already mounted, measured and stable. Otherwise it builds the destination neighborhood and jumps, without building the intervening cold content. Positive row offsets include the preceding visible content in the mounted-route check. Reduced-motion preferences select instant movement. Geometry changes during movement can also select an instant arrival. If the semantic destination changes, including a newly appended Latest row, navigation prepares the new destination and jumps without repeating the history loader.
+
+The promise returns `{ status, mode, top }`. Status is `reached`, `cancelled` or `unavailable`; mode is `smooth`, `instant` or `null` when no movement began. `top` is the actual final offset. Stationary frames away from the destination do not count as arrival. After initial preparation, a bounded stalled-movement watchdog reports unavailable; it does not limit application loading. Resume latest-follow intent only after `reached`; preserve application retry policy for unavailable destinations.
+
+A newer navigation or preparation replaces the pending operation. Abort signals, store teardown, native owner detachment/disposal and print preparation cancel it. Wheel movement, touch, scrolling keys outside editable controls, scrollbar presses and pointer dragging cancel movement; hover alone does not. Keep one application intent owner and abort when changing conversations. The framework owns lazy geometry and anchor coordination, while the application owns history loading, data identity and bookmark contents. Existing `prepare` APIs remain available for immediate bookmark restoration. Check capability availability on the actual runtime before using this development API.
 
 ### Targeted lazy scroll preparation
 

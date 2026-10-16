@@ -16,7 +16,7 @@ Adds the bento-group class and forwards padding, border, background and shadow v
 
 Combine with a native grid or flex layout; this style supplies surfaces rather than data or navigation.
 
-The current borderRadius assignment uses a misspelled variable; verify that override before depending on it.
+The borderRadius option currently does not change native bento corner rounding; retain the theme default.
 
 Positional order: `padding` → `borderStyle` → `borderColor` → `borderRadius` → `backgroundColor` → `backgroundImage` → `boxShadow`.
 

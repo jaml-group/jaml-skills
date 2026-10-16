@@ -22,9 +22,9 @@ A time input that uses the browser's native `<input type="time">` UI, with confi
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement).
 
-| Param     | Type     | Default   | Description                                                |
-| --------- | -------- | --------- | ---------------------------------------------------------- |
-| `pattern` | `string` | `'HH:mm'` | Output format pattern. Supported tokens: `HH`, `mm`, `ss`. |
+| Param     | Type     | Default   | Description                                                                                               |
+| --------- | -------- | --------- | --------------------------------------------------------------------------------------------------------- |
+| `pattern` | `string` | `'HH:mm'` | Numeric-timestamp conversion pattern on assignment. Use native time syntax such as `HH:mm` or `HH:mm:ss`. |
 
 ---
 
@@ -41,8 +41,8 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 -   Accepts `'HH:mm'` string values or numeric timestamps (milliseconds since epoch).
 -   Numeric values are converted using `formatTime(new Date(value), pattern)`.
--   The native `<input type="time">` always displays in `HH:mm` format regardless of the `pattern` setting.
--   The `pattern` controls **output** formatting when `getValue()` is read.
+-   The converted string is assigned to the native input and stored as the component value; existing strings pass through. Use browser-supported time syntax such as `HH:mm` or `HH:mm:ss`. An incompatible pattern can leave the native control empty.
+-   Reading `getValue()` does not apply `pattern` again. Native display and precision depend on the browser and input configuration.
 
 ---
 

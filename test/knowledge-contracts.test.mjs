@@ -38,7 +38,7 @@ test('underscore documentation supplies hosts, units, positional order and compu
             assert.ok(output.includes(host));
         }
         assert.match(output, /check.underscore\(width:3;glow:5\)/);
-        assert.match(profile.args.width.desc, /0.25 rem/);
+        assert.match(profile.args.width.desc, /0\.25\s*rem/);
         assert.match(profile.args.width.desc, /px/);
         assert.match(profile.args.glow.desc, /px/);
         assert.ok(profile.args.width.defaultMetadata);

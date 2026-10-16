@@ -39,7 +39,7 @@ test('artifact installs independently and preserves learned corrections on repla
         for (const [path, expected] of [
             ['Styles/common/layout.zh.md', '有界应用布局'],
             ['Styles/interact.md', 'does not persist the application model'],
-            ['Styles/table-style.md', 'current animation callback calls string methods on a truthy value'],
+            ['Styles/table-style.md', 'true is not supported'],
             ['choosing-native-capabilities.md', 'complete tabs interaction'],
             ['Styles/check.md', 'native element owns selection']
         ]) {

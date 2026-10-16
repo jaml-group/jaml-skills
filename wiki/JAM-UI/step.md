@@ -2,7 +2,7 @@
 
 **Class:** `ShaddockStep` · **Type:** `"step"` · **Extends:** `AbstractInputElement`
 
-A step/stepper indicator that renders a sequence of labeled steps with arrow separators between them. Useful for progress wizards, pipeline views, and multi-step process flows.
+A static sequence of labeled steps with arrow separators. Use it to describe a process or pipeline. It does not highlight an active step or control wizard navigation.
 
 ---
 
@@ -22,18 +22,18 @@ A step/stepper indicator that renders a sequence of labeled steps with arrow sep
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement).
 
-| Param   | Type       | Default | Description                                                          |
-| ------- | ---------- | ------- | -------------------------------------------------------------------- |
-| `data`  | `string[]` | —       | Array of step label strings rendered in order with arrow separators. |
-| `value` | `any`      | —       | Current active step index or value.                                  |
+| Param   | Type       | Default | Description                                                                                                                  |
+| ------- | ---------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `data`  | `string[]` | —       | Required array of step label strings, rendered once during initialization. Use `[]` when supplying only custom slot content. |
+| `value` | `any`      | —       | Inherited stored value; changing it does not change the generated step display.                                              |
 
 ---
 
 ## Slots
 
-| Slot             | Description                                                                     |
-| ---------------- | ------------------------------------------------------------------------------- |
-| `step` (default) | Custom step content. When populated, overrides the auto-generated step display. |
+| Slot             | Description                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------- |
+| `step` (default) | Additional custom content. Generated `data` labels are also appended; use `data: []` to omit them. |
 
 ---
 
@@ -49,7 +49,7 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 }
 ```
 
-### Reactive step with value binding and navigation
+### Track progress separately from the static sequence
 
 ```javascript jaml-playground
 export default {
@@ -59,9 +59,9 @@ export default {
         {
             type: 'step',
             cap: 'Document Workflow',
-            data: ['Draft', 'Review', 'Published'],
-            value: '{{currentStep}}'
+            data: ['Draft', 'Review', 'Published']
         },
+        { type: 'indicator', cap: 'Current step', value: '{{currentStep + 1}}', unit: '/ 3' },
         {
             type: 'wrapper',
             styles: ['wrapper.buttonwrapper'],
@@ -70,14 +70,18 @@ export default {
                     type: 'button',
                     cap: 'Previous',
                     onclick: function () {
-                        if (this.model.vars.currentStep > 0) this.model.vars.currentStep--;
+                        if (this.model.vars.currentStep > 0) {
+                            this.model.vars.currentStep--;
+                        }
                     }
                 },
                 {
                     type: 'button-cta',
                     cap: 'Next',
                     onclick: function () {
-                        if (this.model.vars.currentStep < 2) this.model.vars.currentStep++;
+                        if (this.model.vars.currentStep < 2) {
+                            this.model.vars.currentStep++;
+                        }
                     }
                 }
             ]
@@ -92,15 +96,15 @@ export default {
 {
     "type": "step",
     "cap": "Checkout Process",
-    "data": ["Cart", "Shipping", "Payment", "Confirmation"],
+    "data": [],
     "components": [
         {
             "type": "wrapper",
             "slot": "step",
             "styles": ["wrapper.buttonwrapper"],
             "components": [
-                { "type": "badge", "cap": "Cart", "color": "blue" },
-                { "type": "badge", "cap": "Payment", "color": "green" }
+                { "type": "badge", "cap": "Cart", "color": "hsl(240 100% 50%)" },
+                { "type": "badge", "cap": "Payment", "color": "hsl(120 100% 25%)" }
             ]
         }
     ]
@@ -122,6 +126,6 @@ export default {
 
 ## Notes
 
--   The `step` element is in early development. The arrow separator and label text are generated from the `data` array in `initedCallback`.
--   For advanced step indicators, consider injecting a custom template via the `step` slot, or building the stepper using `wrapper` + `badge` components.
--   The value can be used to track the current step position, enabling conditional display or navigation logic.
+-   The labels are generated once from the initial `data` array. Later assignments to `data` or `value` do not rebuild or select the generated steps.
+-   For a custom display, use the `step` slot with `data: []`, or compose `wrapper` and `badge` components with explicit state bindings.
+-   Keep navigation state in the owning model and bind it to a separate status display, as in the example above.

@@ -22,7 +22,7 @@ Bento 模块
 
 可配合原生 grid 或 flex 布局；此样式提供表面外观，不提供数据或导航。
 
-当前 borderRadius 赋值使用了拼写错误的变量；依赖该覆盖值前需验证其效果。
+borderRadius 参数目前不会改变原生便当布局的圆角；请保留主题默认圆角。
 
 位置参数顺序: `padding` → `borderStyle` → `borderColor` → `borderRadius` → `backgroundColor` → `backgroundImage` → `boxShadow`.
 
@@ -38,7 +38,7 @@ Bento 模块
 
 Bento-grid layout. Adds `.jam-bento-group` and styles its children from the active theme's `bento` component tokens. Explicit args override those values for one group.
 
-The 1.4.0 runtime wrote `--jam-bento-broder-radius` for the radius override, while the native recipe consumed `--jam-bento-border-radius`; account for that compatibility difference when maintaining older themes.
+The `borderRadius` option currently does not change native bento corner rounding; retain the theme default.
 
 ```javascript jaml-playground
 export default [

@@ -6,13 +6,40 @@
 
 <a id="entry-shortcut"></a>
 
-Keyboard shortcuts
+Hover action shortcuts
 
-Identify the base hover-shortcut plugin.
+Offer application-defined actions for a hovered target.
 
-Creates a shortcuts popup only when an options provider exists; the bare exported entry defines no provider or declared argument schema.
+Pass an object to Plugins.shortcut({ selector, optionsGetter, container?, allowOverflow?, class? }). optionsGetter(target) returns the action ElementOption array. selector matches the hovered target; container resolves the popup host. Without an options provider no popup is created.
 
-This is not a keyboard-shortcut registration API. Use a supported configured extension or shortcut.search for its specific built-in behavior.
+This is a hover action popup, not keyboard-shortcut registration. Keep the provider and actions application-owned, encode external query values, and unplug to remove the host listener and destroy the owned popup.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    plugins: [
+        Plugins.shortcut({
+            selector: '.jam-option',
+            optionsGetter: (target) => [
+                {
+                    name: 'Search DuckDuckGo',
+                    onclick: () => window.open(`https://duckduckgo.com/?q=${encodeURIComponent(target.textContent ?? '')}`, '_blank', 'noopener,noreferrer')
+                }
+            ]
+        })
+    ],
+    components: [
+        {
+            type: 'radio',
+            cap: 'Search target',
+            data: [
+                { name: 'JAM-UI', value: 'jam-ui' },
+                { name: 'JavaScript', value: 'js' }
+            ]
+        }
+    ]
+};
+```
 
 ---
 
@@ -30,14 +57,14 @@ Provide selector and the referenced icon assets.
 
 Unplug removes the host listener and destroys the popup.
 
-The built-in provider wins over the declared optionsGetter argument in the constructor. Search text is interpolated without URL encoding; use a custom registered plugin for different or robust query behavior.
+The preset keeps its built-in search actions even when optionsGetter is supplied. Search text is interpolated without URL encoding; use Plugins.shortcut({ selector, optionsGetter }) for custom actions and encoded queries.
 
 Positional order: `selector` → `optionsGetter` → `container` → `allowOverflow` → `class`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
 | `selector` | `string` | Not supplied | Selector for elements that show search shortcuts. |
-| `optionsGetter` | `function` | Not supplied | Custom shortcut option provider. |
+| `optionsGetter` | `function` | Not supplied | Declared for compatibility; cannot replace this preset’s built-in provider. Use Plugins.shortcut for custom actions. |
 | `container` | `functionOrString` | Not supplied | Popup container resolver. |
 | `allowOverflow` | `boolean` | `false` | Allow popup overflow. |
 | `class` | `string` | Not supplied | Popup CSS class. |
@@ -59,34 +86,6 @@ export default {
                 { name: 'Albert Einstein', value: 'einstein' },
                 { name: 'Isaac Newton', value: 'newton' },
                 { name: 'Niels Bohr', value: 'bohr' }
-            ]
-        }
-    ]
-};
-```
-
-```javascript jaml-playground
-export default {
-    type: 'container',
-    plugins: [
-        Plugins.shortcut.search({
-            selector: '.jam-option',
-            optionsGetter: (target) => [
-                {
-                    name: '',
-                    icon: '<img src="https://duckduckgo.com/favicon.ico"/>',
-                    onclick: () => window.open(`https://duckduckgo.com/?q=${target.textContent}`)
-                }
-            ]
-        })
-    ],
-    components: [
-        {
-            type: 'radio',
-            cap: 'Search target',
-            data: [
-                { name: 'JAM-UI', value: 'jam-ui' },
-                { name: 'JavaScript', value: 'js' }
             ]
         }
     ]

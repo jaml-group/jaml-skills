@@ -294,7 +294,7 @@ Uses the native tree row provider and body scroll slot with SaigonScroll; reserv
 
 Requires a bounded body viewport and stable configured row height.
 
-Use a supported animation name string or false; the current animation callback calls string methods on a truthy value. Variable-height details do not use the same fixed-row virtualization path.
+Set animation to a supported animation-name string or false; true is not supported. Variable-height expanded details suspend fixed-row virtualization.
 
 Positional order: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection`.
 

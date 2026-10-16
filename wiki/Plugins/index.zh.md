@@ -11,4 +11,5 @@
 - [popup](popup.zh.md)
 - [router-plugins](router-plugins.zh.md)
 - [shortcut](shortcut.zh.md)
+- [show-more](show-more.zh.md)
 - [subRouter](subRouter.zh.md)

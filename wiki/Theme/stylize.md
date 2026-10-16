@@ -273,6 +273,8 @@ These describe common content and interaction responsibilities:
 }
 ```
 
+On runtimes supporting stacked actions, direct `button-cta` children appear last in the default `actions` layout, including when the group wraps. Set `variant: 'stacked'` on the actions container for a single-column layout with CTAs first. Multiple CTAs retain their relative authored order. This changes visual placement only; author DOM order deliberately because keyboard and accessibility reading order are unchanged.
+
 Assign `item` to each repeated list peer and every direct child positioned by its parent's coordinate system. List children represent repeated records; map and calendar children represent coordinate-owned labels, overlays, or marks. Parent context specializes the same item identity. A concrete element can carry the role directly; use a wrapper when one peer contains multiple elements.
 
 ```json

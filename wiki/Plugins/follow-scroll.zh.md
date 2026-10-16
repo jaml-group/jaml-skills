@@ -42,7 +42,7 @@ export default {
             cap: 'Append log line',
             onclick() {
                 const _body = this.parentElement.querySelector('.follow-log-content');
-                _body.cmpt.insertComponent({ type: 'element', value: 'New output from the build', style: { display: 'block', padding: '8px' } });
+                _body.cmpt.insertComponent({ type: 'element', value: 'New output from the build', style: { display: 'block', padding: '0.5rem' } });
             }
         },
         {
@@ -55,7 +55,7 @@ export default {
         {
             type: 'container',
             class: 'follow-log',
-            style: { display: 'block', height: '160px', overflow: 'auto' },
+            style: { display: 'block', height: '10rem', overflow: 'auto' },
             plugins: [
                 Plugins.followScroll({
                     content: '.follow-log-content',

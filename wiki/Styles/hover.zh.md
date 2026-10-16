@@ -67,29 +67,32 @@
 
 悬停跑马灯
 
-指针悬停时，溢出的单行文本以恒定速度从起点向末尾移动，默认停留 1000 毫秒，再立即跳回起点并正向循环。默认速度为每秒 48 像素。指针离开立即复位。RTL 使用负滚动起点。
+首次移动前默认等待 500 毫秒，之后循环不重复启动延迟。指针悬停时，溢出的单行文本以恒定速度从起点向末尾移动，默认停留 1000 毫秒，再立即跳回起点并正向循环。默认速度为每秒 48 像素。指针离开立即复位。RTL 使用负滚动起点。
 
-卸载或移除时取消待执行动画并移除指针及媒体查询订阅。几何变化时重新开始，内容适配时保持静止。动态减少运动偏好会停止动画并保留静态渐隐。
+卸载或移除样式会取消动画并恢复目标样式和遮罩。选择目标替换或移除会释放旧目标，并跟随后续匹配；新目标重新等待启动延迟。几何变化才重启动画，内容不溢出时静止。实时减少动态效果设置会停止动画并保留淡出。
 
-内置 listenScroll:false 的 mask.overflow，默认渐隐长度为 1.5rem。动画直接刷新溢出状态，不增加原生滚动监听器。应用到实际有界裁剪元素，不需要额外移动包装、复制文本或单独遮罩。
+复用原生溢出遮罩和几何观察，默认淡出长度 1.5rem，无原生滚动监听。悬停属于样式宿主，selector 选择滚动后代。原生标题使用 selector: ":scope > [slot=cap]"，排除操作区中的嵌套标题；无需额外标签、重复文本或遮罩。
 
-应用期间设置 overflow:hidden、white-space:nowrap 和 scroll-behavior:auto；需指定目标宽度。不自动选择嵌套标题，也不提供子目标、影子槽或 agent 菜单变体。非正或非有限速度禁用运动，负数或非有限停留时间按零处理。不要同时由其他功能控制同一滚动位置。
+挂载时设置裁剪、不换行和即时滚动。选定后代还会设置 display:block 和 min-width:0；调用者负责宿主有界尺寸。没有匹配目标时不生效，不会退回滚动宿主。选择器仅查找轻 DOM，不提供子元素、槽位或 agent 菜单变体。速度非正或非有限时禁用动画；停留时间为负或非有限时取零。避免多个滚动位置控制者。
 
-位置参数顺序: `speed` → `hold` → `size`.
+位置参数顺序: `speed` → `hold` → `size` → `delay` → `selector`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
 | `speed` | `number` | `48` | 恒定速度，单位 像素/秒 |
 | `hold` | `number` | `1000` | 末尾停留时间，单位毫秒 |
 | `size` | `numberOrString` | `1.5` | 遮罩渐隐长度；数值使用 rem<br>Unit: `rem` |
+| `delay` | `number` | `500` | 首次滚动延迟，单位毫秒；默认 500，零表示立即开始 |
+| `selector` | `string` | 未提供 | 选择要滚动的第一个轻 DOM 后代；省略时滚动悬停宿主 |
 
-For sidebar conversation names, use `hover.marquee(speed:48;hold:5000)` on the actual bounded title element. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
+For sidebar conversation names, use `Styles.hover.marquee({ selector: ":scope > [slot=cap]", speed: 48, hold: 5000 })` on the owning native label or button. Hovering the owner scrolls only its direct caption. Omit selector when the owner itself is the clipping box. This moves at 48 pixels per second, holds the complete ending for five seconds, then restarts while hovered. The five-second hold is an explicit recipe choice; the plugin default remains 1000 ms. Keep icons, action buttons and the row itself outside the moving title box. The style already includes an overflow-aware mask without a scroll listener; do not add a second mask or animation handler.
 
 ```javascript jaml-playground
 export default {
-    type: 'container',
-    styles: ['css(display:block;width:16rem;height:2rem;padding:0)', 'hover.marquee(speed:48;hold:5000;size:1.5rem)'],
-    components: [{ type: 'label', cap: 'A conversation title that needs more room in the sidebar', styles: ['css(display:inline;white-space:nowrap)'] }]
+    type: 'label',
+    icon: '💬',
+    cap: 'A conversation title that needs more room in the sidebar',
+    styles: ['css(width:16rem)', Styles.hover.marquee({ selector: ':scope > [slot=cap]', speed: 48, hold: 5000 })]
 };
 ```
 

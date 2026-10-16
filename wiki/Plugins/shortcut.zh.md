@@ -6,13 +6,40 @@
 
 <a id="entry-shortcut"></a>
 
-快捷键
+悬停快捷操作
 
-标识基础悬停快捷操作插件。
+为悬停目标提供应用定义的操作。
 
-仅在存在选项提供器时创建 shortcuts 弹出层；导出的基础入口没有定义提供器或声明参数结构。
+向 Plugins.shortcut({ selector, optionsGetter, container?, allowOverflow?, class? }) 传入对象。optionsGetter(target) 返回操作的 ElementOption 数组；selector 匹配悬停目标，container 解析弹出层宿主。没有选项提供函数时不会创建弹出层。
 
-这不是键盘快捷键注册 API。使用受支持的已配置扩展，或使用 shortcut.search 获取其特定的内置行为。
+这是悬停操作弹出层，不是键盘快捷键注册。选项提供函数和操作由应用拥有；外部查询值应编码。卸载插件会移除宿主监听器并销毁其弹出层。
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    plugins: [
+        Plugins.shortcut({
+            selector: '.jam-option',
+            optionsGetter: (target) => [
+                {
+                    name: 'Search DuckDuckGo',
+                    onclick: () => window.open(`https://duckduckgo.com/?q=${encodeURIComponent(target.textContent ?? '')}`, '_blank', 'noopener,noreferrer')
+                }
+            ]
+        })
+    ],
+    components: [
+        {
+            type: 'radio',
+            cap: 'Search target',
+            data: [
+                { name: 'JAM-UI', value: 'jam-ui' },
+                { name: 'JavaScript', value: 'js' }
+            ]
+        }
+    ]
+};
+```
 
 ---
 
@@ -30,14 +57,14 @@
 
 卸载时移除宿主监听器并销毁弹出层。
 
-构造器中的内置提供器优先于声明的 optionsGetter 参数。搜索文字直接插入而未进行 URL 编码；需要不同或更稳健的查询行为时使用自定义注册插件。
+即使传入 optionsGetter，此预设仍保留内置搜索操作。搜索文本直接插入 URL 而不编码；自定义操作和编码查询应使用 Plugins.shortcut({ selector, optionsGetter })。
 
 位置参数顺序: `selector` → `optionsGetter` → `container` → `allowOverflow` → `class`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
 | `selector` | `string` | 未提供 | 显示搜索快捷键的元素选择器。 |
-| `optionsGetter` | `function` | 未提供 | 自定义快捷键选项提供函数。 |
+| `optionsGetter` | `function` | 未提供 | 兼容性声明参数，不能替换此预设的内置提供函数。自定义操作应使用 Plugins.shortcut。 |
 | `container` | `functionOrString` | 未提供 | 弹出层容器解析函数。 |
 | `allowOverflow` | `boolean` | `false` | 允许弹出层溢出。 |
 | `class` | `string` | 未提供 | 弹出层 CSS 类名。 |
@@ -59,34 +86,6 @@ export default {
                 { name: 'Albert Einstein', value: 'einstein' },
                 { name: 'Isaac Newton', value: 'newton' },
                 { name: 'Niels Bohr', value: 'bohr' }
-            ]
-        }
-    ]
-};
-```
-
-```javascript jaml-playground
-export default {
-    type: 'container',
-    plugins: [
-        Plugins.shortcut.search({
-            selector: '.jam-option',
-            optionsGetter: (target) => [
-                {
-                    name: '',
-                    icon: '<img src="https://duckduckgo.com/favicon.ico"/>',
-                    onclick: () => window.open(`https://duckduckgo.com/?q=${target.textContent}`)
-                }
-            ]
-        })
-    ],
-    components: [
-        {
-            type: 'radio',
-            cap: 'Search target',
-            data: [
-                { name: 'JAM-UI', value: 'jam-ui' },
-                { name: 'JavaScript', value: 'js' }
             ]
         }
     ]

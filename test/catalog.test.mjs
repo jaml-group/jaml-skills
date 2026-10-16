@@ -57,6 +57,13 @@ test('every exported path preserves runtime values and source argument order in 
         const _view = catalog.reader.resolveAuthoringManifests(catalog.metadata, locale);
         const _projection = projectGuides(catalog, locale);
         assert.equal(_projection.targets.size, catalog.entries.length);
+        for (const [file, content] of _projection.files) {
+            if (!file.endsWith('.md')) {
+                continue;
+            }
+            const _title = content.match(/^# (.+)$/m)?.[1].trim();
+            assert.ok(_title && !/^(?:undefined|null|@tr\()/.test(_title), 'Meaningful generated guide title: ' + file);
+        }
         for (const entry of catalog.entries) {
             const _kind = entry.kind === 'style' ? 'styles' : 'plugins';
             const _raw = catalog.metadata[_kind].schemaTable[entry.schemaRef];

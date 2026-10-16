@@ -281,22 +281,22 @@ jam.dropDown(target, content, { position: 'bottom' });
 
 ### Methods
 
-| Method                           | Description                                                               |
-| -------------------------------- | ------------------------------------------------------------------------- |
-| `popup.setContent(content)`      | Update the popup content at runtime without re-showing.                   |
-| `popup.reapplyContent()`         | Re-apply the current content (useful when content is a function).         |
-| `popup.updatePosition(noFlash?)` | Manually recalculate and apply the popup position.                        |
-| `popup.moveToCursor()`           | Move the popup to the current cursor position.                            |
-| `popup.moveToCoord(coord)`       | Move the popup to a specific `{ x, y }` coordinate.                       |
-| `popup.moveToTarget()`           | Move the popup to follow the target element.                              |
-| `popup.bindEvents()`             | Bind trigger events on `eventTarget` (required for standalone instances). |
-| `popup.destroy()`                | Clean up the popup instance.                                              |
+| Method                           | Description                                                                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `popup.setContent(content)`      | Update the popup content at runtime without re-showing.                                                                                |
+| `popup.reapplyContent()`         | Re-apply the current content (useful when content is a function).                                                                      |
+| `popup.updatePosition(noFlash?)` | Manually recalculate and apply the popup position.                                                                                     |
+| `popup.moveToCursor()`           | Move the popup to the current cursor position.                                                                                         |
+| `popup.moveToCoord(coord)`       | Move the popup to a specific `{ x, y }` coordinate.                                                                                    |
+| `popup.moveToTarget()`           | Move the popup to follow the target element.                                                                                           |
+| `popup.bindEvents()`             | Bind trigger events on `eventTarget`. Optional when the owner calls `show()` from its own event handlers; bind only once per instance. |
+| `popup.destroy()`                | Clean up the popup instance.                                                                                                           |
 
 ### Static methods
 
-| Method                             | Description                                                                      |
-| ---------------------------------- | -------------------------------------------------------------------------------- |
-| `PapayaPopup.hideAllTips(filter?)` | Hide all matching popups. `filter` can be a PopupType string or filter function. |
+| Method                             | Description                                                                                                                             |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `PapayaPopup.hideAllTips(filter?)` | Hide all popups, or only those accepted by `(popup) => boolean`. For example, `PapayaPopup.hideAllTips(popup => popup.type === 'tip')`. |
 
 ---
 
@@ -371,28 +371,28 @@ export default {
 
 ### Right-click context menu
 
+Use the element-owned popup with the context-menu profile, so the trigger owns its popup lifetime. Changing an existing popup's `type` alone does not apply that profile's trigger or placement defaults.
+
 ```javascript jaml-playground
 export default {
-    type: 'container',
-    components: [
-        {
-            type: 'wrapper',
-            cap: 'Right-click me',
-            id: 'context-target',
-            styles: ['css(padding:1rem;border:1px dashed var(--jam-border))'],
-            onmount: function () {
-                // Bind a context-menu popup on mount
-                papaya.eventTarget = this;
-                papaya.type = 'contextMenu';
-                papaya.content = `
-          <div style="padding:0.5rem 1rem;cursor:pointer">Edit</div>
-          <div style="padding:0.5rem 1rem;cursor:pointer">Copy</div>
-          <div style="padding:0.5rem 1rem;cursor:pointer">Delete</div>
-        `;
-                papaya.bindEvents();
-            }
-        }
-    ]
+    type: 'wrapper',
+    cap: 'Right-click me',
+    styles: ['css(padding:1rem;border:0.0625rem dashed currentColor)'],
+    oncontextmenu(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.popup(
+            {
+                type: 'wrapper',
+                styles: ['wrapper.buttonwrapper'],
+                components: [
+                    { type: 'button', cap: 'Edit', onclick: () => nutmeg.info('Edit selected') },
+                    { type: 'button', cap: 'Copy', onclick: () => nutmeg.info('Copy selected') }
+                ]
+            },
+            { type: 'contextMenu', click2Hide: true }
+        );
+    }
 };
 ```
 

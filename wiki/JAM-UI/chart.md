@@ -227,7 +227,7 @@ export default {
 
 ### Complete ECharts option (migration from raw ECharts)
 
-If you're new to JAML and have an existing ECharts option object, use the `option` param. **Set `type` to `"chart"` only** — no subtype. The subtype (e.g. `chart-bar`, `chart-line`) would force a specific series type, which conflicts with a complete option where `series[].type` is already defined in the option itself. It accepts a complete ECharts option and routes everything correctly — non-series keys go to `chartOption`, the `series` key becomes series config, and data is cleared to trigger a fresh redraw:
+For an existing ECharts option object, use the `option` param and include `type` on each series. Plain `"chart"` is a clear choice for mixed series; a subtype does not override explicit `series[].type` in a complete option. Non-series keys become chart configuration, `series` supplies the series configuration, and `data` is cleared so those explicit series can render:
 
 ```javascript jaml-playground
 export default {

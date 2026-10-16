@@ -1,6 +1,6 @@
 # Color & Lumi System
 
-JAM-UI has a built-in color system that automatically adapts between light and dark modes. All color values resolve through the accent color chain: a single **accent color** (`jam.accolor`) generates a full **color set** (`jam.colorSet`) using a **color scheme** (`jam.colorScheme`).
+JAM-UI provides adaptive color profiles for light and dark modes. A global **accent color** (`jam.accolor`) generates a **color set** (`jam.colorSet`) using a **color scheme** (`jam.colorScheme`). Elements can inherit that profile or establish a local one; literal CSS colors do not automatically become adaptive.
 
 ---
 
@@ -8,13 +8,11 @@ JAM-UI has a built-in color system that automatically adapts between light and d
 
 ### Accent color (`jam.accolor`)
 
-The single base color that defines the entire UI palette. Every element's `color` property resolves through this. Set globally or per-element.
+The base color for the global UI palette. An element inherits its parent's color profile unless it supplies a local `color`.
 
 ```javascript
 jam.accolor; // → chroma.Color — current accent color
-jam.accolor = 'red'; // set accent color globally
-jam.accolor = '#3b82f6'; // hex
-jam.accolor = 'hsl(210, 70%, 55%)'; // HSL
+jam.accolor = 'hsl(210 70% 55%)'; // set accent color globally
 ```
 
 For a branded first render, set `jam.accolor` before rendering. Descendants inherit that global color profile, and `jam.colorSet` is regenerated from it; later `jam.accolor` assignments update the active profile as well. Omit an element's `color` when it should use the global accent because setting `color` creates an intentional local accent profile. Use `jam.ac()` for CSS/style expressions and `jam.colorSet` for derived palette values; never pass the uncalled `jam.ac` builder as an element color.
@@ -58,7 +56,8 @@ jam.colorScheme = 'pastel'; // switch scheme
 Auto-detected from system preference. Can be forced per-element or globally.
 
 ```javascript
-jam.darkMode; // → boolean — current mode (reads system preference)
+jam.darkMode; // → boolean — active body mode, including an explicit override
+jam.getSystemDarkMode(); // → boolean — current system preference
 jam.darkMode = true; // force dark mode globally
 // Per-element via param:
 const lightCard = { type: 'card', darkMode: false };
@@ -70,11 +69,11 @@ When an example intentionally forces a global mode, set `jam.darkMode` before re
 
 ## The lumi system
 
-Lumi is the **lightness adaptation layer** that makes the accent color readable in both light and dark modes. It works by shifting the **OKLCH lightness** of colors based on the active mode.
+Lumi provides mode-dependent lightness and alpha expressions for CSS colors. The `lumiO` and `lumiL` helpers produce lightness components used by HSL builders; palette generation and [color tuning](#color-tuning) separately use OKLCH transforms.
 
 ### How it works
 
-Every color used in the UI is adjusted through **lumiO** (luminosity offset, "O" = opposite). In light mode, the offset is additive. In dark mode, the sign flips (opposite direction). This ensures colors stay readable against the background regardless of mode.
+**lumiO** ("O" = opposite) builds a CSS lightness expression whose level increases lightness in light mode and decreases it in dark mode. Use it when authoring adaptive colors; prefer existing semantic tokens when they already express the intended treatment. Adaptation does not guarantee sufficient contrast for every foreground/background pair.
 
 ```
 Light mode: lumiO(level) =   4.5%  + 2.0% × level   → higher level = lighter
@@ -91,52 +90,54 @@ jam.lumiO(5); // subtle offset from base
 
 ### Lumi functions
 
-| Function                  | Returns               | Description                                                                                                                                                             |
-| ------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `jam.lumiO(level, bias?)` | `string` (percentage) | General-purpose lightness offset ("O" = opposite — sign auto-flips per dark mode). Use for backgrounds, surfaces, borders, and most color values. Practical range: 1–50 |
-| `jam.lumiL(level, bias?)` | `string` (percentage) | Level-based lightness shift ("L" = level). A separate profile for fine-grained control                                                                                  |
-| `jam.lumiA(level)`        | `number`              | Alpha value for semi-transparent overlays                                                                                                                               |
-| `jam.lumiText(level)`     | `string`              | Neutral gray at the given lumiO level. Convenience for `hsl(0, 0%, lumiO(level))`                                                                                       |
-| `jam.inDarkMode(el?)`     | `boolean`             | Whether the element (or document body) is in dark mode                                                                                                                  |
+| Function                  | Returns                    | Description                                                                                  |
+| ------------------------- | -------------------------- | -------------------------------------------------------------------------------------------- |
+| `jam.lumiO(level, bias?)` | `string` (CSS `calc(...)`) | Mode-dependent lightness component; level direction reverses in dark mode.                   |
+| `jam.lumiL(level, bias?)` | `string` (CSS `calc(...)`) | Lightness component with a separate base and the same level direction in both modes.         |
+| `jam.lumiA(level)`        | `string` (CSS `calc(...)`) | Mode-dependent alpha component for CSS colors or opacity.                                    |
+| `jam.lumiText(level)`     | `string` (CSS HSL)         | Complete neutral color equivalent to `jam.hsl(0, 0, jam.lumiO(level))`.                      |
+| `jam.inDarkMode(el)`      | `boolean`                  | Active mode for the supplied element. Use `jam.darkMode` or `jam.isDarkMode()` for the body. |
+
+For numeric calculations, use `jam.getLumiO(level, darkMode?, bias?)`, `jam.getLumiL(level, darkMode?, bias?)`, or `jam.getLumiA(level, darkMode?)`. These return numbers and default to the active body mode. Lightness values are fractions; CSS builders retain `calc(...)` expressions so CSS can respond to context changes.
 
 ### Why use lumiO instead of hardcoded colors?
 
 ```javascript
-// ❌ Hardcoded — breaks in dark mode
+// Fixed foreground — does not follow mode changes
 {
-    color: '#333333';
+    color: 'hsl(0 0% 20%)';
 }
 
-// ✅ lumiO — auto-adapts to light/dark mode
+// Adaptive foreground and background — verify their rendered contrast
 {
     background: jam.hsl(0, 0, jam.lumiO(48));
     color: jam.lumiText(1); // same as jam.hsl(0, 0, jam.lumiO(1))
 }
 
 // ✅ In a JavaScript-authored style string, interpolate the returned lightness component
-`css(background:hsl(0,0%,${jam.lumiO(10)}))`;
+`css(background:hsl(0 0% ${jam.lumiO(10)}))`;
 ```
 
-> **Rule of thumb:** `lumiO` is the general-purpose lightness function for everything — "O" stands for "opposite" (its sign flips in dark mode).
+> **Rule of thumb:** Prefer a semantic token for an existing visual role. Use `lumiO` when constructing an adaptive lightness component; its level direction reverses in dark mode.
 
-When a fixed literal is genuinely intentional, prefer legacy comma-separated HSL/HSLA syntax such as `hsl(210, 70%, 55%)` or `hsla(210, 70%, 55%, 0.5)` over hex/RGB. When the color should adapt, compose `jam.hsl(...)` with `jam.lumiO(...)` or another adaptive helper instead of maintaining separate light and dark literals.
+For an intentional literal, use CSS HSL notation such as `hsl(210 70% 55%)` or `hsl(210 70% 55% / 0.5)`. When the color should adapt, consume a semantic token or compose `jam.hsl(...)` with `jam.lumiO(...)` rather than maintaining separate light and dark literals. The `jam.hsl()` builder returns comma-separated CSS HSL/HSLA syntax for compatibility.
 
-The CSS custom properties `--jam-lumi-o-*` and `--jam-lumi-l-*` are automatically injected by `applyLumi()` on every element.
+The CSS custom properties `--jam-lumi-o-*` and `--jam-lumi-l-*` supply the luminosity context inherited by CSS expressions.
 
 ---
 
 ## Color values (`ColorType`)
 
-Any param typed `ColorType` accepts:
+`ColorType` represents a string or `chroma.Color`. Supported resolution depends on the consumer; CSS variables require an element-aware resolver.
 
 | Format          | Example                                                           | Notes                                                                |
 | --------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------- |
-| CSS named color | `'red'`, `'blue'`, `'tomato'`                                     | Any valid CSS color name                                             |
-| Hex             | `'#3b82f6'`, `'#fff'`                                             | Short or long form                                                   |
-| RGB/RGBA        | `'rgb(59, 130, 246)'`                                             | —                                                                    |
-| HSL/HSLA        | `'hsl(217, 91%, 60%)'`                                            | Legacy Chromium-compatible                                           |
+| CSS named color | A valid CSS color name                                            | Native element/style resolution may adapt it to the active palette.  |
+| Hex             | A CSS hexadecimal color string                                    | Supported by the color parser; use HSL for authored examples.        |
+| RGB/RGBA        | A CSS `rgb()` / `rgba()` expression                               | Supported by the color parser; use HSL for authored examples.        |
+| HSL/HSLA        | `'hsl(217 91% 60%)'`                                              | Modern and comma-separated forms are accepted by the color parser.   |
 | CSS variable    | `'var(--jam-ac-color)'`                                           | Element-aware; use `jam.calcColor(el, value)` for imperative parsing |
-| chroma.Color    | `chroma('red')`                                                   | JS only                                                              |
+| chroma.Color    | `jam.color('hsl(0 100% 50%)')`                                    | JS only                                                              |
 | `'random'`      | Random color                                                      | Useful for prototyping                                               |
 | Semantic name   | `'info'`, `'success'`, `'warn'`, `'error'`, `'mute'`, `'disable'` | Predefined semantic colors                                           |
 
@@ -162,7 +163,7 @@ The canonical style-string names are lowercase; matching is case-insensitive for
 {
     "type": "button",
     "cap": "Styled",
-    "styles": ["css(background:ac;color:onac;border:1px solid ac[1])"]
+    "styles": ["css(background:ac;color:onac;border:0.0625rem solid ac[1])"]
 }
 ```
 
@@ -172,28 +173,30 @@ The canonical style-string names are lowercase; matching is case-insensitive for
 
 ### `jam.color(value)`
 
-Parse any `ColorType` into a `chroma.Color`.
+Parse a literal color, a JAML semantic name, or a registered custom color into a `chroma.Color`. Semantic and custom colors use the initialized global palette; this function has no element context. It does not resolve CSS `var()` or `calc()` expressions. Unrecognized input falls back to a random color, so do not use it to validate external color input.
 
 ```javascript
-jam.color('red'); // → chroma.Color
-jam.color('#3b82f6'); // → chroma.Color
+jam.color('hsl(217 91% 60%)'); // → chroma.Color
+jam.color('success'); // → semantic color from the global palette
 jam.color('random'); // → random chroma.Color
 ```
 
 ### `jam.getColor(value)`
 
-Alias for `jam.color()`. Parses a color value.
+Alias for `jam.color()`, with the same global resolution and invalid-input fallback.
 
 ### `jam.calcColor(el, value)`
 
-Resolve an element-scoped CSS color expression and parse it into a `chroma.Color`. `calcColor()` runs one `jam.parseCSSVariable()` pass; `var()` or `calc()` expressions introduced by a custom-property substitution are not expanded recursively. For a known acyclic chain, resolve it with a bounded, cycle-guarded series of `parseCSSVariable()` calls before passing the result to `calcColor()`.
+Resolve an element-scoped CSS color expression and parse it into a `chroma.Color`. JAML semantic names such as `success` and registered custom names are not CSS color expressions and are not resolved here; unsupported input throws. `calcColor()` runs one `jam.parseCSSVariable()` pass; `var()` or `calc()` expressions introduced by a custom-property substitution are not expanded recursively. For a known acyclic chain, resolve it with a bounded, cycle-guarded series of `parseCSSVariable()` calls before passing the result to `calcColor()`.
+
+For scoped semantic colors, prefer the native element `color` property or `jam.getAdjustedColor(el, value)`. The latter uses that element's palette for semantic names and adjusts chromatic CSS names to it. Registered custom colors retain their global adjustment contract. Read colors after theme readiness and after the element has its intended color context.
 
 ### `jam.adjustColor(color, adjustments)`
 
 Adjust a color's properties.
 
 ```javascript
-jam.adjustColor('red', { h: 30, s: 1.2, l: 0.9, a: 0.5 });
+jam.adjustColor('hsl(0 100% 50%)', { h: 30, s: 0.8, l: 0.6, a: 0.5 });
 ```
 
 ### `jam.randomColor(option?)`
@@ -216,8 +219,8 @@ Check if a value is a `chroma.Color` instance.
 Build a legacy Chromium-compatible CSS `hsl()` or `hsla()` string from numeric values, using comma-separated channels and percentage saturation/lightness.
 
 ```javascript
-jam.hsl(0, 0, 95); // → 'hsl(0, 0%, 95%)'
-jam.hsl(220, 1, 0.5, 0.8); // → 'hsla(220, 100%, 50%, 0.8)'
+jam.hsl(0, 0, 95); // opaque neutral; returns a comma-separated CSS HSL string
+jam.hsl(220, 1, 0.5, 0.8); // translucent color; returns a CSS HSLA string
 ```
 
 ### `jam.getAccentColor(el?)`
@@ -233,7 +236,7 @@ Get the CSS named color string from a color value.
 Build a `ColorSet` array from a base color and scheme.
 
 ```javascript
-jam.buildColorSet(jam.color('green'), 'monochromatic');
+jam.buildColorSet(jam.color('hsl(120 100% 25%)'), 'monochromatic');
 ```
 
 ### `jam.scale(colors, count)`
@@ -241,7 +244,7 @@ jam.buildColorSet(jam.color('green'), 'monochromatic');
 Interpolate a list of `ColorType` values in LCH space and return a normalized `ColorSet` of `count` colors.
 
 ```javascript
-const ramp = jam.scale(['#2563eb', '#22c55e'], 5);
+const ramp = jam.scale(['hsl(221.21 83.19% 53.33%)', 'hsl(142.09 70.56% 45.29%)'], 5);
 ramp.toCSS();
 ```
 
@@ -261,7 +264,7 @@ Return a tuned `chroma.Color`.
 | `chromaFloor`   | `number`       | Minimum chroma after multiplication                  | Default: `0`                            |
 
 ```javascript
-const tuned = jam.tuneColor(jam.getColor('#4f46e5'), 1.5, 0.05, 0.08);
+const tuned = jam.tuneColor(jam.getColor('hsl(243.4 75.36% 58.63%)'), 1.5, 0.05, 0.08);
 ```
 
 ### Tuner Presets
@@ -282,7 +285,7 @@ const tuned = jam.tuneColor(jam.getColor('#4f46e5'), 1.5, 0.05, 0.08);
 Normalize `ColorType[]` input with `ColorSet.from(...)`, tune each resulting `chroma.Color`, and return a new `ColorSet`.
 
 ```javascript
-const source = ['#ef4444', '#3b82f6', '#22c55e'];
+const source = ['hsl(0 84.24% 60.2%)', 'hsl(217.22 91.22% 59.8%)', 'hsl(142.09 70.56% 45.29%)'];
 const pastel = jam.tuneColorSet(source, 'pastel');
 
 const custom = jam.tuneColorSet(source, (color) => jam.tuneColor(color, 1.2, -0.04));
@@ -292,11 +295,11 @@ The callback receives each normalized `chroma.Color`. Input arrays and existing 
 
 ### `jam.registerCustomColors(colorMap)`
 
-Register custom named colors. Accepts a dictionary of `name: color-string`.
+Register custom named colors from a dictionary of `name: color-string`. Resolution blends the supplied color with the first entry of the global color set; registration is not a promise to preserve an exact brand color. Prefer native semantic names for ordinary success/warning/error feedback.
 
 ```javascript
-jam.registerCustomColors({ '1000kv': '#0000ff', '800kv': '#8800ff' });
-// Now usable anywhere: { color: '1000kv' }
+jam.registerCustomColors({ '1000kv': 'hsl(240 100% 50%)', '800kv': 'hsl(272 100% 50%)' });
+// Use the registered name through native color resolution: { color: '1000kv' }
 ```
 
 ### `jam.modifyColor(color, option)`
@@ -313,20 +316,22 @@ Compare two colors with tolerance for equality.
 
 ### `jam.toRGB(color)` / `jam.toHSL(color)` / `jam.toHex(color)`
 
-Convert a color string to structured formats.
+Convert a color string to the requested format: `toRGB()` returns an RGB object, `toHSL()` returns an HSL object, and `toHex()` returns a hexadecimal string.
 
 ```javascript
-jam.toHex('red'); // → '#ff0000'
-jam.toRGB('blue'); // → { r: 0, g: 0, b: 255 }
+jam.toHex('hsl(210 70% 55%)'); // hexadecimal string
+jam.toRGB('hsl(210 70% 55%)'); // RGB object with r, g, b and alpha accessors
 ```
+
+Current limitation: these legacy converters can lose full-intensity channels; for example, `hsl(0 0% 100%)` converts incorrectly. Prefer `jam.getColor(color)` with `.rgb()`, `.rgba()`, `.hsl()`, `.hex()` or `.css()` when accurate conversion at channel boundaries is required.
 
 ### `jam.toGradientObject(type, arg, ...colorStops)`
 
 Build a linear or radial ECharts gradient object. For `'linear'`, `arg` is a degree value and follows the direction rules below. For `'radial'`, `arg` is a CSS radial descriptor; a trailing `at <x> <y>` sets the normalized center and otherwise defaults to `0.5, 0.5`. Radial gradients use `r: 1`.
 
 ```javascript
-jam.toGradientObject('linear', -45, '#4f46e5', '#22d3ee');
-jam.toGradientObject('radial', 'ellipse at 25% 75%', '#ffffff', '#4f46e5');
+jam.toGradientObject('linear', -45, 'hsl(243.4 75.36% 58.63%)', 'hsl(187.94 85% 53.33%)');
+jam.toGradientObject('radial', 'ellipse at 25% 75%', 'hsl(0 0% 100%)', 'hsl(243.4 75.36% 58.63%)');
 ```
 
 ### `jam.toEchartsGradient(deg, ...colorStops)`
@@ -344,12 +349,12 @@ type EchartsGradientColorStop = ColorType | [ColorType, number | string];
 -   With one supplied stop, that color stays first and a transparent neutral `hsla(0, 0%, lumiO(50), 0)` stop is appended at the end. A plain first stop resolves to offset `0`; an explicit first offset is preserved.
 
 ```javascript
-const gradient = jam.toEchartsGradient(-45, ['#4f46e5', '10%'], '#22d3ee', ['#f8fafc', 0.8], '#0f172a');
+const gradient = jam.toEchartsGradient(-45, ['hsl(243.4 75.36% 58.63%)', '10%'], 'hsl(187.94 85% 53.33%)', ['hsl(210 40% 98.04%)', 0.8], 'hsl(222.22 47.37% 11.18%)');
 
 gradient.colorStops.map(({ offset }) => offset);
 // → [0.1, 0.45, 0.8, 1]
 
-jam.toEchartsGradient(90, '#4f46e5');
+jam.toEchartsGradient(90, 'hsl(243.4 75.36% 58.63%)');
 // → first color at 0, transparent lumiO(50) neutral at 1
 ```
 
@@ -429,7 +434,7 @@ jam.hsl(0, 0, jam.acLumiO[2](1)); // oriented against color-set entry 2
 
 ### `jam.lumiText(level)`
 
-Neutral gray at the given `lumiO` level — convenience for `hsl(0, 0%, lumiO(level))`. Does NOT accept a color; for color-aware text readability, use `jam.getAcLumiText(color, level)` or `jam.acLumiText(level)`.
+Neutral gray at the given `lumiO` level — equivalent to `jam.hsl(0, 0, jam.lumiO(level))`. Does NOT accept a color; for color-aware text readability, use `jam.getAcLumiText(color, level)` or `jam.acLumiText(level)`.
 
 ```javascript
 jam.lumiText(1); // near-white in dark mode, near-black in light mode
@@ -448,17 +453,17 @@ Neutral text colors at a given lumi step whose lightness orientation follows the
 ```javascript
 jam.acLumiText(5); // accent text at lumi step 5
 jam.getAcLumiText(someColor, 3); // lumi-adapted text for any color at step 3
-jam.getAcLumiO('#16213e', 1); // lumiO(1) adjusted for dark/light of given color
+jam.getAcLumiO('hsl(223.5 47.62% 16.47%)', 1); // lumiO(1) adjusted for dark/light of given color
 ```
 
 ### `jam.lumiO` / `jam.lumiL` / `jam.lumiA`
 
-**`jam.lumiO(level, bias?)`** — "O" = opposite. The general-purpose lightness function. Its sign auto-flips per dark mode so the same level value works in both themes without manual adjustment. Use it for backgrounds, surfaces, borders, and any color that needs to adapt to the current mode.
+**`jam.lumiO(level, bias?)`** — "O" = opposite. A CSS lightness expression whose level direction reverses between modes. Use it when constructing adaptive colors that are not already covered by semantic tokens.
 
 The optional `bias` string is appended to the calc expression for fine-tuning — e.g. `'+10%'` adds 10% to the result, `'* 1.2'` scales by 1.2.
 
 ```javascript
-jam.lumiO(1); // base offset (light: +4.5%, dark: 106.5%)
+jam.lumiO(1); // CSS expression; evaluates to 6.5% in light mode, 104.5% before CSS clamping in dark mode
 jam.lumiO(46, '+10%'); // high level → dark in dark mode, light in light mode — good for card/surface backgrounds, with '+10%' bias
 
 // Real-world usage in JAML:
@@ -475,20 +480,21 @@ jam.lumiL(1); // light: ~25.5%, dark: ~-10.5%
 jam.lumiL(5, '+10%'); // further offset, with '+10%' bias
 ```
 
-**`jam.lumiA(level)`** — Alpha values for semi-transparent overlays that adapt to mode.
+**`jam.lumiA(level)`** — A CSS alpha expression for semi-transparent overlays that adapt to mode.
 
 ```javascript
-jam.lumiA(1); // base alpha (light: 0.01, dark: 0.26)
+jam.lumiA(1); // CSS expression; evaluates to 0.02 in light mode, 0.27 in dark mode
+jam.getLumiA(1, false); // numeric 0.02, suitable for JavaScript calculations
 jam.lumiA(5); // more opaque
 ```
 
-### `jam.inDarkMode(el?)`
+### `jam.inDarkMode(el)`
 
-Check if an element (or document body) is in dark mode.
+Check the active mode for an explicit element. This helper requires an element; use `jam.darkMode` or `jam.isDarkMode()` for the active body mode, and `jam.getSystemDarkMode()` for the system preference.
 
 ```javascript
-jam.inDarkMode(); // → boolean — global
-jam.inDarkMode(myElement); // → boolean — per-element
+jam.isDarkMode(); // → boolean — active body mode
+jam.inDarkMode(myElement); // → boolean — mode at the supplied element
 ```
 
 ### `jam.lumiText(level)`
@@ -580,34 +586,34 @@ const [mean, variance, stdDev] = jam.colorSet.getVariance('oklch.l');
 Create a `ColorSet` from any iterable or array-like collection of `ColorType` values. Every entry is normalized to a `chroma.Color`.
 
 ```javascript
-const colors = ColorSet.from(['red', '#2563eb', chroma('gold')]);
+const colors = ColorSet.from(['hsl(0 100% 50%)', 'hsl(221.21 83.19% 53.33%)', jam.color('hsl(50.59 100% 50%)')]);
 ```
 
 ---
 
 ## How the lumi system works (deep dive)
 
-Lumi uses **two profiles** — one for light mode, one for dark. Each profile has 4 config values that follow a `base + dev * level` formula:
+Lumi uses **two profiles** — one for light mode, one for dark. Each profile has six config values that follow a `base + dev * level` formula:
 
 ```
 light mode:
-  lumiO(level) =   4.5% + 2.0% × level   ← base + dev, both flip in dark mode
+  lumiO(level) =   4.5% + 2.0% × level   ← base changes and dev reverses in dark mode
   lumiL(level) =  24.0% + 1.5% × level   ← separate profile, does NOT flip like lumiO
   lumiA(level) =   0.01 + 0.01 × level   ← alpha for overlays
 
 dark mode:
-  lumiO(level) = 106.5% − 2.0% × level   ← base/dev flip sign — opposite direction
+  lumiO(level) = 106.5% − 2.0% × level   ← changed base, reversed level direction
   lumiL(level) = -12.0% + 1.5% × level   ← base shifts, dev stays same direction
   lumiA(level) =   0.26 + 0.01 × level   ← alpha for overlays
 ```
 
-These values are injected as CSS custom properties on every element that calls `applyLumi()`. `--jam-lumi-o-base` and `--jam-lumi-o-dev` contain the active mode's values. Both mode profiles are also available at the same time through `--jam-lumi-o-base-lt`, `--jam-lumi-o-dev-lt`, `--jam-lumi-o-base-dk`, and `--jam-lumi-o-dev-dk`. All JAM-UI elements auto-apply lumi on connection.
+These profiles supply inherited CSS custom properties. `--jam-lumi-o-base` and `--jam-lumi-o-dev` contain the active context's values. Both mode profiles are also available through `--jam-lumi-o-base-lt`, `--jam-lumi-o-dev-lt`, `--jam-lumi-o-base-dk`, and `--jam-lumi-o-dev-dk`. Ordinary descendants inherit the context; they do not need a separate luminosity profile on every node.
 
-> **Key insight:** `lumiO` = "opposite" — **low levels are the most opposite.** `lumiO(1)` yields near-white in dark mode and near-black in light mode. As level increases, you move away from the opposite toward the mode's natural background: high levels (40–50) produce dark colors in dark mode and light colors in light mode. Always use values in the **1–50** range.
+> **Key insight:** `lumiO` = "opposite" — **low levels are the most opposite.** `lumiO(1)` yields near-white in dark mode and near-black in light mode. As level increases, you move away from the opposite toward the mode's natural background: high levels (40–50) produce dark colors in dark mode and light colors in light mode. The **1–50** range is a useful authoring scale, not runtime validation; CSS clamps out-of-range lightness when resolving the color.
 >
-> **Foreground vs background:** For readable text on a surface, use contrasting `lumiO` levels — a small level for the foreground (e.g. `lumiO(1)`) against a large level for the background (e.g. `lumiO(46)`). The auto-flip ensures both adapt correctly in either mode.
+> **Foreground vs background:** For readable text on a surface, use contrasting `lumiO` levels — a small level for the foreground (e.g. `lumiO(1)`) against a large level for the background (e.g. `lumiO(46)`). The reversed level direction adapts both expressions to mode; verify the actual foreground/background contrast in each mode.
 >
-> **`lumiL`** is a separate profile whose base values differ per mode but whose deviation direction does NOT flip — unlike `lumiO` where both base and deviation flip sign. It exists for cases that need a different lightness scale than `lumiO`.
+> **`lumiL`** is a separate profile whose base values differ per mode but whose deviation direction does NOT flip — unlike `lumiO`, whose deviation changes sign and whose base changes by mode. It exists for cases that need a different lightness scale than `lumiO`.
 
 ---
 
@@ -627,7 +633,7 @@ export default {
             type: 'tags',
             cap: 'Color set swatch',
             template: { type: 'input-color', value: '{value}' },
-            // Each indicator uses a different color from the set
+            // Each color input uses a different color from the set
             data: jam.colorSet.toCSS()
         },
         {

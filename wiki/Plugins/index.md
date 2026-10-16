@@ -11,4 +11,5 @@ Choose the owning topic, then read the entry’s arguments, prerequisites and cl
 - [popup](popup.md)
 - [router-plugins](router-plugins.md)
 - [shortcut](shortcut.md)
+- [show-more](show-more.md)
 - [subRouter](subRouter.md)
