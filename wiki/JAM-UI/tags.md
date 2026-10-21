@@ -27,16 +27,16 @@ A tag list that renders each selected option as a visual tag/chip. Supports addi
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
-| Param            | Type             | Default          | Description                                                                                                      |
-| ---------------- | ---------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `removable`      | `boolean`        | `false`          | Show a close/remove button on each tag. Also sets `clearable: true`.                                             |
-| `addable`        | `boolean`        | `false`          | Show an add button (`+`). Requires `onaddclick` handler. Set automatically when `onaddclick` is assigned.        |
-| `showCount`      | `boolean`        | `true`           | Show the tag count badge on the purge-all button.                                                                |
-| `placeholder`    | `string`         | `'没有任何内容'` | Empty state message shown when no tags exist.                                                                    |
-| `keepOrder`      | `boolean`        | `false`          | Maintain insertion order when updating tags. When `false`, new tags are appended.                                |
-| `updateViaValue` | `boolean`        | `false`          | Re-render tags based on the `value` array instead of `data`. Useful when the value is driven by another element. |
-| `onaddclick`     | `(e) => void`    | —                | Hook fired when the add button is clicked. Setting this also sets `addable: true`.                               |
-| `ontagremove`    | `(data) => void` | —                | Hook fired when a tag is removed. Receives the removed option's data. Setting this also sets `removable: true`.  |
+| Param            | Type             | Default                 | Description                                                                                                      |
+| ---------------- | ---------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `removable`      | `boolean`        | `false`                 | Show a close/remove button on each tag. Also sets `clearable: true`.                                             |
+| `addable`        | `boolean`        | `false`                 | Show an add button (`+`). Requires `onaddclick` handler. Set automatically when `onaddclick` is assigned.        |
+| `showCount`      | `boolean`        | `true`                  | Show the tag count badge on the purge-all button.                                                                |
+| `placeholder`    | `string`         | Translated `tags.empty` | Empty state message shown when no tags exist (`No items` in English, `没有任何内容` in Chinese).                 |
+| `keepOrder`      | `boolean`        | `false`                 | Maintain insertion order when updating tags. When `false`, new tags are appended.                                |
+| `updateViaValue` | `boolean`        | `false`                 | Re-render tags based on the `value` array instead of `data`. Useful when the value is driven by another element. |
+| `onaddclick`     | `(e) => void`    | —                       | Hook fired when the add button is clicked. Setting this also sets `addable: true`.                               |
+| `ontagremove`    | `(data) => void` | —                       | Hook fired when a tag is removed. Receives the removed option's data. Setting this also sets `removable: true`.  |
 
 ---
 

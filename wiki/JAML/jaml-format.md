@@ -1094,7 +1094,7 @@ export default {
 
 **Two ways to write args:**
 
--   **Inline style string:** `"path.to.style(key1:val1;key2:val2)"` — semicolon-separated, like inline CSS. Supports array values `[a,b,c]`, do not support value that contains parenthesis or semicolon.
+-   **Inline style string:** `"path.to.style(key1:val1;key2:val2)"` — semicolon-separated, like inline CSS. For an array argument, use numeric literals `[1,2,3]` or quoted strings `["a","b","c"]`; bare words inside brackets are JavaScript identifiers. Use a JavaScript factory for complex values or values containing delimiters.
 -   **Literal object string:** `"path.to.style({key1:\"val1\", key2:\"val2\"})"` — JavaScript object literal as a string (parsed at runtime).
 -   **In JS:** `Styles.path.to.style({ key1: 'val1' })` — real JS object, full type safety.
 

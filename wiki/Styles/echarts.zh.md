@@ -663,7 +663,9 @@ Styles.echarts.map.layer.imageSet({
 })
 ```
 
-```javascript jaml-playground
+Integration example: first configure a host-supplied map loader and matching GeoJSON, as described in [map prerequisites](../JAM-UI/map.md#host-prerequisites). Supply any referenced image assets as well.
+
+```javascript
 export default {
     type: 'map',
     region: '江苏',
@@ -757,7 +759,9 @@ Supplying a middle or bottom color enables merging for that layer unless its mer
 
 Computes density for map children with `jam-coord` after `childreposition`.
 
-```javascript jaml-playground
+Integration example: first configure a host-supplied map loader and matching GeoJSON, as described in [map prerequisites](../JAM-UI/map.md#host-prerequisites). Supply any referenced image assets as well.
+
+```javascript
 export default {
     type: 'map',
     region: '江苏',

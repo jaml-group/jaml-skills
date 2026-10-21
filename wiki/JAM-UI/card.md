@@ -46,6 +46,8 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 
 ---
 
+For a dismissible card, use [`interact.closable`](../Styles/interact.md#entry-interact-closable) for the native extra close control; supply its callback when close must change application state or request confirmation. Modal mounting, dismissal and focus requirements belong to the [modal owner](../utils.md#jamrendermodalcontainer-option-config). See [document composition](../JAML/purpose-and-composition.md#one-document-reuses-button-and-card-parts) for these parts together.
+
 ## Examples
 
 ### Info card with indicators

@@ -22,10 +22,10 @@ A static sequence of labeled steps with arrow separators. Use it to describe a p
 
 Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstractinputelement).
 
-| Param   | Type       | Default | Description                                                                                                                  |
-| ------- | ---------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `data`  | `string[]` | —       | Required array of step label strings, rendered once during initialization. Use `[]` when supplying only custom slot content. |
-| `value` | `any`      | —       | Inherited stored value; changing it does not change the generated step display.                                              |
+| Param   | Type       | Default | Description                                                                                                         |
+| ------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `data`  | `string[]` | `[]`    | Array of step label strings, rendered once during initialization. Use `[]` when supplying only custom slot content. |
+| `value` | `any`      | —       | Inherited stored value; changing it does not change the generated step display.                                     |
 
 ---
 

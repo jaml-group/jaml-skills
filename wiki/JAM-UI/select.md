@@ -34,9 +34,9 @@ For external labels, use `optionTextPolicy: 'literal'` and keep `autoTip` disabl
 
 Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement).
 
-| Param         | Type                | Default        | Description                                                                  |
-| ------------- | ------------------- | -------------- | ---------------------------------------------------------------------------- |
-| `placeholder` | `string \| boolean` | `'--请选择--'` | Placeholder option at the top of the dropdown. Pass `false` or `''` to hide. |
+| Param         | Type                | Default                         | Description                                                                                                                           |
+| ------------- | ------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `placeholder` | `string \| boolean` | Translated `select.placeholder` | Placeholder option at the top of the dropdown (`Select an option` in English, `--请选择--` in Chinese). Pass `false` or `''` to hide. |
 
 ---
 

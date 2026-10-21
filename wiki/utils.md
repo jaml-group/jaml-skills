@@ -94,15 +94,31 @@ The returned root uses `stylize: 'json'`.
 const option = jam.parseJSONAsJAML(myData);
 ```
 
+### Dialog and popup ownership
+
+Choose the [interaction and presentation](JAML/purpose-and-composition.md#choose-interaction-and-presentation), then compare the exact construction and lifetime contracts. A definition, a reactive `Model` and its built element are different inputs.
+
+| API                                                                | Input and result                                                              | Reactive data owner                                                                                                                  | Decision and dismissal                                                                                                          |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `jaml.yesNoDialog(prompt, onYes?, onNo?, styles?, options?)`       | Prompt content → editable JAML definition                                     | Supplied by the later rendering path                                                                                                 | Calls the selected callback; neither mounts nor closes a presentation and has no once-only settlement guard.                    |
+| `jam.popup(target, content, option?, type?)`                       | Supported content, including a JAML definition or built element → `undefined` | A definition is built as component content. For reactive vars, the caller constructs a `Model`, seeds it and passes `model.build()`. | Uses the shared popup owner; the caller owns its content model and response/lifetime policy.                                    |
+| `jam.popupYesNo(target, prompt, onYes, onNo, option?)`             | Prompt content → `undefined`                                                  | Builds component content, without a reactive `Model`                                                                                 | Requests popup dismissal before either callback; does not await a promise or add the modal helper's once-only settlement guard. |
+| `jam.renderModal(container, option, config?)`                      | JAML definition or array of definitions → `Model` or matching `Model[]`       | Creates and renders the model(s)                                                                                                     | Owns modal mounting and configured dismissal; application callbacks own asynchronous completion and operation state.            |
+| `jam.modalYesNo(container, prompt, onYes, onNo, styles?, option?)` | Prompt content → `undefined`                                                  | Creates the modal's model internally                                                                                                 | Settles the decision once and initiates dismissal before its callback; does not await a promise.                                |
+
+Decision callbacks receive the containing root component/model: a reactive `Model` through a model/modal path, and a component root in the direct popup helper path. A nested `yesNoDialog` receives the enclosing root, not a separate dialog model. A callback parameter named `model` does not establish reactive vars.
+
+For a reactive popup, use the [explicit Model/build recipe](JAML/purpose-and-composition.md#rename-beside-the-conversation). For a modal, pass the **definition** to `renderModal` and seed runtime values on its returned model; do not pass a `Model` instance or `model.build()` to that argument. Neither a callback returning a promise nor a disabled-looking button changes a helper's lifetime. Apply the [asynchronous operation contract](JAML/purpose-and-composition.md#own-asynchronous-operations) to pending, failure, cancellation and late results.
+
 ### `jam.renderModal(container, option, config?)`
 
-Render a JAML object as a modal dialog. The caller's host/layout and content styles determine placement and sizing; this helper does not center the content. A native `card` with `cap` already supplies its header. For a Yes/No decision, prefer the [confirmation helpers](choosing-native-capabilities.md#confirmations-and-editing-dialogs) and their managed ownership where appropriate.
+Render a JAML object as a modal dialog. The caller's host/layout and content styles determine placement and sizing; this helper does not center the content. A native `card` with `cap` already supplies its header. Select [interaction and presentation](JAML/purpose-and-composition.md#choose-interaction-and-presentation) first; a local edit can stay inline or beside its trigger. For a Yes/No decision, prefer the [confirmation helpers](choosing-native-capabilities.md#confirmations-and-editing-dialogs) and their managed ownership where appropriate.
 
-Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`.
+Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`. `click2Close` selects Escape/curtain dismissal at opening; mutating the original config later does not update the open modal. It does not gate an editable builder's Save/Cancel callbacks. Put a pending gate in those callbacks and choose a compatible dismissal policy when opening.
 
 `curtainMode: 'active'` is the default: one reused curtain blocks lower sibling modals while leaving the top modal interactive. `'shared'` keeps sibling modals above the shared curtain. The first modal selects the container’s mode until the last modal is removed. Curtain effect strengths also remain those of the first curtain; later opens do not accumulate darkness or replace its effects.
 
-While physical modals remain, the supplied container prevents user scrolling; its previous overflow styling resumes after the last modal unmounts, including exit animation. Other ancestors are not locked, programmatic scrolling remains possible, and modal content owns its own scroll region. This does not provide a focus trap or background-inertness guarantee. See [curtain effects](#jamshowcurtainel-option) and [confirmation ownership](#jammodalyesnocontainer-prompt-onyes-onno-styles-option). These stacking/effect contracts require the updated development runtime; verify the consuming bundle.
+While physical modals remain, the supplied container prevents user scrolling; its previous overflow styling resumes after the last modal unmounts, including exit animation. Other ancestors are not locked, programmatic scrolling remains possible, and modal content owns its own scroll region. Scroll locking is separate from the [modal focus and background contract](#modal-focus-and-background). See [curtain effects](#jamshowcurtainel-option) and [confirmation ownership](#jammodalyesnocontainer-prompt-onyes-onno-styles-option). These stacking/effect contracts require the updated development runtime; verify the consuming bundle.
 
 ```javascript
 const model = jam.renderModal(
@@ -119,13 +135,21 @@ const model = jam.renderModal(
 );
 ```
 
+#### Modal focus and background
+
+Development bundles with native modal accessibility manage initial focus, keyboard containment, host-scoped background inertness and conditional return to the opener. The active modal and its owned native popup chains form the focus region; shared-curtain mode also keeps live sibling modal cards reachable. Inertness preserves prior sibling state within the supplied modal host; this is not a whole-page guarantee for an arbitrary host.
+
+Return focus is attempted after unmount only when the captured opener remains connected and is eligible under any remaining modal. For an unhandled, non-composing Escape reaching the modal listener, owned popups dismiss before the modal. The `yesNoDialog` builder can handle Escape earlier, prevent the event and invoke No; its decision path therefore takes precedence over that popup fallback. Verify the intended sequence when composing them. The application supplies the accessible name and verifies the intended keyboard/assistive-technology flow.
+
+Earlier bundles lack this integration. Verify the consuming runtime and preserve its native ownership; an existing adapter fills only a demonstrated gap. A popup or the `yesNoDialog` definition alone does not acquire modal behavior.
+
 ### `jam.closeTopModal()`
 
 Close the topmost modal popup.
 
 ### `jam.popupYesNo(target, prompt, onYes, onNo, option?)`
 
-Show a Yes/No confirmation popup. The fifth argument is a popup options object; this helper returns `undefined`. Callbacks receive the dialog model. It uses the [shared popup owner](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing); do not retain its return value as a popup handle.
+Show a Yes/No confirmation popup beside its target when the operation warrants a decision. Both decision callbacks request popup dismissal before invoking the supplied callback; the helper does not wait for an asynchronous save. For an editor that remains open on failure, use the editable definition and an owned popup lifetime as in [Rename](JAML/purpose-and-composition.md#rename-beside-the-conversation). The fifth argument is a popup options object; this helper returns `undefined`. Callbacks receive the dialog root component; this helper does not construct a reactive `Model` or guard decision settlement once. Keep repeated business actions behind the application's operation gate. Hiding the popup by clicking outside is not a No callback; release owned resources through the presentation's replacement, dismissal and disposal paths too. It uses the [shared popup owner](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing); do not retain its return value as a popup handle.
 
 ```javascript
 jam.popupYesNo(
@@ -142,7 +166,7 @@ jam.popupYesNo(
 
 ### `jam.notify(content, option?)`
 
-Show a notification. Returns the `NutmegNotify` instance.
+Show a notification. Returns the `NutmegNotify` instance. For a plain outcome, pass the message directly; a recognized JAML content object selects custom mode with different level defaults. See [choosing notification content](JAM-UI/notify.md#choose-the-notification-content) for plain versus interactive content, literal external text, stable IDs and lifetime ownership.
 
 ```javascript
 jam.notify('File saved', { level: 'success', duration: 3000 });
@@ -188,6 +212,8 @@ Remove all active notifications.
 ### `jam.popup(target, content, option?, type?)`
 
 Show a popup anchored to an element or mouse event. The optional 4th `type` parameter accepts a `PopupType` key (e.g. `'dropDown'`, `'tip'`, `'contextMenu'`) to use a predefined profile.
+
+Definitions are built as component content. For reactive model data, pass the explicitly constructed model's built element and retain its cleanup owner; see [popup content and focus](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) and the [Rename example](JAML/purpose-and-composition.md#rename-beside-the-conversation).
 
 ```javascript
 jam.popup(buttonElement, 'Click me for details');
@@ -257,9 +283,9 @@ For this helper path, a top-level `onafterrender` callback inside the popup cont
 
 ### `jaml.yesNoDialog(prompt, onYes?, onNo?, styles?, options?)`
 
-Build a complete editable confirmation-dialog JAML definition. This helper creates the definition without mounting it; use your existing popup or modal owner to present it. `jam.yesNoDialog` remains an alias of the same function with the same argument order.
+Build a complete editable confirmation-dialog JAML definition. Choose [interaction and presentation](JAML/purpose-and-composition.md#choose-interaction-and-presentation) separately; this builder does not imply a modal surface. This helper creates the definition without mounting it; use your existing popup or modal owner to present it. `jam.yesNoDialog` remains an alias of the same function with the same argument order.
 
-The prompt can be text, an existing DOM element, a JAML definition, or an array of JAML definitions. Yes/No callbacks receive the dialog model. The optional fifth argument accepts `yesCap` and `noCap`; omitted or nullish captions use the existing Confirm and Cancel translations. Caption values retain the normal JAML cap contract, including translation strings, bindings, and explicit empty text. Existing callers using four arguments retain their defaults.
+The prompt can be text, an existing DOM element, a JAML definition, or an array of JAML definitions. Yes/No callbacks receive the containing root component/model; nesting the definition does not create another root. Reactive model data requires a model-owning rendering path, as in the [Rename integration](JAML/purpose-and-composition.md#rename-beside-the-conversation). The optional fifth argument accepts `yesCap` and `noCap`; omitted or nullish captions use the existing Confirm and Cancel translations. Caption values retain the normal JAML cap contract, including translation strings, bindings, and explicit empty text. Existing callers using four arguments retain their defaults.
 
 ```javascript
 const dialog = jaml.yesNoDialog(
@@ -275,7 +301,7 @@ Focused native buttons retain their own Enter action. Enter elsewhere confirms; 
 
 ### `jam.modalYesNo(container, prompt, onYes, onNo, styles?, option?)`
 
-Show a confirmation modal with Yes/No buttons. The optional sixth argument configures the boolean-or-number [`dimmer` and `blur` effects](#jamshowcurtainel-option); the fifth argument remains a styles array. For a dimmed background without blur, use `jam.modalYesNo(container, prompt, onYes, onNo, [], { dimmer: true, blur: false })`. Omitted effects retain the existing curtain defaults. The helper owns the dismissal callback and settles the decision once; these presentation options cannot replace that callback. Focused native Cancel and Confirm buttons keep their own Enter action. The dialog ignores prevented/composing key events; Enter elsewhere in the dialog confirms. This helper does not add focus trapping or focus restoration.
+Show a confirmation modal with Yes/No buttons. The optional sixth argument configures the boolean-or-number [`dimmer` and `blur` effects](#jamshowcurtainel-option); the fifth argument remains a styles array. For a dimmed background without blur, use `jam.modalYesNo(container, prompt, onYes, onNo, [], { dimmer: true, blur: false })`. Omitted effects retain the existing curtain defaults. Direct button or builder-keyboard decisions initiate dismissal before invoking the chosen callback. Curtain/body-Escape dismissal invokes No through the modal's dismissal callback after unmount. Both paths share the once-only decision guard; neither awaits a returned promise. These presentation options cannot replace its dismissal callback. When a failed asynchronous save must leave the dialog open, use the editable `jaml.yesNoDialog` definition with application-owned submission and a presentation lifetime suited to the task; see the [editable operation recipe](JAML/purpose-and-composition.md#choose-the-whole-operation-before-its-parts). Focused native Cancel and Confirm buttons keep their own Enter action. The dialog ignores prevented/composing key events; Enter elsewhere in the dialog confirms. Focus and background interaction follow the consuming runtime's [modal owner](#modal-focus-and-background).
 
 ```javascript
 jam.modalYesNo(
@@ -979,7 +1005,7 @@ For declarative ownership use [Plugins.followScroll](Plugins/follow-scroll.md). 
 
 `jam.makeFileDroppable(target, onDrop, prompt?, accept?, beginRead?)` keeps its ordinary per-drop delivery by default. The optional `beginRead(files)` receives a raw `File[]` snapshot before asynchronous reads. Returning exactly `false` vetoes those reads. Returning a predicate retains the existing delivery-only check: a false predicate result suppresses obsolete delivery after reading and does not cancel reads. Use the predicate to capture a consumer-owned generation when replacement semantics are needed. Native `input-file` exposes this boundary through its documented `onfileselect` hook.
 
-`jam.renderModal` routes Escape/curtain dismissal to the top modal's own `onclose` callback and respects `click2Close`. Canceled/composing Escape and ordinary typing do not dismiss. Programmatic `closeTopModal()` does not invoke this dismissal callback. `modalYesNo` settles its yes/no decision once and closes its own modal during exit animation. These helpers do not by themselves establish a full focus trap or background-inertness contract.
+`jam.renderModal` routes Escape/curtain dismissal to the top modal's own `onclose` callback and respects `click2Close`. Canceled/composing Escape and ordinary typing do not dismiss. Programmatic `closeTopModal()` does not invoke this dismissal callback. `modalYesNo` settles its yes/no decision once and closes its own modal during exit animation. See the runtime-qualified [modal focus and background contract](#modal-focus-and-background).
 
 ### Preparing deferred scroll destinations
 

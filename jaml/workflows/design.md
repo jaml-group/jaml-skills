@@ -2,23 +2,27 @@
 
 Read the reference map and the owning pages for the capabilities under consideration. For an application, read roles and token consumption before designing its surfaces.
 
-## Application design
+## UI composition design
+
+Apply this section to pages, builders, CCs and framework-provided UI. Selecting an element includes selecting the native parts and behavior it owns.
 
 Follow [Building a JAML UI](../references/building-ui.md) for the shared design-to-verification path and the relevant dashboard, landing-page, form or application choices.
 
-Read [Think in JAML](../references/JAML/purpose-and-composition.md) for purpose-to-composition reasoning. Name what each unit represents or lets the user do, identify its native parts, then decide which independent units need grouping. A metric's tile appearance does not require a card around its indicator.
+Read [Think in JAML](../references/JAML/purpose-and-composition.md) for purpose-to-composition reasoning. Name what each unit represents or lets the user do, compare the complete operation owner (builder, CC or behavior) before its element parts, then decide which independent units need grouping. Use the [composition review pass](../references/JAML/purpose-and-composition.md#review-the-reasoning-as-well-as-the-syntax) before drawing the tree. A metric's tile appearance does not require a card around its indicator.
 
-Use [intent-first element selection](../references/building-ui.md#choose-elements-by-user-intent) to establish the important user operations, state/data shape, responsive behavior, accessibility and lifecycle expectations. Map each substantial capability to an existing native element, public style/plugin or a specific extension gap. Read candidate detail pages and inheritance before selecting a custom implementation. A documented control name alone does not establish keyboard, accessibility or state-preservation guarantees.
+Use [intent-first element selection](../references/building-ui.md#choose-elements-by-user-intent) to establish the important user operations, state/data shape, responsive behavior, accessibility and lifecycle expectations. For edits, confirmations and supporting views, first follow [interaction and presentation choice](../references/JAML/purpose-and-composition.md#choose-interaction-and-presentation): select the trigger, location, attention demand and return path. Map that contract to an existing native element, public style/plugin or a specific extension gap. Read candidate detail pages and inheritance before selecting a custom implementation. A documented control name alone does not establish keyboard, accessibility or state-preservation guarantees.
 
 For streamed or external data, read the [literal-text boundary](../references/index.md#trust-and-application-data), [Markdown policy and execution ownership](../references/Plugins/markdown.md#content-policy-and-playground-ownership), and [owned subscription/follow-scroll contracts](../references/utils.md#owned-external-subscriptions-and-follow-scrolling). Choose the sink and lifecycle owner before composing the view.
 
 Record a compact design with:
 
--   Business purposes, selected element/module owners and reused native parts.
+-   Business purposes, chosen interaction/presentation and its context or interruption rationale, the complete native operation candidates considered, selected owners/parts and the specific remaining gap that justifies custom work. Preserve async, keyboard and host-lifecycle requirements when a candidate covers only part of the operation.
 -   Structural regions and semantic roles; theme/token consumption and business-color strategy.
--   Data, reactivity, localization, navigation and cleanup ownership.
+-   Data, reactivity, localization, navigation and cleanup ownership. For asynchronous operations, specify [pending, retry, departure and concurrency transitions](../references/JAML/purpose-and-composition.md#own-asynchronous-operations), including any backend prerequisite.
 -   Reused capabilities, proposed extensions and the requirements each extension satisfies.
--   Intended module locations, registration timing and verification scenarios.
+-   Intended module locations, registration timing and verification scenarios for the chosen parts and interactions in each requested presentation. Carry these choices into implementation and review; revise the design when an evidenced gap changes an owner.
+
+## Application setup
 
 During authorized new-app setup, merge a concise JAML section into the project's applicable `AGENTS.md` using [the template](../assets/project-agents.md). Preserve unrelated rules, update an existing JAML section instead of duplicating it, and use project-relative links. If instructions belong in an existing nested file, use that scope. This declaration is a setup output, not a prerequisite for using the skill.
 
@@ -46,7 +50,7 @@ Read [Theme](../references/Theme/theme.md), then its selected authoring, token, 
 
 ## Framework context
 
-For Jam-UI source work, identify the owning implementation, public contract and verification seam in the existing package architecture. Use existing fixture/test locations. The app scaffold and generated app declaration do not apply to framework maintenance. Demos still follow application-composition principles.
+For Jam-UI source work, identify the owning implementation, public contract and verification seam in the existing package architecture. Use existing fixture/test locations. The app scaffold and generated app declaration do not apply to framework maintenance. Builders, CCs and demos still follow the UI composition design above; only the application setup steps are excluded.
 
 ## Done
 

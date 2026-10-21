@@ -178,7 +178,8 @@ export default [
     {
         type: 'input',
         cap: 'Mapped',
-        styles: ['color.valueMap(valueRange:[0,100];colorRange:[red,green];mode:lch)']
+        value: 50,
+        styles: [Styles.color.valueMap({ valueRange: [0, 100], colorRange: ['hsl(0 100% 50%)', 'hsl(120 100% 25%)'], mode: 'lch' })]
     }
 ];
 ```

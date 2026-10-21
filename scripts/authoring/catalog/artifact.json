@@ -1,14 +1,14 @@
 {
     "formatVersion": 1,
     "sourcePackage": "@jam/jam-ui",
-    "sourceDigest": "sha256:1032:2063f7278802befc57e78dbddce220ba292e112a4c55cb0a731721a3cc4ad2b6",
+    "sourceDigest": "sha256:1032:c2c4bc7b19f4654b343b34d90382a6eeb8efe1d67feae8afca39c0c345c631f2",
     "compilerDigest": "48221ea5eee0bf3343fbfa0eec84c3d1b04e699cd2dc5c1317259728c7a32c41",
     "frameworkVersion": "1.6.0",
     "declaredLicense": "MIT",
-    "catalogDigest": "2d80a05faa4930dc2fd1d65c979003b72488665cc89dc86d17c7bb4425c2433b",
-    "schemaDigest": "e80e61e58c9f5bc47f6ca45298735afcd0922c949837973cc3da7eaab9f4f076",
+    "catalogDigest": "964dba5badb38c38bd5b6713bf896ba7d24809f5444f8762b4764c62acd16c14",
+    "schemaDigest": "cf9eb991928ea923b4eaf3e13b343f11d6cd9b5b93c17d766642279dc7c2407c",
     "files": {
-        "catalog.json": "e66784f2a690bde69934c01bc1f4fc9abc99fc55b3b3f7edcb1dd964b7b32995",
+        "catalog.json": "1e668fa163f7591573a8c6b69b732fad1263f1648f8027f15c2a926a43afc777",
         "authoringView.mjs": "9e99229c951c231c8a7bd42e32389389aaf6a6a70fb6d4b737d5fed9491e099b",
         "authoringCatalog.mjs": "5ddd7b6a721df3449e5acfc594910e348e881df125e4e2b8eac355d4984587d4",
         "catalogSchema.mjs": "a8d6a614a07aed0000f318bcb1c791d403b41968d4ffae1fafe78b8d3d8ac4c9",

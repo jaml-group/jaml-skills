@@ -6,22 +6,105 @@ An `input` owns editing a value, including its caption, icon and control; a numb
 
 ## Decide what the object means
 
-Before writing a tree, describe each unit in one sentence: “edit the warning threshold,” “show completed orders,” or “choose the reporting period.” Then reason in this order:
+Apply this reasoning to pages, builders, CCs and framework-provided UI. Before writing a JAML definition, describe each unit in one sentence: “edit the warning threshold,” “show completed orders,” or “choose the reporting period.” Then reason in this order:
 
 1. **Purpose and data.** Identify the value, record or operation, its owner and the relevant states.
-2. **Native owner and parts.** Read the fitting element's parameters, inherited behavior and slots. Reuse the caption, icon, value, unit and control it already owns.
-3. **Specialization.** Apply supported roles, ordered styles/plugins and bindings. Extend through named slots or layers when the same purpose needs more representation.
-4. **Composition.** Arrange independent purposes together. Extract a CC or builder when a recurring business module has a clear input, behavior and lifecycle contract.
+2. **Interaction and presentation.** Choose how and where the user acts, the attention required, feedback and return path. Apply the [context-preserving choice](#choose-interaction-and-presentation) before selecting a surface or helper.
+3. **Operation owner, then parts.** First check whether a native builder, CC or behavior owner already composes the operation. Then read the participating elements' parameters, inherited behavior and slots. Reuse the caption, icon, value, unit and control they already own.
+4. **Specialization.** Apply supported roles, ordered styles/plugins and bindings. Extend through named slots or layers when the same purpose needs more representation.
+5. **Composition.** Arrange independent purposes together. Extract a CC or builder when a recurring business module has a clear input, behavior and lifecycle contract.
 
-| Requirement                                  | Starting composition                                                            | Reasoning                                                                                   |
-| -------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Edit a folder path                           | One `input` with `cap` and `placeholder`, inside the operation's dialog content | The field owns its label and edit control; the dialog owns dismissal, focus and submission. |
-| Edit a percentage                            | One `input-number` with `cap`, `icon` and `unit`                                | These parts describe one editable value.                                                    |
-| Show a metric with a period and status       | An `indicator` with native parts and explicitly slotted additions               | Extra context enriches the metric without changing its purpose.                             |
-| Choose a period that affects several modules | A selection owner publishes state; each module consumes it                      | The selector does not need to know the receivers.                                           |
-| Show one dataset in several ways             | A `data` owner publishes the dataset; consumers bind or project it              | Fetching and refresh have one logical owner.                                                |
+| Requirement                                  | Starting composition                                                            | Reasoning                                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Edit a folder path                           | One `input` with `cap` and `placeholder`, inside the operation's dialog content | The field owns its parts; the application owns submission and the presentation owner supplies the required dismissal/focus policy. |
+| Edit a percentage                            | One `input-number` with `cap`, `icon` and `unit`                                | These parts describe one editable value.                                                                                           |
+| Show a metric with a period and status       | An `indicator` with native parts and explicitly slotted additions               | Extra context enriches the metric without changing its purpose.                                                                    |
+| Choose a period that affects several modules | A selection owner publishes state; each module consumes it                      | The selector does not need to know the receivers.                                                                                  |
+| Show one dataset in several ways             | A `data` owner publishes the dataset; consumers bind or project it              | Fetching and refresh have one logical owner.                                                                                       |
 
 This is a selection method, not a ban on containers, labels, events or custom components. Keep a composition when its responsibilities justify it. Consult [native capability choices](../choosing-native-capabilities.md) when ownership is unclear; knowing how to write a container does not establish that a container is the right owner.
+
+## Choose interaction and presentation
+
+Choose the experience before choosing its API. Identify the trigger, the affected object, the state change and where attention already is. Count the extra looking, pointer travel, navigation and repeated decisions needed to finish and return. Choose the smallest interaction that serves the goal while retaining understandable feedback and keyboard access.
+
+| User need                              | Preferred starting point                                                             | Decision to establish                                                                                             |
+| -------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Routine reversible command             | Act directly and show nearby feedback; offer Undo where restoration is supported     | Recovery must restore the actual affected state.                                                                  |
+| Edit one local value                   | Inline editing when space permits; otherwise an anchored popup beside the object     | Keep the subject visible, preserve the draft and return focus appropriately.                                      |
+| Confirm a local consequence            | A brief confirmation near the triggering control                                     | Establish that confirmation is warranted; name the action and consequence.                                        |
+| Decision requiring undivided attention | A modal dialog with a deliberate interruption and dismissal policy                   | Explain why continuing elsewhere is inappropriate; verify focus containment, background interaction and recovery. |
+| Sustained supporting work              | A panel or drawer when it preserves useful context and supplies enough working space | Assess task scope, duration, available space and return path; verify the chosen runtime's capabilities.           |
+
+Confirmation is a decision, a popup is an anchored presentation, and modality determines whether surrounding interaction remains available. A drawer's placement alone does not determine its modality or what content it may contain. Select each from the task; a large surface or an API name does not justify blocking the rest of the application. When a viewport or unavailable anchor requires another presentation, retain the subject's identity and a clear return path.
+
+Keep progress and recoverable errors near the operation. A routine success usually needs a changed value or brief feedback; it does not need another decision. An important operation warrants explicit consequences and proportionate feedback, with modality justified separately. Check the selected owner's actual lifetime and focus contract rather than inferring them from appearance.
+
+## Choose the whole operation before its parts
+
+A correct native field can still sit inside a needlessly reconstructed operation. For “rename a conversation,” first choose inline editing or a popup beside the conversation. When the chosen editor uses Save/Cancel, evaluate the editable [`jaml.yesNoDialog`](../utils.md#jamlyesnodialogprompt-onyes-onno-styles-options) definition before assembling a header, input, divider and action row. Its prompt accepts native JAML content, including an input, while it supplies confirmation actions and keyboard decisions. A `card` can own a title or surface when needed; choosing it does not resolve the decision owner.
+
+### Rename beside the conversation
+
+The user has already located the conversation. A centred modal requires them to find the edit elsewhere and then return to the original row. For this brief local task, an inline field or a compact anchored editor keeps the name, action and result together. Save commits the new name; it is not an additional “Are you sure?” question.
+
+| Moment            | Intended behavior                                                                                                                                                                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Open              | Capture the conversation identity and current name. Anchor a popup to the stable row/control, rather than a menu item that disappears on selection. Focus the edit field when owned content is ready.                                                                 |
+| Edit              | Use one native input with its caption and validation. Enter submits, Escape cancels, and visible Save/Cancel controls remain available.                                                                                                                               |
+| Save              | Validate, then use one pending gate for pointer and keyboard submission. Show nearby progress and define whether dismissal is allowed during the request.                                                                                                             |
+| Failure           | While the editor is current, keep its draft, error and retry path together. After the user leaves, retain recovery state without automatically reopening the editor or moving focus back.                                                                             |
+| Success or cancel | Success updates the captured conversation; cancel discards the unsubmitted draft. Close only the matching editor instance and restore focus to its still-valid origin when appropriate. Guard late results and focus work after replacement, row removal or disposal. |
+
+This is the interaction contract to implement and verify, not a claim that one helper supplies every step. For the popup variant, construct a reactive model from the editable definition, then give its built element to [`jam.popup`](../utils.md#jampopuptarget-content-option-type), or use an existing adapter that performs those steps. Read [shared popup content, focus and dismissal](../JAM-UI/popup.md#helper-content-focus-and-dismissal-timing): passing a definition directly does not construct a reactive Model, `onafterrender` is not a popup-visible readiness signal, and a later presentation can replace the shared popup. Anchor placement and return focus need keyboard and viewport checks.
+
+Compare [helper inputs, model ownership and dismissal](../utils.md#dialog-and-popup-ownership) before wiring callbacks. In particular, a popup accepts the explicitly owned model's built element; `renderModal` accepts the JAML definition and creates its model. Distinguish the definition from its presentation lifetime:
+
+-   For a brief local confirmation, [`jam.popupYesNo`](../utils.md#jampopupyesnotarget-prompt-onyes-onno-option) presents the decision near its target and requests dismissal before invoking the callback. It does not await asynchronous saving.
+-   For an immediate decision whose interruption is justified, [`jam.modalYesNo`](../utils.md#jammodalyesnocontainer-prompt-onyes-onno-styles-option) presents the confirmation, starts dismissal before invoking the chosen callback, and settles once. It does not wait for a returned promise. Reuse the consuming runtime's [modal focus/background owner](../utils.md#modal-focus-and-background), with an adapter only for a verified gap.
+-   For “save, stay open on failure, close after success,” use the editable definition with the selected popup or modal presentation owner. The application owns validation, a pending gate shared by pointer and keyboard submission, failure feedback, current-dialog identity and the cancellation policy. The presentation owner retains focus, cleanup and any required background-blocking policy. A callback that starts an asynchronous save does not change the managed helper's dismissal timing.
+-   For a multi-step editor, use the owners for its steps, editing and progress. An unmodified Enter-to-confirm handler may conflict with multiline editing or step navigation. A custom composition is justified by those requirements; the same appearance does not make it a Yes/No operation.
+
+This popup integration fragment assumes an initialized runtime, a product rule requiring a nonempty name, and application-supplied `submitRename(model)` and `cancelRename(model)`, with those validation, pending and lifetime checks. It builds the content; it does not mount or save anything by itself.
+
+```javascript
+const renameDialog = jaml.yesNoDialog({ type: 'input', cap: 'Name', valueKey: 'draft', rules: { required: true } }, submitRename, cancelRename, ['layout.autoalign'], { yesCap: 'Save', noCap: 'Cancel' });
+const model = new jam.Model(renameDialog);
+model.vars.draft = currentName;
+const renameContent = model.build();
+```
+
+Conversation names are runtime data; the per-key vars write above preserves binder-looking text. See the [literal-data boundary](binder.md#runtime-data-and-authored-definitions). After registering the owned readiness and cleanup handlers, the presentation adapter can call `jam.popup(anchor, renameContent)` with the stable anchor. It retains this model and disposes it with `model.destroy()` when its owned presentation ends, including replacement or owner disposal. A delayed result must not close another popup or restore focus to a different conversation.
+
+The input owns the editable name and caption. The builder owns the decision content. The application supplies the business action and failure feedback, and the host owns presentation. Keep those boundaries when adapting an existing presentation helper; rebuilding focus management or adding a second action row would duplicate responsibilities.
+
+## Own asynchronous operations
+
+An editor's presentation and its business request have separate lifetimes. Capture the affected record and request identity before submitting; keep the request owner alive until its outcome is reconciled, even if its popup, row or panel disappears. An editor generation guards view updates and focus. It does not cancel a server operation or undo a committed change.
+
+Specify these transitions before writing the handlers:
+
+| Transition                                    | Ownership and behavior                                                                                                                                                                                                       |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ready → submitting                            | Validate the product's actual rules. Acquire one pending gate shared by pointer and keyboard actions before sending; bind the request to the captured record.                                                                |
+| Submitting → failure                          | Release the pending gate so a deliberate retry can run. Preserve the draft and error in the current editor; after departure, retain a discoverable recovery action without automatically reopening or stealing focus.        |
+| Submitting → success                          | Reconcile the affected record. Only the matching current presentation may close, change its draft/baseline or return focus.                                                                                                  |
+| Cancel, replacement or disposal while pending | Either prevent dismissal through all supported paths, or detach the presentation and retain the operation owner. State which policy applies. Closing a view or aborting local transport does not prove the server cancelled. |
+| Response lost or outcome uncertain            | Reconcile with the backend before treating the operation as failed or retrying a possibly committed action; use an idempotency contract only when the endpoint supplies one.                                                 |
+
+Keep a pending gate distinct from permanent settlement. A failed attempt must become retryable; a completed decision or retired operation must reject duplicates. Visible disabled state is feedback, while the shared handler gate enforces the rule. Use the selected helper's actual cancellation/readiness contract: for popup focus, match both the owned target and content in [`showing`](../JAM-UI/popup.md#helper-content-focus-and-dismissal-timing), then check visibility, connection and focus eligibility.
+
+### Archive with a real Undo
+
+Archive can remain a direct row action when the backend supports restoring the document and its prior placement. The notification presents the recovery action; it does not own archiving, restoration or the deadline. Follow the [archive/Undo transitions](../JAM-UI/notify.md#archive-and-undo) from request through acknowledgement, restoration, failure and expiry. An optimistic row change does not by itself make Undo eligible.
+
+### Confirm an irreversible shared change
+
+For deleting several shared rules, capture their identities and the consequences the user reviewed, including affected queued work. The server must check that confirmed scope and its revision or equivalent precondition **atomically with the destructive operation**. A client reread before submit still leaves a race. If the endpoint cannot enforce that condition, report the missing backend contract instead of claiming the confirmation protects against concurrent changes.
+
+A conflict keeps the decision available, refreshes the identities and consequences, and requires renewed explicit confirmation. Preserve the request owner when a pending presentation is dismissed; reconcile an accepted server result even when its old view is no longer current. Choose modality from the attention required, and use the [editable decision definition](../utils.md#dialog-and-popup-ownership) when failure must leave the decision open.
+
+For sustained editors, keep the draft's bound record separate from the record currently inspected elsewhere. Keeping an unsaved draft need not force workspace selection back. A late save may update its captured record, but may change the visible editor's baseline only when that editor still owns the same draft/request.
 
 ## One input is already a composition
 
@@ -39,9 +122,57 @@ export default {
 };
 ```
 
-There is no separate caption label or unit label to synchronize. For an operation such as “Add workspace,” the same reasoning gives a dialog title, one native path input and the operation's actions. Group those independent responsibilities where needed. Choose the actual modal/focus and submission contracts separately; a container with dialog-like styling does not implement them.
+There is no separate caption label or unit label to synchronize. For an operation such as “Add workspace,” first evaluate the [operation owner](#choose-the-whole-operation-before-its-parts), then supply one native path input. Group independent responsibilities where needed and preserve the submission/presentation boundary; a container with dialog-like styling does not implement it.
 
 See [input](../JAM-UI/input.md) for the number-mode unit and validation contracts. Validation messages are popup feedback, triggered on blur by default. Contextual help uses `help` with [`popup.helper`](../Plugins/popup.md#popuphelper); it is not an implicit inline helper or error row.
+
+## One document reuses button and card parts
+
+“Open this document” is an operation on one record. A native button owns its icon, caption and activation. Opening it reveals a card that owns the document header and body; `extra` holds a Save copy action, and `interact.closable` supplies the native close control. Selecting `button` and then assembling a separate icon label and filename tree would leave those native parts unused.
+
+This complete example uses an authored text document. Its modal illustrates document/slot composition; select the surface using [interaction and presentation](#choose-interaction-and-presentation) rather than treating it as the default for every preview. Hover over its button for Save copy, or open it and use the same action in the card header. Both paths download the displayed text. The hover shortcut is a convenience; the opened card retains a visible action reachable without hovering.
+
+```javascript jaml-playground
+const report = {
+    name: 'Quarterly notes.txt',
+    icon: '📄',
+    text: 'Quarterly notes\n\nRevenue grew 12%.\nThe next review is scheduled for Monday.'
+};
+const saveCopy = () => jam.downloadAsFile(report.name, report.text);
+
+function openDocument() {
+    jam.renderModal(document.body, {
+        type: 'card',
+        cap: document.createTextNode(report.name),
+        icon: report.icon,
+        styles: ['interact.closable', 'css(position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:30rem;max-width:calc(100vw - 2rem))'],
+        components: [
+            { type: 'button-ghost', cap: 'Save copy', icon: '↓', slot: 'extra', onclick: saveCopy },
+            { type: 'label', cap: document.createTextNode(report.text), styles: ['css(white-space:pre-wrap)'] }
+        ]
+    });
+}
+
+export default {
+    type: 'button-ghost',
+    class: 'document-open',
+    cap: document.createTextNode(report.name),
+    icon: report.icon,
+    onclick: openDocument,
+    plugins: [
+        Plugins.shortcut({
+            selector: '.document-open',
+            optionsGetter: () => [{ name: 'Save copy', icon: '↓', onclick: saveCopy }]
+        })
+    ]
+};
+```
+
+The button's native caption slot contains the filename, and its icon slot contains the document icon. The card's unslotted label intentionally enters its body; the action explicitly enters `extra`. Use [literal slot text](../JAM-UI/JAM-UI.md#slot-content-and-literal-text) for external names/content and [runtime data writes](binder.md#runtime-data-and-authored-definitions) when loading external records. Verify the documented runtime requirements for literal Text nodes.
+
+For another presentation of the same record, keep its data and action contract and change the native parts/styles or action placement. A compact list can use [hover shortcuts](../Plugins/shortcut.md#entry-shortcut); a tile can expose visible actions; a preview can place them in the [card header's extra slot](../JAM-UI/card.md#slots). Choose those placements deliberately for the requested interaction and keyboard/touch access. Additional metadata belongs in a supported slot/layer with an explicit arrangement; separate grouping is useful when it represents independent controls. A non-activating document summary can use a label instead of a button.
+
+[`interact.closable`](../Styles/interact.md#entry-interact-closable) removes the closable host by default. Supply its callback when closing must update state or request confirmation. [`jam.renderModal`](../utils.md#jamrendermodalcontainer-option-config) owns modal mounting/dismissal; the example supplies placement explicitly. This example mounts at document scope, so its modal remains until dismissed even if the opener is removed. A page or CC should use its owned host or remove its opened modal when that owner ends. Cleanup belongs to unmount, since native close and curtain/Escape dismissal are separate paths. Verify the consuming runtime's [modal focus and background contract](../utils.md#modal-focus-and-background); its scope and older-bundle limits still apply.
 
 ## One metric can have several presentations
 
@@ -153,6 +284,23 @@ Request deduplication is an underlying efficiency mechanism. Its conditional pro
 
 ## Review the reasoning as well as the syntax
 
-For each substantial unit, explain its purpose, the native owner and parts it reuses, the data/state relationship, and why any added structure is needed. Exercise a different presentation, another independent instance or another consumer when that is the claimed reuse contract. Verify interactions and geometry in the actual host.
+Use this pass before drawing a new component tree and again when reviewing the implementation:
 
-A valid JAML tree is only the syntax check. A composition thinks in JAML when its structure follows the purposes and relationships of the application, and uses the language's existing composition mechanisms to express them.
+1. **Name the operation and preservation requirements.** Establish what the user does or learns, the data/state owner and the relevant pending, failure, keyboard, focus and cleanup behavior. Check [interaction and presentation](#choose-interaction-and-presentation): the location, attention demanded and return path must fit the task before comparing APIs.
+2. **Compare complete native candidates.** Check the fitting builder, CC or behavior owner as well as its element parts. Read the contract before accepting or rejecting it. Record the selected owner and the concrete gap, if any, that remains custom.
+3. **Trace composition through helpers.** Inspect the JAML definitions returned by app builders/CCs and shared modal, field, settings-row or notification helpers. A short call site may conceal the same repeated container/label construction. Rendered DOM can locate a concern, but native internal nodes do not establish unnecessary authored structure.
+4. **Account for added structure.** For each candidate wrapper or label, identify its responsibility and check the native parameter, part, slot or style that might already own it. Retain independent prose, grouping, layout and integration boundaries where they serve a real purpose.
+5. **Check the resulting behavior.** Compare the delivered interaction, presentation and owners with the initial choice. Walk from the real trigger through completion and return; account for unnecessary travel, blocking and repeated confirmations. Exercise the promised states, actual controls and host lifecycle, including [pending, retry, departure and concurrent changes](#own-asynchronous-operations); test another presentation or independent instance when reuse is claimed. Report the inspected scope and any unverified behavior.
+
+These are review candidates, not automatic findings:
+
+| Authored pattern                                 | Compare with                                                     | Reason to retain custom composition                                            |
+| ------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Caption label beside a generic input wrapper     | Native input `cap`, `icon`, control and supported unit           | Independent explanatory content or a distinct group of fields                  |
+| Several labels representing one number           | Indicator parts, slots/layers and indicator styles               | A separate document or independently actionable content                        |
+| Repeated prompt, divider and Cancel/Confirm row  | Editable confirmation builder and the fitting presentation owner | A step/editor contract incompatible with the default decision behavior         |
+| Text-only notification wrapped in custom content | Plain notification API                                           | Actual interactive or structured content, with its documented tradeoffs        |
+| Buttons plus manual selection state/handlers     | Native selection group and its state contract                    | Independent commands or a coordinated interaction the group does not implement |
+| Wrapper added solely for appearance              | The owner's roles, styles/plugins and supported slots            | Real layout, scrolling, lifetime or external-host boundary                     |
+
+A useful finding names the location, purpose, existing owner, native candidate, covered contract, remaining gap and preservation checks. Do not infer a defect from nesting depth, tokenized CSS or a native element name alone. A justified container is a correct choice; a syntactically valid tree can still duplicate an existing owner.

@@ -67,6 +67,37 @@ Inherits all params from [AbstractInputElement](./JAM-UI.md#section-2--abstracti
 
 For mutually exclusive switches that can return to no selection, see the [cancelable switch-group recipe](../utils.md#cancelable-switch-group) and its runtime compatibility note. Use [group utilities](../utils.md#checked-state-and-group-helpers) when application code owns grouping; `updateSiblingsCheckedState` reconciles an already updated target without toggling it again.
 
+### Checked state and icon presentation
+
+A favorite toggle is one switch with its own caption and icon. Choose `switch-ghost` for the ghost presentation (`switch-button` for a filled button); `switch-ghostbutton` is not a native subtype. The switch owns its boolean value and click toggle. With `autoState: true`, checked-state updates select `checked` when true, `indeterminate` when unchecked and indeterminate, and `default` otherwise. Setting a switch value to true clears indeterminate.
+
+Keep both icon treatments in that state map. The previous state's styles are reverted before the next styles apply, so the icon renderer can restore its text and apply the next treatment. The persistent `icon.attrs(...)` style targets the existing icon-slot content. No extra icon element, label, click handler or bound state expression is needed for this local boolean presentation.
+
+This example requires Font Awesome CSS and matching regular/solid fonts in the host. The supplied playground loads those assets. `star` is available in both bundled treatments; when substituting `thumbtack` or another glyph, verify both styles in the actual font package. Icon styles select presentation and do not download fonts.
+
+```javascript jaml-playground
+export default {
+    type: 'switch-ghost',
+    cap: 'Favorite',
+    icon: 'star',
+    defaultValue: false,
+    autoState: true,
+    styles: ['icon.attrs(aria-hidden:true)'],
+    states: {
+        default: { styles: ['icon.regular'] },
+        checked: { styles: ['icon.solid'] }
+    }
+};
+```
+
+The general composition is **native value owner → native state projection → state-specific presentation of an existing part**. For a model-owned favorite value, add `valueKey: 'favorite'` and initialize that key in the containing model; other consumers can bind to the same key. The switch still owns the toggle. Use an explicit bound `state` instead when presentation depends on additional facts, such as pending or failed persistence; leave `autoState` off in that case. Ordinary `check.*` locator styles are not needed to switch this icon.
+
+`icon.attrs(aria-hidden:true)` hides the decorative icon-slot content, while the visible `cap` names the purpose. See [composed style paths](../Styles/styles.md#compose-style-paths-by-target-and-operation) for why an exact full-string search is not the validity test. Keep persistent slot attributes outside the state styles, and avoid a competing regular/solid renderer in the persistent styles array.
+
+Verify initial false/regular rendering, click to true/solid, then click back to false/regular. Repeat the cycle and test programmatic `setValue(true)` / `setValue(false)`; each state should retain one icon, the matching font treatment, visible geometry and the decorative attribute, with no literal icon-name text left behind.
+
+The current native ghost/button variants do not inherit the default slider's focused keyboard and ARIA behavior. For a native keyboard-operated settings switch, use `type: 'switch'` with the same icon and state configuration; its host owns focus, Space/Enter and `aria-checked` in the corrected runtime described below. This icon example does not establish keyboard accessibility for the ghost variant.
+
 ### Default slider toggle
 
 ```json jaml-playground

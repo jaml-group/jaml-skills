@@ -2,9 +2,82 @@
 
 **Class:** `NutmegNotify` · **Type:** `"notify"` · **Extends:** `AbstractElement` · **Global:** `nutmeg`
 
-`NutmegNotify` manages a self-contained notification stack and uses the `modal` stylize profile by default. It is **not** placed via JAML. Notifications are triggered imperatively via the `nutmeg` global proxy or the static `NutmegNotify.appendNotify()` method.
+`NutmegNotify` owns a notification stack: presentation, level defaults, close/pin controls and timed dismissal. Trigger it through `nutmeg`, `jam.notify()` or `NutmegNotify.appendNotify()`; pass JAML as content when the notification needs another native purpose, such as a metric or an action. The committed baseline uses the `modal` stylize profile; verify the consuming runtime before relying on that profile.
+
+## Choose the notification content
+
+Choose by the information and interaction required, before choosing a layout:
+
+| Purpose                                               | Start with                                                                                               | What the application owns                                                                                 |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Report a completed operation or an error              | Plain `nutmeg.success(message)`, `nutmeg.error(message)` or `jam.notify(message, options)`               | Outcome, severity, literal/translated text and a meaningful ID.                                           |
+| Confirm an action beside its triggering control       | An anchored [Papaya popup](popup.md) through [jam.popup](../utils.md#jampopuptarget-content-option-type) | Anchor, activation/dismissal policy and whether feedback must remain available after leaving the control. |
+| Offer a recovery action or display structured content | A native button, indicator or meaningful JAML composition as notification content                        | Action eligibility, business state and any asynchronous recovery/deadline rules.                          |
+| Retain validation, progress or an unresolved decision | The field, progress element or decision view that owns that state                                        | Keep necessary information available; a transient notification is not its state owner.                    |
+
+A plain outcome already has a native presentation owner. Do not wrap a message in a container and label just to display text, set its level or obtain a close button. An application notification adapter should preserve this plain path when its optional action is absent. Select native options and styles before rebuilding presentation.
+
+### Plain messages and literal text
+
+```javascript
+nutmeg.success('Settings saved.', { id: 'settings-save' });
+
+// Treat external text as data, including apparent HTML or binding syntax.
+const message = 'Connection failed: <server> {{detail}}';
+nutmeg.error(document.createTextNode(message), { id: 'connection-error' });
+```
+
+A supplied `Text` node keeps this a plain notification; a JAML content object selects custom-content mode. Literal Text handling requires the updated runtime described in [slot content and literal text](JAM-UI.md#slot-content-and-literal-text); older bundles may reparse Text. Authored HTML strings remain HTML-capable. Translate application-authored messages through the application's localization owner before display; do not translate arbitrary external error text as a message key.
+
+### Structured or interactive content
+
+Custom content is useful when the body has another purpose: the [indicator example below](#interactive-notification-demo) represents a metric, and a recovery button represents an available action. It is not required just because the notification belongs to an application.
+
+Integration example: supply `openConnectionSettings()` to navigate to the application's connection settings. A native button owns the recovery action; Nutmeg still owns the notification shell. Clicking the button requests dismissal of this notice before navigating.
+
+```javascript
+const notice = jam.notify(
+    {
+        type: 'button',
+        cap: 'Connection failed — Open settings',
+        onclick() {
+            notice.remove();
+            openConnectionSettings();
+        }
+    },
+    { id: 'connection-recovery', level: 'error', duration: 8000 }
+);
+```
+
+For `jam.notify()` and `nutmeg.*`, a recognized JAML object selects `isCustom: true`. That skips automatic level icons, card titles and level decorations; the level still supplies its color. Global `NutmegNotify.styles` apply to plain notifications. Per-notification `styles`, native close/pin controls and the returned instance remain available for custom content. Choose custom content for its required purpose before compensating for those changed defaults. Do not invent an `actions` option: compose an actual action through the supported content contract.
+
+### Identity, lifetime and verification
+
+Use a stable, meaningful `id` for repeated outcomes of one operation. Normal same-ID updates reuse the notification and restart its native duration. Keep its content mode stable: switching an existing ID between plain and custom content does not reinitialize all mode-specific defaults. Use distinct IDs for those presentations, or verify the transition against the target runtime. Keep asynchronous result ordering and cancellation with the operation owner so an older result cannot replace newer feedback. An ID is not an application operation token.
+
+`duration` governs native dismissal, not business eligibility: hovering can defer removal, and pinning retains a notice. A time-limited Undo action must check its own deadline and eligibility, exclude duplicate pending requests and settle only after success or retirement; failure can remain retryable. Follow the [archive/Undo transitions](#archive-and-undo) even while its notification remains visible. A repeated outcome and a notice already awaiting removal are distinct lifecycle cases; verify the latter against the consuming runtime. Retire owned pending actions and notifications when their application owner is disposed.
+
+Verify the selected composition as well as visible text: a plain-message path should retain native plain mode and defaults, literal external text should remain literal, and repeated IDs should not create duplicate notices. For interactive content, exercise the actual control, stale-result replacement and any deadline/retirement rules. Styling or a test that only checks a nested label's text does not establish that custom composition was necessary.
 
 ---
+
+## Archive and Undo
+
+For a reversible archive, compose a native Undo button as [interactive notification content](#structured-or-interactive-content). The application owns the record, prior collection/placement, request identity and backend restoration eligibility. A notification ID identifies feedback, not the request or restoration authority.
+
+| State or outcome    | Application behavior and feedback                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Archive pending     | Gate repeated activation. An optimistic row removal may be useful, but show pending feedback and keep Undo unavailable until the backend acknowledges archive.           |
+| Archive succeeds    | Reconcile the archived state; retain the backend's restoration identity and actual deadline/eligibility. Offer Undo for that operation.                                  |
+| Archive fails       | Reconcile the row with authoritative state and retire obsolete pending/Undo feedback for that operation only. Show the failure and retry path.                           |
+| Restore pending     | Check current eligibility and acquire a restore-pending gate before sending. Keep the recovery feedback available while awaiting the result.                             |
+| Restore fails       | Release the gate; retain archived state and allow an explicit retry while still eligible. Reconcile uncertain outcomes before repeating a possibly committed request.    |
+| Restore succeeds    | Reconcile the document's restored collection/position and retire only the matching operation's notice. A late callback must not remove newer feedback using the same ID. |
+| Eligibility expires | Make Undo visibly unavailable and reject further activation. Retire the recovery action independently of notification hover, pinning or native duration.                 |
+
+Use an explicit operation state rather than a permanent “used” flag set on the first click: duplicates while pending are blocked, while a failed restore remains retryable. Keep recovery feedback available while Undo is pending or retryable; if the consuming runtime supports click dismissal, leave it disabled for this action. Native `duration` and same-ID refresh are presentation timing, not backend deadlines; they cannot extend restoration eligibility.
+
+The operation owner must outlive a dismissed notice or hand its pending request to another application owner. Keep completion/recovery reachable when feedback is dismissed, replaced or its view is disposed. See [asynchronous operation ownership](../JAML/purpose-and-composition.md#own-asynchronous-operations) for cancellation and stale view updates.
 
 ## `nutmeg` — global proxy (preferred API)
 
@@ -100,7 +173,7 @@ Read-only. Current number of active notifications.
 | `NutmegNotify.entryDuration`   | `number`                              | `400`         | Entry/exit animation duration in ms.                    |
 | `NutmegNotify.order`           | `'descend' \| 'ascend'`               | `'descend'`   | Stacking order.                                         |
 | `NutmegNotify.defaultType`     | `'banner' \| 'card'`                  | `'banner'`    | Default display style.                                  |
-| `NutmegNotify.styles`          | `StyleOption[]`                       | `[]`          | Global styles applied to every notification.            |
+| `NutmegNotify.styles`          | `StyleOption[]`                       | `[]`          | Global styles applied to plain notifications.           |
 | `NutmegNotify.onupdate`        | `(count, toRemove, toAppend) => void` | —             | Callback fired when the notification list changes.      |
 | `NutmegNotify.levels`          | `object`                              | _(see below)_ | Level icon/cap/color defaults. Override via `config()`. |
 
@@ -108,19 +181,19 @@ Read-only. Current number of active notifications.
 
 ## Instance properties & methods
 
-| Property / Method   | Type                 | Default           | Description                                                                 |
-| ------------------- | -------------------- | ----------------- | --------------------------------------------------------------------------- |
-| `notify.level`      | `NotifyLevel`        | `'info'`          | Severity level. Setting updates icon, cap, color, and styles.               |
-| `notify.type`       | `'banner' \| 'card'` | `defaultType`     | Display style.                                                              |
-| `notify.content`    | `any`                | —                 | Body content (slot).                                                        |
-| `notify.pin`        | `boolean`            | `false`           | When `true`, notification stays pinned and does not auto-dismiss.           |
-| `notify.closable`   | `boolean`            | `true`            | Show a close button.                                                        |
-| `notify.pinnable`   | `boolean`            | `false`           | Show a pin/unpin toggle button.                                             |
-| `notify.linkTo`     | `HTMLElement`        | —                 | When set, clicking the notification locates the linked element.             |
-| `notify.isCustom`   | `boolean`            | `false`           | Skip level-based icon/cap/color injection (for fully custom notifications). |
-| `notify.createTime` | `Date`               | _(auto)_          | Read-only creation timestamp.                                               |
-| `notify.duration`   | `number`             | `defaultDuration` | Auto-dismiss delay in ms.                                                   |
-| `notify.remove()`   | method               | —                 | Remove this notification from the stack.                                    |
+| Property / Method   | Type                 | Default           | Description                                                                          |
+| ------------------- | -------------------- | ----------------- | ------------------------------------------------------------------------------------ |
+| `notify.level`      | `NotifyLevel`        | `'info'`          | Sets color in both modes; automatic icon/card title/decorations apply in plain mode. |
+| `notify.type`       | `'banner' \| 'card'` | `defaultType`     | Display style.                                                                       |
+| `notify.content`    | `any`                | —                 | Body content (slot).                                                                 |
+| `notify.pin`        | `boolean`            | `false`           | When `true`, notification stays pinned and does not auto-dismiss.                    |
+| `notify.closable`   | `boolean`            | `true`            | Show a close button.                                                                 |
+| `notify.pinnable`   | `boolean`            | `false`           | Show a pin/unpin toggle button.                                                      |
+| `notify.linkTo`     | `HTMLElement`        | —                 | When set, clicking the notification locates the linked element.                      |
+| `notify.isCustom`   | `boolean`            | `false`           | Skip automatic level icon/card title/decorations; level color remains.               |
+| `notify.createTime` | `Date`               | _(auto)_          | Read-only creation timestamp.                                                        |
+| `notify.duration`   | `number`             | `defaultDuration` | Auto-dismiss delay in ms.                                                            |
+| `notify.remove()`   | method               | —                 | Remove this notification from the stack.                                             |
 
 ---
 
@@ -128,7 +201,7 @@ Read-only. Current number of active notifications.
 
 | Field      | Type                 | Default           | Description                                                                                   |
 | ---------- | -------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
-| `content`  | `any`                | —                 | Notification body text or HTML.                                                               |
+| `content`  | `any`                | —                 | Body text, supplied Text/Element, or JAML through `jam.notify()` / `nutmeg.*`.                |
 | `cap`      | `string`             | Level default     | Title / header text (shown in card type).                                                     |
 | `icon`     | `string`             | Level default     | Icon (emoji or text).                                                                         |
 | `level`    | `NotifyLevel`        | `'info'`          | Severity level: `'debug'`, `'info'`, `'success'`, `'warn'`, `'error'`, `'hurray'`.            |
@@ -153,7 +226,7 @@ Read-only. Current number of active notifications.
 | `defaultDuration` | `number`                        | `3000`      | Default auto-dismiss time (ms).                                         |
 | `defaultType`     | `'banner' \| 'card'`            | `'banner'`  | Default display style.                                                  |
 | `levels`          | `Partial<levels>`               | —           | Override icon, cap, and color for each level.                           |
-| `styles`          | `StyleOption[]`                 | `[]`        | Global styles applied to every notification.                            |
+| `styles`          | `StyleOption[]`                 | `[]`        | Global styles applied to plain notifications.                           |
 
 ---
 
@@ -197,7 +270,7 @@ export default {
             await save();
             nutmeg.success('Saved!');
         } catch (e) {
-            nutmeg.error(`Save failed: ${e.message}`);
+            nutmeg.error(document.createTextNode(`Save failed: ${e.message}`));
         }
     }
 };
@@ -332,6 +405,13 @@ export default {
             icon: '⚠️',
             onclick() {
                 nutmeg.warn('Please save your work', { duration: 4000 });
+            }
+        },
+        {
+            type: 'button',
+            cap: 'Literal error text',
+            onclick() {
+                nutmeg.error(document.createTextNode('Connection failed: <server> {{detail}}'), { id: 'literal-error' });
             }
         },
         {

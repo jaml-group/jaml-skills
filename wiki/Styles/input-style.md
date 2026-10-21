@@ -104,11 +104,11 @@ Code editor
 
 Configure the external code-editor integration for an input.
 
-Provides formatting options to the external style integration; its error path restores the native agent and resolves editor/formatter readiness.
+The native code input and explicit input.code formatting styles share one editor. Formatting defaults to off; the active style supplies Prettier options when formatting is enabled.
 
-Requires the separate code-input integration for the editor behavior.
+Use type: 'input-code' (or its 'code' alias) and make jam-input-code.js available through the host resource setup. Set lang and autoFormat: true when formatted value updates are desired.
 
-This native entry does not itself bundle or initialize a code editor.
+The style does not bundle editor resources. Applying it to a plain input is not a substitute for selecting the native code input type.
 
 Positional order: `semi` → `singleQuote` → `trailingComma` → `printWidth`.
 
@@ -119,17 +119,21 @@ Positional order: `semi` → `singleQuote` → `trailingComma` → `printWidth`.
 | `trailingComma` | `string` | `none` | Trailing commas |
 | `printWidth` | `number` | `999` | Print width |
 
-Code editor with Prettier formatting — applies automatic code formatting to the input value.
+Use `type: 'input-code'` for an editable code value; `input.code(...)` configures its editor. Load the `jam-input-code.js` bundle through the host resource setup. Choose `lang` and set `autoFormat: true` to format value updates; formatting defaults to off. The native code input and explicit formatting style share one editor.
 
 ```javascript jaml-playground
 export default [
     {
         type: 'input-code',
+        lang: 'JavaScript',
+        autoFormat: true,
         value: "const greeting = 'hello world'",
         styles: ['input.code(semi:false;singleQuote:true;trailingComma:none;printWidth:80)']
     },
     {
         type: 'input-code',
+        lang: 'JavaScript',
+        autoFormat: true,
         value: 'let x = 1; let y = 2;',
         styles: ['input.code(semi:true;singleQuote:false)']
     }
@@ -214,6 +218,9 @@ export default [
 ```javascript jaml-playground
 export default {
     type: 'input-code',
+    lang: 'JavaScript',
+    autoFormat: true,
+    value: 'const options = { enabled: true, name: "Sample" };',
     styles: ['input.code(semi:false;singleQuote:true;trailingComma:all)']
 };
 ```

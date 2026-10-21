@@ -123,7 +123,7 @@ export default [
     {
         type: 'indicator',
         cap: 'Colorful frets',
-        styles: ['layer.spinner.frets(fretCount:6;fretColors:[red,orange,yellow,green,blue,purple];spin:normal;duration:8000)', 'css(position:relative;width:10rem;height:10rem)']
+        styles: [Styles.layer.spinner.frets({ fretCount: 6, fretColors: ['hsl(0 100% 50%)', 'hsl(39 100% 50%)', 'hsl(60 100% 50%)', 'hsl(120 100% 25%)', 'hsl(240 100% 50%)', 'hsl(300 100% 25%)'], spin: 'normal', duration: 8000 }), 'css(position:relative;width:10rem;height:10rem)']
     }
 ];
 ```
@@ -305,7 +305,7 @@ export default [
     {
         type: 'indicator',
         cap: 'Object spinner',
-        styles: ['layer.spinner.object(objectCount:6;objectHTML:[⚡,🔥,💧,🌪️,❄️,🌈];duration:5000;spin:normal;objectSize:2rem)', 'css(position:relative;width:10rem;height:10rem)']
+        styles: ['layer.spinner.object(objectCount:6;objectHTML:["⚡","🔥","💧","🌪️","❄️","🌈"];duration:5000;spin:normal;objectSize:2rem)', 'css(position:relative;width:10rem;height:10rem)']
     }
 ];
 ```

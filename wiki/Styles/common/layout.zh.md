@@ -85,8 +85,8 @@ Adds `jam-layout` CSS class for basic layout styling. No args.
 | --- | --- | --- | --- |
 | `rows` | `numberOrString` | 未提供 | 行数 |
 | `cols` | `numberOrString` | 未提供 | 列数 |
-| `gap` | `numberOrString` | 未提供 | 间隙 |
-| `padding` | `numberOrString` | 未提供 | 内边距 |
+| `gap` | `numberOrString` | 未提供 | 行列间距：接受 CSS 长度或间距令牌；数值以 rem 为单位。两个值分别设置行、列间距。省略时保留已有间距。<br>Unit: `rem` |
+| `padding` | `numberOrString` | 未提供 | 内边距：接受 CSS 长度或间距令牌；数值以 rem 为单位。支持一至四个方向值。省略时保留已有内边距。<br>Unit: `rem` |
 | `size` | `array` | 未提供 | 行/列数<br>行/列数<br>支持简写 |
 | `withHeader` | `boolean` | `false` | 是否有头部 |
 
@@ -96,7 +96,16 @@ CSS grid with explicit row/column counts.
 export default [
     {
         type: 'container',
-        styles: ['layout.grid(rows:2;cols:3;gap:0.5rem)']
+        styles: ['layout.grid(rows:2;cols:3;gap:0.5rem;padding:1rem)', 'css(width:min(100%,32rem);height:16rem)'],
+        childStyles: ['indicator.centered', 'css(background:tint;padding:s;border-radius:s)'],
+        components: [
+            { type: 'indicator-number', cap: 'Open', value: 24 },
+            { type: 'indicator-number', cap: 'Assigned', value: 18 },
+            { type: 'indicator-number', cap: 'In review', value: 7 },
+            { type: 'indicator-number', cap: 'Completed', value: 42 },
+            { type: 'indicator-number', cap: 'Waiting', value: 3 },
+            { type: 'indicator-number', cap: 'Blocked', value: 1 }
+        ]
     }
 ];
 ```

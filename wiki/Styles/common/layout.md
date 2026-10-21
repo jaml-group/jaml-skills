@@ -85,8 +85,8 @@ Positional order: `rows` → `cols` → `gap` → `padding` → `size` → `with
 | --- | --- | --- | --- |
 | `rows` | `numberOrString` | Not supplied | Row count |
 | `cols` | `numberOrString` | Not supplied | Column count |
-| `gap` | `numberOrString` | Not supplied | Gap |
-| `padding` | `numberOrString` | Not supplied | Padding |
+| `gap` | `numberOrString` | Not supplied | Row/column spacing: CSS lengths or spacing tokens; numbers use rem. Two values set row then column gaps. Omission preserves existing spacing.<br>Unit: `rem` |
+| `padding` | `numberOrString` | Not supplied | Inner spacing: CSS lengths or spacing tokens; numbers use rem. Accepts one to four side values. Omission preserves existing padding.<br>Unit: `rem` |
 | `size` | `array` | Not supplied | Row/column counts<br>Row/column counts<br>Shorthand |
 | `withHeader` | `boolean` | `false` | Include a header |
 
@@ -96,7 +96,16 @@ CSS grid with explicit row/column counts.
 export default [
     {
         type: 'container',
-        styles: ['layout.grid(rows:2;cols:3;gap:0.5rem)']
+        styles: ['layout.grid(rows:2;cols:3;gap:0.5rem;padding:1rem)', 'css(width:min(100%,32rem);height:16rem)'],
+        childStyles: ['indicator.centered', 'css(background:tint;padding:s;border-radius:s)'],
+        components: [
+            { type: 'indicator-number', cap: 'Open', value: 24 },
+            { type: 'indicator-number', cap: 'Assigned', value: 18 },
+            { type: 'indicator-number', cap: 'In review', value: 7 },
+            { type: 'indicator-number', cap: 'Completed', value: 42 },
+            { type: 'indicator-number', cap: 'Waiting', value: 3 },
+            { type: 'indicator-number', cap: 'Blocked', value: 1 }
+        ]
     }
 ];
 ```

@@ -57,13 +57,13 @@ Representers use the same `"type"` key in JAML for data carriers and HTML primit
 
 | Type                    | Class           | Description                                                                                       |
 | ----------------------- | --------------- | ------------------------------------------------------------------------------------------------- |
-| `checkbox`              | —               | Checkbox input. Extends `AbstractInputElement`.                                                   |
-| `code`                  | —               | Syntax-highlighted code block.                                                                    |
+| `checkbox`              | —               | Checkbox option group from `data`; creates `OliveOptions`. See [options](./options.md).           |
+| `code`                  | —               | Editable code input (`ImbeInput`), equivalent to `input-code`. See [input](./input.md).           |
 | `data`                  | —               | Invisible data carrier; see [shared data ownership](../JAML/state-and-data.md#shared-data-owner). |
 | `divider`               | `EndiveElement` | Visual divider; optional label is supplied through inherited `value` from `AbstractInputElement`. |
 | `hr`                    | —               | Horizontal rule (`<hr>`).                                                                         |
 | `placeholder`           | —               | Placeholder element.                                                                              |
-| `radio`                 | —               | Radio input. Extends `AbstractInputElement`.                                                      |
+| `radio`                 | —               | Radio option group from `data`; creates `OliveOptions`. See [options](./options.md).              |
 | `tag`                   | —               | Single tag/chip.                                                                                  |
 | `textarea`              | —               | Multi-line text area. Extends `AbstractInputElement`.                                             |
 | `vr`                    | —               | Vertical rule.                                                                                    |
@@ -71,6 +71,8 @@ Representers use the same `"type"` key in JAML for data carriers and HTML primit
 | `unknown`               | —               | Fallback for unrecognized types.                                                                  |
 
 ---
+
+For one boolean value, choose [`switch` or `switch-checkbox`](./switch.md); `checkbox` and `radio` describe option groups. For static code content, use the [Markdown renderer](../Plugins/markdown.md).
 
 ## Section 1 — AbstractElement
 
@@ -80,11 +82,11 @@ Every JAM-UI element inherits from `AbstractElement`. All params listed here are
 
 ### Core
 
-| Param          | Type      | Description                                                                             |
-| -------------- | --------- | --------------------------------------------------------------------------------------- |
-| `ghostElement` | `boolean` | When `true` the element is invisible in the DOM (used internally for virtual elements). |
-| `observeChild` | `boolean` | Enable child mutation observation (fires child lifecycle events).                       |
-| `autoState`    | `boolean` | Automatically toggle state on click (cycles through defined `states`).                  |
+| Param          | Type      | Description                                                                                                                                                                                       |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ghostElement` | `boolean` | When `true` the element is invisible in the DOM (used internally for virtual elements).                                                                                                           |
+| `observeChild` | `boolean` | Enable child mutation observation (fires child lifecycle events).                                                                                                                                 |
+| `autoState`    | `boolean` | When native checked-state updates occur, map them to `checked`, `indeterminate` or `default`; defaults to `false`. See [switch state ownership](./switch.md#checked-state-and-icon-presentation). |
 
 ### Theme presentation
 
@@ -143,6 +145,8 @@ export default {
     }
 };
 ```
+
+`autoState` responds to checked-state updates; it does not install a click handler or cycle through arbitrary state names. A native switch already owns boolean toggling and can project it through `autoState`. Use a bound `state` expression when application conditions require other names or additional dimensions, and keep that expression as the state owner. Explicit state cycling uses `switchToNextState()`.
 
 **Instance methods:**
 
@@ -242,7 +246,7 @@ The [watcher](../JAML/binder.md#watchers) follows the plain `expanded` prop alia
 
 Keep the changing icon binding inside `states`: native [compound binding](../JAML/binder.md#compound-binder-object-recursive-binding) re-evaluates the state dictionary when its bound values change. This refreshes the current presentation even if the selected state name stays the same, and retains the latest semantic icon for a later collapse. Assigning the same `element.state` string alone does not refresh its parameters.
 
-Keep click/keyboard activation, `aria-expanded` and content visibility connected to the same expanded model value. Leave `autoState` off: cycling four presentation states would make hover/focus compete with the expansion model. Prefer the native icon slot over a second overlaid icon or a wrapper that duplicates the button's interaction. When reusing this pattern, verify initial rendering, pointer and keyboard transitions, model updates without pointer movement, and semantic-icon changes while the state name remains unchanged. In particular, click to expand and fold, then move the pointer away without moving focus: the collapsed button must return to its semantic icon while retaining focus. Also verify keyboard-visible focus, and keyboard use of the already click-focused button without a new focus event.
+Keep click/keyboard activation, `aria-expanded` and content visibility connected to the same expanded model value. Leave `autoState` off here: the bound expression owns these four presentation states, while `autoState` maps native checked updates to `checked`, `indeterminate` or `default`. Prefer the native icon slot over a second overlaid icon or a wrapper that duplicates the button's interaction. When reusing this pattern, verify initial rendering, pointer and keyboard transitions, model updates without pointer movement, and semantic-icon changes while the state name remains unchanged. In particular, click to expand and fold, then move the pointer away without moving focus: the collapsed button must return to its semantic icon while retaining focus. Also verify keyboard-visible focus, and keyboard use of the already click-focused button without a new focus event.
 
 ---
 

@@ -4,13 +4,22 @@
 
 A geographic map chart built on ECharts with drill-down, coordinate-aware children, editable connection routes, and custom coordinate overrides. It loads a map profile through `MedlarMap.loader` and supports custom GeoJSON through `mapJSON`.
 
-> **Important:** For the default China profile, region names are Chinese without administrative suffixes — use `"江苏"` not `"江苏省"`, `"南京"` not `"南京市"`.
+## Host prerequisites
+
+A `map` needs ECharts plus geographic data supplied by the host. The framework does not ship a China profile, a default loader module, or regional GeoJSON assets. Choose one data source when constructing the map:
+
+-   `loader: '/maps/profile-loader.mjs'`: a host-served ES module whose default export is a constructible map loader accepting the active map. It supplies profiles, coordinates, region resolution and drill relationships. Serve every GeoJSON file that loader requests.
+-   `mapJSON: '/maps/site.geojson'`: a host-served GeoJSON FeatureCollection for a custom map. Feature names must match the names used by `data` and coordinate-aware children. This path uses the built-in GeoJSON loader and does not fetch the default loader module.
+
+With neither param, the runtime requests `defaultLoader.mjs` beneath `MedlarMap.jsonPath` (initially `assets/mapProfile/`). That is an integration convention, not a bundled resource. A missing module or GeoJSON response is a host setup error; select a data source before composing the map.
+
+The regional examples below are integration snippets for a host with a China profile installed; they are not self-contained playground demos. That profile uses names such as `"江苏"` and `"南京"` without administrative suffixes. Other profiles define their own names and identifiers.
 
 ---
 
 ## JAML usage
 
-```json jaml-playground
+```json
 {
     "type": "map",
     "cap": "Jiangsu Population",
@@ -30,40 +39,40 @@ A geographic map chart built on ECharts with drill-down, coordinate-aware childr
 
 Inherits all params from [CashewChart](./chart.md) (which extends [AbstractOptionElement](./JAM-UI.md#section-3--abstractoptionelement)).
 
-| Param                | Type                                                                    | Default                                     | Description                                                                                                                                                                        |
-| -------------------- | ----------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `region`             | `string`                                                                | `''`                                        | Current map region name. Default profile uses Chinese names without suffix: `"江苏"`, `"南京"`, `"鼓楼"`. Setting it resolves and synchronizes `adcode` after the loader is ready. |
-| `adcode`             | `string \| number`                                                      | `''`                                        | Current map region identifier. Setting it resolves and synchronizes `region` through `MapLoader.getProfileByAdcode()`.                                                             |
-| `topLevel`           | `string`                                                                | `'level1'`                                  | Highest loader level that click drill-up can reach. Default loader levels are `level1` and `level2`.                                                                               |
-| `roam`               | `boolean`                                                               | `false`                                     | Enable panning and zooming.                                                                                                                                                        |
-| `click2Drill`        | `boolean`                                                               | `true`                                      | Click a region to drill down; click background to drill up.                                                                                                                        |
-| `highlightTogether`  | `boolean`                                                               | `false`                                     | Cross-highlight linked regions together when one is hovered.                                                                                                                       |
-| `silent`             | `boolean`                                                               | `false`                                     | Disable region interaction and drill handlers. Roaming remains available when `roam` is enabled.                                                                                   |
-| `showBackground`     | `boolean`                                                               | `false`                                     | Render the replicated background geo and its optional scatter labels.                                                                                                              |
-| `connections`        | `MapConnection[]`                                                       | `[]`                                        | Connection definitions with unique `id`, `from`, and `to` labels.                                                                                                                  |
-| `lineOption`         | `Omit<MapConnection, 'id' \| 'from' \| 'to' \| 'midpoints' \| 'state'>` | `{}`                                        | Shared line defaults merged beneath each connection.                                                                                                                               |
-| `gap`                | `number \| string`                                                      | `0`                                         | Separation between parallel auto-routed connections. Strings are converted to pixels in the map container.                                                                         |
-| `editMode`           | `boolean`                                                               | `false`                                     | Enable draggable labels, endpoints, midpoints, route editing, snap control, and coordinate export controls.                                                                        |
-| `scenery`            | `string`                                                                | `''`                                        | Optional coordinate-override context below the current region.                                                                                                                     |
-| `customCoords`       | `{ connections; labels }`                                               | `{ connections: {}, labels: {} }`           | Read or apply exported connection and label coordinate overrides.                                                                                                                  |
-| `colored`            | `any[]`                                                                 | `[]`                                        | Regions to highlight with color. Auto-populated based on `region`.                                                                                                                 |
-| `grayed`             | `any[]`                                                                 | `[]`                                        | Regions to render in gray. Auto-populated as complement of `colored`.                                                                                                              |
-| `customAreas`        | `string[]`                                                              | `[]`                                        | Custom area names grouped into the `comboArea` region when loading `mapJSON`.                                                                                                      |
-| `sizeFactor`         | `number`                                                                | `rem(0.2)`                                  | Scale map label and shadow styling.                                                                                                                                                |
-| `conf`               | `Dictionary`                                                            | `{}`                                        | Override map display config: `zoom`, `center`.                                                                                                                                     |
-| `onregionchange`     | `(profile) => void`                                                     | —                                           | Receives the active region profile after region preparation (including drilling). No previous-profile argument is supplied.                                                        |
-| `onconnectionchange` | `(change: MapConnectionChange) => void`                                 | —                                           | Fired after an edited connection is committed.                                                                                                                                     |
-| `oncoordchange`      | `(change: MapCoordinateChange) => void`                                 | —                                           | Fired after an edited label coordinate is committed.                                                                                                                               |
-| `mapJSON`            | `string` (setter)                                                       | —                                           | Load a custom GeoJSON URL. Sets `customData = true` and fetches + registers the map data.                                                                                          |
-| `loader`             | `string` (setter)                                                       | `MedlarMap.jsonPath + '/defaultLoader.mjs'` | Load a map-loader module. Its default export must be a constructible loader class accepting the active `MedlarMap` instance.                                                       |
+| Param                | Type                                                                    | Default                                          | Description                                                                                                                                                                          |
+| -------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `region`             | `string`                                                                | `''`                                             | Current map region name. The example China profile uses names without suffix: `"江苏"`, `"南京"`, `"鼓楼"`. Setting it resolves and synchronizes `adcode` after the loader is ready. |
+| `adcode`             | `string \| number`                                                      | `''`                                             | Current map region identifier. Setting it resolves and synchronizes `region` through `MapLoader.getProfileByAdcode()`.                                                               |
+| `topLevel`           | `string`                                                                | `'level1'`                                       | Highest loader level that click drill-up can reach. The built-in GeoJSON loader uses `level1` and `level2`; custom loaders define their profiles.                                    |
+| `roam`               | `boolean`                                                               | `false`                                          | Enable panning and zooming.                                                                                                                                                          |
+| `click2Drill`        | `boolean`                                                               | `true`                                           | Click a region to drill down; click background to drill up.                                                                                                                          |
+| `highlightTogether`  | `boolean`                                                               | `false`                                          | Cross-highlight linked regions together when one is hovered.                                                                                                                         |
+| `silent`             | `boolean`                                                               | `false`                                          | Disable region interaction and drill handlers. Roaming remains available when `roam` is enabled.                                                                                     |
+| `showBackground`     | `boolean`                                                               | `false`                                          | Render the replicated background geo and its optional scatter labels.                                                                                                                |
+| `connections`        | `MapConnection[]`                                                       | `[]`                                             | Connection definitions with unique `id`, `from`, and `to` labels.                                                                                                                    |
+| `lineOption`         | `Omit<MapConnection, 'id' \| 'from' \| 'to' \| 'midpoints' \| 'state'>` | `{}`                                             | Shared line defaults merged beneath each connection.                                                                                                                                 |
+| `gap`                | `number \| string`                                                      | `0`                                              | Separation between parallel auto-routed connections. Strings are converted to pixels in the map container.                                                                           |
+| `editMode`           | `boolean`                                                               | `false`                                          | Enable draggable labels, endpoints, midpoints, route editing, snap control, and coordinate export controls.                                                                          |
+| `scenery`            | `string`                                                                | `''`                                             | Optional coordinate-override context below the current region.                                                                                                                       |
+| `customCoords`       | `{ connections; labels }`                                               | `{ connections: {}, labels: {} }`                | Read or apply exported connection and label coordinate overrides.                                                                                                                    |
+| `colored`            | `any[]`                                                                 | `[]`                                             | Regions to highlight with color. Auto-populated based on `region`.                                                                                                                   |
+| `grayed`             | `any[]`                                                                 | `[]`                                             | Regions to render in gray. Auto-populated as complement of `colored`.                                                                                                                |
+| `customAreas`        | `string[]`                                                              | `[]`                                             | Custom area names grouped into the `comboArea` region when loading `mapJSON`.                                                                                                        |
+| `sizeFactor`         | `number`                                                                | `rem(0.2)`                                       | Scale map label and shadow styling.                                                                                                                                                  |
+| `conf`               | `Dictionary`                                                            | `{}`                                             | Override map display config: `zoom`, `center`.                                                                                                                                       |
+| `onregionchange`     | `(profile) => void`                                                     | —                                                | Receives the active region profile after region preparation (including drilling). No previous-profile argument is supplied.                                                          |
+| `onconnectionchange` | `(change: MapConnectionChange) => void`                                 | —                                                | Fired after an edited connection is committed.                                                                                                                                       |
+| `oncoordchange`      | `(change: MapCoordinateChange) => void`                                 | —                                                | Fired after an edited label coordinate is committed.                                                                                                                                 |
+| `mapJSON`            | `string` (setter)                                                       | —                                                | Load a custom GeoJSON URL. Sets `customData = true` and fetches + registers the map data.                                                                                            |
+| `loader`             | `string` (setter)                                                       | `defaultLoader.mjs` beneath `MedlarMap.jsonPath` | Load a map-loader module. Its default export must be a constructible loader class accepting the active `MedlarMap` instance.                                                         |
 
-**Data format:** `{name, value}` objects where `name` matches region names (Chinese, without administrative suffix). The `value` is used for the color scale.
+**Data format:** `{name, value}` objects where `name` matches names in the selected loader or GeoJSON. The `value` is used for the color scale.
 
 **Styling:** Map inherits all ECharts styling from CashewChart. Use `Styles.echarts.*` styles, `Styles.eopts` for raw options, or `Styles.efuncs` for programmatic manipulation. See [echarts styles](../Styles/echarts.md).
 
 Direct coordinate-aware map children use `stylize: 'item'`. The `map > item` parent context covers labels and related overlays without introducing a separate map-only role. Map recipes may refine the item with native variants such as `colored`, `grayed`, `external`, and `line`; `stylize: 'item-line'` is the compact form of `stylize: 'item'` plus `variant: 'line'`. Use `variant: 'autohide'` for an authored coordinate child that stays hidden until map editing exposes it.
 
-```json jaml-playground
+```json
 {
     "type": "map",
     "region": "江苏",
@@ -113,7 +122,7 @@ interface MapConnection {
 
 `from` and `to` use the same profile names or custom coordinate keys accepted by `jam-coord`. A connection-level option overrides `lineOption`; map connections default to `path: 'polyline'`. `state: 'reverse'` reverses dash animation and swaps start/end symbol presentation without changing the authored identifiers.
 
-```javascript jaml-playground
+```javascript
 export default {
     type: 'map',
     region: '江苏',
@@ -184,7 +193,7 @@ A custom loader module must default-export a class instantiated as `new Loader(m
 
 ### Jiangsu province with city data
 
-```json jaml-playground
+```json
 {
     "type": "map",
     "cap": "Jiangsu Population",
@@ -212,7 +221,7 @@ A custom loader module must default-export a class instantiated as `new Loader(m
 
 Click a city to drill down to its districts. Click background to drill back up:
 
-```javascript jaml-playground
+```javascript
 export default {
     type: 'map',
     styles: ['css(height:25rem;width:35rem)'],
@@ -234,7 +243,7 @@ export default {
 
 Children with `jam-coord` attributes are auto-positioned at their geographic coordinates. Use `buildFor` to generate one indicator per data item:
 
-```javascript jaml-playground
+```javascript
 export default {
     type: 'map',
     region: '江苏',
@@ -268,8 +277,8 @@ export default {
 
 ## Notes
 
--   **Region names must be in Chinese without administrative suffixes** — `"江苏"` not `"江苏省"`, `"南京"` not `"南京市"`, `"鼓楼"` not `"鼓楼区"`.
--   GeoJSON files are loaded from `MedlarMap.jsonPath` on first access for each region. The path should contain files named by region adcode (e.g. `100000.json` for China, `320100.json` for Nanjing).
+-   Region names and identifiers belong to the supplied profile. The China-profile examples use `"江苏"`, `"南京"` and `"鼓楼"`; these are not universal naming requirements.
+-   GeoJSON request locations and file naming follow the supplied loader. Adcode-named files such as `100000.json` and `320100.json` are a China-profile convention, not a requirement for custom GeoJSON.
 -   After changing `region` or `adcode` programmatically, call and await `switchRegion()` to prepare the selected region and redraw. Initialization and built-in drill interactions perform that switch themselves.
 -   When `click2Drill` is enabled, clicking a colored region drills down and clicking the background drills up.
 -   During roaming, replicated and image geo layers stay synchronized and children with `jam-coord` are repositioned. A drag gesture suppresses drill-click handling until roaming settles.

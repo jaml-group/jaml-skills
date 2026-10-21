@@ -16,7 +16,9 @@ The element installs its internal base style automatically. Use public styles fo
 
 Waits for chart readiness and calls ECharts `resize()`. On an actual resize event, it redraws when `redrawOnResize` is true or the map has a fixed image fill. Otherwise it reapplies map offsets and repositions all child elements. Applied automatically on element creation. No args.
 
-```javascript jaml-playground
+Integration example: first configure a host-supplied map loader and matching GeoJSON, as described in [map prerequisites](../JAM-UI/map.md#host-prerequisites). Supply any referenced image assets as well.
+
+```javascript
 export default [
     {
         type: 'map',

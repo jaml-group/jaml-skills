@@ -104,11 +104,11 @@ export default [
 
 为输入元素配置外部代码编辑器集成。
 
-向外部样式集成提供格式化选项；发生错误时恢复原生 agent，并完成编辑器/格式化器的就绪流程。
+原生代码输入与显式 input.code 格式化样式共享一个编辑器。格式化默认关闭；开启后使用当前样式的 Prettier 参数。
 
-编辑器行为需要独立的 code-input 集成。
+使用 type: 'input-code'（或别名 'code'），并通过宿主资源配置提供 jam-input-code.js。需要格式化值更新时设置 lang 和 autoFormat: true。
 
-此原生条目本身不会捆绑或初始化代码编辑器。
+此样式不包含编辑器资源。将它应用于普通 input 不能替代原生代码输入类型。
 
 位置参数顺序: `semi` → `singleQuote` → `trailingComma` → `printWidth`.
 
@@ -119,17 +119,21 @@ export default [
 | `trailingComma` | `string` | `none` | 尾随逗号 |
 | `printWidth` | `number` | `999` | 打印宽度 |
 
-Code editor with Prettier formatting — applies automatic code formatting to the input value.
+Use `type: 'input-code'` for an editable code value; `input.code(...)` configures its editor. Load the `jam-input-code.js` bundle through the host resource setup. Choose `lang` and set `autoFormat: true` to format value updates; formatting defaults to off. The native code input and explicit formatting style share one editor.
 
 ```javascript jaml-playground
 export default [
     {
         type: 'input-code',
+        lang: 'JavaScript',
+        autoFormat: true,
         value: "const greeting = 'hello world'",
         styles: ['input.code(semi:false;singleQuote:true;trailingComma:none;printWidth:80)']
     },
     {
         type: 'input-code',
+        lang: 'JavaScript',
+        autoFormat: true,
         value: 'let x = 1; let y = 2;',
         styles: ['input.code(semi:true;singleQuote:false)']
     }
@@ -214,6 +218,9 @@ export default [
 ```javascript jaml-playground
 export default {
     type: 'input-code',
+    lang: 'JavaScript',
+    autoFormat: true,
+    value: 'const options = { enabled: true, name: "Sample" };',
     styles: ['input.code(semi:false;singleQuote:true;trailingComma:all)']
 };
 ```

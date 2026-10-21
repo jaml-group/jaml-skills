@@ -866,11 +866,11 @@ Object.keys(jaml.usageRegistry.registry); // ['reset', 'clear', 'cancel', 'dateB
 Use `jaml.bunch()` to render a data array with entry animations, parallax hover, and layer effects on each item:
 
 ```javascript jaml-playground
-jaml.registerCustomColors({
-    '220kv': '#800080',
-    '110kv': '#F04155',
-    '35kv': '#FFFF00',
-    '10kv': '#B94842'
+jam.registerCustomColors({
+    '220kv': 'hsl(300.00 100.00% 25.10%)',
+    '110kv': 'hsl(353.14 85.37% 59.80%)',
+    '35kv': 'hsl(60.00 100.00% 50.00%)',
+    '10kv': 'hsl(3.03 47.41% 49.22%)'
 });
 
 export default jaml.wrapper(
@@ -878,10 +878,10 @@ export default jaml.wrapper(
         styles: ['layout.autogrid(minHeight:15rem)', 'size.fullsize', 'css(padding:1rem;gap:1rem)'],
         vars: {
             items: [
-                { name: '220kV', color: '#800080' },
-                { name: '110kV', color: '#F04155' },
-                { name: '35kV', color: '#FFFF00' },
-                { name: '10kV', color: '#B94842' }
+                { name: '220kV', color: 'hsl(300.00 100.00% 25.10%)' },
+                { name: '110kV', color: 'hsl(353.14 85.37% 59.80%)' },
+                { name: '35kV', color: 'hsl(60.00 100.00% 50.00%)' },
+                { name: '10kV', color: 'hsl(3.03 47.41% 49.22%)' }
             ]
         }
     },

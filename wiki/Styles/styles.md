@@ -46,6 +46,21 @@ For a settings/workspace refactor, assign each declaration before moving it: hea
 
 A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds. Token substitution alone does not meet that criterion.
 
+## Compose style paths by target and operation
+
+Resolve the native part and the operation together. Supported target namespaces expose common operations; their family contracts determine which combinations exist. A full literal such as `icon.attrs(aria-hidden:true)` need not appear as a separate recipe to be valid. Read the target contract and the operation's arguments, then validate the resolved path; arbitrary concatenation is not a capability guarantee.
+
+| Path                           | Target and effect                                                                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `attrs(aria-label:Favorite)`   | Set an attribute on the host element.                                                                                                                    |
+| `icon.attrs(aria-hidden:true)` | Set an attribute on the content assigned to the host's icon slot, hiding that decorative content from accessibility.                                     |
+| `icon.css(opacity:0.7)`        | Apply CSS to that icon-slot content.                                                                                                                     |
+| `icon.regular` / `icon.solid`  | Run the icon rendering treatment on a host with simple text icon content; these renderers replace the text with font markup and restore it when removed. |
+
+The assigned content and the shadow slot wrapper are different targets; use the documented `iconslot.*` contract when the wrapper is intended. Applying `attrs(aria-hidden:true)` at the host would hide the whole control. Attribute/class/CSS effects follow replacement of named slotted content in the corrected runtime; see [named-slot lifecycle](../JAM-UI/JAM-UI.md#named-slot-lifecycle) and verify support in the consuming artifact.
+
+For a dynamic presentation, identify its existing state owner first. A switch can project its value to native checked states; a custom multistate interaction may need a bound state expression. Keep each changing treatment in the selected state's `styles`, and keep persistent effects in the element's `styles`. The [switch icon example](../JAM-UI/switch.md#checked-state-and-icon-presentation) combines these rules and describes both transition checks. The [icon](./common/icon.md) and [attribute](./common/attrs.md) guides own renderer prerequisites and attribute arguments.
+
 ## The `style` param
 
 **Type:** `string | Dictionary`
@@ -138,7 +153,7 @@ Arguments are semicolon-separated key-value pairs inside parentheses. Types are 
 }
 ```
 
-Arguments are semicolon-separated key-value pairs inside parentheses. Types are inferred automatically from the style's registered arg profiles. Values are cast: numbers, booleans, arrays `[a,b,c]`, and nested objects are all supported.
+Arguments are semicolon-separated key-value pairs inside parentheses. Types are inferred automatically from the style's registered arg profiles. Values are cast according to those profiles. Bracketed arrays are JavaScript literals: write `[1,2,3]` for numbers and `["a","b","c"]` for strings. Bare words inside brackets are evaluated as identifiers, not string values. For an argument declared as an array, a simple unbracketed comma list such as `a,b,c` is also accepted. Use a JavaScript style factory with a real array or object for complex values, functions, or values containing delimiters.
 
 > **`delay` and `duration` helpers:** `seq(per, offset)` and `random(min, max)` provide staggered and randomized timing. See [Animation](./animation.md#delay-and-duration-helpers) for full details, along with the easing names table.
 
