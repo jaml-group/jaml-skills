@@ -12,6 +12,25 @@ In the updated development runtime, `jam.themeReady` exists synchronously after 
 
 Older bundles may assign the promise only at `DOMContentLoaded`. Verify that it exists before treating `await jam.themeReady` as a readiness barrier: awaiting `undefined` does not wait for initialization. Early global dark-mode writes in the updated runtime wait for the body color profile and coalesce to the latest request. Wait for it before assigning `colors`/`colorScheme` palettes. This barrier does not establish component rendering, geometry or font readiness.
 
+### Theme assets for classic-script embedding
+
+On runtimes supporting `jam-theme-assets-path`, set this attribute on the classic runtime script before it executes. Its trimmed, nonempty value becomes `jam.Theme.assetsPath` before automatic initialization starts. Missing or blank values leave the existing path unchanged. The directory must serve `themes.json` and its referenced theme modules and shared chunks. Relative paths resolve against the document base URL; use an absolute URL when embedding under an application-specific asset route.
+
+For a dynamically loaded classic runtime:
+
+```javascript
+const script = document.createElement('script');
+script.src = new URL('jam-ui.js', assetBaseURL).href;
+script.setAttribute('jam-theme-assets-path', new URL('themes', assetBaseURL).href);
+script.onload = async () => {
+    await jam.themeReady;
+    // Render the application with its existing mount owner.
+};
+document.head.append(script);
+```
+
+The same attribute works on a parser-loaded classic `<script>` tag. Automatic initialization may begin before a dynamic script's `load` callback, so assigning `Theme.assetsPath` in that callback is too late for initial discovery. The property remains configurable before initialization. Changing the attribute after evaluation does not restart discovery. This hook does not configure ES-module imports or repeated runtime loading; it retains the existing `jam.themeReady` promise and initialization timing.
+
 ### `jam.defaultStyleOverrides`
 
 Assign a selector-to-style dictionary to extend or replace entries in the framework default style map. Set it before themes are discovered or constructed; each `Theme` snapshots the combined defaults in its constructor.
@@ -114,7 +133,7 @@ For a reactive popup, use the [explicit Model/build recipe](JAML/purpose-and-com
 
 Render a JAML object as a modal dialog. The caller's host/layout and content styles determine placement and sizing; this helper does not center the content. A native `card` with `cap` already supplies its header. Select [interaction and presentation](JAML/purpose-and-composition.md#choose-interaction-and-presentation) first; a local edit can stay inline or beside its trigger. For a Yes/No decision, prefer the [confirmation helpers](choosing-native-capabilities.md#confirmations-and-editing-dialogs) and their managed ownership where appropriate.
 
-Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer` and `curtainMode`. `click2Close` selects Escape/curtain dismissal at opening; mutating the original config later does not update the open modal. It does not gate an editable builder's Save/Cancel callbacks. Put a pending gate in those callbacks and choose a compatible dismissal policy when opening.
+Accepts `click2Close` (boolean, default `true`) or a config object with `click2Close`, `onclose`, `curtainCSS`, `blur`, `dimmer`, `curtainMode`, `presentation` and `drawerBreakpoint`. `click2Close` selects Escape/curtain dismissal at opening; mutating the original config later does not update the open modal. It does not gate an editable builder's Save/Cancel callbacks. Put a pending gate in those callbacks and choose a compatible dismissal policy when opening.
 
 `curtainMode: 'active'` is the default: one reused curtain blocks lower sibling modals while leaving the top modal interactive. `'shared'` keeps sibling modals above the shared curtain. The first modal selects the container’s mode until the last modal is removed. Curtain effect strengths also remain those of the first curtain; later opens do not accumulate darkness or replace its effects.
 
@@ -142,6 +161,14 @@ Development bundles with native modal accessibility manage initial focus, keyboa
 Return focus is attempted after unmount only when the captured opener remains connected and is eligible under any remaining modal. For an unhandled, non-composing Escape reaching the modal listener, owned popups dismiss before the modal. The `yesNoDialog` builder can handle Escape earlier, prevent the event and invoke No; its decision path therefore takes precedence over that popup fallback. Verify the intended sequence when composing them. The application supplies the accessible name and verifies the intended keyboard/assistive-technology flow.
 
 Earlier bundles lack this integration. Verify the consuming runtime and preserve its native ownership; an existing adapter fills only a demonstrated gap. A popup or the `yesNoDialog` definition alone does not acquire modal behavior.
+
+### Adaptive modal presentation
+
+`jam.configureModalPresentation({ presentation: 'auto', drawerBreakpoint: 48 })` sets defaults for subsequent modal calls. `presentation` is `'auto' | 'dialog' | 'drawer'`; `drawerBreakpoint` is a finite nonnegative rem value. Defaults are `'auto'` and `48`.
+
+`jam.renderModal` accepts those options per call. Auto mode uses a bottom drawer when the supplied host width is at or below the breakpoint, otherwise a dialog. Host-width and root-rem changes preserve the mounted model. Forced drawer presentation uses the bottom edge. Existing modals retain their resolved options when global defaults change.
+
+Presentation does not replace modal lifetime, curtain, dismissal callbacks or focus/background ownership. Unlike a retained [`jaml.drawer`](JAML/drawer-and-previewer.md#retained-drawers), closing a modal tears it down. The sixth argument of `jam.modalYesNo(container, prompt, onYes, onNo, styles?, options?)` also accepts `presentation` and `drawerBreakpoint`, alongside `dimmer` and `blur`. For file content, mount a [`jaml.previewer` definition](JAML/drawer-and-previewer.md#file-preview-definitions) through `renderModal`.
 
 ### `jam.closeTopModal()`
 
@@ -678,7 +705,7 @@ String case conversion utilities.
 | `jam.logLevel`     | `Level`   | Log level threshold       |
 | `jam.defaultTheme` | `string`  | Default theme name        |
 
-`jam.Theme.assetsPath` controls the directory used by initial theme discovery and defaults to `assets/themes`. Set it before `jam.themeReady` begins. `jam.Theme.reload()` reloads the current page by default and may be overridden by hosts such as an IDE webview that owns its reload lifecycle.
+`jam.Theme.assetsPath` controls the directory used by initial theme discovery and defaults to `assets/themes`. Set it before automatic initialization begins; for classic scripts, use the [pre-load theme asset attribute](#theme-assets-for-classic-script-embedding). `jam.Theme.reload()` reloads the current page by default and may be overridden by hosts such as an IDE webview that owns its reload lifecycle.
 
 ---
 

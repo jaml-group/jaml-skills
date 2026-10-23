@@ -20,12 +20,13 @@ Owns only its injected buttons and one popup per application. Removal, container
 
 Direct children only; class-only mutations are not observed. No async content contract or caption mask is supplied. Overlapping target classes should use a single plugin owner. Other options forward to PapayaPopup. Keep application identity, permissions and action logic in getcontent.
 
-Positional order: `target` → `getcontent` → `click2Hide` → `clickElsewhere2Hide`.
+Positional order: `target` → `getcontent` → `triggerStyles` → `click2Hide` → `clickElsewhere2Hide`.
 
 | Argument | Type | Contract |
 | --- | --- | --- |
 | `target` | `string` | One class name identifying eligible direct children. |
 | `getcontent` | `function` | Synchronous callback receiving the current child and returning popup content on each opening. |
+| `triggerStyles` | `array` |  |
 | `click2Hide` | `boolean` | Forward native click dismissal; omission retains the dropdown default of false and existing callback ordering. |
 | `clickElsewhere2Hide` | `boolean` | Forward native outside-click dismissal; omission retains true. |
 

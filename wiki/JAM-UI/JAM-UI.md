@@ -370,7 +370,7 @@ jam.bindEvent(element, 'passiveresize', onResize);
 jam.unbindEvent(element, 'passiveresize', onResize);
 ```
 
-Direct `element.on('passiveresize', callback)`, `addEventListener`, and a JAML `once` map do not start observation themselves. Direct `off`/`removeEventListener` also bypass observation cleanup. Use the paired helpers for imperative observation; do not call `disconnect()` on the shared observer.
+Direct `element.on('passiveresize', callback)` and a JAML `once` map do not start observation themselves. Native `addEventListener` does not receive framework `passiveresize` notifications, even when observation is already active. Direct `off` bypasses observation cleanup; native `removeEventListener` does not remove framework subscriptions. Use the paired helpers for imperative observation; do not call `disconnect()` on the shared observer.
 
 Removing one subscription preserves other callbacks. Independent owners should use distinct callback functions; repeated registration of the same function is not an independently reference-counted subscription. For Jam elements, cleanup checks the element's event-handler registry; for ordinary DOM elements, it tracks callbacks registered through `jam.bindEvent`. Ordinary DOM callbacks registered or removed outside those helpers cannot be accounted for. Final Jam element destruction unobserves the element even if callbacks remain. Temporary removal/unmount alone does not end observation; a mount-scoped owner should unbind on unmount and bind again on remount. Ordinary DOM elements need explicit owner cleanup.
 
@@ -427,6 +427,14 @@ export default {
 
 For a changing or localized name, update the same attribute from its existing application owner. This example sets a static name once; it does not define naming for replacement editors. `setParam('aria-label', ...)` is not an attribute-forwarding API, and `agent.attrs` is not a registered style. Component `onafterrender` may run while a parent is detached; prefer element initialization when native-agent readiness is required.
 
+### Framework event subscriptions
+
+In 2.0, classified framework notifications such as `mount`, `unmount`, `valuechange`, `pannzoom` and named-slot changes are synchronous, local notifications. Use JAML event handlers, a JAM element's `.on`, `.off`, `.once` and `.trigger`, or `jam.bindEvent`, `jam.unbindEvent`, `jam.bindOnetimeEvent` and `jam.triggerEvent`. The helpers also support framework notifications on ordinary elements.
+
+Native `addEventListener` and `dispatchEvent` are not aliases for these notifications. They do not bubble or cross shadow boundaries, and ancestor capture does not receive them. Subscribe on the emitting element and release subscriptions with the same callback when their owner is disposed. The event carries its payload in `detail`; its callback receiver and target identify the emitting element. A once subscription removes itself before invoking its callback. New subscriptions do not join an in-progress delivery, and removing a pending subscription prevents its delivery. `stopImmediatePropagation()` stops the remaining callbacks for that notification.
+
+Browser events such as `click`, `resize` and `sort`, unclassified custom event names, and standalone `EventTarget` instances retain native behavior. Bare browser `slotchange` on ordinary nodes remains native; named host slot notifications use the local framework path. Event property hooks retain their own documented arguments; calling `.trigger` does not invoke a property hook.
+
 ### Named-slot lifecycle
 
 Every named slot present in an element's template at initialization exposes a `[name]slotchange` event and an `on[name]slotchange` hook. For example, `cap` provides `capslotchange` / `oncapslotchange`; the same rule applies to `icon`, `label`, `value`, `unit` and other slots actually present on that element. This works independently of `observeChild`.
@@ -443,7 +451,7 @@ On receipt of native `slotchange`, the element reads `slot.assignedNodes({ flatt
 
 Prefer JAML `on: { capslotchange(event) { ... } }` or `el.on('capslotchange', handler)` for independent subscriptions. Direct hook assignment uses `el.oncapslotchange = function (slot, assigned) { ... }`. The dispatcher looks up the hook dynamically, but a top-level JAML hook param is accepted only when the element exposes that property; use the event form for template-only names such as `label`. In the current runtime, slot-property hooks such as `oncapslotchange` can share their assigned callback across instances, so event listeners are the reliable choice for per-instance behavior.
 
-The named host event has `bubbles: false`, `composed: false` and `cancelable: false`. An ordinary ancestor listener or ancestor `on` map will not receive a descendant's event. Delegation within the same DOM tree uses `root.addEventListener('capslotchange', handler, { capture: true })`; identify the emitting host with `event.target`, and the relevant slot with `event.detail.slot`. It does not cross an enclosing shadow boundary. Remove the listener with the same capture setting when its owner is released.
+The named host event has `bubbles: false`, `composed: false` and `cancelable: false`. In 2.0 it uses the local framework registry: neither ancestor capture nor an ancestor `on` map receives a descendant's notification. Subscribe directly with `el.on('capslotchange', handler)` (or `jam.bindEvent`) and remove it with `el.off('capslotchange', handler)` (or `jam.unbindEvent`) when its owner is released. Identify the emitting host with `event.target` and the relevant slot with `event.detail.slot`.
 
 Native `slotchange` does bubble inside the shadow tree. Nested template slots can therefore notify an outer slot too: for an input, a `capslotchange` may be accompanied by `labelslotchange`. Each payload describes the slot whose listener handled the notification. Do not assume one host event per application update.
 

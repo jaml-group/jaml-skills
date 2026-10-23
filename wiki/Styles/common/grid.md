@@ -89,6 +89,28 @@ export default [
 ];
 ```
 
+## `grid.resizable`
+
+<a id="entry-grid-resizable"></a>
+
+Resize explicit grid tracks
+
+Adjacent tracks exchange size while preserving their pair total. The first nonzero drag converts the affected axis to proportional tracks.
+
+Requires explicit supported grid tracks and placements, horizontal writing and LTR. Row resizing requires a bounded height.
+
+Shares the host grid controller. Cancellation restores the pre-gesture template; cleanup preserves newer external sizing.
+
+Responsive auto-repeat, implicit or ambiguous tracks and virtualized child layouts do not support interactive resizing. Use interact.resizable for element sizing.
+
+Positional order: `columns` → `rows` → `minSize`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `columns` | `boolean` | `true` | Enable column boundary resizing |
+| `rows` | `boolean` | `false` | Enable row boundary resizing |
+| `minSize` | `numberOrString` | `1rem` | Minimum track size; numeric values use rem<br>Unit: `rem` |
+
 ## `grid.virtualScroll`
 
 <a id="entry-grid-virtualscroll"></a>

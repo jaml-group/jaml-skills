@@ -2,7 +2,7 @@
 
 **Class:** `NutmegNotify` · **Type:** `"notify"` · **Extends:** `AbstractElement` · **Global:** `nutmeg`
 
-`NutmegNotify` owns a notification stack: presentation, level defaults, close/pin controls and timed dismissal. Trigger it through `nutmeg`, `jam.notify()` or `NutmegNotify.appendNotify()`; pass JAML as content when the notification needs another native purpose, such as a metric or an action. The committed baseline uses the `modal` stylize profile; verify the consuming runtime before relying on that profile.
+`NutmegNotify` owns a notification stack: presentation, level defaults, close/pin controls and timed dismissal. Trigger it through `nutmeg`, `jam.notify()` or `NutmegNotify.appendNotify()`; pass JAML as content when the notification needs another native purpose, such as a metric or an action. The current development runtime uses the `tooltip` stylize profile; earlier builds use `modal`. Check the target runtime before relying on that profile.
 
 ## Choose the notification content
 
@@ -75,7 +75,7 @@ For a reversible archive, compose a native Undo button as [interactive notificat
 | Restore succeeds    | Reconcile the document's restored collection/position and retire only the matching operation's notice. A late callback must not remove newer feedback using the same ID. |
 | Eligibility expires | Make Undo visibly unavailable and reject further activation. Retire the recovery action independently of notification hover, pinning or native duration.                 |
 
-Use an explicit operation state rather than a permanent “used” flag set on the first click: duplicates while pending are blocked, while a failed restore remains retryable. Keep recovery feedback available while Undo is pending or retryable; if the consuming runtime supports click dismissal, leave it disabled for this action. Native `duration` and same-ID refresh are presentation timing, not backend deadlines; they cannot extend restoration eligibility.
+Use an explicit operation state rather than a permanent “used” flag set on the first click: duplicates while pending are blocked, while a failed restore remains retryable. Set `click2Hide: false` when clicking Undo must retain feedback through failure. Native `duration` and same-ID refresh are presentation timing, not backend deadlines; they cannot extend restoration eligibility.
 
 The operation owner must outlive a dismissed notice or hand its pending request to another application owner. Keep completion/recovery reachable when feedback is dismissed, replaced or its view is disposed. See [asynchronous operation ownership](../JAML/purpose-and-composition.md#own-asynchronous-operations) for cancellation and stale view updates.
 
@@ -188,6 +188,7 @@ Read-only. Current number of active notifications.
 | `notify.content`    | `any`                | —                 | Body content (slot).                                                                 |
 | `notify.pin`        | `boolean`            | `false`           | When `true`, notification stays pinned and does not auto-dismiss.                    |
 | `notify.closable`   | `boolean`            | `true`            | Show a close button.                                                                 |
+| `notify.click2Hide` | `boolean`            | `false`           | Start dismissal after a content click; see Click dismissal below.                    |
 | `notify.pinnable`   | `boolean`            | `false`           | Show a pin/unpin toggle button.                                                      |
 | `notify.linkTo`     | `HTMLElement`        | —                 | When set, clicking the notification locates the linked element.                      |
 | `notify.isCustom`   | `boolean`            | `false`           | Skip automatic level icon/card title/decorations; level color remains.               |
@@ -199,20 +200,37 @@ Read-only. Current number of active notifications.
 
 ## `NotifyOption` fields
 
-| Field      | Type                 | Default           | Description                                                                                   |
-| ---------- | -------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
-| `content`  | `any`                | —                 | Body text, supplied Text/Element, or JAML through `jam.notify()` / `nutmeg.*`.                |
-| `cap`      | `string`             | Level default     | Title / header text (shown in card type).                                                     |
-| `icon`     | `string`             | Level default     | Icon (emoji or text).                                                                         |
-| `level`    | `NotifyLevel`        | `'info'`          | Severity level: `'debug'`, `'info'`, `'success'`, `'warn'`, `'error'`, `'hurray'`.            |
-| `type`     | `'banner' \| 'card'` | `defaultType`     | Display style. `'banner'` is compact, `'card'` shows icon+cap+content with background layers. |
-| `duration` | `number`             | `defaultDuration` | Auto-dismiss delay in ms.                                                                     |
-| `id`       | `string`             | —                 | Unique ID. Repeated calls with the same ID update the existing notification.                  |
-| `styles`   | `StyleOption[]`      | —                 | Additional styles applied to this notification.                                               |
-| `shake`    | `boolean`            | `true`            | Shake the notification if it already exists (when `id` matches).                              |
-| `linkTo`   | `HTMLElement`        | —                 | Element to link the notification to. Requires the target element to have an `id`.             |
-| `closable` | `boolean`            | `true`            | Show close button.                                                                            |
-| `pinnable` | `boolean`            | `false`           | Show pin button.                                                                              |
+| Field        | Type                 | Default           | Description                                                                                   |
+| ------------ | -------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
+| `content`    | `any`                | —                 | Body text, supplied Text/Element, or JAML through `jam.notify()` / `nutmeg.*`.                |
+| `cap`        | `string`             | Level default     | Title / header text (shown in card type).                                                     |
+| `icon`       | `string`             | Level default     | Icon (emoji or text).                                                                         |
+| `level`      | `NotifyLevel`        | `'info'`          | Severity level: `'debug'`, `'info'`, `'success'`, `'warn'`, `'error'`, `'hurray'`.            |
+| `type`       | `'banner' \| 'card'` | `defaultType`     | Display style. `'banner'` is compact, `'card'` shows icon+cap+content with background layers. |
+| `duration`   | `number`             | `defaultDuration` | Auto-dismiss delay in ms.                                                                     |
+| `id`         | `string`             | —                 | Unique ID. Repeated calls with the same ID update the existing notification.                  |
+| `styles`     | `StyleOption[]`      | —                 | Additional styles applied to this notification.                                               |
+| `shake`      | `boolean`            | `true`            | Shake the notification if it already exists (when `id` matches).                              |
+| `linkTo`     | `HTMLElement`        | —                 | Element to link the notification to. Requires the target element to have an `id`.             |
+| `closable`   | `boolean`            | `true`            | Show close button.                                                                            |
+| `click2Hide` | `boolean`            | `false`           | Opt into content-click dismissal, independent of hover-paused expiry.                         |
+| `pinnable`   | `boolean`            | `false`           | Show pin button.                                                                              |
+
+---
+
+## Click dismissal
+
+In the updated development runtime, pass `click2Hide: true` to `jam.notify(content, options)` to dismiss after clicking ordinary content or an action inside it. It defaults to false. Dismissal starts after synchronous click handlers finish, bypasses hover-paused expiry and uses the normal exit animation; it does not wait for an action's promise or invoke the action again. Exiting content becomes inert.
+
+Native close and pin buttons keep their own behavior. A content click also dismisses a pinned notification. Disabled, read-only, inert and ARIA-disabled click paths do not dismiss. Calling `event.preventDefault()` cancels dismissal; stopping propagation alone does not. Eligibility is captured before the handler runs, so an enabled action that disables itself while awaiting work still dismisses.
+
+A same-ID refresh or content replacement during the action invalidates the older queued dismissal. Reusing an ID keeps omitted options, so explicitly pass `click2Hide: false` to turn it off. Refreshing a connected notice waiting for expiry removal revives it. Equal-content deduplication does not combine notifications with different `click2Hide` settings. Application actions still own expiry, authorization, asynchronous failures and stale-result handling; do not let an older async callback remove a newer same-ID notice.
+
+Integration fragment (the application supplies its existing content and action handlers):
+
+```js
+jam.notify(content, { id: 'operation-result', closable: true, click2Hide: true });
+```
 
 ---
 

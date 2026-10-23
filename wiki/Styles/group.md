@@ -168,7 +168,7 @@ Positional order: `padding` → `direction` → `length` → `width` → `color`
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
 | `padding` | `numberOrString` | Not supplied | Padding<br>Unit: `rem` |
-| `direction` | `string` | `horizontal` | Direction<br>Shorthand<br>Options: `horizontal`, `vertical` |
+| `direction` | `string` | `horizontal` | Direction<br>Shorthand<br>Options: `horizontal`, `vertical`, `both` |
 | `length` | `numberOrString` | Not supplied | Size |
 | `width` | `numberOrString` | Not supplied | Width |
 | `color` | `string` | Not supplied | Color |

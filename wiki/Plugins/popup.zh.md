@@ -20,12 +20,13 @@
 
 仅处理直属子项，不监听仅类名发生的变化。不提供异步内容协议或标题遮罩。重叠目标类应使用单一插件所有者。其他选项转发给 PapayaPopup；应用身份、权限和操作逻辑留在 getcontent。
 
-位置参数顺序: `target` → `getcontent` → `click2Hide` → `clickElsewhere2Hide`.
+位置参数顺序: `target` → `getcontent` → `triggerStyles` → `click2Hide` → `clickElsewhere2Hide`.
 
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
 | `target` | `string` | 标识适用直属子项的单个类名。 |
 | `getcontent` | `function` | 每次打开时接收当前子项并返回弹窗内容的同步回调。 |
+| `triggerStyles` | `array` |  |
 | `click2Hide` | `boolean` | 转发原生点击关闭选项；省略时保留下拉弹窗默认 false 及现有回调顺序。 |
 | `clickElsewhere2Hide` | `boolean` | 转发原生外部点击关闭选项；省略时保留 true。 |
 

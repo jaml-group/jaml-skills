@@ -7,6 +7,7 @@
 - [follow-scroll](follow-scroll.zh.md)
 - [i18n](i18n.zh.md)
 - [interact-plugins](interact-plugins.zh.md)
+- [navigation](navigation.zh.md)
 - [observe](observe.zh.md)
 - [popup](popup.zh.md)
 - [router-plugins](router-plugins.zh.md)

@@ -168,7 +168,7 @@ export default [
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
 | `padding` | `numberOrString` | 未提供 | 内边距<br>Unit: `rem` |
-| `direction` | `string` | `horizontal` | 方向<br>支持简写<br>选项: `horizontal`, `vertical` |
+| `direction` | `string` | `horizontal` | 方向<br>支持简写<br>选项: `horizontal`, `vertical`, `both` |
 | `length` | `numberOrString` | 未提供 | 大小 |
 | `width` | `numberOrString` | 未提供 | 宽度 |
 | `color` | `string` | 未提供 | 颜色 |

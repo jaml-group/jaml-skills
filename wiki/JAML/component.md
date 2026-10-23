@@ -24,6 +24,8 @@ Three globals are registered at startup:
 | `jame` | `jame(option)`                       | `HTMLElement`            | Build a static element — no reactivity, no messaging |
 | `jamd` | `jamd(container, markdown, option?)` | `Model`                  | Render a Markdown document                           |
 
+For retained auxiliary panels and file previews, see [`jaml.drawer` and `jaml.previewer`](drawer-and-previewer.md). Both return definitions; mounting and lifetime remain with their owning component or modal.
+
 ### Core `jaml.*` API
 
 | Method                             | Description                                                                | See                                                                 |

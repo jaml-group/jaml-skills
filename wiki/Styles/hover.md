@@ -445,3 +445,21 @@ export default [
     }
 ];
 ```
+
+## `hover.show`
+
+<a id="entry-hover-show"></a>
+
+Reveal descendant controls on hover or focus
+
+Reveals matching descendants on host hover or focus-within. Coarse pointers and devices without hover keep them visible; reduced motion disables the fade.
+
+Hidden targets normally retain layout space. Collapsed targets cannot receive keyboard focus until revealed; keep an accessible focus target outside the collapsed area. This is a visual affordance, not an authorization boundary.
+
+Positional order: `selector` → `duration` → `collapse`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `selector` | `string` | Not supplied | Descendant selector; excludes parent references, :scope and leading sibling combinators |
+| `duration` | `number` | `120` | Opacity transition duration in milliseconds |
+| `collapse` | `boolean` | `false` | Remove hidden targets from layout on fine hover-capable pointers |

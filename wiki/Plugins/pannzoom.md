@@ -67,13 +67,16 @@ type PanZoomEvent = {
 
 ### Change event
 
-When panning or zooming changes the transform, a `pannzoom` custom event fires on the target element after a 200ms debounce:
+When panning or zooming changes the transform, a local `pannzoom` framework notification fires on the target element after a 200ms debounce. Subscribe through the framework helper, including when the target is an ordinary element:
 
 ```ts
-el.addEventListener('pannzoom', (e: CustomEvent) => {
+const onPanZoom = (e: CustomEvent) => {
     const { scale, position } = e.detail;
     // scale: current scale, position: { x, y } offset
-});
+};
+jam.bindEvent(el, 'pannzoom', onPanZoom);
+// On owner cleanup:
+jam.unbindEvent(el, 'pannzoom', onPanZoom);
 ```
 
 ---

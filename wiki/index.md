@@ -8,6 +8,8 @@ For new UI or reusable modules, start with [Think in JAML: purpose and compositi
 
 For setup, Wiki linking, builds, a first runnable example or a page that fails to load, start with [Run and test JAML](running-and-testing.md).
 
+For upgrading existing applications, read the [2.0 migration notes](migration-2.0.md). For retained inspectors and file viewing, see [drawers and previewers](JAML/drawer-and-previewer.md).
+
 ## What the layers do
 
 | Concept                 | What it owns                                                       | Read when                                                                                                                                               |

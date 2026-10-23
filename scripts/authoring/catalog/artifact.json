@@ -1,18 +1,18 @@
 {
     "formatVersion": 1,
     "sourcePackage": "@jam/jam-ui",
-    "sourceDigest": "sha256:1032:c2c4bc7b19f4654b343b34d90382a6eeb8efe1d67feae8afca39c0c345c631f2",
+    "sourceDigest": "sha256:1057:c72406577dc1da5c183e11bbda09d31cced402c225c2e3da52d08876b677eec2",
     "compilerDigest": "48221ea5eee0bf3343fbfa0eec84c3d1b04e699cd2dc5c1317259728c7a32c41",
-    "frameworkVersion": "1.6.0",
+    "frameworkVersion": "2.0.0-beta.1",
     "declaredLicense": "MIT",
-    "catalogDigest": "964dba5badb38c38bd5b6713bf896ba7d24809f5444f8762b4764c62acd16c14",
-    "schemaDigest": "cf9eb991928ea923b4eaf3e13b343f11d6cd9b5b93c17d766642279dc7c2407c",
+    "catalogDigest": "3bb7f8e2a986f0d1d6c584e507effeb116535bde0ddd7a05b38995779b1e0577",
+    "schemaDigest": "ca63f2845ee0b76e218878881a2ff9cb064a170cde9665b3aa0e793c89b9dfc4",
     "files": {
-        "catalog.json": "1e668fa163f7591573a8c6b69b732fad1263f1648f8027f15c2a926a43afc777",
+        "catalog.json": "7136ad2e889ccaf2e9b5c06180c3fdbb3a4b64970dd5ae073e7737a56ec4a7be",
         "authoringView.mjs": "9e99229c951c231c8a7bd42e32389389aaf6a6a70fb6d4b737d5fed9491e099b",
         "authoringCatalog.mjs": "5ddd7b6a721df3449e5acfc594910e348e881df125e4e2b8eac355d4984587d4",
         "catalogSchema.mjs": "a8d6a614a07aed0000f318bcb1c791d403b41968d4ffae1fafe78b8d3d8ac4c9",
-        "generated/sharedI18n.mjs": "7a423f233c9c995328b6821b5e955cb54b3b4489a106a53fc6bc0869108bbf3e",
+        "generated/sharedI18n.mjs": "8c4efbe5395a61fb0440c76f97a0a52c083acd0a405ee60f4b966ccb99f098e4",
         "LICENSE": "e25e7835e4e3cfe1f8ecdfe7da1c7156970af3bf9234ac8ec2e9a42ee8f0f92f"
     }
 }

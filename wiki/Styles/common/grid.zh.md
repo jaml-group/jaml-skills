@@ -89,6 +89,28 @@ export default [
 ];
 ```
 
+## `grid.resizable`
+
+<a id="entry-grid-resizable"></a>
+
+调整显式网格轨道大小
+
+相邻轨道交换尺寸并保持二者总量；首次非零拖动将受影响轴转换为比例轨道。
+
+需要受支持的显式网格轨道和布局、水平书写及从左到右方向；行调整需要限定高度。
+
+共享宿主网格控制器；取消操作恢复手势前的模板，清理时保留后续外部尺寸修改。
+
+响应式自动重复、隐式或不明确轨道以及虚拟化子布局不支持交互调整；元素尺寸调整请使用 interact.resizable。
+
+位置参数顺序: `columns` → `rows` → `minSize`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `columns` | `boolean` | `true` | 启用列边界调整 |
+| `rows` | `boolean` | `false` | 启用行边界调整 |
+| `minSize` | `numberOrString` | `1rem` | 轨道最小尺寸；数值使用 rem<br>Unit: `rem` |
+
 ## `grid.virtualScroll`
 
 <a id="entry-grid-virtualscroll"></a>
