@@ -59,23 +59,23 @@ Destroy an owned view with `model.destroy()` when it is replaced or canceled; sy
 
 ### Standalone application root
 
-For a standalone full-page Jam application, render one framework-created application root directly into `document.body`. Define it as `type: 'container', stylize: 'app'`. Where the target runtime supports `jaml.application(...)`, that builder already creates the application root; mount its result directly rather than wrapping it in another `app`.
+For a standalone full-page Jam application, render `jaml.application({ viewport: true, ... })` directly into `document.body`. The builder creates the `app` root and owns its layout; mount its result directly rather than wrapping it in another `app`.
 
 ```javascript
-const model = jaml(document.body, {
-    type: 'container',
-    stylize: 'app',
-    vars: { title: 'Hello' },
-    components: [
+const model = jaml(
+    document.body,
+    jaml.application(
         {
-            type: 'container',
-            stylize: 'main',
-            components: [{ type: 'label', cap: '{{title}}' }]
-        }
-    ]
-});
+            viewport: true,
+            main: { components: [{ type: 'label', cap: '{{title}}' }] }
+        },
+        { vars: { title: 'Hello' } }
+    )
+);
 model.vars.title = 'Updated'; // reactive — updates all bound {{title}} elements
 ```
+
+The `app` role alone supplies presentation, not full-page geometry. A custom shell that does not use the application builder must own its display and dimensions explicitly. `size.fullsize` supplies parent-relative width and height, but requires a sized host and an appropriate display mode; it does not establish viewport ownership. Embedded application builders normally leave `viewport: false` and use the host's dimensions.
 
 `jam.render(document.body, view)` follows the same mounting contract. Avoid gratuitous static `<main id="app">` or `<div id="app">` wrappers around a standalone app: theme recipes may target `body > .jam-app-style`, and an extra host breaks that boundary. `main` describes the primary semantic content inside the app; Electron does not require a static `<main>` mounting element. A splash or other intentionally separate body sibling does not require a wrapper around the app.
 
@@ -907,7 +907,7 @@ Use [`jaml.yesNoDialog(prompt, onYes?, onNo?, styles?, options?)`](../utils.md#j
 
 ### Theme panel composition and readiness
 
-`jaml.themePanel(options)` returns a complete editable JAML panel definition. Call it after theme readiness, then customize its styles or components before building. The returned definition builds inline by default. For a deferred popup panel, explicitly set `build: false`. For a standard palette button with its own deferred panel, use the `themebutton` CC. The downstream name `themepanel` is an alias of this same opening button; it does not return the editable panel. Use `jaml.themePanel()` when you need the panel definition.
+`jaml.themePanel(options)` returns a complete editable JAML panel definition. Call it after theme readiness, then customize its styles or components before building. The returned definition builds inline at the full available parent width by default, with border-box sizing. The parent owns the available width. For a standard palette button with its own deferred panel, use the `themebutton` CC. The downstream name `themepanel` is an alias of this same opening button; it does not return the editable panel. Use `jaml.themePanel()` when you need the panel definition.
 
 Build the composition after the application's normal framework startup and theme readiness. For this composition, await `jam.themeReady` using the [runtime readiness contract](../utils.md#jamthemeready). The updated development entry exposes that promise synchronously and starts initialization at `DOMContentLoaded` for loading documents or in a microtask for an already-ready document. Older bundles assign it later; awaiting an undefined promise before startup does not wait for the theme. An embedded application uses its host's initialization contract. This is a theme-panel prerequisite, not a rule that every CC factory requires a DOM or a theme.
 
@@ -928,23 +928,14 @@ On development runtimes with popup-based theme confirmation, omitting `confirmat
 
 For a packaged runtime, confirm its artifact identity and registration (for example `typeof jaml.themePanel === 'function'`), then exercise the needed opening, mode and preference behavior. A version label or absence of a readable symbol in a minified bundle alone does not establish support. Missing registration or readiness is a precise integration gap; do not fabricate a replacement API.
 
-Use `{ type: 'themebutton' }` for the standard opening button. Its optional factory argument accepts the same `icons`, `iconStyles`, and `confirmation` panel options. Each button owns its panel.
+Use `{ type: 'themebutton' }` for the standard opening button. Its optional factory argument accepts the same `icons`, `iconStyles`, and `confirmation` panel options. Each button owns its deferred panel and the compact popup width (`20rem`, constrained to the viewport).
 
-A custom header button can open the existing panel model using its native reference. Keep both components in the same owning model and create them after theme readiness:
+Use the same CC in headers and editor toolbars so popup sizing and opening behavior have one owner:
 
 ```javascript jaml-playground
 export default {
     type: 'container',
-    components: [
-        {
-            type: 'button',
-            cap: 'Appearance',
-            onclick() {
-                jam.popup(this, this.ref('theme-config'));
-            }
-        },
-        { ...jaml.themePanel(), build: false }
-    ]
+    components: [{ type: 'themebutton', cap: 'Appearance' }]
 };
 ```
 
