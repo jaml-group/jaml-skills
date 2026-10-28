@@ -46,6 +46,71 @@ For a settings/workspace refactor, assign each declaration before moving it: hea
 
 A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds. Token substitution alone does not meet that criterion.
 
+### Choose inline CSS, local rules or shared CC styles
+
+Reuse native styles and theme recipes first. For the remaining CSS, choose by selector needs and actual reuse; being a CC does not require global registration.
+
+| Need                                                                            | Choice                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A few declarations on this element                                              | `css(...)` in `styles`; its normal AutoStyle path writes inline CSS when no state, selector or part target requires a rule.                                                                                                                         |
+| A one-off hover/focus state, pseudo-element, native part or descendant selector | Use the normal rule-producing route: `hover(...)`, `focus(...)`, `css(method:rule;...)`, `Styles.css({ selector: ... })` or a scoped target style. These select RulePlugin without constructing it directly.                                        |
+| The same presentation across repeated CC instances                              | Use a stable `Styles.clazz({ clazz, descStyles })` recipe. Its CSS registers once for that class and each instance attaches the class. [CC Definition variants](../JAML/component.md#cc-definitions) already use this route for their `descStyles`. |
+
+Simple local adjustment:
+
+```javascript jaml-playground
+export default {
+    type: 'button',
+    cap: 'Open details',
+    styles: ['css(letterSpacing:0.025em)']
+};
+```
+
+A one-off state treatment needs rules, but no shared class registration. Keep the base opacity in a rule too so it does not override the state rules with inline CSS:
+
+```javascript jaml-playground
+export default {
+    type: 'button',
+    cap: 'Preview',
+    styles: ['css(method:rule;opacity:0.7)', 'hover(opacity:1)', 'focus(opacity:1)']
+};
+```
+
+This repeated review summary keeps its business values in instance props and shares one presentation recipe:
+
+```javascript jaml-playground
+const reviewPresentation = Styles.clazz({
+    clazz: 'review-summary',
+    descStyles: {
+        indicator: ['css(fontVariantNumeric:tabular-nums)'],
+        ':scope:hover indicator': ['css(opacity:0.85)']
+    }
+});
+
+jaml.register('reviewSummary', {
+    type: 'wrapper-vertical',
+    cap: 'Reviews',
+    props: { pending: 0, completed: 0 },
+    styles: [reviewPresentation],
+    components: [
+        { type: 'indicator-number', cap: 'Pending', value: '{{pending}}' },
+        { type: 'indicator-number', cap: 'Completed', value: '{{completed}}' }
+    ]
+});
+
+export default {
+    type: 'wrapper',
+    components: [
+        { type: 'reviewSummary', props: { pending: 3, completed: 12 } },
+        { type: 'reviewSummary', props: { pending: 8, completed: 27 } }
+    ]
+};
+```
+
+For `clazz` with `descStyles`, the first registration for that class selector wins. Keep the recipe stable; put per-instance/resource values in bindings, instance properties or CSS variables consumed by the shared rules. Changing the recipe under the same class per instance does not create an independent style. Class removal does not unregister the shared recipe; [clazz](./common/clazz.md) owns that lifetime distinction.
+
+Local scoped rules follow their style application and the [specific stylesheet owner](#specific-stylesheet-owner-jam-sss-root). Shared class recipes have a separate registration lifetime. Choose between them for scope and reuse, without assuming one is universally faster. Use [stylesheets](#stylesstylesheet--inject-css-rules) when conditional blocks or keyframes require them.
+
 ## Compose style paths by target and operation
 
 Resolve the native part and the operation together. Supported target namespaces expose common operations; their family contracts determine which combinations exist. A full literal such as `icon.attrs(aria-hidden:true)` need not appear as a separate recipe to be valid. Read the target contract and the operation's arguments, then validate the resolved path; arbitrary concatenation is not a capability guarantee.
@@ -103,6 +168,41 @@ Every JAM-UI element and JAML component accepts a `styles` array. Each entry is 
     "styles": ["hover.brighter", "animation.entry.frombottom(delay:100;duration:300)"]
 }
 ```
+
+---
+
+## Specific stylesheet owner: `jam-sss-root`
+
+Place `attrs: { 'jam-sss-root': '' }` on the element that should own scoped CSS rules for itself and its descendants. It is a presence-only marker: its value is ignored. It is not a `root` argument on individual styles or a reference to a different element.
+
+The nearest element matching `[jaml-model], [jam-sss-root]` owns the stylesheet. The lookup includes the styled element itself. If neither marker is found, the styled element owns its own stylesheet. JAML models already carry `jaml-model`; native tables receive `jam-sss-root` by default. A nearer model boundary wins over a farther stylesheet marker, just as a nearer stylesheet marker wins over a farther model boundary.
+
+Set the owner marker before descendant styles apply:
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        {
+            type: 'container',
+            attrs: { 'jam-sss-root': '' },
+            components: [
+                {
+                    type: 'button',
+                    cap: 'Hover me',
+                    styles: ['css(method:rule;opacity:0.7)', 'hover(opacity:1)']
+                }
+            ]
+        }
+    ]
+};
+```
+
+This changes where scoped rules are stored, not which element their selectors target. It does not relocate inline styles or styles injected by the separate `stylesheet` plugin. Native elements wait for connection before choosing the stylesheet owner. For plain HTML JAML elements, `styles` effects apply after the subtree is inserted; direct inline `style` assignments and options-only styles remain immediate. Ancestor lookup does not cross shadow-root boundaries.
+
+In the current development runtime, an active rule application restores its owner's rules after stylesheet replacement when the styled element receives the framework `mount` event. It preserves rule order and updates the live rule used for cleanup. Unplug removes that application's live rule and mount listener, including when detached, without removing sibling rules or the owner marker. Raw DOM moves that do not produce a mount notification do not trigger automatic recovery. Verify target runtime support before relying on this behavior.
+
+Rules retain their original owner when markers or DOM parents change; recovery does not retarget them to a new ancestor. Establish ownership before applying styles. For moving content, prefer an owner whose lifetime fits the content and is not hidden by a nearer model boundary.
 
 ---
 
@@ -412,7 +512,7 @@ export default {
 };
 ```
 
-> **Performance tip:** `childStyles`, `descStyles`, and `[name]Styles` use CSS rules injected into a scoped stylesheet — they're more performant than inline `css()` on each element. Prefer these for bulk child styling, especially with animation delays (`seq()`).
+Use these parameters to express a relationship owned by the parent. CSS declarations can become scoped rules; behavior plugins still retain their own application semantics. For repeated CC presentation, follow [the style-selection decision](#choose-inline-css-local-rules-or-shared-cc-styles); selector scope alone does not establish a performance advantage.
 
 ---
 

@@ -51,6 +51,20 @@ Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/in
 
 For drop filtering, read `interact.droppable` in the [drag/drop guide](Plugins/interact-plugins.md): its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin, not a reason to search unrelated families.
 
+## Fold regions or reveal a side panel
+
+| Need                                                                | Native owner                                          | Contract to read                                                                                                                                  |
+| ------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Several independently foldable/resizable grid regions               | Parent `layout.accordion` + child `interact.foldable` | [Explicit-template parent](Styles/common/layout.md#entry-layout-accordion), [region API and lifetime](Styles/interact.md#entry-interact-foldable) |
+| One panel expands into its adjacent sibling                         | `interact.expandable`                                 | [Paired interaction and accordion adapter](Styles/interact.md#entry-interact-expandable)                                                          |
+| One retained edge panel, docked or overlaid according to host width | `jaml.drawer`                                         | [Drawer modes, sizing and lifetime](JAML/drawer-and-previewer.md#retained-drawers)                                                                |
+
+Choose the layout owner first. Accordion requires explicit parent grid templates and one managed track per region (including a valid subgrid path); it retains each expanded preference and exposes `element.foldable.fold()`, `unfold()` and `toggle()` for external controls. Use an ordinary `fr` remainder for content that should absorb released space. The foldable owns min/max, threshold and state. Inside accordion, expandable only adapts the neighboring foldable operation: its legacy `default`, `saveState` and `resizeThreshold` do not govern the track.
+
+Keep a persistent interactive rail in a separate track or sibling outside the folded navigation host. A nonzero `foldSize` preserves a visible strip, but the entire folded host is still inert and hidden from accessibility; putting the reopen button inside it makes that button unusable. The [accordion example](Styles/common/layout.md#entry-layout-accordion) keeps both external buttons usable while navigation and inspector fold independently.
+
+Drawer serves one host-relative retained panel and selects docked/overlay modes; it is not the owner for several independent grid folds. Its ordinary overlay is non-blocking. Do not substitute nested drawers merely to obtain multiple independent accordion tracks. Native grid gaps, minima and hard maxima remain authored layout constraints; neither choice implies storage persistence or a breakpoint policy beyond its declared contract.
+
 ## Container layout and child placement
 
 | Decision                                      | Inspect these styles                |

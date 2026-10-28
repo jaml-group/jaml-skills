@@ -10,6 +10,93 @@
 
 ## Variants
 
+### `interact.foldable`
+
+<a id="entry-interact-foldable"></a>
+
+独立折叠区域
+
+将单个区域注册到祖先 layout.accordion，并通过 foldable 句柄控制。
+
+宿主 HTMLElement 暴露 element.foldable.fold()、unfold()、toggle()，均返回是否接受请求的布尔值，以及只读 folded 和 size。size 为当前逻辑轨道尺寸，单位是 CSS 像素，而非动画表面矩形。不冒泡的 foldchange 事件携带 detail:{folded}；不冒泡的 foldresize 事件携带 detail:{size,folded}。重复 fold/unfold 请求被接受，但不会再次触发 foldchange。外部按钮可调用同一句柄。
+
+显式模板网格所有者必须安装 layout.accordion。区域在 axis 上必须恰好占据一个轨道；subgrid 后代可通过明确放置映射至单个祖先轨道。foldSize、minSize、maxSize、resizeThreshold 使用非负 CSS 长度，且 maxSize 不小于 minSize。所有者缺失或无效时，fold/unfold 返回 false。 设置分数轨道上限的轴支持明确长度/百分比、fr 和 minmax(length,fr) 轨道，不支持 intrinsic 或计算式轨道。作者最小值大于 maxSize 时最小值优先，应避免此冲突。 saveState:true 要求此子区域具有稳定 id，仅父元素 id 不够。
+
+折叠期间子内容和状态保持挂载。所有折叠宿主均 inert 且 aria-hidden，包含 foldSize 非零的可见条带；零尺寸折叠还会隐藏视觉呈现。展开会恢复自身临时样式以及作者的 overflow/最小尺寸。移除父样式会重置当前会话。saveState:true 且子区域具有稳定 id 时，新 Foldable 实例（包括重新加载后）从 localStorage 恢复已提交的展开首选尺寸；展开/折叠意图仍由作者控制。取消拖动、临时几何和模式切换不会覆盖保存值。无效数据或存储不可用时使用作者尺寸。共享同一祖先轨道的 subgrid 区域共享折叠状态和尺寸。
+
+在父网格模板中声明展开首选值，在区域上配置 minSize/maxSize 和 resizeThreshold。弹性首选值在达到上限前仍保持比例。阈值拖动期间可越过作者模板和插件的展开最小值；释放时低于 resizeThreshold 则折叠并保留拖动前首选值，否则恢复展开限制。Escape 取消拖动。外部导航栏控制应放在该宿主旁边，而非其中。完整父子示例见 layout.accordion。
+
+edge 选择缩放手柄边，而非动画原点。内部区域使用居中 squeeze 入场/离场，边缘区域使用对应边，邻接区域使用布局 FLIP。尚未实现可选悬停激活。resizable:false 移除拖动手柄，resizable:{hide:true} 仅隐藏指示器。折叠控件无法重新展开其自身 inert 宿主，必须提供外部控制。
+
+位置参数顺序: `axis` → `edge` → `foldSize` → `minSize` → `maxSize` → `resizeThreshold` → `folded` → `saveState` → `resizable`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `axis` | `string` | `columns` | 受管理的轨道轴。<br>选项: `columns`, `rows` |
+| `edge` | `string` | 未提供 | 缩放手柄边；内部区域通常使用后侧边界，最后区域使用前侧边界。<br>选项: `left`, `right`, `top`, `bottom` |
+| `foldSize` | `string` | `0rem` | 折叠轨道尺寸；非零可见条带仍为 inert。 |
+| `minSize` | `string` | `0rem` | 展开最小尺寸，与作者 minmax 最小值共同生效。 |
+| `maxSize` | `string` | 未提供 | 展开尺寸上限，不是首选尺寸；达到上限前弹性区域保持比例。 |
+| `resizeThreshold` | `string` | `0rem` | 拖动释放时低于该尺寸则折叠；零表示禁用阈值折叠。 |
+| `folded` | `boolean` | `false` | 首次注册区域时的初始折叠状态。 |
+| `saveState` | `boolean` | `false` | 按稳定子区域 id 和轴持久化已提交的展开首选尺寸，重载后恢复；不保存折叠状态。默认 false。 |
+| `resizable` | `dictionaryOrBoolean` | `true` | 启用缩放；false 禁用手柄，{hide:true} 仅隐藏指示器。 |
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        { type: 'label', cap: 'The rail stays interactive while navigation and inspector fold independently.' },
+        {
+            type: 'container',
+            id: 'folding-example',
+            styles: [Styles.layout.accordion({ cols: '4rem 12rem minmax(12rem,1fr) 10rem', rows: 'minmax(0,1fr)' }), 'css(height:14rem;width:100%;gap:0.5rem)'],
+            components: [
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:1;display:flex;flex-direction:column;gap:0.5rem;background:ac4)'],
+                    components: [
+                        {
+                            type: 'button',
+                            cap: 'Nav',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-navigation').foldable.toggle();
+                            }
+                        },
+                        {
+                            type: 'button',
+                            cap: 'Info',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-inspector').foldable.toggle();
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-navigation',
+                    cap: 'Navigation',
+                    styles: ['css(grid-column:2;min-width:0;overflow:auto;background:ac1)', Styles.interact.foldable({ foldSize: '2rem', minSize: '6rem', maxSize: '20rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Filter', value: 'Retained navigation value', styles: ['label.atTop', 'size.fullwidth'] }]
+                },
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:3;min-width:0;overflow:auto;background:ac5)'],
+                    components: [{ type: 'label', cap: 'Main content receives the remaining space. The visible folded strip is inert; use the rail to reopen it.' }]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-inspector',
+                    cap: 'Inspector',
+                    styles: ['css(grid-column:4;min-width:0;overflow:auto;background:ac3)', Styles.interact.foldable({ minSize: '6rem', maxSize: '16rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Notes', value: 'Retained inspector value', styles: ['label.atTop', 'size.fullwidth'] }]
+                }
+            ]
+        }
+    ]
+};
+```
+
 ### `interact.movable`
 
 <a id="entry-interact-movable"></a>
@@ -118,13 +205,13 @@ export default [
 
 将一个面板扩展到相邻兄弟元素的空间中。
 
-根据 direction 选择前一个或后一个兄弟元素，添加可选的切换按钮和尺寸调整边缘，并可按宿主 id 保存展开状态和尺寸。
+根据 direction 选择前一个或后一个兄弟元素，并添加可选切换按钮和尺寸调整边缘。在 accordion 外，saveState:true 通过 localStorage 持久化：flex 必须为应用样式的元素本身设置 id；旧式 grid 优先使用父级 id，否则使用元素 id，并结合轴区分状态。仅父级有 id 可以通过前置检查，但不会启用 flex 持久化。
 
-需要相邻兄弟元素和可测量的父元素；saveState 需要 id。
+需要相邻兄弟元素和可测量父容器。传入 saveState:true 始终需要稳定的元素或父级 id，即使在跳过存储处理的 accordion 内也如此；在该模式下应省略无关旧式选项。在 accordion 外，持久化为可选功能。在 accordion 内，邻接轨道必须安装 interact.foldable。
 
 移除时释放尺寸调整、监听器和按钮，并移除展开相关类。
 
-这是成对面板的交互，不是任意浮层。resizable 对象会被视为启用调整大小，但此包装不会转发其中的自定义字段。
+在 accordion 外这是双面板交互，而非覆盖层。在 layout.accordion 内，邻接的 interact.foldable 拥有折叠状态、首选尺寸、最小/最大值和阈值行为；expandable 的旧式 default、saveState、resizeThreshold 被跳过。按钮调用邻接 foldable API，缩放使用共享网格所有者。在 foldable 上配置初始状态和限制，在父模板中配置展开首选值。
 
 位置参数顺序: `direction` → `resizeThreshold` → `default` → `button` → `saveState` → `resizable`.
 
@@ -137,17 +224,22 @@ export default [
 | `saveState` | `boolean` | `false` | 保存状态 |
 | `resizable` | `dictionaryOrBoolean` | `true` | 可调整大小 |
 
-Adds an expand/collapse toggle between this element and its adjacent sibling. Expands to 100% in the given direction, shrinking the sibling. Persists state in `localStorage` (by element `id`). Requires the element to have an `id`.
+Adds a toggle between this element and its adjacent sibling. Outside accordion, optional `saveState:true` enables `localStorage` persistence: flex requires the styled element’s own `id`; legacy grid uses the parent `id` (falling back to the element `id`) together with the axis. A parent-only `id` passes the initial prerequisite check but does not enable flex persistence. Inside accordion, configure the neighboring `interact.foldable` and the parent template; its legacy `default`, `saveState` and `resizeThreshold` options do not govern that track.
 
 ```javascript jaml-playground
-export default [
-    {
-        type: 'container',
-        id: 'sidebar',
-        styles: ['interact.expandable(direction:right;default:30%)'],
-        components: [{ type: 'label', cap: 'Expandable sidebar' }]
-    }
-];
+export default {
+    type: 'container',
+    styles: ['css(display:flex;width:100%;height:10rem)'],
+    components: [
+        { type: 'container', styles: ['css(width:30%;min-width:0;background:ac1)'], components: [{ type: 'label', cap: 'Paired sidebar' }] },
+        {
+            type: 'container',
+            id: 'paired-example-main',
+            styles: ['css(width:70%;min-width:0;background:ac5)', Styles.interact.expandable({ direction: 'left', default: '70%', resizable: true })],
+            components: [{ type: 'label', cap: 'Use the boundary toggle or resize handle. State is not persisted unless saveState is enabled with an id.' }]
+        }
+    ]
+};
 ```
 
 ### `interact.closable`
@@ -158,15 +250,16 @@ export default [
 
 为宿主添加关闭控件。
 
-创建关闭按钮，并将图标插槽的双击操作关联到该按钮；默认回调移除最近的可关闭宿主。
+创建带无障碍名称的关闭按钮，并将图标插槽双击连接到它；默认回调移除最近的可关闭宿主。
 
 关闭时需要更新应用状态或请求确认，应提供 callback。
 
-位置参数顺序: `callback`.
+位置参数顺序: `callback` → `label`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `callback` | `function` | 运行时决定 (function) | 回调 |
+| `callback` | `function` | 运行时决定 (function) | 回调<br>支持简写 |
+| `label` | `functionOrString` | 未提供 | 关闭按钮的无障碍名称：字符串或 (host) => string，默认使用本地化的关闭，语言切换时更新。 |
 
 Adds a close (&times;) button. Double-clicking the icon slot also triggers close.
 

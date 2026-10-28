@@ -212,6 +212,29 @@ A peer region absent from the selected layout can live beside one application la
 -   `nav`: navigation list, tabs, menu, breadcrumb, route picker, or table-of-contents-like structure. It can live in `header`, `sidebar`, `panel`, `main`, or a local `tile`.
 -   `main`: primary semantic document/work area. A normal application has one `main`.
 
+### Sidebar navigation composition
+
+`sidebar` is the whole persistent side region. A simple sidebar may contain `header`, `nav` and `footer` directly. When a compact navigation rail accompanies contextual navigation, compose:
+
+```text
+sidebar
+  nav-rail
+    destination controls
+    footer?                 supporting account or usage controls
+  section
+    header?
+    nav-tree
+    footer?
+```
+
+The `section` is a cohesive subdivision of the sidebar, not necessarily a separate auxiliary work surface. Themes can target `sidebar > section` for its visual treatment. `panel` remains appropriate when the content actually represents an auxiliary work surface; it is not required merely to obtain a theme selector.
+
+`nav` describes navigation purpose, not a mandatory button group or wrapper. It may be applied directly to a navigation tree or to a container that includes navigation-related heading and supporting controls. Child support follows the chosen component's contract. A tree's logical groups and depths do not require matching nested JAML containers: indentation and node presentation can express hierarchy within one tree component.
+
+`nav-rail` and `nav-tree` retain the `nav` role and select the `rail` and `tree` variants. They are presentation hooks, not new base roles or behaviors; they do not create a tree, navigation routing or selection. Theme-specific visual recipes may vary and these names alone do not guarantee a dedicated recipe in every theme. Use plain `nav` when no specialized presentation is needed. Layout owns sizing and scrolling; themes own surfaces, borders, elevation and compatible spacing.
+
+Use the [sidebar builder](../JAML/component.md#sidebar-builder-and-application-integration) for simple and composite forms. Header/footer roles here are local to their containing region; the single-primary-header/footer rule applies at application-shell scope.
+
 ## Surface Stylize Values
 
 These describe content and auxiliary surfaces:
@@ -229,7 +252,7 @@ When a portable card also occupies a dashboard-grid position, use `type: 'card'`
 
 These describe how content is organized within a surface:
 
--   `section`: cohesive content region inside a `tile`, `card`, or `panel`. It may represent the surface's whole body or one of several regions, and may be named or unnamed.
+-   `section`: cohesive content region inside a `tile`, `card`, `panel`, or `sidebar`. It may represent the surface's whole body or one of several regions, and may be named or unnamed.
 -   `group`: related, same-purpose content or controls. Its children may use different element types, and the group may be named or unnamed.
 
 `section` establishes a content boundary that themes can treat consistently. `group` owns local arrangement, alignment, wrapping, and `gap` within that content. Prefer a flat composition; nested sections, groups, or lists represent a corresponding content or data hierarchy.
@@ -381,31 +404,31 @@ Traits map to known class-backed element behavior and are declared as `-[trait]`
 
 Use this when deciding between nearby values:
 
-| Need                                                  | Use                                           |
-| ----------------------------------------------------- | --------------------------------------------- |
-| Whole application shell                               | `app`                                         |
-| Layout-owned shared header/work-area/footer boundary  | `frame` (verify runtime/layout support above) |
-| Primary document/work area                            | `main`                                        |
-| Navigation region                                     | `nav`                                         |
-| Auxiliary work surface for a distinct task or context | `panel`                                       |
-| Anchored transient surface                            | `type: "popup"`                               |
-| Compact tooltip/completion surface                    | `tooltip`                                     |
-| Blocking centered overlay                             | `modal`                                       |
-| Cohesive content region inside a tile, card, or panel | `section`                                     |
-| Related, same-purpose content or controls             | `group`                                       |
-| One data-editing workflow or model                    | `form`                                        |
-| One labelled compound logical value                   | `field`                                       |
-| Form/dialog button row                                | `actions`                                     |
-| Repeated peer collection                              | `list`                                        |
-| Collection peer or coordinate-positioned child        | `item`                                        |
-| Dashboard/bento grid unit                             | `tile`                                        |
-| App, section, panel, card, or tile title              | `title`                                       |
-| Compact badge/chip/status                             | matching badge, tag, or tags element type     |
-| Portable content object                               | `type: "card"`                                |
-| Rendered Markdown document root                       | `markdown` (assigned by `jamd` / `jaml.md()`) |
-| Rendered JSON tree root                               | `json` (assigned by `jaml.json()`)            |
+| Need                                                           | Use                                           |
+| -------------------------------------------------------------- | --------------------------------------------- |
+| Whole application shell                                        | `app`                                         |
+| Layout-owned shared header/work-area/footer boundary           | `frame` (verify runtime/layout support above) |
+| Primary document/work area                                     | `main`                                        |
+| Navigation region                                              | `nav`                                         |
+| Auxiliary work surface for a distinct task or context          | `panel`                                       |
+| Anchored transient surface                                     | `type: "popup"`                               |
+| Compact tooltip/completion surface                             | `tooltip`                                     |
+| Blocking centered overlay                                      | `modal`                                       |
+| Cohesive content region inside a tile, card, panel, or sidebar | `section`                                     |
+| Related, same-purpose content or controls                      | `group`                                       |
+| One data-editing workflow or model                             | `form`                                        |
+| One labelled compound logical value                            | `field`                                       |
+| Form/dialog button row                                         | `actions`                                     |
+| Repeated peer collection                                       | `list`                                        |
+| Collection peer or coordinate-positioned child                 | `item`                                        |
+| Dashboard/bento grid unit                                      | `tile`                                        |
+| App, section, panel, card, or tile title                       | `title`                                       |
+| Compact badge/chip/status                                      | matching badge, tag, or tags element type     |
+| Portable content object                                        | `type: "card"`                                |
+| Rendered Markdown document root                                | `markdown` (assigned by `jamd` / `jaml.md()`) |
+| Rendered JSON tree root                                        | `json` (assigned by `jaml.json()`)            |
 
-`main` owns the application's primary work area. `section` owns a cohesive content region within a tile, card, or panel.
+`main` owns the application's primary work area. `section` owns a cohesive content region within a tile, card, panel, or sidebar.
 
 ## Runtime Stylize, Variant, And Style Plugins
 

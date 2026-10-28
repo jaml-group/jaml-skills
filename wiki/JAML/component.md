@@ -28,22 +28,115 @@ For retained auxiliary panels and file previews, see [`jaml.drawer` and `jaml.pr
 
 ### Core `jaml.*` API
 
-| Method                             | Description                                                                | See                                                                 |
-| ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `jaml(container, option)`          | Render a reactive JAML UI                                                  | Below                                                               |
-| `jaml.<type>(...)`                 | Easy builder for any element type                                          | [Easy Builders](#easy-builders--jamltype)                           |
-| `jaml.json(data)`                  | Convert any JS object into a component tree                                | [`jaml.json()`](#jamljson--render-json-as-jaml)                     |
-| `jaml.md(content, option?)`        | Parse Markdown into a component option                                     | [`jaml.md()`](#jamlmd--markdown-as-component-option)                |
-| `jaml.register(name, option)`      | Register a custom component (CC)                                           | [Custom Components](#custom-components-cc)                          |
-| `jaml.register(definition)`        | Register a complete CC Definition and its variant styles                   | [CC Definitions](#cc-definitions)                                   |
-| `jaml.cc.*(...)`                   | Build conventional title, subtitle, and indicator nodes for CC Definitions | [CC builders](#cc-builders)                                         |
-| `jaml.registerUsage(name, option)` | Register a reusable action preset                                          | [`jaml.registerUsage()`](#jamlregisterusage--custom-usages)         |
-| `jaml.var(key, cb?)`               | JS-first reactive binder builder                                           | [Binder syntax](./binder.md#jamlvar-programmatic-binder)            |
-| `jaml.bunch(target, builder)`      | JS-first loop builder (equivalent of `buildFor`)                           | [`buildFor`](./jaml-format.md#buildfor)                             |
-| `jaml.res(fn)`                     | Mark a function as a lazy param resolver                                   | [Element params](./jaml-format.md#jamlres--lazy-param-resolver)     |
-| `jaml.pre(value)`                  | Preserve a value from binder evaluation                                    | [Binder syntax](./binder.md#jamlpre--preserve-a-value-from-binding) |
+| Method                                      | Description                                                                | See                                                                 |
+| ------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `jaml(container, option)`                   | Render a reactive JAML UI                                                  | Below                                                               |
+| `jaml.<type>(...)`                          | Easy builder for any element type                                          | [Easy Builders](#easy-builders--jamltype)                           |
+| `jaml.json(data, options?, jamlOverride?)`  | Convert any JS object into a component tree                                | [`jaml.json()`](#jamljson--render-json-as-jaml)                     |
+| `jaml.md(content, options?, jamlOverride?)` | Parse Markdown into a component option                                     | [`jaml.md()`](#jamlmd--markdown-as-component-option)                |
+| `jaml.register(name, option)`               | Register a custom component (CC)                                           | [Custom Components](#custom-components-cc)                          |
+| `jaml.register(definition)`                 | Register a complete CC Definition and its variant styles                   | [CC Definitions](#cc-definitions)                                   |
+| `jaml.cc.*(...)`                            | Build conventional title, subtitle, and indicator nodes for CC Definitions | [CC builders](#cc-builders)                                         |
+| `jaml.registerUsage(name, option)`          | Register a reusable action preset                                          | [`jaml.registerUsage()`](#jamlregisterusage--custom-usages)         |
+| `jaml.var(key, cb?)`                        | JS-first reactive binder builder                                           | [Binder syntax](./binder.md#jamlvar-programmatic-binder)            |
+| `jaml.bunch(target, builder)`               | JS-first loop builder (equivalent of `buildFor`)                           | [`buildFor`](./jaml-format.md#buildfor)                             |
+| `jaml.res(fn)`                              | Mark a function as a lazy param resolver                                   | [Element params](./jaml-format.md#jamlres--lazy-param-resolver)     |
+| `jaml.pre(value)`                           | Preserve a value from binder evaluation                                    | [Binder syntax](./binder.md#jamlpre--preserve-a-value-from-binding) |
 
 ---
+
+## Final JAML overrides
+
+On development runtimes with the unified builder override contract, structured builders accept an optional final `jamlOverride` for the returned root. Builder inputs describe content and behavior; the final override supplies root IDs, attributes, bindings, styles, plugins and caller hooks. Verify runtime support before migrating an older installation.
+
+| Builder                            | Signature                                                               |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| Page, application, sidebar, drawer | `jaml.<builder>(layout, jamlOverride?)`                                 |
+| Theme panel                        | `jaml.themePanel(options?, jamlOverride?)`                              |
+| Previewer                          | `jaml.previewer(resource, options?, jamlOverride?)`                     |
+| Git diff                           | `jaml.gitdiff(content, options?, jamlOverride?)`                        |
+| Confirmation content               | `jaml.yesNoDialog(prompt, yes?, no?, styles?, options?, jamlOverride?)` |
+| CC helpers                         | `jaml.cc.<helper>(options?, classOrStyles?, jamlOverride?)`             |
+| Markdown                           | `jaml.md(content, options?, jamlOverride?)`                             |
+| JSON                               | `jaml.json(content, options?, jamlOverride?)`                           |
+
+Keep the documented argument positions: an override is not detected merely because it is the last object supplied. For example, use `jaml.previewer(resource, {}, override)` to leave preview options at their defaults; `jaml.previewer(resource, override)` supplies preview options instead. Use `{}` or `undefined` for an omitted options argument and `[]` or `undefined` for an omitted styles argument. Existing positional arguments retain their meanings. Markdown/JSON still accept legacy root customization in `options`; the final override applies afterward. Legacy JSON depth/caption arguments remain accepted as `jaml.json(content, options, depth, cap?, jamlOverride?)`; normal composition does not need them. Generic element builders already accept a final JAML object and have no separate generated structure to protect.
+
+Choose the customization target before writing the override:
+
+| Intended change                                                  | Where it belongs                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Content, business behavior or a generated region                 | The builder's named inputs: for example, drawer `content`/`drawer`, sidebar `nav`/`footer`, or previewer `actions`.                                                                                                                                     |
+| Returned root's ID, attributes, styles, bindings or caller hooks | The final `jamlOverride`. Pass it to the builder so its merge and hook composition run. Spreading over the returned definition or assigning its hooks afterward bypasses those protections.                                                             |
+| Additional children of that root                                 | A top-level `components` array in the final override. It appends after generated children; it does not recursively patch a generated region. Native slots may place an addition when the returned host supports them and the addition fits its purpose. |
+
+This document keeps its rendered Markdown, adds a draft note after it, and runs caller diagnostics alongside its existing lifecycle. It needs no extra container just to hold the root ID or height:
+
+```javascript jaml-playground
+export default jaml.md(
+    '# Notes\n\nThe renderer retains its own content and lifecycle.',
+    { buildToc: false },
+    {
+        id: 'notes-document',
+        attrs: { 'aria-label': 'Notes' },
+        styles: ['css(height:16rem;flexDirection:column)'],
+        components: [{ type: 'label', cap: 'Local draft' }],
+        onafterrender() {
+            console.info('Notes rendered');
+        },
+        onunmount() {
+            console.info('Notes unmounted');
+        }
+    }
+);
+```
+
+The merge does not mutate caller options. Across structured builders, a top-level final override `components` array concatenates after generated children in a new array; an empty array preserves them. If there are no generated children, the supplied children are still copied into a new array. Use an explicit array, not a binding, loader or function. `params.components`, reflected component attributes and suffixed component properties remain blocked because they bypass concatenation. Undefined properties leave defaults intact. Ordinary properties replace defaults; supported maps merge by key, while styles/plugins append after required entries. Watchers accept the native array or callback-map form and append to existing watchers. Selector style maps retain required entries. Existing classes are retained alongside caller classes. Internal method/property/variable keys and framework-owned attributes cannot be replaced; additional keys are allowed.
+
+Generated structure stays with the builder: `type`, `element`, `buildFor`, `dataUrl` and `bunchBuilder` cannot change that ownership. The same type is allowed, and an existing semantic role can select a compatible variant. Renderer-owned broker/binding settings, preview resource methods/properties and theme-panel identity remain protected. Alternate paths through nested `params`, reflected attributes or suffixed property names cannot replace protected state or required style/plugin collections. Put supported customization in the top-level final override; errors name the conflicting property. Arbitrary CSS and callback code remain caller responsibilities.
+
+No builder lifecycle is added. A caller hook with no builder counterpart passes through. When a builder already owns the hook, supply a function: its existing handler runs first with the same receiver and arguments, then the caller handler. Existing synchronous dispatch is preserved; returned promises do not introduce waiting. For native unmount/destroy hooks, caller notification is retained through `finally`; caller failure cannot skip the builder cleanup that ran first. Initialization failure does not run a caller success hook. Dialog keyboard behavior likewise runs before its appended caller handler. Native mount/unmount/destroy subscriptions installed by a builder remain attached.
+
+Use the named builder inputs to customize an existing internal region. The final override does not search descendants or infer a new region from an appended child. An empty `components` array keeps generated children; it is not a clearing operation. If the required structure is outside the builder's contract, choose another composition rather than bypassing a protection error. In particular, [sidebar overrides](#sidebar-builder-and-application-integration) target the sidebar root independently of the application's final root override.
+
+## Read-only Git diff builder
+
+`jaml.gitdiff({ before, after, language? }, options?, jamlOverride?)` displays a single-file comparison through the optional input-code bundle. Both documents are literal strings. Git access, file/revision selection, finding validation and stale-source policy belong to the caller. Standalone source previews are separate capabilities.
+
+Options include `mode: 'unified' | 'split'` (default unified), `lineWrapping` (default true), `syncScroll` (default true), `collapseUnchanged: false | { margin?, minSize? }` (default margin 3/minSize 4), and `scrollToChange` (default true). Synchronized split mode uses one shared vertical viewport; false gives each pane independent scrolling. Unified gutters show paired old/new numbers with at least four digits per column. `beforeLabel`, `afterLabel` and `unchangedLabel` support localization; the unchanged label uses `$` for its line count.
+
+For comparisons that supply only changed regions, use `{ hunks, language? }` instead of document strings. Each hunk is `{ oldStart, oldLines, newStart, newLines, lines }`; each entry in `lines` is one physical line prefixed with a space (context), `-` (removed) or `+` (added). Counts must match those rows, and spans must be ordered and nonoverlapping on both sides. Starts/counts must be safe integers; nonempty spans start at one or above, while zero-count spans anchor after a nonnegative start. An optional `\ No newline at end of file` entry annotates the preceding row. Do not mix hunks with `before`/`after` fields.
+
+Supplied change markers remain authoritative. Hunk views preserve original line numbers and show permanent headers with omitted-context notices; `omittedLabel` customizes that notice. Missing lines cannot be expanded, and `collapseUnchanged` does not hide supplied context. No trailing omission is inferred. Empty hunks mean no supplied content, not proof of identical files. File existence, binary/oversized status and one-sided layout policy remain caller-owned. Hunk highlighting identifies changed lines; it does not promise word-level highlights.
+
+In hunk mode, `selectRange` uses original source line numbers and rejects missing lines or ranges crossing an omitted gap. Unified selection targets after-source text; removed lines are displayed separately. Same hunk rows/coordinates and mode retain the mounted editors across preference changes. Changing input kind, hunk content or mode recreates them.
+
+Use `fontSize` as a positive finite rem number, for example `1.125`. Without that option, typography inherits `--jam-git-diff-font-size` from the host, with a `0.875rem` fallback. Updating `fontSize` to `undefined` removes the explicit override. Language support includes Python (`py`), JSX (`javascriptreact`), TSX (`typescriptreact`), JavaScript and TypeScript, alongside the other input-code languages. Names are case-insensitive; unknown names fall back to plain text. Filename mapping remains caller-owned.
+
+`onReady(view)` supplies the public handle after mounting; `onError(error)` handles mount/loading failures. The handle supports:
+
+-   `update(content, options?)`: merge options and update the comparison.
+-   `selectRange(range, { reveal? }?)`: select a range and return whether the request was accepted.
+-   `destroy()`: release this viewer; repeated destruction is harmless.
+
+A range is `{ side?: 'before' | 'after', from: { line, column? }, to: { line, column? } }`. Lines are one-based and columns are zero-based UTF-16 offsets. Start columns default to zero; the exclusive end defaults to the end of its line. Empty ranges and end-of-document cursors are valid. The default side is after; before-side selection requires split mode. Invalid/reversed/out-of-bounds ranges and unavailable/retired handles return false without changing selection. Calls are not queued before readiness. Hidden unchanged context intersecting the selection expands in both aligned panes. `reveal` defaults to `'center'`, centering the starting line even for a tall range; `'start'` aligns it at the top, and `false` selects/expands without explicit reveal. Programmatic reveal stays inside the viewer and does not steal focus.
+
+```javascript jaml-playground
+jaml.gitdiff(
+    { before: 'const value = 1;\nexport { value };', after: 'const value = 2;\nexport { value };', language: 'JavaScript' },
+    {
+        fontSize: 0.875,
+        onReady(view) {
+            view.selectRange({ from: { line: 1 }, to: { line: 1 } });
+        }
+    },
+    { id: 'example-diff', styles: ['css(height:18rem)'] }
+);
+```
+
+For the same before/after strings, unchanged mode and effective collapse configuration, preference updates retain editor identity, selection and expanded context. Font, wrapping, synchronization, language and label changes preserve the top logical code block and its offset; reflow may change the numeric scroll position. Horizontal offsets survive where still reachable. Independent-to-shared scrolling uses the after pane's position; shared-to-independent scrolling retains the corresponding position in each pane. Later navigation or user input takes priority over a pending restoration.
+
+Different documents, unified/split switches and collapse-configuration changes reset selection, expanded context and initial scrolling. `scrollToChange` controls construction/reset rather than navigating on every preference update. Unmount/remount recreates editors from the latest documents/options; it does not retain transient selection/scroll/context state. Explicit rerender retires the old handle. Review-specific source validation should run before calling `selectRange`; accepting a range only validates its coordinates.
 
 ## Logical component lookup before DOM
 
@@ -81,6 +174,63 @@ The `app` role alone supplies presentation, not full-page geometry. A custom she
 
 Set `stylize` in the JAML definition so the framework processes it and supplies `.jam-app-style`. A raw HTML `stylize="app"` attribute on a static element is not equivalent to rendering that JAML definition. Keep one app role for the standalone shell and retain content roles beneath it; see [layout-owned profiles](../Theme/stylize.md#layout-owned-stylize-profiles). A justified peer region outside the selected layout uses the explicit [composite-host pattern](#composite-application-hosts) below; it is not an incidental mounting wrapper.
 
+### Sidebar builder and application integration
+
+On development runtimes supporting `jaml.sidebar`, use `jaml.sidebar(layout, jamlOverride?)` to compose a sidebar. Its final argument customizes the sidebar root. `jaml.application(layout, jamlOverride?)` likewise accepts a final application-root override. Existing runtime versions may not include the sidebar builder; verify support before use.
+
+| Sidebar layout input | Contract                                                                                                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nav`                | Required JAML option. Defaults to `stylize: 'nav'`; preserves the supplied element type, data, events and compatible variant such as `nav-tree`. No extra navigation wrapper. |
+| `rail`               | Optional JAML option. Defaults to `nav-rail`; its contents, including supporting controls and a footer, remain caller-owned.                                                  |
+| `header`, `footer`   | Optional JAML options for the contextual navigation area.                                                                                                                     |
+| `section`            | Optional JAML override for the generated section. Requires `rail`; its `components` array appends after the generated header/nav/footer.                                      |
+
+Without a rail, the sidebar directly contains the optional header, navigation and optional footer. With a rail, it contains the rail and a `section` grouping those same contextual regions. Widths, responsive visibility and rail contents remain caller choices. The layout arranges rail and section side by side, keeps contextual header/footer outside the navigation scroller, and gives the rail independent overflow. A rail's internal sticky or fixed controls require its own authored layout.
+
+```text
+sidebar                    sidebar
+  header?                    nav-rail
+  nav                        section
+  footer?                      header?
+                               nav
+                               footer?
+```
+
+Use the explicit `{ layout, jamlOverride? }` descriptor when the application should construct the sidebar. The application calls the sidebar builder with those two arguments. A plain sidebar JAML option is still supported, including an already-built `jaml.sidebar(...)` result. The descriptor reserves its `layout` key and accepts no other keys besides `jamlOverride`.
+
+```javascript jaml-playground
+jaml.application(
+    {
+        sidebar: {
+            layout: {
+                rail: {
+                    styles: ['css(width:3rem;display:flex;flex-direction:column)'],
+                    components: [
+                        { type: 'button', cap: 'Home' },
+                        { type: 'container', stylize: 'footer', styles: ['css(margin-top:auto)'], components: [{ type: 'button', cap: 'Me' }] }
+                    ]
+                },
+                section: { styles: ['css(width:14rem)'] },
+                header: { components: [{ type: 'label', cap: 'Projects' }] },
+                nav: {
+                    type: 'tree',
+                    stylize: 'nav-tree',
+                    data: [{ id: 'project', name: 'Project', children: [{ id: 'chat', name: 'Chat' }] }]
+                },
+                footer: { components: [{ type: 'label', cap: 'Workspace' }] }
+            },
+            jamlOverride: { id: 'workspace-sidebar' }
+        },
+        main: { components: [{ type: 'label', cap: 'Work area' }] }
+    },
+    { styles: ['css(height:24rem)'] }
+);
+```
+
+Root and section overrides preserve the native container type, semantic role and generated tree. Root, sidebar section and application frame `components` arrays append after their generated children; use named regions to place content within those regions. Conflicting `element`, `buildFor`, `dataUrl` or `bunchBuilder` fields are rejected, including inside literal `params`. Compatible role variants are allowed. Caller root styles follow required layout styles; other ordinary properties and existing lifecycle callbacks pass through. The override adds no separate lifecycle system; builder-owned hooks, including responsive application setup, run before matching caller hooks. Supplied options are not mutated. Custom CSS and callbacks remain caller responsibilities.
+
+The rail and contextual navigation inputs are complete component options rather than generated trees: use a component that supports authored children when composing a footer inside a navigation region. A tree retains its own data/node contract. See [sidebar navigation roles](../Theme/stylize.md#sidebar-navigation-composition).
+
 ### Embedded application hosts
 
 An embedded widget, preview, or Jam application inside another page can intentionally render into an existing host, for example `jaml('#widget-host', view)`. Preserve that host's sizing, lifecycle and ownership boundary, and check theme selectors against the actual embedding structure. Direct-body shell recipes do not automatically apply there. This is an explicit integration choice; ordinary JAML containers remain appropriate for content composition.
@@ -107,9 +257,73 @@ The inspector retains its authored role, class bindings, children and plugins; t
 
 Omitting `inspector` preserves the existing layout. This capability is development-runtime dependent; verify the target runtime rather than relying on the package version alone. Older runtimes reject the input. Do not append or reparent builder-owned children to emulate it.
 
+### Responsive application panels
+
+On development runtimes supporting `application.responsive`, the application builder owns desktop folding and mobile modal presentation. Use this when a shell has a persistent navigation rail, contextual navigation and a right inspector. It requires an unframed application, the composite `{ layout: { rail, nav, ... } }` sidebar descriptor, and an inspector. Older runtimes need qualification before using this option.
+
+Wide presentation has four tracks: rail, foldable navigation, flexible main and foldable inspector. The header spans the first three; the inspector spans the full height. The rail stays interactive when navigation folds. At or below the host-width breakpoint, the rail and navigation become one modal panel opened by an external burger control, and the inspector becomes a modal bottom panel. Backdrop taps and Escape dismiss; owned popups consume Escape first. Opening either mobile panel closes the other. Controls belong in the visible application header, not inside a folded region.
+
+| `responsive` option | Contract                                                                                                                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `breakpoint`        | Nonnegative rem number; default `48`. Host width, including root-font-size changes, determines mode.                                                                                           |
+| `saveState`         | Boolean; default `false`. Save committed expanded navigation/inspector sizes across reloads. Requires an explicit stable literal application root `id`. Fold/open intent remains caller-owned. |
+| `railSize`          | Nonnegative CSS length; default `'3rem'`.                                                                                                                                                      |
+| `sidebar`           | `{ size?, minSize?, maxSize? }` CSS lengths; defaults `'16rem'`, `'10rem'`, `'28rem'`.                                                                                                         |
+| `inspector`         | Same sizing object; desktop defaults `'24rem'`, `'12rem'`, `'36rem'`. Mobile panel fills the host width and uses 75% of its height.                                                            |
+| `sidebarFolded`     | Boolean or JAML binding; default `false`. Desktop navigation preference.                                                                                                                       |
+| `navigationOpen`    | Boolean or JAML binding; default `false`. Mobile burger presentation, independent of desktop folding.                                                                                          |
+| `inspectorOpen`     | Boolean or JAML binding; default `false`. Shared inspector intent across modes.                                                                                                                |
+
+The root exposes bindable `applicationSidebarFolded`, `applicationNavigationOpen` and `applicationInspectorOpen`, plus read-only `applicationNarrow`. Native intent events are `applicationsidebarchange` with `{ folded }`, `applicationnavigationchange` and `applicationinspectorchange` with `{ open }`; write these back to the bound model. `applicationmodechange` reports `{ narrow }`. `applicationsidebarresize` reports `{ size, folded }`, where `size` is the logical navigation-track extent in CSS pixels, excluding the rail. Use it only for application relationships such as a header divider; do not write the outer grid geometry. The root's `applicationLayout` controller also exposes `setSidebarFolded(boolean)`, `setNavigationOpen(boolean)` and `setInspectorOpen(boolean)`.
+
+```javascript jaml-playground
+jaml.application(
+    {
+        responsive: { saveState: true, sidebarFolded: '{{folded}}', navigationOpen: '{{navigation}}', inspectorOpen: '{{inspecting}}' },
+        header: {
+            components: [
+                {
+                    type: 'button',
+                    cap: 'Navigation',
+                    onclick() {
+                        this.model.vars[this.model.element.applicationNarrow ? 'navigation' : 'folded'] = !this.model.vars[this.model.element.applicationNarrow ? 'navigation' : 'folded'];
+                    }
+                },
+                {
+                    type: 'button',
+                    cap: 'Inspector',
+                    onclick() {
+                        this.model.vars.inspecting = !this.model.vars.inspecting;
+                    }
+                }
+            ]
+        },
+        sidebar: { layout: { rail: { components: [{ type: 'button', cap: 'Home' }] }, nav: { components: [{ type: 'input', value: 'Retained navigation' }] } } },
+        main: { components: [{ type: 'label', cap: 'Main content' }] },
+        inspector: { components: [{ type: 'input', value: 'Retained inspector' }] }
+    },
+    {
+        id: 'persistent-application',
+        vars: { folded: false, navigation: false, inspecting: false },
+        styles: ['css(height:32rem)'],
+        onapplicationsidebarchange(event) {
+            this.model.vars.folded = event.detail.folded;
+        },
+        onapplicationnavigationchange(event) {
+            this.model.vars.navigation = event.detail.open;
+        },
+        onapplicationinspectorchange(event) {
+            this.model.vars.inspecting = event.detail.open;
+        }
+    }
+);
+```
+
+With `saveState`, unnamed navigation and inspector regions receive stable IDs derived from the root; authored child IDs are preserved. Invalid saved sizes or unavailable storage fall back to authored sizing. Cancelled drags and mobile geometry do not overwrite the committed preference. The builder preserves mounted content, edits and desktop width preferences when changing modes. Closing does not destroy the panel. Do not combine this option with a second drawer owner, application-authored absolute positioning, generic resizing on the same regions, or another focus trap. Ordinary `jaml.drawer` remains appropriate for a single nonblocking docked/overlay region; this application mode intentionally owns modal mobile navigation and inspector behavior.
+
 ### Composite application hosts
 
-When an application needs a peer region that the selected layout does not provide, an ordinary native `container` may host one `jaml.application(...)` result and that peer, such as a custom peer arrangement beyond the supported inspector region. This lets the peer sit beside the entire application layout, including its header. Keep exactly one `app` role; the composite host does not receive another `stylize: 'app'`. Do not append children to, replace, or reparent the builder's managed regions to invent an unsupported slot.
+When an application needs a peer region that the selected layout does not provide, an ordinary native `container` may host one `jaml.application(...)` result and that peer, such as a custom peer arrangement beyond the supported inspector region. This lets the peer sit beside the entire application layout, including its header. Keep exactly one `app` role; the composite host does not receive another `stylize: 'app'`. A final root override may append children, but that does not create a managed layout region or supply its sizing, scrolling or responsive behavior. Use named inputs for supported regions; choose an explicit composite owner when the peer needs a separate layout contract. Preserve the builder's existing regions and lifecycle.
 
 The composite host owns its available size, outer flex/grid arrangement, responsive peer placement and overall lifetime. Give the child layout a bounded region and retain `viewport: false` (the application builder default) so it sizes within the host rather than fixing itself to the browser viewport. Keep its internal region identities, scrolling and lifecycle under the layout owner. Preserve both children when only peer visibility or width changes; release them through the owning model when the host is disposed. Use supported layout options for managed regions. A deliberate override of their grid placement is a separately qualified application layout recipe, not merely a theme appearance change.
 
@@ -204,10 +418,10 @@ export default jaml.wrapper('New User', { styles: ['layout.autoalign'] }, [
 Converts any JavaScript object or array into a JAML component tree for visual inspection.
 
 ```typescript signature
-jaml.json(content: Dictionary): ComponentOption
+jaml.json(content: Dictionary, options?: Partial<BaseComponentOption>, jamlOverride?: Partial<BaseComponentOption>): BaseComponentOption
 ```
 
-The output type depends on the shape of `content`:
+The final argument follows [the root override contract](#final-jaml-overrides); legacy customization in `options` remains the first layer. The output type depends on the shape of `content`:
 
 | Input shape                                     | Output element                         |
 | ----------------------------------------------- | -------------------------------------- |
@@ -242,7 +456,7 @@ export default jaml.json({
 Parses a Markdown string and returns a `ComponentOption` (the JAML option object for the document). Use this when you want to embed a Markdown document as a child component inside a larger JAML tree.
 
 ```typescript signature
-jaml.md(content: string, option?: Partial<MarkdownOption>): ComponentOption
+jaml.md(content: string, options?: Partial<MarkdownOption>, jamlOverride?: Partial<BaseComponentOption>): BaseComponentOption
 ```
 
 ```javascript jaml-playground
@@ -256,7 +470,7 @@ This is a section with a list:
 `);
 ```
 
-For a full standalone document rendering use [`jamd`](#jamd--markdown-renderer) instead.
+Use `options` for Markdown parser settings and the final [root override](#final-jaml-overrides) for root customization; legacy root options still apply before it. The override preserves renderer-owned binding/broker settings and composes existing hooks. For a full standalone document rendering use [`jamd`](#jamd--markdown-renderer) instead.
 
 ---
 
@@ -609,6 +823,12 @@ const definition = {
 const registration = jaml.register(definition);
 // registration.dispose() restores the registration that preceded this one.
 ```
+
+### Choose styles inside a CC
+
+Choose [inline CSS, local rules or shared CC styles](../Styles/styles.md#choose-inline-css-local-rules-or-shared-cc-styles) according to selectors and reuse. A CC can keep simple declarations inline and one-off state/part rules local. A CC Definition variant's `descStyles` automatically uses the shared `clazz` registration route; its ordinary `styles` keep their normal plugin behavior. For a simple `jaml.register(name, body)` component, use `Styles.clazz({ clazz, descStyles })` explicitly when sharing a repeated presentation recipe.
+
+Keep each shared recipe stable: the first registration for its class selector wins. Bind business/resource values per instance; use instance CSS variables when shared rules need differing values.
 
 ### CC builders
 

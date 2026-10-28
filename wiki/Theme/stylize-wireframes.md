@@ -29,6 +29,23 @@ A normal application has one `app`, one `main`, and zero or one primary `header`
 
 In a `header`, use `toolbar` for utility controls such as search, filter, layout switch, refresh, or icon-only tools. Use `actions` only when the group is a decision row, such as Save/Cancel or Publish/Discard.
 
+## Composite Sidebar
+
+A sidebar can contain a compact navigation rail alongside a contextual section:
+
+```text
+sidebar
+  nav-rail
+    destination controls
+    footer?
+  section
+    header?
+    nav-tree
+    footer?
+```
+
+The tree is one navigation component; logical tree nodes do not imply nested section containers. The rail's footer belongs to the rail, while the section's footer belongs to contextual navigation. See [sidebar composition](./stylize.md#sidebar-navigation-composition) and the [builder contract](../JAML/component.md#sidebar-builder-and-application-integration).
+
 ## Common Surfaces
 
 Surface role names stay stable. Docked, slide-in, floating, movable, and resizable are behavior/recipe choices.

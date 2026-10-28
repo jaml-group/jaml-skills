@@ -11,7 +11,7 @@ Apply this reasoning to pages, builders, CCs and framework-provided UI. Before w
 1. **Purpose and data.** Identify the value, record or operation, its owner and the relevant states.
 2. **Interaction and presentation.** Choose how and where the user acts, the attention required, feedback and return path. Apply the [context-preserving choice](#choose-interaction-and-presentation) before selecting a surface or helper.
 3. **Operation owner, then parts.** First check whether a native builder, CC or behavior owner already composes the operation. Then read the participating elements' parameters, inherited behavior and slots. Reuse the caption, icon, value, unit and control they already own.
-4. **Specialization.** Apply supported roles, ordered styles/plugins and bindings. Extend through named slots or layers when the same purpose needs more representation.
+4. **Specialization.** Apply supported roles, ordered styles/plugins and bindings. Extend through named slots or layers when the addition fits the selected [owner's contract](#choose-the-owner-before-the-slot).
 5. **Composition.** Arrange independent purposes together. Extract a CC or builder when a recurring business module has a clear input, behavior and lifecycle contract.
 
 | Requirement                                  | Starting composition                                                            | Reasoning                                                                                                                          |
@@ -23,6 +23,29 @@ Apply this reasoning to pages, builders, CCs and framework-provided UI. Before w
 | Show one dataset in several ways             | A `data` owner publishes the dataset; consumers bind or project it              | Fetching and refresh have one logical owner.                                                                                       |
 
 This is a selection method, not a ban on containers, labels, events or custom components. Keep a composition when its responsibilities justify it. Consult [native capability choices](../choosing-native-capabilities.md) when ownership is unclear; knowing how to write a container does not establish that a container is the right owner.
+
+## Choose the owner before the slot
+
+An element's purpose comes from its supported parts and behavior. Putting a filename in a `label` makes it display a filename; it does not give the label a file-preview contract. Renaming the caption to “File controls” does not supply that contract either. Several controls can concern the same record while owning different operations.
+
+Ask what the addition does for the host before choosing its slot. A reporting period or status can qualify an indicator's metric. Decrement/increment buttons can extend a value input when they operate that same value through its supported contract. A slot supplies a place for content; it does not by itself establish state ownership, keyboard behavior, layout or cleanup. Read the selected owner and extension contracts for those responsibilities.
+
+For a file preview toolbar, a filename label displays text, metadata describes the file, a zoom input edits scale, presets select scale and Download performs an action. Group those responsibilities in a suitable toolbar/container or a module that explicitly composes them. One shared file record does not make the filename label their owner.
+
+This is a conceptual ownership sketch, not a runnable definition or a new toolbar API:
+
+```text
+preview toolbar / meaningful group
+  filename label
+  file information
+  zoom input, with its value display and supported +/- additions
+  zoom presets, using the same scale owner
+  Download action
+```
+
+Reuse an input's native caption/icon/control/unit instead of rebuilding them as siblings. Retain an indicator's appropriate layer annotations. Keep grouping where it composes distinct responsibilities. Fewer containers and more slots are not objectives; neither is adding a container around every control.
+
+A reusable file-summary or preview CC can own a broader purpose through an explicit props/data, action and lifecycle contract. Its internal root type alone neither proves nor disproves that contract. Likewise, a label may have supported additions; assess what they do rather than forbidding children or interactive slots. The review question is whether each responsibility has a fitting owner, including the custom composition that joins them.
 
 ## Choose interaction and presentation
 
@@ -170,7 +193,7 @@ export default {
 
 The button's native caption slot contains the filename, and its icon slot contains the document icon. The card's unslotted label intentionally enters its body; the action explicitly enters `extra`. Use [literal slot text](../JAM-UI/JAM-UI.md#slot-content-and-literal-text) for external names/content and [runtime data writes](binder.md#runtime-data-and-authored-definitions) when loading external records. Verify the documented runtime requirements for literal Text nodes.
 
-For another presentation of the same record, keep its data and action contract and change the native parts/styles or action placement. A compact list can use [hover shortcuts](../Plugins/shortcut.md#entry-shortcut); a tile can expose visible actions; a preview can place them in the [card header's extra slot](../JAM-UI/card.md#slots). Choose those placements deliberately for the requested interaction and keyboard/touch access. Additional metadata belongs in a supported slot/layer with an explicit arrangement; separate grouping is useful when it represents independent controls. A non-activating document summary can use a label instead of a button.
+For another presentation of the same record, keep its data and action contract and change the native parts/styles or action placement. A compact list can use [hover shortcuts](../Plugins/shortcut.md#entry-shortcut); a tile can expose visible actions; a preview can place them in the [card header's extra slot](../JAM-UI/card.md#slots). Choose those placements deliberately for the requested interaction and keyboard/touch access. Additional metadata can use a supported slot/layer when it fits the host's contract, with an explicit arrangement. A label can present non-activating document text; a broader file summary or control group needs its own composition contract. Apply [owner-before-slot reasoning](#choose-the-owner-before-the-slot) when adding controls, even when they concern the same document.
 
 [`interact.closable`](../Styles/interact.md#entry-interact-closable) removes the closable host by default. Supply its callback when closing must update state or request confirmation. [`jam.renderModal`](../utils.md#jamrendermodalcontainer-option-config) owns modal mounting/dismissal; the example supplies placement explicitly. This example mounts at document scope, so its modal remains until dismissed even if the opener is removed. A page or CC should use its owned host or remove its opened modal when that owner ends. Cleanup belongs to unmount, since native close and curtain/Escape dismissal are separate paths. Verify the consuming runtime's [modal focus and background contract](../utils.md#modal-focus-and-background); its scope and older-bundle limits still apply.
 
@@ -289,18 +312,19 @@ Use this pass before drawing a new component tree and again when reviewing the i
 1. **Name the operation and preservation requirements.** Establish what the user does or learns, the data/state owner and the relevant pending, failure, keyboard, focus and cleanup behavior. Check [interaction and presentation](#choose-interaction-and-presentation): the location, attention demanded and return path must fit the task before comparing APIs.
 2. **Compare complete native candidates.** Check the fitting builder, CC or behavior owner as well as its element parts. Read the contract before accepting or rejecting it. Record the selected owner and the concrete gap, if any, that remains custom.
 3. **Trace composition through helpers.** Inspect the JAML definitions returned by app builders/CCs and shared modal, field, settings-row or notification helpers. A short call site may conceal the same repeated container/label construction. Rendered DOM can locate a concern, but native internal nodes do not establish unnecessary authored structure.
-4. **Account for added structure.** For each candidate wrapper or label, identify its responsibility and check the native parameter, part, slot or style that might already own it. Retain independent prose, grouping, layout and integration boundaries where they serve a real purpose.
+4. **Check both duplicated parts and overloaded hosts.** For each wrapper, label and slot addition, identify its responsibility and compare it with the selected [owner's contract](#choose-the-owner-before-the-slot). Reuse parts that already belong to an input or indicator; retain independent prose, grouping, layout and integration boundaries. Also check whether unrelated responsibilities were placed under a presenter merely because they share a record or reduce the wrapper count.
 5. **Check the resulting behavior.** Compare the delivered interaction, presentation and owners with the initial choice. Walk from the real trigger through completion and return; account for unnecessary travel, blocking and repeated confirmations. Exercise the promised states, actual controls and host lifecycle, including [pending, retry, departure and concurrent changes](#own-asynchronous-operations); test another presentation or independent instance when reuse is claimed. Report the inspected scope and any unverified behavior.
 
 These are review candidates, not automatic findings:
 
-| Authored pattern                                 | Compare with                                                     | Reason to retain custom composition                                            |
-| ------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Caption label beside a generic input wrapper     | Native input `cap`, `icon`, control and supported unit           | Independent explanatory content or a distinct group of fields                  |
-| Several labels representing one number           | Indicator parts, slots/layers and indicator styles               | A separate document or independently actionable content                        |
-| Repeated prompt, divider and Cancel/Confirm row  | Editable confirmation builder and the fitting presentation owner | A step/editor contract incompatible with the default decision behavior         |
-| Text-only notification wrapped in custom content | Plain notification API                                           | Actual interactive or structured content, with its documented tradeoffs        |
-| Buttons plus manual selection state/handlers     | Native selection group and its state contract                    | Independent commands or a coordinated interaction the group does not implement |
-| Wrapper added solely for appearance              | The owner's roles, styles/plugins and supported slots            | Real layout, scrolling, lifetime or external-host boundary                     |
+| Authored pattern                                   | Compare with                                                     | Reason to retain custom composition                                                 |
+| -------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Caption label beside a generic input wrapper       | Native input `cap`, `icon`, control and supported unit           | Independent explanatory content or a distinct group of fields                       |
+| Several labels representing one number             | Indicator parts, slots/layers and indicator styles               | A separate document or independently actionable content                             |
+| Repeated prompt, divider and Cancel/Confirm row    | Editable confirmation builder and the fitting presentation owner | A step/editor contract incompatible with the default decision behavior              |
+| Text-only notification wrapped in custom content   | Plain notification API                                           | Actual interactive or structured content, with its documented tradeoffs             |
+| Buttons plus manual selection state/handlers       | Native selection group and its state contract                    | Independent commands or a coordinated interaction the group does not implement      |
+| Wrapper added solely for appearance                | The owner's roles, styles/plugins and supported slots            | Real layout, scrolling, lifetime or external-host boundary                          |
+| Filename label hosting metadata, zoom and download | A meaningful group or module composing the participating owners  | An explicit module contract that owns the complete operation, not its caption alone |
 
-A useful finding names the location, purpose, existing owner, native candidate, covered contract, remaining gap and preservation checks. Do not infer a defect from nesting depth, tokenized CSS or a native element name alone. A justified container is a correct choice; a syntactically valid tree can still duplicate an existing owner.
+A useful finding names the location, purpose, existing owner, native candidate, covered contract, remaining gap and preservation checks. Do not infer a defect from nesting depth, tokenized CSS or a native element name alone. A justified container is a correct choice; a syntactically valid tree can still duplicate native parts or overload a presenter with responsibilities its contract does not own.

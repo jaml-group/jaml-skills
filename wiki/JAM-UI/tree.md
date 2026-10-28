@@ -154,6 +154,33 @@ Use `hasRowChildren(pKey)`, `getRowLevel(pKey)`, `isRowChildrenExpanded(pKey)`, 
 
 See [tree styles](../Styles/tree-style.md) and [table row details](./table.md#row-details-and-nested-rows).
 
+### Load children before expansion
+
+Use native expansion admission when the application must prepare children before opening a folder. Keep the row collapsed while loading, publish the final child data, then allow native expansion. Do not insert a visible placeholder child merely to obtain a disclosure control.
+
+Set `hasChildren: true` on an object node to mark it as an expandable parent even when `children` is empty or not loaded. This marker also follows existing parent-selection/checkbox rules. Keep it true for a semantic directory that must remain expandable while empty; omit or clear it for a leaf. Use stable `id` values.
+
+The inherited `beforeExpandRowChildren({ pKey, signal })` callback can return `false` to decline or a promise that resolves after the application has published its prepared data. Any other successful result allows expansion. The tree waits for pending native layout/bindings before committing; it does not fetch, cache or own the child data. The callback runs on each expansion attempt, so return promptly from an already-ready application cache rather than refetching unnecessarily.
+
+Options fragment; `prepareChildren` is caller-owned and must publish children before resolving:
+
+```javascript
+{
+    type: 'tree-radio',
+    keyboardNavigation: true,
+    data: '{{nodes}}',
+    beforeExpandRowChildren({ pKey, signal }) {
+        return prepareChildren(pKey, signal);
+    }
+}
+```
+
+`toggleRowChildren(pKey, force?)` still returns a boolean synchronously; a newly pending expansion returns false. `isRowChildrenLoading(pKey)` reports pending state. The native disclosure shows activity without changing row height and remains usable to cancel; `aria-busy` identifies pending state. Repeated force-true/ArrowRight requests reuse the pending operation. A second pointer toggle, force-false or ArrowLeft cancels it. Enable `keyboardNavigation` for native tree keys.
+
+`cancelRowChildrenExpansion(pKey?)` cancels one pending row or all when omitted. Call it before changing the application data source/session if keys can be reused. Native row removal, unkeyed replacement, clear, unmount and destruction cancel pending expansion; collapsing an ancestor cancels pending descendants. Same-key data updates preserve admission because the loader itself may publish new children. The caller must also check its source generation and honor the supplied abort signal before publishing late data.
+
+The inherited events are `rowchildrenloading` with `{ pKey, loading }`, `rowchildrenloaderror` with `{ pKey, error }` for rejected callbacks, and the existing `rowchildrenchange` only after actual expansion/collapse. Failure leaves the row collapsed and permits retry. Present errors in caller-owned status UI, without inserting fake children. Apps may start a directory watch from committed `rowchildrenchange` and retire it on collapse.
+
 ### Clearing tree data
 
 Trees inherit the table structural `clear(theadOnly?)` operation: it clears rows, data, headers, expansion, filters and sort state even with `clearable: false`. Passing `true` retains only `tneck` and `tfoot` slot contents; it does not preserve tree nodes. See [table methods](table.md#data--display).

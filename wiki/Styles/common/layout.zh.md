@@ -10,6 +10,86 @@
 
 ## Variants
 
+### `layout.accordion`
+
+<a id="entry-layout-accordion"></a>
+
+独立折叠网格
+
+管理显式网格轨道，使各区域独立折叠并保留各自展开尺寸。
+
+每个注册区域独立保留折叠状态和首选尺寸，展开的弹性轨道分配剩余空间。拖动弹性区域后仍保留分数比例，minSize 和 maxSize 约束展开份额；长度首选值保持为 CSS 长度。折叠轨道使用 foldSize。内容保持挂载，不会因折叠而移除或重建。
+
+将 layout.accordion 应用于网格所有者，将 interact.foldable 应用于各区域。必须通过 cols/rows 或所有者的内联 grid-template-columns/grid-template-rows 提供至少一个显式模板。未提供模板的轴不受管理。支持数字 repeat() 和命名线；不支持 auto-fill、auto-fit、隐式轨道和未解析的模板变量。管理行时应限定所有者高度。 当 maxSize 限制分数轨道时，该受约束轴只能使用明确长度/百分比轨道、fr 或 minmax(length,fr)；此上限路径拒绝 intrinsic/auto/fit-content/calc 轨道定义，不会估算其尺寸。未设置分数轨道上限时仍使用原生 CSS 路径。
+
+状态和首选尺寸属于当前 accordion 会话。在有效轨道之间移动区域会保留这些值；暂不支持的放置会释放轨道，恢复有效放置后重新绑定。移除并重新应用父样式会结束原尺寸会话，并从作者模板重新开始。移除子区域所有权会释放手柄、监听器和自身临时呈现，但保留内容。父子挂载顺序均可。
+
+各折叠区域须明确占据一个轨道。subgrid 可将对应轴传递给祖先 accordion；沿 subgrid 链使用确定的数字线或数字跨度，最终使每个区域映射至一个祖先轨道。独立嵌套网格会终止解析。共享同一祖先轨道的区域必须声明相同折叠约束，并共享状态。即使 foldSize 留下可见条带，交互式导航栏或重新展开按钮也必须放在折叠宿主外。 将 foldable 应用到原本负责该区域的元素上。有标题的分组可使用 wrapper 或 card，并通过 cap、icon 和 extra 使用其原生标题与操作区；该行为不要求在通用 container 中重新拼装这些部分。
+
+这是独立网格折叠所有者，不是悬停手风琴或覆盖层。旧式相邻双面板交互使用 interact.expandable；需要延迟构建、保留内容以及停靠/覆盖模式的边缘区域使用 jaml.drawer。原生网格间距仍然生效。若展开最小值总和超过容器，布局无法容纳；若所有展开轨道均达到最大值，可能留下空余空间。不会自动提供断点或持久化存储。 避免作者最小值超过 maxSize；与 CSS 尺寸规则一致，在此冲突中有效最小值优先。
+
+位置参数顺序: `cols` → `rows`.
+
+| 参数 | 类型 | 契约 |
+| --- | --- | --- |
+| `cols` | `string` | 显式列模板；省略时读取内联 grid-template-columns。 |
+| `rows` | `string` | 显式行模板；省略时读取内联 grid-template-rows。 |
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        { type: 'label', cap: 'The rail stays interactive while navigation and inspector fold independently.' },
+        {
+            type: 'container',
+            id: 'folding-example',
+            styles: [Styles.layout.accordion({ cols: '4rem 12rem minmax(12rem,1fr) 10rem', rows: 'minmax(0,1fr)' }), 'css(height:14rem;width:100%;gap:0.5rem)'],
+            components: [
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:1;display:flex;flex-direction:column;gap:0.5rem;background:ac4)'],
+                    components: [
+                        {
+                            type: 'button',
+                            cap: 'Nav',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-navigation').foldable.toggle();
+                            }
+                        },
+                        {
+                            type: 'button',
+                            cap: 'Info',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-inspector').foldable.toggle();
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-navigation',
+                    cap: 'Navigation',
+                    styles: ['css(grid-column:2;min-width:0;overflow:auto;background:ac1)', Styles.interact.foldable({ foldSize: '2rem', minSize: '6rem', maxSize: '20rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Filter', value: 'Retained navigation value', styles: ['label.atTop', 'size.fullwidth'] }]
+                },
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:3;min-width:0;overflow:auto;background:ac5)'],
+                    components: [{ type: 'label', cap: 'Main content receives the remaining space. The visible folded strip is inert; use the rail to reopen it.' }]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-inspector',
+                    cap: 'Inspector',
+                    styles: ['css(grid-column:4;min-width:0;overflow:auto;background:ac3)', Styles.interact.foldable({ minSize: '6rem', maxSize: '16rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Notes', value: 'Retained inspector value', styles: ['label.atTop', 'size.fullwidth'] }]
+                }
+            ]
+        }
+    ]
+};
+```
+
 ### `layout`
 
 <a id="entry-layout"></a>

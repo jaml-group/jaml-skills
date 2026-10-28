@@ -1,16 +1,16 @@
 {
   "formatVersion": 1,
   "frameworkVersion": "2.0.0-beta.1",
-  "catalogDigest": "3bb7f8e2a986f0d1d6c584e507effeb116535bde0ddd7a05b38995779b1e0577",
-  "schemaDigest": "ca63f2845ee0b76e218878881a2ff9cb064a170cde9665b3aa0e793c89b9dfc4",
-  "status": "provisional",
+  "catalogDigest": "9f62b75c35f3ef89cafcfc01859ed22f46658f1bab3d88a872996b86087cc477",
+  "schemaDigest": "21ed3634765dac993def9dff897f3184e149d635279613b967c5da87f7f0aac7",
+  "status": "frozen",
   "files": {
-    "catalog.json": "7136ad2e889ccaf2e9b5c06180c3fdbb3a4b64970dd5ae073e7737a56ec4a7be",
+    "catalog.json": "b00fa0eedef651557e765bd74693d70ef572373745ecc637d0628790dc5b95b3",
     "authoringView.mjs": "9e99229c951c231c8a7bd42e32389389aaf6a6a70fb6d4b737d5fed9491e099b",
     "authoringCatalog.mjs": "5ddd7b6a721df3449e5acfc594910e348e881df125e4e2b8eac355d4984587d4",
     "catalogSchema.mjs": "a8d6a614a07aed0000f318bcb1c791d403b41968d4ffae1fafe78b8d3d8ac4c9",
     "generated/sharedI18n.mjs": "8c4efbe5395a61fb0440c76f97a0a52c083acd0a405ee60f4b966ccb99f098e4",
     "LICENSE": "e25e7835e4e3cfe1f8ecdfe7da1c7156970af3bf9234ac8ec2e9a42ee8f0f92f",
-    "artifact.json": "8e5d0c3b826169a7074c825e2599ef799cc6b0ddb9c9c532ac53cba8302d912f"
+    "artifact.json": "265a18c421acf2e801a25b54ca21ba2c3790a288c2879f5697bbb06617efcb2a"
   }
 }

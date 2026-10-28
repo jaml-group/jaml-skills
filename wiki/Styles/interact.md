@@ -10,6 +10,93 @@
 
 ## Variants
 
+### `interact.foldable`
+
+<a id="entry-interact-foldable"></a>
+
+Independent foldable region
+
+Register one region with an ancestor layout.accordion and control it through its foldable handle.
+
+The styled HTMLElement exposes element.foldable.fold(), unfold() and toggle(), each returning boolean acceptance, plus read-only folded and size. size is the current logical track extent in CSS pixels, not the animated surface rectangle. Non-bubbling foldchange events carry detail:{folded}; non-bubbling foldresize events carry detail:{size,folded}. A duplicate fold/unfold request is accepted without another foldchange. External buttons may call the same handle.
+
+Requires layout.accordion on the explicit-template grid owner. The region must occupy exactly one track on axis; subgrid descendants may resolve to one ancestor track through definite placement. Use nonnegative CSS lengths for foldSize, minSize, maxSize and resizeThreshold; maxSize must be at least minSize. An invalid or absent owner makes fold/unfold requests return false. Capped fractional axes accept definite length/percentage, fr and minmax(length,fr) tracks; intrinsic or calculated track definitions are unsupported there. An authored minimum above maxSize takes precedence; avoid that conflict. saveState:true requires a stable id on this child, not merely its parent.
+
+The children and their state remain mounted during folding. Every folded host is inert and aria-hidden, including a painted nonzero foldSize strip; a zero-size fold is also visually hidden. Unfold restores owned presentation and authored expanded overflow/minima. Parent style removal resets the live session. With saveState:true and a stable child id, a new Foldable instance (including after reload) restores the committed expanded size preference from localStorage; open/fold intent remains authored. Cancelled drags, temporary geometry and mode changes do not overwrite saved preferences. Invalid saved data or unavailable storage falls back to authored sizes. Subgrid peers sharing the same ancestor track share folded state and size.
+
+Author the expanded preference in the parent’s grid template, then put minSize/maxSize and resizeThreshold on this region. A flexible preference remains proportional below its cap. During threshold dragging, the selected region may cross authored and plugin expanded minima; release below resizeThreshold folds and retains its pre-drag preference, while release above it restores expanded limits. Escape cancels the drag. External rail controls belong beside this host, not inside it. See layout.accordion for the complete parent/child example.
+
+edge chooses the resize handle side, not the animation origin. Interior regions use center squeeze entry/exit; outer regions use the associated edge, while neighboring regions use layout FLIP. Optional hover activation is not implemented. resizable:false removes the drag handle; resizable:{hide:true} hides only its indicator. Folded controls cannot reopen their own inert host: provide an external control.
+
+Positional order: `axis` → `edge` → `foldSize` → `minSize` → `maxSize` → `resizeThreshold` → `folded` → `saveState` → `resizable`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `axis` | `string` | `columns` | Managed track axis.<br>Options: `columns`, `rows` |
+| `edge` | `string` | Not supplied | Resize handle side; interior regions normally use the following boundary and the last region uses the preceding boundary.<br>Options: `left`, `right`, `top`, `bottom` |
+| `foldSize` | `string` | `0rem` | Track extent while folded; a nonzero visible strip remains inert. |
+| `minSize` | `string` | `0rem` | Minimum expanded extent; combines with an authored minmax minimum. |
+| `maxSize` | `string` | Not supplied | Maximum expanded extent, not the preferred size; flexible regions remain proportional below this cap. |
+| `resizeThreshold` | `string` | `0rem` | Release below this extent to fold after dragging; zero disables threshold folding. |
+| `folded` | `boolean` | `false` | Initial folded state when first registering the region. |
+| `saveState` | `boolean` | `false` | Persist the committed expanded size preference across reloads, keyed by stable child id and axis; does not persist folded state. Default false. |
+| `resizable` | `dictionaryOrBoolean` | `true` | Enable resizing; false disables the handle, or {hide:true} hides its indicator. |
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        { type: 'label', cap: 'The rail stays interactive while navigation and inspector fold independently.' },
+        {
+            type: 'container',
+            id: 'folding-example',
+            styles: [Styles.layout.accordion({ cols: '4rem 12rem minmax(12rem,1fr) 10rem', rows: 'minmax(0,1fr)' }), 'css(height:14rem;width:100%;gap:0.5rem)'],
+            components: [
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:1;display:flex;flex-direction:column;gap:0.5rem;background:ac4)'],
+                    components: [
+                        {
+                            type: 'button',
+                            cap: 'Nav',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-navigation').foldable.toggle();
+                            }
+                        },
+                        {
+                            type: 'button',
+                            cap: 'Info',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-inspector').foldable.toggle();
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-navigation',
+                    cap: 'Navigation',
+                    styles: ['css(grid-column:2;min-width:0;overflow:auto;background:ac1)', Styles.interact.foldable({ foldSize: '2rem', minSize: '6rem', maxSize: '20rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Filter', value: 'Retained navigation value', styles: ['label.atTop', 'size.fullwidth'] }]
+                },
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:3;min-width:0;overflow:auto;background:ac5)'],
+                    components: [{ type: 'label', cap: 'Main content receives the remaining space. The visible folded strip is inert; use the rail to reopen it.' }]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-inspector',
+                    cap: 'Inspector',
+                    styles: ['css(grid-column:4;min-width:0;overflow:auto;background:ac3)', Styles.interact.foldable({ minSize: '6rem', maxSize: '16rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Notes', value: 'Retained inspector value', styles: ['label.atTop', 'size.fullwidth'] }]
+                }
+            ]
+        }
+    ]
+};
+```
+
 ### `interact.movable`
 
 <a id="entry-interact-movable"></a>
@@ -118,13 +205,13 @@ Expandable
 
 Expand one panel into an adjacent sibling’s space.
 
-Chooses a previous/next sibling from direction, adds an optional toggle button and resize edge, and can store expanded state and dimensions by host id.
+Chooses a previous/next sibling from direction and adds an optional toggle button and resize edge. Outside accordion, saveState:true persists through localStorage: flex requires the styled element’s own id; legacy grid uses the parent id first, falling back to the element id, together with the axis. A parent-only id passes the prerequisite check but does not enable flex persistence.
 
-Requires the adjacent sibling and a measurable parent; saveState requires an id.
+Requires an adjacent sibling and measurable parent. Passing saveState:true requires a stable element or parent id, including inside accordion where storage handling is bypassed; omit irrelevant legacy options there. Outside accordion, persistence is opt-in. Inside accordion, the neighboring track must have interact.foldable.
 
 Removal releases resize/listener/button ownership and removes expansion classes.
 
-This is a paired-panel interaction, not an arbitrary overlay. The resizable object is treated as enabled but its custom fields are not forwarded by this wrapper.
+Outside accordion this is a paired-panel interaction, not an overlay. Inside layout.accordion, the neighboring interact.foldable owns folded state, preferred size, min/max and threshold behavior; expandable’s legacy default, saveState and resizeThreshold are bypassed. Its button calls the neighboring foldable API and resizing uses the shared grid owner. Configure initial state and bounds on foldable; configure expanded preference in the parent template.
 
 Positional order: `direction` → `resizeThreshold` → `default` → `button` → `saveState` → `resizable`.
 
@@ -137,17 +224,22 @@ Positional order: `direction` → `resizeThreshold` → `default` → `button` �
 | `saveState` | `boolean` | `false` | Save state |
 | `resizable` | `dictionaryOrBoolean` | `true` | Resizable |
 
-Adds an expand/collapse toggle between this element and its adjacent sibling. Expands to 100% in the given direction, shrinking the sibling. Persists state in `localStorage` (by element `id`). Requires the element to have an `id`.
+Adds a toggle between this element and its adjacent sibling. Outside accordion, optional `saveState:true` enables `localStorage` persistence: flex requires the styled element’s own `id`; legacy grid uses the parent `id` (falling back to the element `id`) together with the axis. A parent-only `id` passes the initial prerequisite check but does not enable flex persistence. Inside accordion, configure the neighboring `interact.foldable` and the parent template; its legacy `default`, `saveState` and `resizeThreshold` options do not govern that track.
 
 ```javascript jaml-playground
-export default [
-    {
-        type: 'container',
-        id: 'sidebar',
-        styles: ['interact.expandable(direction:right;default:30%)'],
-        components: [{ type: 'label', cap: 'Expandable sidebar' }]
-    }
-];
+export default {
+    type: 'container',
+    styles: ['css(display:flex;width:100%;height:10rem)'],
+    components: [
+        { type: 'container', styles: ['css(width:30%;min-width:0;background:ac1)'], components: [{ type: 'label', cap: 'Paired sidebar' }] },
+        {
+            type: 'container',
+            id: 'paired-example-main',
+            styles: ['css(width:70%;min-width:0;background:ac5)', Styles.interact.expandable({ direction: 'left', default: '70%', resizable: true })],
+            components: [{ type: 'label', cap: 'Use the boundary toggle or resize handle. State is not persisted unless saveState is enabled with an id.' }]
+        }
+    ]
+};
 ```
 
 ### `interact.closable`
@@ -158,15 +250,16 @@ Closable
 
 Add a close affordance to a host.
 
-Creates a close button and wires icon-slot double-click to it; the default callback removes the nearest closable host.
+Creates a named close button and wires icon-slot double-click to it; the default callback removes the nearest closable host.
 
 Provide callback when closing must update application state or request confirmation.
 
-Positional order: `callback`.
+Positional order: `callback` → `label`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `callback` | `function` | Runtime-determined (function) | Callback |
+| `callback` | `function` | Runtime-determined (function) | Callback<br>Shorthand |
+| `label` | `functionOrString` | Not supplied | Accessible close-button name: string or (host) => string. Defaults to translated Close; refreshed on locale change. |
 
 Adds a close (&times;) button. Double-clicking the icon slot also triggers close.
 

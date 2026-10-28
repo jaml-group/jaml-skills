@@ -21,6 +21,8 @@ A tag list that renders each selected option as a visual tag/chip. Supports addi
 }
 ```
 
+Removable tags name each remove button with the localized equivalent of `Remove {name}`, using the option name. The native button owns this name from creation and refreshes it when the locale changes; applications do not need to query asynchronously created buttons to label them.
+
 ---
 
 ## Params

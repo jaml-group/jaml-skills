@@ -10,6 +10,86 @@
 
 ## Variants
 
+### `layout.accordion`
+
+<a id="entry-layout-accordion"></a>
+
+Independent folding grid
+
+Own explicit grid tracks whose regions fold independently while retaining their expanded sizes.
+
+Each registered region keeps its own folded state and preferred size. Open flexible tracks share remaining space. Resizing a flexible region preserves its fractional preference; minSize and maxSize bound its expanded share. Length preferences retain their CSS length. Folded tracks use foldSize. Content stays mounted; folding does not remove or rebuild children.
+
+Apply layout.accordion to the grid owner and interact.foldable to each region. Supply at least one explicit template through cols/rows or the owner’s inline grid-template-columns/grid-template-rows. An axis without an authored template is not managed. Numeric repeat() and named lines are supported; auto-fill, auto-fit, implicit tracks and unresolved template variables are not. Bound the owner’s height when managing rows. When maxSize caps a fractional track, the constrained axis must use definite length/percentage tracks, fr, or minmax(length,fr); intrinsic/auto/fit-content/calc track definitions are rejected on that capped path rather than estimated. The uncapped CSS-native path is unchanged.
+
+State and preferred sizes belong to the live accordion session. Moving a region between valid tracks preserves them; temporarily unsupported placement releases its track until valid placement returns. Removing/reinstalling the parent style ends the sizing session and starts from authored definitions. Removing child ownership releases its handle, listeners and owned presentation; content is retained. Mount order may be parent-first or child-first.
+
+Use explicit single-track placement for each foldable region. A subgrid may relay that axis to an ancestor accordion; use definite numeric lines or numeric spans along the subgrid chain, and make each foldable region resolve to one ancestor track. An independent nested grid stops resolution. Regions sharing one ancestor track must declare identical fold constraints and share state. Keep an interactive rail or reopen button outside every folded host, even when foldSize leaves a visible strip. Apply foldable to the element that already owns the region. A titled group can use a wrapper or card with cap, icon and extra for its native heading and actions; the behavior does not require rebuilding those parts inside a generic container.
+
+This is an independent grid-fold owner, not a hover accordion or overlay. Use interact.expandable for a legacy paired sibling interaction and jaml.drawer for lazy retained edge content with docked/overlay modes. Native grid gaps remain intentional. If the sum of expanded minima exceeds the host, the authored layout cannot fit; if every expanded track reaches its maximum, unused space can remain. No automatic breakpoint or persistence store is implied. Avoid an authored minimum larger than maxSize: as with CSS sizing, the effective minimum wins that impossible constraint.
+
+Positional order: `cols` → `rows`.
+
+| Argument | Type | Contract |
+| --- | --- | --- |
+| `cols` | `string` | Explicit authored column template; omit to read inline grid-template-columns. |
+| `rows` | `string` | Explicit authored row template; omit to read inline grid-template-rows. |
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    components: [
+        { type: 'label', cap: 'The rail stays interactive while navigation and inspector fold independently.' },
+        {
+            type: 'container',
+            id: 'folding-example',
+            styles: [Styles.layout.accordion({ cols: '4rem 12rem minmax(12rem,1fr) 10rem', rows: 'minmax(0,1fr)' }), 'css(height:14rem;width:100%;gap:0.5rem)'],
+            components: [
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:1;display:flex;flex-direction:column;gap:0.5rem;background:ac4)'],
+                    components: [
+                        {
+                            type: 'button',
+                            cap: 'Nav',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-navigation').foldable.toggle();
+                            }
+                        },
+                        {
+                            type: 'button',
+                            cap: 'Info',
+                            onclick() {
+                                this.closest('#folding-example').querySelector('#folding-inspector').foldable.toggle();
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-navigation',
+                    cap: 'Navigation',
+                    styles: ['css(grid-column:2;min-width:0;overflow:auto;background:ac1)', Styles.interact.foldable({ foldSize: '2rem', minSize: '6rem', maxSize: '20rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Filter', value: 'Retained navigation value', styles: ['label.atTop', 'size.fullwidth'] }]
+                },
+                {
+                    type: 'container',
+                    styles: ['css(grid-column:3;min-width:0;overflow:auto;background:ac5)'],
+                    components: [{ type: 'label', cap: 'Main content receives the remaining space. The visible folded strip is inert; use the rail to reopen it.' }]
+                },
+                {
+                    type: 'wrapper-vertical',
+                    id: 'folding-inspector',
+                    cap: 'Inspector',
+                    styles: ['css(grid-column:4;min-width:0;overflow:auto;background:ac3)', Styles.interact.foldable({ minSize: '6rem', maxSize: '16rem', resizeThreshold: '3rem' })],
+                    components: [{ type: 'input', cap: 'Notes', value: 'Retained inspector value', styles: ['label.atTop', 'size.fullwidth'] }]
+                }
+            ]
+        }
+    ]
+};
+```
+
 ### `layout`
 
 <a id="entry-layout"></a>

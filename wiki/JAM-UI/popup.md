@@ -75,6 +75,8 @@ Use the existing popup owner and its close/disposal lifecycle; do not add anothe
 
 ### What still needs positioning
 
+For a known application-owned content change, prefer manual positioning: prepare the settled data, apply the content change, then call `await popup.updatePosition()` once at that boundary. Avoid revealing loading placeholders and rebuilding/repositioning through every intermediate snapshot when the final content can be prepared first. `moreSteady` is not a substitute for this update ownership.
+
 Edge anchoring does not replace measurement for viewport constraints, cross-axis alignment, moving targets, custom geometry or choosing another side. Automatic popup size observation still performs placement work. With `manuallyUpdatePos: true`, the caller remains responsible for position updates; `moreSteady` does not enable automatic positioning.
 
 In the current development runtime, a live `moveToTarget()` update that flips to another side also switches the anchored edge and remeasures before committing placement. Subsequent growth therefore follows the new side. Older runtimes can retain the previous anchor after a live flip; verify the runtime bundled with the application. Edge anchoring does not guarantee that oversized content fits the viewport.
@@ -178,8 +180,8 @@ For common use cases, use the declarative `tip` and `help` params instead of cal
 }
 ```
 
--   `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
--   `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
+- `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
+- `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
 
 ---
 
@@ -233,7 +235,11 @@ A JAML definition passed to `jam.popup` / `jam.dropDown` is built directly as co
 
 For application-owned focus, register the `showing` listener on the shared `papaya` popup before calling the helper. Check `event.detail.target` against the owned trigger and identify the owned content through `event.detail.content`. After that signal, verify the intended control is connected, visible and eligible before focusing it. Any deferred focus must be cancellable and guarded against dismissal, replacement or owner disposal. `showing` is not a promise that future data, fonts or layout have settled. The popup's private current-target field is not the public ownership API.
 
+With `manuallyUpdatePos: true`, the `showing` event identifies attached content, but the popup stays hidden awaiting the caller's first position update. Register an owned listener before opening; match both target and content, apply the prepared model data, then `await papaya.updatePosition()` before focusing. `updatePosition()` waits for the native pending-layout boundary before measuring and entering; do not add a guessed animation-frame or timeout delay. On the development runtime with conditional-layout readiness, this includes current `buildIf`/`showIf` work after scalar model-variable assignments, including rows not yet attached. Await its promise: even a no-work position update crosses the native notification microtask before measurement. This is not a general model-flush API for arbitrary nested collection publications or future asynchronous data. The caller must separately await its own asynchronous requests: native layout readiness cannot anticipate future Host/network results. Guard the continuation against close, replacement and disposal, and remove the owned listener with the presentation. For subsequent known updates, finish changing the content before explicitly updating position.
+
 The read-only `showing` property becomes false when the hide delay expires, **before** the exit animation and `hiding` event complete. It can therefore be false while the popup remains connected and animating. An adapter that must clear `aria-expanded` and stale close/focus callbacks at that earlier point should observe the popup's state, rather than waiting solely for `hiding`. In the current runtime this state is reflected by class changes: an owner-scoped `MutationObserver` on the popup's `class` attribute can re-read `papaya.showing`. Mutation delivery is asynchronous; disconnect the observer with the owner and do not treat every class mutation as dismissal.
+
+Separate interaction release from presentation disposal. When `showing` becomes false, clear trigger `aria-expanded`, cancel pending focus and retire input callbacks, but retain the rendered content and its model throughout the native exit animation. Destroying the model or clearing its content at hide start can remove the panel while its arrow is still animating. For ordinary dismissal, finalize model/content disposal on the owned `hiding` event. Also finalize when that presentation is replaced, its content is removed, or its owner is disposed; make finalization idempotent and guard it by presentation identity so an old close cannot destroy replacement content. Run application dismissal callbacks, subscription and timer cleanup, and business-state retirement when closing starts. Delay only destruction or clearing of the rendered model/content. If one application callback currently combines both responsibilities, split it: immediate semantic cleanup and deferred presentation disposal. Application callback names such as `onclose` or `onclosed` are adapter conventions, not native popup APIs. Guard both phases by presentation identity so cleanup from an older presentation cannot clear a replacement’s state.
 
 Cancelling a scheduled show before it becomes visible need not emit `hiding`. Release the application's resources on its own close, replacement and disposal paths too. Because `papaya` is shared, a subsequent `showing` for another target invalidates the previous adapter; even the same target can receive replacement content. Remove owned listeners, cancel pending focus and restore focus only when the dismissal reason requires it. This lifecycle contract does not provide complete menu/dialog keyboard behavior.
 
