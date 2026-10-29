@@ -2,99 +2,101 @@
 
 选择所属主题，再阅读具体条目的参数、前提和清理要求。
 
-- [active](active.zh.md)
-- [after](after.zh.md)
-- [animation](animation.zh.md)
-- [auto](auto.zh.md)
-- [badge-style](badge-style.zh.md)
-- [before](before.zh.md)
-- [button-style](button-style.zh.md)
-- [buttongroup-style](buttongroup-style.zh.md)
-- [calendar-style](calendar-style.zh.md)
-- [capslot](capslot.zh.md)
-- [card-style](card-style.zh.md)
-- [chart-style](chart-style.zh.md)
-- [check](check.zh.md)
-- [checkbox](checkbox.zh.md)
-- [checked](checked.zh.md)
-- [child](child.zh.md)
-- [click](click.zh.md)
-- [common/agent](common/agent.zh.md)
-- [common/align](common/align.zh.md)
-- [common/attrs](common/attrs.zh.md)
-- [common/background](common/background.zh.md)
-- [common/border](common/border.zh.md)
-- [common/cap](common/cap.zh.md)
-- [common/clazz](common/clazz.zh.md)
-- [common/color](common/color.zh.md)
-- [common/css](common/css.zh.md)
-- [common/filter](common/filter.zh.md)
-- [common/flex](common/flex.zh.md)
-- [common/gap](common/gap.zh.md)
-- [common/grid](common/grid.zh.md)
-- [common/hide](common/hide.zh.md)
-- [common/icon](common/icon.zh.md)
-- [common/layout](common/layout.zh.md)
-- [common/margin](common/margin.zh.md)
-- [common/mask](common/mask.zh.md)
-- [common/outline](common/outline.zh.md)
-- [common/overflow](common/overflow.zh.md)
-- [common/padding](common/padding.zh.md)
-- [common/shadow](common/shadow.zh.md)
-- [common/size](common/size.zh.md)
-- [common/text](common/text.zh.md)
-- [common/trait](common/trait.zh.md)
-- [common/value](common/value.zh.md)
-- [container-style](container-style.zh.md)
-- [datepicker-style](datepicker-style.zh.md)
-- [disabled](disabled.zh.md)
-- [echarts](echarts.zh.md)
-- [element-style](element-style.zh.md)
-- [extra](extra.zh.md)
-- [extraslot](extraslot.zh.md)
-- [focus](focus.zh.md)
-- [group](group.zh.md)
-- [hover](hover.zh.md)
-- [iconslot](iconslot.zh.md)
-- [indeterminate](indeterminate.zh.md)
-- [indicator-style](indicator-style.zh.md)
-- [input-style](input-style.zh.md)
-- [interact](interact.zh.md)
-- [label-style](label-style.zh.md)
-- [labelslot](labelslot.zh.md)
-- [layers/background](layers/background.zh.md)
-- [layers/border](layers/border.zh.md)
-- [layers/canvas](layers/canvas.zh.md)
-- [layers/chart](layers/chart.zh.md)
-- [layers/combo](layers/combo.zh.md)
-- [layers/crosshair](layers/crosshair.zh.md)
-- [layers/css](layers/css.zh.md)
-- [layers/follower](layers/follower.zh.md)
-- [layers/glare](layers/glare.zh.md)
-- [layers/layer](layers/layer.zh.md)
-- [layers/overlay](layers/overlay.zh.md)
-- [layers/ribbon](layers/ribbon.zh.md)
-- [layers/scroller](layers/scroller.zh.md)
-- [layers/spinner](layers/spinner.zh.md)
-- [layers/watermark](layers/watermark.zh.md)
-- [map-style](map-style.zh.md)
-- [notify-style](notify-style.zh.md)
-- [on](on.zh.md)
-- [options-style](options-style.zh.md)
-- [popup-style](popup-style.zh.md)
-- [progress-style](progress-style.zh.md)
-- [select-style](select-style.zh.md)
-- [stylize](stylize.zh.md)
-- [switch-style](switch-style.zh.md)
-- [sync](sync.zh.md)
-- [table-style](table-style.zh.md)
-- [tags-style](tags-style.zh.md)
-- [theme](theme.zh.md)
-- [timepicker-style](timepicker-style.zh.md)
-- [tree-style](tree-style.zh.md)
-- [visited](visited.zh.md)
-- [with](with.zh.md)
-- [wrapper-style](wrapper-style.zh.md)
+这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。
+
+- [active](active.zh.md) — 已有状态的呈现；不创建该状态。
+- [after](after.zh.md) — CSS 伪元素呈现。
+- [animation](animation.zh.md) — 入场、离场与运动效果。
+- [auto](auto.zh.md) — 自动聚焦、文字适配、移动或滚动同步与位置恢复。
+- [badge-style](badge-style.zh.md) — 原生 badge 的呈现；先选择元素与行为。
+- [before](before.zh.md) — CSS 伪元素呈现。
+- [button-style](button-style.zh.md) — 原生 button 的呈现；先选择元素与行为。
+- [buttongroup-style](buttongroup-style.zh.md) — 原生 buttongroup 的呈现；先选择元素与行为。
+- [calendar-style](calendar-style.zh.md) — 原生 calendar 的呈现；先选择元素与行为。
+- [capslot](capslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [card-style](card-style.zh.md) — 原生 card 的呈现；先选择元素与行为。
+- [chart-style](chart-style.zh.md) — 原生 chart 的呈现；先选择元素与行为。
+- [check](check.zh.md) — 可选的选中项装饰；选择状态由原生选项控件拥有。
+- [checkbox](checkbox.zh.md) — 复选框或选项布局及旧式标记；原生控件拥有选择状态。
+- [checked](checked.zh.md) — 已有状态的呈现；不创建该状态。
+- [child](child.zh.md) — 子项或插槽内容上的样式；先确认目标。
+- [click](click.zh.md) — 点击触发行为，包括将定位的同级内容置于前方。
+- [common/agent](common/agent.zh.md) — 设置输入控件内部原生代理的样式。
+- [common/align](common/align.zh.md) — 对齐盒子及其内容。
+- [common/attrs](common/attrs.zh.md) — 为选定宿主或插槽目标设置属性。
+- [common/background](common/background.zh.md) — 背景颜色与图像呈现。
+- [common/border](common/border.zh.md) — 边框几何与外观。
+- [common/cap](common/cap.zh.md) — 定制原生标题的呈现。
+- [common/clazz](common/clazz.zh.md) — 命名类与可复用后代规则。
+- [common/color](common/color.zh.md) — 前景与语义颜色呈现。
+- [common/css](common/css.zh.md) — 局部声明与状态前缀 CSS；不创建新的交互所有者。
+- [common/filter](common/filter.zh.md) — 选定目标上的视觉滤镜。
+- [common/flex](common/flex.zh.md) — Flex 尺寸与位置。
+- [common/gap](common/gap.zh.md) — 布局子项间距。
+- [common/grid](common/grid.zh.md) — 网格轨道与子项放置。
+- [common/hide](common/hide.zh.md) — 可见性与显示处理；移除内容时检查生命周期。
+- [common/icon](common/icon.zh.md) — 呈现图标名称或字形；检查渲染器与资源前提。
+- [common/layout](common/layout.zh.md) — 容器几何、flex/grid 排列与受管理的可折叠布局。
+- [common/margin](common/margin.zh.md) — 选定盒子外部的间距。
+- [common/mask](common/mask.zh.md) — 遮罩与渐隐呈现。
+- [common/outline](common/outline.zh.md) — 选定目标周围的轮廓。
+- [common/overflow](common/overflow.zh.md) — 溢出及方向呈现；检查观察行为的要求。
+- [common/padding](common/padding.zh.md) — 选定盒子内部的间距。
+- [common/shadow](common/shadow.zh.md) — 阴影与层次呈现。
+- [common/size](common/size.zh.md) — 宽度、高度与尺寸约束。
+- [common/text](common/text.zh.md) — 排版与文字换行；盒子对齐有独立契约。
+- [common/trait](common/trait.zh.md) — 共享语义角色与类型类。
+- [common/value](common/value.zh.md) — 定制原生值的呈现。
+- [container-style](container-style.zh.md) — 原生 container 的呈现；先选择元素与行为。
+- [datepicker-style](datepicker-style.zh.md) — 原生 datepicker 的呈现；先选择元素与行为。
+- [disabled](disabled.zh.md) — 已有状态的呈现；不创建该状态。
+- [echarts](echarts.zh.md) — 图表配置与数据呈现；先选择原生图表契约。
+- [element-style](element-style.zh.md) — 原生 element 的呈现；先选择元素与行为。
+- [extra](extra.zh.md) — 子项或插槽内容上的样式；先确认目标。
+- [extraslot](extraslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [focus](focus.zh.md) — 已有状态的呈现；不创建该状态。
+- [group](group.zh.md) — 子项分组表面与布局预设。
+- [hover](hover.zh.md) — 已有状态的呈现；不创建该状态。
+- [iconslot](iconslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [indeterminate](indeterminate.zh.md) — 已有状态的呈现；不创建该状态。
+- [indicator-style](indicator-style.zh.md) — 原生 indicator 的呈现；先选择元素与行为。
+- [input-style](input-style.zh.md) — 原生 input 的呈现；先选择元素与行为。
+- [interact](interact.zh.md) — 移动、调整大小、折叠、排序或关闭已有宿主；检查所选行为的前提。
+- [label-style](label-style.zh.md) — 原生 label 的呈现；先选择元素与行为。
+- [labelslot](labelslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [layers/background](layers/background.zh.md) — 装饰性背景内容。
+- [layers/border](layers/border.zh.md) — 装饰性边框层。
+- [layers/canvas](layers/canvas.zh.md) — 基于画布的装饰内容。
+- [layers/chart](layers/chart.zh.md) — 已有宿主上的图表层。
+- [layers/combo](layers/combo.zh.md) — 组合式装饰层效果。
+- [layers/crosshair](layers/crosshair.zh.md) — 十字线装饰。
+- [layers/css](layers/css.zh.md) — 由 CSS 设置样式的子层。
+- [layers/follower](layers/follower.zh.md) — 可选跟随指针的装饰层；不拥有选择状态。
+- [layers/glare](layers/glare.zh.md) — 眩光与高亮效果。
+- [layers/layer](layers/layer.zh.md) — 围绕宿主已有用途添加内容；阅读层叠与插槽所有权契约。
+- [layers/overlay](layers/overlay.zh.md) — 覆盖层内容与层叠。
+- [layers/ribbon](layers/ribbon.zh.md) — 缎带装饰。
+- [layers/scroller](layers/scroller.zh.md) — 滚动层效果。
+- [layers/spinner](layers/spinner.zh.md) — 装饰性活动效果；可测量完成度应使用进度所有者。
+- [layers/watermark](layers/watermark.zh.md) — 水印装饰。
+- [map-style](map-style.zh.md) — 原生 map 的呈现；先选择元素与行为。
+- [notify-style](notify-style.zh.md) — 原生 notify 的呈现；先选择元素与行为。
+- [on](on.zh.md) — 已有浅色或深色表面上的前景角色。
+- [options-style](options-style.zh.md) — 原生 options 的呈现；先选择元素与行为。
+- [popup-style](popup-style.zh.md) — 原生 popup 的呈现；先选择元素与行为。
+- [progress-style](progress-style.zh.md) — 原生 progress 的呈现；先选择元素与行为。
+- [select-style](select-style.zh.md) — 原生 select 的呈现；先选择元素与行为。
+- [stylize](stylize.zh.md) — 分组样式的已弃用兼容别名；新组合使用 group。
+- [switch-style](switch-style.zh.md) — 原生 switch 的呈现；先选择元素与行为。
+- [sync](sync.zh.md) — 在框架尺寸事件中同步计算尺寸；能表达关系时优先使用 flex/grid。
+- [table-style](table-style.zh.md) — 原生 table 的呈现；先选择元素与行为。
+- [tags-style](tags-style.zh.md) — 原生 tags 的呈现；先选择元素与行为。
+- [theme](theme.zh.md) — 局部明暗配色边界；前景角色使用 on。
+- [timepicker-style](timepicker-style.zh.md) — 原生 timepicker 的呈现；先选择元素与行为。
+- [tree-style](tree-style.zh.md) — 原生 tree 的呈现；先选择元素与行为。
+- [visited](visited.zh.md) — 已有状态的呈现；不创建该状态。
+- [with](with.zh.md) — 受支持宿主上的主题表面与特征处理。
+- [wrapper-style](wrapper-style.zh.md) — 原生 wrapper 的呈现；先选择元素与行为。
 
 上下文路径在相应元素或插槽内应用共享样式；先阅读元素/插槽的宿主要求，再阅读相应公共样式。根 text.mono 与上下文 cap.text.mono 的行为不同，分别见文本参考。
 

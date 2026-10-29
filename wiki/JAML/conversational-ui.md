@@ -14,7 +14,9 @@ Choose the highest fitting **ready** capability from the current host snapshot. 
 
 Do not run three successive searches. Familiar ready contracts already in context can be selected immediately. Retrieve only an unresolved contract or prerequisite. A documented absence can justify fallback; a missing hit in a partial catalog cannot. If a stock module lacks its data feed, drawing a native chart does not supply market data.
 
-These levels describe the reuse boundary, not a component's appearance or root tag. Native `indicator`, `chart-*`, `list` and element-builder helpers are L1; they do not become registered CCs because they are compact. L2 may combine CCs using an existing composition recipe. Introducing new element-level structure or behavior uses L1 for that part; retain fitting modules and CCs elsewhere instead of rebuilding everything.
+These levels describe the reuse boundary, not a component's appearance or root tag. Native `indicator`, `chart-*`, `table` and element-builder helpers are L1; they do not become registered CCs because they are compact. L2 may combine CCs using an existing composition recipe. Introducing new element-level structure or behavior uses L1 for that part; retain fitting modules and CCs elsewhere instead of rebuilding everything.
+
+For a repeated list, compose native row elements under a meaningful container or [wrapper](../JAM-UI/wrapper.md), using [buildFor](jaml-format.md#buildfor) when data drives the rows. `list` is not a registered native element type. Wrapper list presentation uses `styles: ['wrapper.list']`; it does not introduce a data-loading or selection contract.
 
 ## A small current capability snapshot
 
@@ -90,6 +92,43 @@ export default [
 ```
 
 Use ordinary child styles for explicit sizing and long captions (for example `cap.text(whitespace:normal)`); the host does not infer business hierarchy from element types. More complex shared state or relationships can still justify an authored container. See [indicator](../JAM-UI/indicator.md), [chart prerequisites/data](../JAM-UI/chart.md) and [presentation/lifetime](../Plugins/markdown.md#playground-presentation) for unresolved details. No new JSON envelope or automatic cross-block persistence is implied.
+
+## Local state and actions
+
+A small reply can use the following native wiring contract directly. Retrieve the selected element or plugin's guide for its own inputs and prerequisites; these forms do not require rereading the complete format and binder guides.
+
+| Need               | Authoring contract                                                                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native parts       | Put `type`, `cap`, `value` and other documented parameters at the definition's top level; put child definitions in `components`.                                                                         |
+| Shared local state | Put initial keys in a common owner's `vars`. A group is justified when children share state, layout or lifetime. Separate independent definitions can remain an array.                                   |
+| Editable value     | `value: '{{quantity}}'` is a single-variable, two-way binding. Do not also supply `valueKey` on that element.                                                                                            |
+| Derived value      | `value: '{{quantity}} * 2'` re-evaluates when the key changes; it does not provide two-way editing. Binder support belongs to documented parameters/control keys, not arbitrary fields.                  |
+| Local command      | Use a normal handler such as `onclick() { this.model.vars.quantity = 0; }`. Its `this` is the element. Arrow functions do not acquire that receiver. Write individual keys; do not replace `model.vars`. |
+| Appearance         | `styles` is an ordered list of registered style/plugin paths; `style` is a CSS declaration object. Native semantic parts and state remain their owners.                                                  |
+
+This example has one model because the input, switch, metric and restore action share values. The input owns editing, the switch owns toggling and the indicator owns the result. No separate labels or click handler are needed to reproduce those behaviors.
+
+```javascript jaml-content
+export default {
+    type: 'container',
+    vars: { quantity: 2, enabled: true },
+    components: [
+        { type: 'input-number', cap: 'Quantity', value: '{{quantity}}' },
+        { type: 'switch', cap: 'Include', value: '{{enabled}}' },
+        { type: 'indicator-number', cap: 'Included quantity', value: '{{enabled}} ? {{quantity}} : 0', unit: 'units' },
+        {
+            type: 'button',
+            cap: 'Restore values',
+            onclick() {
+                this.model.vars.quantity = 2;
+                this.model.vars.enabled = true;
+            }
+        }
+    ]
+};
+```
+
+The state lasts with this model. A re-created view can start from its initial values again; a DOM id alone does not preserve it. Saving across replies or sending a response to the assistant needs the host's advertised contract. See [model vars](jaml-format.md#vars), [value bindings](binder.md#variable-binder-key), [input](../JAM-UI/input.md), [switch](../JAM-UI/switch.md) and [indicator](../JAM-UI/indicator.md) when the task exceeds the forms above.
 
 ## Host integration
 

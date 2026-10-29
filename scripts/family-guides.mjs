@@ -1,5 +1,6 @@
 import { posix } from 'node:path';
 import { argumentLines, renderFamilyGuides } from './animation-guide.mjs';
+import { familyPurpose } from './family-index.mjs';
 
 const code = (value) => '`' + String(value).replaceAll('`', '\\`') + '`';
 const entryAnchor = (path) => 'entry-' + path.toLowerCase().replaceAll('.', '-');
@@ -212,6 +213,7 @@ export function projectGuides(catalog, locale = 'en') {
         ['plugin', 'Plugins']
     ]) {
         const _lines = ['# ' + (locale === 'zh' ? (directory === 'Styles' ? '样式参考' : '插件参考') : directory === 'Styles' ? 'Style reference' : 'Plugin reference'), '', locale === 'zh' ? '选择所属主题，再阅读具体条目的参数、前提和清理要求。' : 'Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.', ''];
+        _lines.push(locale === 'zh' ? '这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。' : 'These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.', '');
         const _links = new Map();
         for (const [key, target] of _targets) {
             if (key.startsWith(kind + ':')) {
@@ -219,7 +221,8 @@ export function projectGuides(catalog, locale = 'en') {
             }
         }
         for (const [file, link] of [..._links].sort(([a], [b]) => a.localeCompare(b))) {
-            _lines.push(`- [${file.replace(directory + '/', '').replace(/(?:\.zh)?\.md$/, '')}](${link})`);
+            const _purpose = familyPurpose(file, locale);
+            _lines.push(`- [${file.replace(directory + '/', '').replace(/(?:\.zh)?\.md$/, '')}](${link})${_purpose ? ' — ' + _purpose : ''}`);
         }
         if (kind === 'style') {
             _lines.push('', locale === 'zh' ? '上下文路径在相应元素或插槽内应用共享样式；先阅读元素/插槽的宿主要求，再阅读相应公共样式。根 text.mono 与上下文 cap.text.mono 的行为不同，分别见文本参考。' : 'Contextual paths apply shared styles within an element or slot. Read the host/slot contract before its common-style contract. Root text.mono and contextual cap.text.mono have distinct behavior; see the text guide.', '', '[Style composition](styles.md#style-ownership-and-composition).');

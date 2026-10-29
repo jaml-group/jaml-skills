@@ -2,99 +2,101 @@
 
 Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.
 
-- [active](active.md)
-- [after](after.md)
-- [animation](animation.md)
-- [auto](auto.md)
-- [badge-style](badge-style.md)
-- [before](before.md)
-- [button-style](button-style.md)
-- [buttongroup-style](buttongroup-style.md)
-- [calendar-style](calendar-style.md)
-- [capslot](capslot.md)
-- [card-style](card-style.md)
-- [chart-style](chart-style.md)
-- [check](check.md)
-- [checkbox](checkbox.md)
-- [checked](checked.md)
-- [child](child.md)
-- [click](click.md)
-- [common/agent](common/agent.md)
-- [common/align](common/align.md)
-- [common/attrs](common/attrs.md)
-- [common/background](common/background.md)
-- [common/border](common/border.md)
-- [common/cap](common/cap.md)
-- [common/clazz](common/clazz.md)
-- [common/color](common/color.md)
-- [common/css](common/css.md)
-- [common/filter](common/filter.md)
-- [common/flex](common/flex.md)
-- [common/gap](common/gap.md)
-- [common/grid](common/grid.md)
-- [common/hide](common/hide.md)
-- [common/icon](common/icon.md)
-- [common/layout](common/layout.md)
-- [common/margin](common/margin.md)
-- [common/mask](common/mask.md)
-- [common/outline](common/outline.md)
-- [common/overflow](common/overflow.md)
-- [common/padding](common/padding.md)
-- [common/shadow](common/shadow.md)
-- [common/size](common/size.md)
-- [common/text](common/text.md)
-- [common/trait](common/trait.md)
-- [common/value](common/value.md)
-- [container-style](container-style.md)
-- [datepicker-style](datepicker-style.md)
-- [disabled](disabled.md)
-- [echarts](echarts.md)
-- [element-style](element-style.md)
-- [extra](extra.md)
-- [extraslot](extraslot.md)
-- [focus](focus.md)
-- [group](group.md)
-- [hover](hover.md)
-- [iconslot](iconslot.md)
-- [indeterminate](indeterminate.md)
-- [indicator-style](indicator-style.md)
-- [input-style](input-style.md)
-- [interact](interact.md)
-- [label-style](label-style.md)
-- [labelslot](labelslot.md)
-- [layers/background](layers/background.md)
-- [layers/border](layers/border.md)
-- [layers/canvas](layers/canvas.md)
-- [layers/chart](layers/chart.md)
-- [layers/combo](layers/combo.md)
-- [layers/crosshair](layers/crosshair.md)
-- [layers/css](layers/css.md)
-- [layers/follower](layers/follower.md)
-- [layers/glare](layers/glare.md)
-- [layers/layer](layers/layer.md)
-- [layers/overlay](layers/overlay.md)
-- [layers/ribbon](layers/ribbon.md)
-- [layers/scroller](layers/scroller.md)
-- [layers/spinner](layers/spinner.md)
-- [layers/watermark](layers/watermark.md)
-- [map-style](map-style.md)
-- [notify-style](notify-style.md)
-- [on](on.md)
-- [options-style](options-style.md)
-- [popup-style](popup-style.md)
-- [progress-style](progress-style.md)
-- [select-style](select-style.md)
-- [stylize](stylize.md)
-- [switch-style](switch-style.md)
-- [sync](sync.md)
-- [table-style](table-style.md)
-- [tags-style](tags-style.md)
-- [theme](theme.md)
-- [timepicker-style](timepicker-style.md)
-- [tree-style](tree-style.md)
-- [visited](visited.md)
-- [with](with.md)
-- [wrapper-style](wrapper-style.md)
+These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
+
+- [active](active.md) — Presentation for an existing state; does not activate that state.
+- [after](after.md) — CSS pseudo-element presentation.
+- [animation](animation.md) — Entry, exit and motion effects.
+- [auto](auto.md) — Automatic focus, text fitting, movement/scroll synchronization and position restoration.
+- [badge-style](badge-style.md) — Presentation for native badge; select the element and behavior first.
+- [before](before.md) — CSS pseudo-element presentation.
+- [button-style](button-style.md) — Presentation for native button; select the element and behavior first.
+- [buttongroup-style](buttongroup-style.md) — Presentation for native buttongroup; select the element and behavior first.
+- [calendar-style](calendar-style.md) — Presentation for native calendar; select the element and behavior first.
+- [capslot](capslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [card-style](card-style.md) — Presentation for native card; select the element and behavior first.
+- [chart-style](chart-style.md) — Presentation for native chart; select the element and behavior first.
+- [check](check.md) — Optional checked-option decoration; the native option owns selection.
+- [checkbox](checkbox.md) — Checkbox/option layout and legacy markers; native controls own selection.
+- [checked](checked.md) — Presentation for an existing state; does not activate that state.
+- [child](child.md) — Styles on child or slotted content; establish the target first.
+- [click](click.md) — Click-triggered behavior, including bringing positioned peers forward.
+- [common/agent](common/agent.md) — Style the native control backing an input.
+- [common/align](common/align.md) — Align boxes and their content.
+- [common/attrs](common/attrs.md) — Set attributes on the selected host or slot target.
+- [common/background](common/background.md) — Background color and image presentation.
+- [common/border](common/border.md) — Border geometry and appearance.
+- [common/cap](common/cap.md) — Specialize the native caption’s presentation.
+- [common/clazz](common/clazz.md) — Named classes and reusable descendant rules.
+- [common/color](common/color.md) — Foreground and semantic color presentation.
+- [common/css](common/css.md) — Local declarations and state-prefixed CSS; not a new interaction owner.
+- [common/filter](common/filter.md) — Visual filters on the selected target.
+- [common/flex](common/flex.md) — Flex sizing and placement.
+- [common/gap](common/gap.md) — Spacing between layout children.
+- [common/grid](common/grid.md) — Grid tracks and child placement.
+- [common/hide](common/hide.md) — Visibility and display treatments; check lifecycle when removing content.
+- [common/icon](common/icon.md) — Render icon names or literal glyphs; check renderer and asset prerequisites.
+- [common/layout](common/layout.md) — Container geometry, flex/grid arrangements and managed foldable layouts.
+- [common/margin](common/margin.md) — Space outside the selected box.
+- [common/mask](common/mask.md) — Mask and fade presentation.
+- [common/outline](common/outline.md) — Outlines around the selected target.
+- [common/overflow](common/overflow.md) — Overflow and directional presentation; check watcher requirements.
+- [common/padding](common/padding.md) — Space inside the selected box.
+- [common/shadow](common/shadow.md) — Shadow and elevation presentation.
+- [common/size](common/size.md) — Width, height and sizing constraints.
+- [common/text](common/text.md) — Typography and text wrapping; box alignment has its own contract.
+- [common/trait](common/trait.md) — Shared semantic roles and type classes.
+- [common/value](common/value.md) — Specialize the native value’s presentation.
+- [container-style](container-style.md) — Presentation for native container; select the element and behavior first.
+- [datepicker-style](datepicker-style.md) — Presentation for native datepicker; select the element and behavior first.
+- [disabled](disabled.md) — Presentation for an existing state; does not activate that state.
+- [echarts](echarts.md) — Chart options and data presentation; start with the native chart contract.
+- [element-style](element-style.md) — Presentation for native element; select the element and behavior first.
+- [extra](extra.md) — Styles on child or slotted content; establish the target first.
+- [extraslot](extraslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [focus](focus.md) — Presentation for an existing state; does not activate that state.
+- [group](group.md) — Grouped child surfaces and layout presets.
+- [hover](hover.md) — Presentation for an existing state; does not activate that state.
+- [iconslot](iconslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [indeterminate](indeterminate.md) — Presentation for an existing state; does not activate that state.
+- [indicator-style](indicator-style.md) — Presentation for native indicator; select the element and behavior first.
+- [input-style](input-style.md) — Presentation for native input; select the element and behavior first.
+- [interact](interact.md) — Move, resize, fold, sort or dismiss an existing host; check the chosen behavior’s prerequisites.
+- [label-style](label-style.md) — Presentation for native label; select the element and behavior first.
+- [labelslot](labelslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [layers/background](layers/background.md) — Decorative background content.
+- [layers/border](layers/border.md) — Decorative border layers.
+- [layers/canvas](layers/canvas.md) — Canvas-based decorative content.
+- [layers/chart](layers/chart.md) — Chart layers around an existing host.
+- [layers/combo](layers/combo.md) — Composite decorative layer effects.
+- [layers/crosshair](layers/crosshair.md) — Crosshair decoration.
+- [layers/css](layers/css.md) — A CSS-styled child layer.
+- [layers/follower](layers/follower.md) — Decorative layers with optional pointer following; does not own selection.
+- [layers/glare](layers/glare.md) — Glare and highlight effects.
+- [layers/layer](layers/layer.md) — Add content around the host’s existing purpose; read stacking and slot ownership.
+- [layers/overlay](layers/overlay.md) — Overlay content and its stacking.
+- [layers/ribbon](layers/ribbon.md) — Ribbon decoration.
+- [layers/scroller](layers/scroller.md) — Scrolling layer effects.
+- [layers/spinner](layers/spinner.md) — Decorative activity; use a progress owner for measured completion.
+- [layers/watermark](layers/watermark.md) — Watermark decoration.
+- [map-style](map-style.md) — Presentation for native map; select the element and behavior first.
+- [notify-style](notify-style.md) — Presentation for native notify; select the element and behavior first.
+- [on](on.md) — Foreground roles for an existing light or dark surface.
+- [options-style](options-style.md) — Presentation for native options; select the element and behavior first.
+- [popup-style](popup-style.md) — Presentation for native popup; select the element and behavior first.
+- [progress-style](progress-style.md) — Presentation for native progress; select the element and behavior first.
+- [select-style](select-style.md) — Presentation for native select; select the element and behavior first.
+- [stylize](stylize.md) — Deprecated compatibility aliases for group styles; use group for new composition.
+- [switch-style](switch-style.md) — Presentation for native switch; select the element and behavior first.
+- [sync](sync.md) — Copy a computed dimension on framework resize; prefer flex/grid when sufficient.
+- [table-style](table-style.md) — Presentation for native table; select the element and behavior first.
+- [tags-style](tags-style.md) — Presentation for native tags; select the element and behavior first.
+- [theme](theme.md) — Local light/dark color-scheme boundaries; use on for foreground roles.
+- [timepicker-style](timepicker-style.md) — Presentation for native timepicker; select the element and behavior first.
+- [tree-style](tree-style.md) — Presentation for native tree; select the element and behavior first.
+- [visited](visited.md) — Presentation for an existing state; does not activate that state.
+- [with](with.md) — Theme surface and trait treatments on a supported host.
+- [wrapper-style](wrapper-style.md) — Presentation for native wrapper; select the element and behavior first.
 
 Contextual paths apply shared styles within an element or slot. Read the host/slot contract before its common-style contract. Root text.mono and contextual cap.text.mono have distinct behavior; see the text guide.
 
