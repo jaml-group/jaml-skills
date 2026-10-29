@@ -6,6 +6,8 @@ For style/plugin contracts, use the [style index](Styles/index.md) or [plugin in
 
 For new UI or reusable modules, start with [Think in JAML: purpose and composition](JAML/purpose-and-composition.md). It shows how to choose a semantic owner, reuse its native parts and compose independent business modules before choosing their geometry.
 
+For UI embedded in assistant replies, read [Choose UI for a reply](JAML/conversational-ui.md): prefer fitting modules, then registered CCs, then native JAML, using current host contracts.
+
 For setup, Wiki linking, builds, a first runnable example or a page that fails to load, start with [Run and test JAML](running-and-testing.md).
 
 For upgrading existing applications, read the [2.0 migration notes](migration-2.0.md). For retained inspectors and file viewing, see [drawers and previewers](JAML/drawer-and-previewer.md).
@@ -42,7 +44,7 @@ For a new dashboard, landing page, form or app, follow [Building a JAML UI](./bu
 
 Verify examples in layers:
 
--   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground` or `jaml-playground-result` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
+-   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground`, `jaml-artifact` or `jaml-content` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
 -   **Static semantics:** use the current source registry to check types, inherited parameters, style paths, and arguments. Dynamic builders and open argument dictionaries can exceed static metadata; investigate a diagnostic before accepting or rejecting the code.
 -   **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. A static pass does not prove visibility, resource loading, or lifecycle behavior.
 

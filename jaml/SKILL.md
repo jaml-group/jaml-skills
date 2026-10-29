@@ -1,6 +1,6 @@
 ---
 name: jaml
-description: Design, build, refactor, validate, explain and debug JAML applications and themes. Use for Jam-UI elements, bindings, styles/plugins, theme roles/tokens and reusable extensions; also configure or operate jaml-playground-mcp, jaml-playground and jaml-copilot.
+description: Design, build, refactor, validate, explain and debug JAML applications and themes. Use for deliberate interactive UI in assistant replies, Jam-UI elements, bindings, styles/plugins, theme roles/tokens and reusable extensions; also configure or operate jaml-playground-mcp, jaml-playground and jaml-copilot.
 license: MIT
 ---
 
@@ -10,19 +10,21 @@ Describe purpose with native Jam-UI capabilities, then specialize their existing
 
 ## Start and route
 
-Read [LEARNED.md](LEARNED.md), identify the target runtime/version and project instructions, and distinguish application consumption, theme authoring and framework development. Framework work follows its owning source and tests; app scaffolding applies only to application setup.
+Honor the user's requested response format first. A non-JAML reply can finish without reading JAML workflows or references. The JAML fast path applies only when JAML is the chosen representation. For a reply whose host already supplies the complete current capability and renderer contract, use the [reply-selection fast path](references/JAML/conversational-ui.md): choose directly without redundant workflow or reference reads. For missing native metric/chart contracts, use the reply guide's [compact selection and panel recipe](references/JAML/conversational-ui.md#native-elements-without-an-outer-wrapper) when the host advertises content/artifact presentations. Unknown inputs, dependencies, composition or lifecycle still require the affected contract. This exception applies to selecting and invoking known capabilities, not to new application design or unverified APIs.
+
+For JAML work that still needs a contract, read [LEARNED.md](LEARNED.md), identify the target runtime/version and project instructions, and distinguish application consumption, theme authoring and framework development. Framework work follows its owning source and tests; app scaffolding applies only to application setup.
 
 Load the workflow for the requested work. New apps normally use Design → Compose → Validate; a small edit needs only its affected contract and checks.
 
-| Ability      | When                                                             | Workflow                                                                  |
-| ------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Design       | New app, substantial feature, theme or migration                 | [Design](workflows/design.md), [Building a UI](references/building-ui.md) |
-| jam-dsh AGUI | Interactive assistant views in jam-dsh or its state/response API | [jam-dsh AGUI](workflows/jam-dsh-agui.md)                                 |
-| Compose      | Create or change executable JAML or extensions                   | [Compose](workflows/compose.md)                                           |
-| Refactor     | Restructure a project or theme                                   | [Refactor](workflows/refactor.md), then its project/theme route           |
-| Validate     | Review correctness and framework fit                             | [Validate](workflows/validate.md)                                         |
-| Explain      | Concepts, mechanisms, rationale or comparisons                   | [Explain](workflows/explain.md)                                           |
-| Debug        | Failure, incorrect behavior or performance                       | [Debug](workflows/debug.md)                                               |
+| Ability      | When                                                               | Workflow                                                                  |
+| ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Design       | New app, substantial feature, theme or migration                   | [Design](workflows/design.md), [Building a UI](references/building-ui.md) |
+| jam-dsh AGUI | Interactive assistant replies in jam-dsh or its state/response API | [jam-dsh AGUI](workflows/jam-dsh-agui.md)                                 |
+| Compose      | Create or change executable JAML or extensions                     | [Compose](workflows/compose.md)                                           |
+| Refactor     | Restructure a project or theme                                     | [Refactor](workflows/refactor.md), then its project/theme route           |
+| Validate     | Review correctness and framework fit                               | [Validate](workflows/validate.md)                                         |
+| Explain      | Concepts, mechanisms, rationale or comparisons                     | [Explain](workflows/explain.md)                                           |
+| Debug        | Failure, incorrect behavior or performance                         | [Debug](workflows/debug.md)                                               |
 
 ## Retrieve for the current decision
 
