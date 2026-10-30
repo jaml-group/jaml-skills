@@ -81,6 +81,8 @@ Read [layout contracts and examples](Styles/common/layout.md) before combining t
 
 Keep the shell's regions and scroll ownership with its [layout-owned roles](Theme/stylize.md#layout-owned-stylize-profiles). The navigator helper requires an existing button group; the `buttongroup.tilted` appearance style is not an overflow implementation. If the verified owners do not meet the required interaction, retain the gap and choose an appropriate [extension](JAML/component.md) instead of assuming a style name supplies it.
 
+For whole-row table highlighting from a cell value, use the table’s `descStyles` plus a class on `rowHolder`, initialized by `ontdbuild` and updated by the cell’s `onvaluechange`. Read [the recipe and hook limits](JAM-UI/table.md#whole-row-styling-from-a-cell-value): equal-value assignments do not provide a generic row-state event, and editable cells need an explicit writeback owner.
+
 ## Inputs, actions and metric presentation
 
 | Intent                     | Candidate                                                                            | Decision to preserve                                                                                                   |
@@ -106,6 +108,8 @@ Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [
 For sidebar rows, see [native bar icons, font assets and caption alignment](JAM-UI/button.md#sidebar-icons-and-left-aligned-captions).
 
 ## Popups, notifications and observers
+
+For size observation versus layout publication, read [the resize contract](JAM-UI/JAM-UI.md#resize-observation-and-layout-notification). A custom layout owner can publish `resize` to affected consumers; observing `passiveresize` does not replace that responsibility.
 
 For element size tracking, start with [shared `passiveresize`](JAM-UI/JAM-UI.md#shared-passive-resize): JAML `on.passiveresize` or paired `jam.bindEvent`/`jam.unbindEvent` subscriptions provide deferred content-box notifications and native measurements in `event.detail` on the updated runtime. Choose a directly owned `ResizeObserver` only when native timing, a different observed box, or native batching is required. Read the linked runtime and cleanup prerequisites before replacing an existing observer.
 
@@ -173,7 +177,11 @@ Independent fetchers remain supported. Request-promise sharing is conditional, a
 
 ## Charts and data transformations
 
+For chart sizing, check [the containing layout and resize notifications](JAM-UI/chart.md#sizing-and-resize); `redrawOnResize` does not enable observation.
+
 Start with the native [chart element and chart styles](Styles/chart-style.md), then inspect the [ECharts family](Styles/echarts.md) and exact `style echarts` paths. Separate three decisions:
+
+[Automatic grid layout](Styles/echarts.md#echartsgrid) follows effective Cartesian series, including mixed charts. Supply any axes not already provided by the chart style; use explicit legend positioning for non-Cartesian charts. Check the first-grid/first-legend and resize limits before relying on automatic spacing.
 
 1. **Data and chart type:** use the native chart type and its data contract. `echarts.bar`, `echarts.line`, `echarts.pie` and `echarts.Radar` are different series families, not interchangeable decorations.
 2. **Option composition:** axis, legend, title, grid, tooltip, label and visual-map helpers write to particular option owners. Query the full path, including case, before sharing a helper across series.

@@ -426,7 +426,7 @@ export default [
 
 绘制时替换 radar.indicator 和每个 series.data。不需要此转换而仅配置原始坐标时，使用 echarts.Radar。
 
-Radar chart. No extended variants — the basic style handles indicator/series transformation and uses `Radar({ shape: 'circle' })` as a plugin. Use `eopts` for customization.
+Radar chart. The basic style transforms indicator/series data and defaults to a circular radar. With `echarts.legend`, an unpositioned horizontal legend defaults to the top; no positioning plugin or Cartesian grid is required. When center/radius are also unset, the radar fits below the measured legend and axis names. Explicit legend top/bottom and radar geometry remain under your control. Hidden/vertical legends, radar arrays and responsive ECharts `media` layouts are excluded from this default layout. The native radar refits to available canvas width and height after resize, including legend wrapping, without changing the JAM element size or requiring `redrawOnResize: true`. Explicitly sized or multi-radar layouts remain caller-owned; labels or legends larger than the canvas still need an author layout decision. Use `eopts` for customization.
 
 ```javascript jaml-playground
 export default [
@@ -815,11 +815,13 @@ Components are used inside chart styles to configure sub-elements. Reference the
 
 设置笛卡尔绘图区边界及标签包含方式。
 
-写入 grid 的位置和尺寸；containLabel 默认为 true，网格背景可见性默认为 false。
+默认网格按所有选项回调完成后的系列坐标系确定，支持混合图表与 efuncs 修改。显式网格样式覆盖自动策略；配置的边距始终作为每次重绘的基准。
 
-显示网格背景时使用 border 和 shadow 子样式。网格几何与系列标签定位相互独立。
+自动网格不创建坐标轴；请补充所选图表样式未提供的坐标轴及其数据。通过 echarts.grid 配置边界或图例策略，通过 echarts.legend.position 指定顶部或底部位置。非直角坐标系的图例定位不需要网格。
 
-位置参数顺序: `left` → `top` → `right` → `bottom` → `containLabel` → `width` → `height` → `show` → `backgroundColor`.
+自动图例留白只检查第一个图例；仅当它可见且为横向时，为第一个网格预留空间；不处理纵向图例、多网格/多图例协调、轴标题留白或仅调整尺寸时的重新测量。需要随尺寸变化重新计算时设置 redrawOnResize:true，或显式管理布局。
+
+位置参数顺序: `left` → `top` → `right` → `bottom` → `containLabel` → `width` → `height` → `show` → `backgroundColor` → `autoLegend` → `relocateDefault` → `legendInset` → `legendGap`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
@@ -832,8 +834,43 @@ Components are used inside chart styles to configure sub-elements. Reference the
 | `height` | `numberOrString` | 未提供 | 高度 |
 | `show` | `boolean` | `false` | 显示 |
 | `backgroundColor` | `functionOrString` | 未提供 | 背景色 |
+| `autoLegend` | `boolean` | `true` | 为第一个图例（仅当它可见且为横向时）预留网格空间；false 禁用自动留白和移位。 |
+| `relocateDefault` | `boolean` | `true` | 未指定 top/bottom 时将图例移至顶部，并保留已指定的 left/right 位置。 |
+| `legendInset` | `number` | 运行时决定 (number) | 未定位图例移至顶部时的间距。数值使用 ECharts 几何单位（像素）；默认等于 0.5rem。 |
+| `legendGap` | `number` | 运行时决定 (number) | 图例与绘图区的间距。数值使用 ECharts 几何单位（像素）；默认等于 0.5rem。 |
 
-Chart grid (plot area). Args: `left`, `top`, `right`, `bottom`, `containLabel`, `width`, `height`, `show`, `backgroundColor`. Sub-styles: `border`, `shadow`, `showBorder`.
+Automatic defaults follow **coordinate systems**, not just chart types. Any series with `coordinateSystem: 'cartesian2d'` qualifies. When omitted, line, bar, scatter, effectScatter, candlestick, boxplot, heatmap, pictorialBar and custom series default to Cartesian. Explicit polar, calendar, geo or none overrides do not qualify. A mixed chart receives defaults if at least one series qualifies; pure radar, pie and geographic maps do not. Automatic grid does not create axes; supply any axes not already provided by the selected chart style, along with their data.
+
+Selection uses completed options, including `efuncs` transformations. Authored grid fields override defaults. Replacing the data can remove or restore automatic defaults without changing configured options.
+
+For the first legend when it is visible and horizontal, automatic layout reserves its offset, measured height and gap on the matching grid side. When neither top nor bottom is specified, it moves the legend to the top, centering it only if left/right are also unset. Explicit top/bottom is retained. Space grows only as needed from the authored margin; later redraws can shrink it or remove it when the legend is hidden.
+
+Use these style fragments inside a chart's `styles` array:
+
+```javascript
+// Explicit bottom legend; reserve the required bottom margin.
+'echarts.legend',
+'echarts.legend.position(bottom:1rem;left:center)',
+'echarts.grid(autoLegend:true)'
+```
+
+```javascript
+// Keep full control of both legend position and plot margins.
+'echarts.grid(autoLegend:false;top:3rem;bottom:3rem)'
+```
+
+`relocateDefault:false` disables only default relocation; spacing still applies. Without an explicit edge it reserves bottom space; specify top or bottom explicitly for predictable positioning across ECharts versions. Numeric `legendInset` and `legendGap` are ECharts geometry values; the defaults each correspond to `0.5rem`. Prefer the defaults unless custom spacing is needed.
+
+For a radar or other non-Cartesian chart, position the legend directly without adding grid styles:
+
+```javascript
+'echarts.legend',
+'echarts.legend.position(top:0.5rem;left:center)'
+```
+
+Limits: only the first legend and first grid participate in automatic spacing. Vertical legends are ignored. Reserve axis-title space separately; `containLabel` does not solve every title/legend collision. A plain resize does not recompute automatic spacing: set the chart's `redrawOnResize: true` when needed. Multiple grids/legends and custom overlapping layouts require explicit layout and, where appropriate, `autoLegend:false`. Explicit style policy can be removed to restore inherited automatic behavior.
+
+Sub-styles: `border`, `shadow`, `showBorder`.
 
 ### `echarts.title`
 

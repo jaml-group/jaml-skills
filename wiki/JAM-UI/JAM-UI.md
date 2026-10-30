@@ -334,6 +334,27 @@ Keep click/keyboard activation, `aria-expanded` and content visibility connected
 
 ---
 
+### Resize observation and layout notification
+
+Choose the event by the responsibility it serves:
+
+| Need                                          | Contract                                                                                                                                                                                        |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Observe an element's content-box size         | `passiveresize` uses shared observation and delivers native measurements later. Subscribe on the element whose size matters; see [subscription and cleanup](#shared-passive-resize).            |
+| Notify consumers after an owned layout change | `resize` is an explicit framework notification. `jam.StyleStack.triggerResize(host)` notifies the host and descendants registered for `resize`; it does not measure or change their dimensions. |
+
+These events are separate. A `passiveresize` notification does not automatically publish `resize`. Direct CSS writes can change an observed size without invoking the layout owner's notification path; switching a consumer's event is not automatically the right repair. Conversely, layout can move a fixed-size descendant without changing its content box.
+
+Native layout operations own their existing notifications. For a custom layout operation, publish once the new logical layout is applied and ready for consumers to measure. Do not defer that publication solely until a decorative animation ends or add another publisher around an operation that already supplies it. A later geometry change may need another notification from its own owner.
+
+```javascript
+// Integration fragment: host is an existing layout element owned by this operation.
+host.style.width = '24rem';
+jam.StyleStack.triggerResize(host);
+```
+
+Publish at the affected layout root so dependent children receive the notification. Use a JAML `on.resize` handler or paired `jam.bindEvent` / `jam.unbindEvent` calls to register custom consumers; these subscriptions do not acquire passive size observation. For a chart, first distinguish the containing layout's size from the chart canvas's size; see [chart sizing and resize](chart.md#sizing-and-resize).
+
 ### Shared passive resize
 
 Use `passiveresize` to react to an element's content-box size changes through the framework's shared `ResizeObserver`. Prefer it for ordinary application size tracking when deferred notification is acceptable. It observes layout size, not just user-driven resize handles or window resizing.

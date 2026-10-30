@@ -136,7 +136,7 @@ Adds list.
 
 No dedicated native selector was found for this marker. Use semantic wrapper roles and explicit group/layout styles for a verified result; the marker does not create list semantics or selection behavior.
 
-Legacy class marker; it does not create list semantics or bullet markers in this baseline. Use the list role for a semantic region and `element.list` for native document-item presentation.
+Legacy class marker without native wrapper styling. For an application collection, use `stylize: "list"` on its container or wrapper, `stylize: "item"` on each native peer, and an explicit layout. `buildFor` repeats data-driven items. Document bullets belong in Markdown; `element.list` is reserved for its renderer.
 
 ### `wrapper.orderedList`
 
@@ -150,7 +150,7 @@ Adds ordered-list.
 
 No dedicated native selector was found for this marker. Use semantic wrapper roles and explicit group/layout styles for a verified result; the marker does not create list semantics or selection behavior.
 
-Legacy class marker; it does not automatically number children. Compose native `element.list` items with explicit order values when document numbering is required.
+Legacy class marker; it does not automatically number children. Use Markdown for a numbered document list. For an application collection, use list/item roles and keep ordering in its data. `element.list` is reserved for the Markdown renderer.
 
 ## `wrapper.grid`
 

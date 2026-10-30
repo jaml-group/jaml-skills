@@ -131,11 +131,11 @@ export default [
 
 List
 
-Render a list item or a simple task item.
+Present a list item owned by the Markdown renderer.
 
 Adds indentation/list classes and an optional order marker. With todo enabled, prepends a native checkbox switch initialized from checked and forwards host clicks through clickWith.
 
-The caller owns the list data and persistence; the style does not parse Markdown or maintain a task model.
+Reserved for Markdown rendering; do not select this style for ordinary JAML lists or todo controls. Application collections use list/item roles and data-driven native children. This style does not parse Markdown or maintain application task data or persistence.
 
 Positional order: `indent` → `order` → `todo` → `checked`.
 
@@ -146,17 +146,7 @@ Positional order: `indent` → `order` → `todo` → `checked`.
 | `todo` | `boolean` | `false` | To-do |
 | `checked` | `boolean` | `false` | Completed |
 
-List item with optional order number or todo checkbox.
-
-```javascript jaml-playground
-export default [
-    {
-        type: 'element',
-        value: 'Buy groceries',
-        styles: ['element.list(todo:true;checked:false)']
-    }
-];
-```
+Reserved for Markdown-rendered list items. Ordinary JAML collections use `stylize: "list"` on their owner and `stylize: "item"` on their native children; use `buildFor` for data-driven repetition. Supply document bullets, numbering and task lists as Markdown.
 
 ### `element.image`
 

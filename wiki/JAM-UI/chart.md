@@ -10,6 +10,20 @@ An ECharts-powered chart element. The `type` second part maps directly to the EC
 
 Load the ECharts browser library before mounting chart elements. The chart reads `globalThis.echarts` from its own browsing context; a library loaded only in a parent window does not supply an iframe's runtime. An opaque or sandboxed host must provide the library inside that frame under its existing script policy. Chart data/options do not install the library or grant network access. Give the element nonzero dimensions and verify an initialized chart instance after mounting.
 
+## Sizing and resize
+
+Give the chart a nonzero height and a usable containing width. `width: '100%'` fills its containing layout, not necessarily the page; resizing the canvas cannot widen an incorrectly sized parent.
+
+The automatically installed chart style waits for chart readiness and resizes the ECharts instance on its initial stable callback and on framework `resize` notifications. It does not subscribe to every CSS size change through `passiveresize`. See [resize observation and layout notification](JAM-UI.md#resize-observation-and-layout-notification) for the difference and custom layout publication. Native layout operations retain their notification ownership; ordinary chart definitions do not need another observer or manual canvas-resize handler.
+
+`redrawOnResize: true` additionally redraws the chart when a framework `resize` event arrives. It does not enable size observation or publish a missing event; the initial stable callback only resizes. When investigating stale chart dimensions, compare the containing layout, chart host and canvas, then verify the actual layout operation delivers its notification before changing the chart handler. A direct CSS experiment may omit that part of the operation.
+
+## Automatic grid and legend layout
+
+Automatic grid defaults follow the completed series coordinate systems, including mixed charts; they are not limited to bar/line. Explicit non-Cartesian overrides do not acquire a grid. Automatic grid does not create axes; supply any axes not already provided by the selected chart style. See [grid defaults, opt-out and layout limits](../Styles/echarts.md#echartsgrid) before customizing legend spacing.
+
+For radar, pie and geographic charts, position the legend directly with `echarts.legend.position`; do not add a Cartesian grid just to move the legend.
+
 ## JAML usage
 
 ```json jaml-playground
@@ -40,7 +54,7 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 | `chartOption`    | `Dictionary`                                                  | Read-only — the resolved ECharts option object. Set via styles or the `option` param                                                                                                                               |
 | `colorSet`       | `ColorType[]`                                                 | Color palette for the chart series. Auto-generated from accent color                                                                                                                                               |
 | `tuner`          | `ColorTuner \| (color: chroma.Color) => chroma.Color \| null` | Immutably tunes each original `colorSet` entry before the chart option is drawn. Presets: `none`, `dopamine`, `neon`, `pastel`, `jewel`, `morandi`                                                                 |
-| `redrawOnResize` | `boolean`                                                     | When `true`, redraws the full chart after an observed resize; otherwise only resizes the ECharts instance. Default `false`                                                                                         |
+| `redrawOnResize` | `boolean`                                                     | When `true`, also redraws after a framework `resize` event; otherwise only resizes the ECharts instance. Does not enable observation. Default `false`; see [sizing and resize](#sizing-and-resize)                 |
 
 **Available chart types (second part of composite `type`):** bar, line, pie, scatter, radar, gauge, funnel, k (candlestick), heatmap, treemap, tree, wordCloud, parallel, sankey, boxplot, graph, lines, themeRiver, map, map3d, custom. The second part becomes the ECharts `series.type`.
 
@@ -363,7 +377,7 @@ Pie data uses the dataset format (first row = name + value columns):
 {
     "type": "chart-radar",
     "cap": "Skills",
-    "styles": ["css(height:18rem;width:22rem)", "echarts.legend", "echarts.Radar(shape:circle)"],
+    "styles": ["css(height:18rem;width:22rem)", "echarts.legend", "echarts.legend.position(top:0.5rem;left:center)", "echarts.Radar(shape:circle)"],
     "data": [
         ["Skill", "Team A", "Team B"],
         ["Speed", 87, 80],

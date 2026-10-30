@@ -81,6 +81,8 @@ The user has already located the conversation. A centred modal requires them to 
 
 This is the interaction contract to implement and verify, not a claim that one helper supplies every step. For the popup variant, construct a reactive model from the editable definition, then give its built element to [`jam.popup`](../utils.md#jampopuptarget-content-option-type), or use an existing adapter that performs those steps. Read [shared popup content, focus and dismissal](../JAM-UI/popup.md#helper-content-focus-and-dismissal-timing): passing a definition directly does not construct a reactive Model, `onafterrender` is not a popup-visible readiness signal, and a later presentation can replace the shared popup. Anchor placement and return focus need keyboard and viewport checks.
 
+For compact Save/Cancel buttons, use the builder's [`options.actions`](../utils.md#jamlyesnodialogprompt-onyes-onno-styles-options) region instead of regrouping its generated children. Keep the prompt full width and choose horizontal or stacked actions independently. For a modal editor, use [targeted animated removal](../utils.md#close-a-specific-modal-after-its-exit-animation) and the definition's `onunmount` hook so cleanup preserves the exit and cannot close a newer modal.
+
 Compare [helper inputs, model ownership and dismissal](../utils.md#dialog-and-popup-ownership) before wiring callbacks. In particular, a popup accepts the explicitly owned model's built element; `renderModal` accepts the JAML definition and creates its model. Distinguish the definition from its presentation lifetime:
 
 -   For a brief local confirmation, [`jam.popupYesNo`](../utils.md#jampopupyesnotarget-prompt-onyes-onno-option) presents the decision near its target and requests dismissal before invoking the callback. It does not await asynchronous saving.
@@ -91,7 +93,7 @@ Compare [helper inputs, model ownership and dismissal](../utils.md#dialog-and-po
 This popup integration fragment assumes an initialized runtime, a product rule requiring a nonempty name, and application-supplied `submitRename(model)` and `cancelRename(model)`, with those validation, pending and lifetime checks. It builds the content; it does not mount or save anything by itself.
 
 ```javascript
-const renameDialog = jaml.yesNoDialog({ type: 'input', cap: 'Name', valueKey: 'draft', rules: { required: true } }, submitRename, cancelRename, ['layout.autoalign'], { yesCap: 'Save', noCap: 'Cancel' });
+const renameDialog = jaml.yesNoDialog({ type: 'input', cap: 'Name', valueKey: 'draft', rules: { required: true } }, submitRename, cancelRename, ['layout.autoalign'], { yesCap: 'Save', noCap: 'Cancel', actions: {} });
 const model = new jam.Model(renameDialog);
 model.vars.draft = currentName;
 const renameContent = model.build();

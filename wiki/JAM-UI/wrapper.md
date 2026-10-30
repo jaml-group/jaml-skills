@@ -31,9 +31,9 @@ A labeled container with a title row (icon + cap + extra) and a default body slo
 
 Inherits all params from [CoconutContainer](./container.md) and [AbstractElement](./JAM-UI.md#section-1--abstractelement).
 
-| Param  | Type     | Default | Description                                                                                                                            |
-| ------ | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `string` | —       | Use `"wrapper-vertical"` for automatic vertical styling. For a list, keep `"wrapper"` and apply `styles: ["wrapper.list"]` explicitly. |
+| Param  | Type     | Default | Description                                                                                                                                                          |
+| ------ | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` | `string` | —       | Use `"wrapper-vertical"` for automatic vertical styling. For an application collection, use `stylize: "list"` and child `stylize: "item"`; select layout separately. |
 
 ---
 
@@ -78,15 +78,21 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 }
 ```
 
-### List-style wrapper
+### Repeated collection with list/item roles
 
 ```json jaml-playground
 {
     "type": "wrapper",
     "cap": "Recent Items",
-    "styles": ["wrapper.list"],
-    "vars": { "items": [{ "name": "Alpha" }, { "name": "Beta" }] },
-    "components": [{ "type": "label", "buildFor": "item in items", "cap": "{{item.name}}" }]
+    "stylize": "list",
+    "styles": ["layout.flex(direction:column)"],
+    "vars": {
+        "items": [
+            { "id": "alpha", "name": "Alpha" },
+            { "id": "beta", "name": "Beta" }
+        ]
+    },
+    "components": [{ "type": "label", "stylize": "item", "buildFor": "item in items", "key": "id", "cap": "{{item.name}}" }]
 }
 ```
 
@@ -142,5 +148,7 @@ Inherits all params from [CoconutContainer](./container.md) and [AbstractElement
 
 -   A bare wrapper with no visible slot content or children has no intrinsic content size and can collapse in centered or shrink-to-fit layouts. Add children or explicit sizing; use `indicator`, `label`, or `button` for a standalone visible value, label, or action.
 -   `WalnutWrapper` inherits the one-time initial `isStable` promise and recurring `onstable` callback from [container](container.md#instance-methods-and-properties).
--   `"wrapper-vertical"` applies the vertical style automatically. List styling requires an explicit `wrapper.list` style.
+-   `"wrapper-vertical"` applies vertical styling automatically. List/item roles supply collection and peer theme context; use native children that fit each item’s purpose and choose layout explicitly.
+-   `wrapper.list` and `wrapper.orderedList` only add legacy markers without native wrapper styling. They do not generate bullets, numbering or selection. `element.list` is reserved for Markdown rendering; supply document lists as Markdown.
+-   For native row operations, choose [table](table.md) or [tree](tree.md). [Show more](../Plugins/show-more.md) reveals their loaded rows; it does not limit arbitrary wrapper children.
 -   When title, icon, and cap content are all absent, the wrapper collapses its header so its body can occupy the available layout.

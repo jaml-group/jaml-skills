@@ -298,6 +298,24 @@ These describe common content and interaction responsibilities:
 
 On runtimes supporting stacked actions, direct `button-cta` children appear last in the default `actions` layout, including when the group wraps. Set `variant: 'stacked'` on the actions container for a single-column layout with CTAs first. Multiple CTAs retain their relative authored order. This changes visual placement only; author DOM order deliberately because keyboard and accessibility reading order are unchanged.
 
+### Compact actions
+
+On runtimes supporting the compact variant, `stylize: 'actions', variant: 'compact'` creates a content-sized, end-aligned command row. Its buttons use equal-width columns, with no fixed button count. This shared role works in forms, cards, panels and dialogs; it does not supply decision callbacks or focus management.
+
+```javascript
+{
+    type: 'container',
+    stylize: 'actions',
+    variant: 'compact',
+    components: [
+        { type: 'button', cap: 'Cancel' },
+        { type: 'button-cta', cap: 'Save' }
+    ]
+}
+```
+
+Use `variant: 'stacked'` for a full-width single-column group with CTAs first visually. Stacked takes precedence: `variant: 'compact stacked'` also stays full-width; compact sizing only applies to non-stacked groups. Variant composition here is specific to the supported actions tokens; arbitrary variants do not automatically compose. DOM, keyboard and reading order stay authored. [`jaml.yesNoDialog`](../utils.md#jamlyesnodialogprompt-onyes-onno-styles-options) selects `compact` when `options.actions` is supplied, and accepts `stacked` through that region override.
+
 Assign `item` to each repeated list peer and every direct child positioned by its parent's coordinate system. List children represent repeated records; map and calendar children represent coordinate-owned labels, overlays, or marks. Parent context specializes the same item identity. A concrete element can carry the role directly; use a wrapper when one peer contains multiple elements.
 
 ```json

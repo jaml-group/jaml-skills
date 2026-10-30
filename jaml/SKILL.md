@@ -1,6 +1,6 @@
 ---
 name: jaml
-description: Design, build, refactor, validate, explain and debug JAML applications and themes. Use for deliberate interactive UI in assistant replies, Jam-UI elements, bindings, styles/plugins, theme roles/tokens and reusable extensions; also configure or operate jaml-playground-mcp, jaml-playground and jaml-copilot.
+description: Design, build, refactor, validate, explain and debug JAML applications and themes. Use for deliberate interactive UI in assistant replies, JAMLL streaming, Jam-UI elements, bindings, styles/plugins, theme roles/tokens and reusable extensions; also configure or operate jaml-playground-mcp, jaml-playground and jaml-copilot.
 license: MIT
 ---
 
@@ -13,6 +13,8 @@ Describe purpose with native Jam-UI capabilities, then specialize their existing
 Honor the user's requested response format first. A non-JAML reply can finish without reading JAML workflows or references. The JAML fast path applies only when JAML is the chosen representation. For a reply whose host already supplies the complete current capability and renderer contract, use the [reply-selection fast path](references/JAML/conversational-ui.md): choose directly without redundant workflow or reference reads. For missing native metric/chart contracts, use the reply guide's [compact selection and panel recipe](references/JAML/conversational-ui.md#native-elements-without-an-outer-wrapper) when the host advertises content/artifact presentations. Unknown inputs, dependencies, composition or lifecycle still require the affected contract. This exception applies to selecting and invoking known capabilities, not to new application design or unverified APIs.
 
 For a small conversational view, use the local composition contract below and retrieve only the selected element or behavior details that are missing. The [reply guide](references/JAML/conversational-ui.md#local-state-and-actions) expands this contract. A self-contained reply does not require the new-application Design → Compose sequence.
+
+Once interactive JAML is chosen, default to **JAMLL** when the host advertises it with whole-message-success integration: `text jamll` for content between paragraphs, `text jamll-artifact` for a distinct panel. The first fence token is the Markdown language hint; the second selects the renderer. Emit complete element records directly, one per physical line, with spaces for child indentation and no `export default`. Native composition and state ownership remain unchanged. Use a complete module when necessary setup or its result cannot fit independent records, and playground when editable source is requested. Follow the [JAMLL examples and format fallback](references/JAML/conversational-ui.md#progressive-replies-with-jamll) for those cases and hosts without JAMLL.
 
 For work beyond the small-reply route, read [LEARNED.md](LEARNED.md), identify the target runtime/version and project instructions, and distinguish application consumption, theme authoring and framework development. Framework work follows its owning source and tests; app scaffolding applies only to application setup.
 
@@ -45,7 +47,7 @@ Stop retrieval once the selected contract answers the task's inputs, owner, prer
 
 ## Local composition contract
 
-For native JAML, put `type`, `cap`, `value` and other documented element parameters directly on the definition; child definitions belong in `components`. A group with `vars` owns shared local state. Use that group when children share state, layout or lifetime; an independent element or array needs no authored wrapper.
+For native JAML, put `type`, `cap`, `value` and other documented element parameters directly on the definition. Object-form trees use `components`; JAMLL also expresses children by indentation. A native owner such as `container` can hold shared local state in `vars`. Use that owner when children share state, layout or lifetime; independent elements need no authored wrapper and can be separate JAMLL records.
 
 -   **Edit:** `value: '{{quantity}}'` binds a native input's value to the model key in both directions. Do not also set `valueKey` on that element.
 -   **Derive:** `value: '{{quantity}} * 2'` reacts to the key without publishing an edited result. Binding applies to documented element parameters/control keys, not arbitrary object fields.

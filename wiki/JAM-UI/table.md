@@ -180,7 +180,128 @@ export default {
 
 ### Using `ontdbuild` for custom cell setup
 
-The `ontdbuild` callback fires after each cell's DOM is constructed, giving access to the cell's `TomatoTd` instance and its bound methods (see Table cell API below).
+The column and table `ontdbuild(td)` callbacks run when a cell's DOM is first constructed; they do not rerun for retained cells on data updates. Read `td.value` for the incoming value and `td.dom` for the element with its row accessors. For initial and subsequent row highlighting, see [Whole-row styling from a cell value](#whole-row-styling-from-a-cell-value).
+
+### Row holder and decor selectors
+
+The table adds `.jam-row-holder` to each row holder it creates and `.jam-row-decor` to each row decor element. Use these classes in the table's `descStyles` to target the corresponding presentation layer. Configure `rowHolder: jaml.element()` when a holder is needed; a selector does not create one. Tree rows share these classes, so keep table-specific rules in that table's `descStyles` rather than a global stylesheet.
+
+For a constant treatment on every holder, no status class or cell hook is needed:
+
+```javascript
+rowHolder: jaml.element(),
+descStyles: {
+    '.jam-row-holder': ['background.gradient.corner(deg:160)']
+}
+```
+
+For status-dependent styling, toggle an app-owned class on the appropriate element and combine it with the framework class: `.jam-row-holder.row-alert` or `.jam-row-decor.row-alert`. The two classes must be on the same element; a space would select a descendant instead. `.jam-row-holder` and `.row-alert` each contribute one class to specificity; combining them contributes two, increasing specificity while identifying the intended layer. This does not guarantee precedence over every native or application rule.
+
+Use the holder for row backgrounds. The decor also carries native presentation such as hover feedback and selection controls. Keep native selection state intact on both; use an app-owned class for business status. The following example demonstrates the qualified holder selector.
+
+### Whole-row styling from a cell value
+
+For a background or highlight spanning a whole row, put the reusable style in the table's `descStyles` and toggle a class on its `rowHolder`. Use the status column's `ontdbuild(td)` for initial presentation and its element's `onvaluechange(value, oldValue)` for later value changes. Selection and hover remain table-owned; the custom class can coexist with them.
+
+This example applies [`background.gradient.corner`](../Styles/common/background.md#gradientcorner) to rows whose Status value is `alert`. A stable key retains existing cells when data changes. The buttons append a row and update an existing row without rebuilding its cells.
+
+```javascript jaml-playground
+let nextRow = 3;
+
+function paintStatus(element, value) {
+    element.rowHolder?.classList.toggle('row-alert', value === 'alert');
+}
+
+export default {
+    type: 'container',
+    styles: ['css(display:flex;flex-direction:column;gap:1rem)'],
+    components: [
+        {
+            type: 'wrapper',
+            styles: ['css(display:flex;flex-wrap:wrap;gap:0.5rem)'],
+            components: [
+                {
+                    type: 'button',
+                    cap: 'Add alert row',
+                    onclick() {
+                        const _id = `task-${nextRow++}`;
+                        document.getElementById('row-status-table').addARow({ id: _id, name: _id, status: 'alert' });
+                    }
+                },
+                {
+                    type: 'button',
+                    cap: 'Clear Alpha alert',
+                    onclick() {
+                        document.getElementById('row-status-table').setRow('alpha', { name: 'Alpha', status: 'normal' });
+                    }
+                },
+                {
+                    type: 'button',
+                    cap: 'Alert Alpha',
+                    onclick() {
+                        document.getElementById('row-status-table').setRow('alpha', { name: 'Alpha', status: 'alert' });
+                    }
+                }
+            ]
+        },
+        {
+            type: 'table-checkbox',
+            id: 'row-status-table',
+            cap: 'Status highlights',
+            valueIndex: 0,
+            styles: ['css(width:100%;height:18rem)'],
+            rowHolder: jaml.element(),
+            descStyles: {
+                '.jam-row-holder.row-alert': ['background.gradient.corner(deg:160)']
+            },
+            dataDef: [
+                { key: 'id', cap: 'ID', isKey: true, hide: true },
+                { key: 'name', cap: 'Name', type: 'text' },
+                {
+                    key: 'status',
+                    cap: 'Status',
+                    type: 'input',
+                    readOnly: true,
+                    ontdbuild(td) {
+                        paintStatus(td.dom, td.value);
+                    },
+                    onvaluechange(value) {
+                        paintStatus(this, value);
+                    }
+                }
+            ],
+            data: [
+                { id: 'alpha', name: 'Alpha', status: 'alert' },
+                { id: 'beta', name: 'Beta', status: 'normal' }
+            ]
+        }
+    ]
+};
+```
+
+#### Hook timing and limits
+
+-   The column's `ontdbuild(td)` runs before the table's `ontdbuild(td)`. Both precede application of the initial row value. Read `td.value` in build hooks: the element's value may not have been applied yet. `td.dom.rowHolder` already exists when a configured holder is built before the cell, but may not yet be connected.
+-   Inside `onvaluechange`, `this` is the cell element; use `this.jamtd`, `this.rowHolder` and `this.rowData`. Use a normal function/method when you need that receiver. `rowData` names follow column `cap || name || key`, so this example exposes `rowData.Status`, not `rowData.status`.
+-   A same-key data update retains existing cells and does not repeat their build hooks. Changed effective values notify; equal values, changes to another column, and descriptor-only changes do not necessarily notify this cell. A class derived from the cell's value fits this pattern; a class intended to mirror every `rowProfile` transition does not.
+-   Lazy cells receive the latest value when first built. Returning retained cells do not repeat build/value hooks merely because they re-enter the viewport. A hidden or never-built status cell cannot initialize a holder class through its own hook until it is built; choose a rendered column for this recipe. Sorting/filtering preserves keyed identity; unkeyed full replacement rebuilds it.
+-   Avoid using the holder's `.state` for the business status: native selection writes `checked`/`default` there. A separate class preserves both presentations. `td.state` is the table's current row profile; it can report `checked` instead of `updated` for a selected row.
+-   Keep the class toggle idempotent and handle both activation and removal. Do not accumulate styles or install a listener on every value notification. No extra listener cleanup is needed for the class-only recipe.
+
+#### Editable cells: choose the writeback owner
+
+Changing a cell element's value fires its handler but does **not** automatically update the table's cell model. For a cell-only edit, replace the example's Status column handler with the following and set `readOnly: false`:
+
+```javascript
+onvaluechange(value) {
+    this.jamtd.value = value;
+    this.rowHolder?.classList.toggle('row-alert', value === 'alert');
+}
+```
+
+Assigning `td.value` updates the model and applies it back to the element; assigning the same effective value does not emit another value-change notification. This is cell writeback, not a table row transaction: it does not recompute the row profile or run table-level filtering/sorting/selection reconciliation. Use `table.setRow(pKey, row)` when those operations are required, passing the complete intended row values: omitted non-key cells are cleared. Application persistence remains separate.
+
+For programmatic table updates, use `setRow` or `data` as in the first example. The value handler then observes incoming row data and reconciled selection. Do not treat every value notification as a user edit or an instruction to save remotely.
 
 ### Column-level `styles`
 
@@ -190,15 +311,16 @@ The `styles` property on a `ThOption` registers a scoped stylesheet class for th
 
 ## `rowProfile` — row states
 
-`table.rowProfile` is a `Map<PKey, RowState>` tracking state per row key.
+`table.rowProfile` is a `Map<PKey, RowState>` tracking transient data/selection state per row key. Data commits recompute change status; selection can replace it with `checked` or `indeterminate`. It is not an independent business-status store, and changing the map directly does not synchronize selection values, events or presentation. See the [value-driven row styling recipe](#whole-row-styling-from-a-cell-value).
 
-| RowState    | Description                          |
-| ----------- | ------------------------------------ |
-| `'default'` | Normal, unmodified row               |
-| `'new'`     | Row added during data update         |
-| `'expired'` | Row removed during data update       |
-| `'updated'` | Row value changed during data update |
-| `'checked'` | Row is selected (checkbox/radio)     |
+| RowState          | Description                                               |
+| ----------------- | --------------------------------------------------------- |
+| `'default'`       | Normal, unmodified row                                    |
+| `'new'`           | Row added during data update                              |
+| `'expired'`       | Cell-state fallback when its row key is no longer present |
+| `'updated'`       | Row value changed during data update                      |
+| `'checked'`       | Row is selected (checkbox/radio)                          |
+| `'indeterminate'` | Checkbox hierarchy is partially selected                  |
 
 ---
 
@@ -266,7 +388,7 @@ When cells are built via `ElementFactory` based on the column `type`, the follow
 | `this.col(colIdx)` | `function`    | Get the value from another column in the **same row** by column index. Example: `this.col(0)` returns the first column's value.                     |
 | `this.row(pKey)`   | `function`    | Get the value from another row in the **same column** by primary key. Example: `this.row(2)` returns this column's value for the row with pKey `2`. |
 | `this.params`      | `Dictionary`  | The column's full `ThOption` params (all keys from the `dataDef` entry excluding control keys).                                                     |
-| `this.rowData`     | `Dictionary`  | The current row's data as a key-value object, keyed by column `cap` / `name` / `key`.                                                               |
+| `this.rowData`     | `Dictionary`  | The current row's cell values, named by column caption, otherwise name, otherwise key. These names may differ from input record keys.               |
 | `this.colHolder`   | `HTMLElement` | The column holder element (background/styling element injected behind this column).                                                                 |
 | `this.colDecor`    | `HTMLElement` | The column decor element (e.g. a highlight bar at the column edge).                                                                                 |
 | `this.rowHolder`   | `HTMLElement` | The row holder element (background/styling element injected behind this row).                                                                       |
@@ -278,28 +400,28 @@ When cells are built via `ElementFactory` based on the column `type`, the follow
 
 Each cell is a `TomatoTd` instance, accessible via `this.jamtd` or the return value of methods like `table.locateTd()`. Key properties:
 
-| Property                | Type          | Description                                                                                                     |
-| ----------------------- | ------------- | --------------------------------------------------------------------------------------------------------------- |
-| `td.value`              | `any`         | Get or set the cell's displayed value. Setting triggers DOM update via `setParams()`.                           |
-| `td.pKey` / `td.rowIdx` | `PKey`        | The row's primary key — a numeric index by default, or a composite string key when `isKey` columns are defined. |
-| `td.colIdx`             | `number`      | The column's index in the original `dataDef` array.                                                             |
-| `td.th`                 | `TomatoTh`    | The column header object for this cell's column.                                                                |
-| `td.table`              | `TomatoTable` | The parent table instance.                                                                                      |
-| `td.checked`            | `boolean`     | Get or set whether the row is checked (for checkbox/radio tables).                                              |
-| `td.row`                | `number`      | Visual row position (1-based, after filtering and sorting).                                                     |
-| `td.col`                | `number`      | Visual column position (1-based, after column reordering and hiding).                                           |
-| `td.rowspan`            | `number`      | Row span for merged cells.                                                                                      |
-| `td.colspan`            | `number`      | Column span for merged cells.                                                                                   |
-| `td.dom`                | `HTMLElement` | The cell's DOM element.                                                                                         |
-| `td.holder`             | `HTMLElement` | The row holder element for this cell.                                                                           |
-| `td.decor`              | `HTMLElement` | The row decor element for this cell.                                                                            |
-| `td.state`              | `RowState`    | The row's state from `table.rowProfile`: `'default'`, `'new'`, `'expired'`, `'updated'`, or `'checked'`.        |
-| `td.mergedWithUpper`    | `boolean`     | Whether this cell is merged with the cell above it (used by `mergable`).                                        |
-| `td.upperTd`            | `TomatoTd`    | The cell directly above this one in the same column (for merge traversal).                                      |
-| `td.lowerTd`            | `TomatoTd`    | The cell directly below this one in the same column.                                                            |
-| `td.leftTd`             | `TomatoTd`    | The cell to the left in the same row.                                                                           |
-| `td.rightTd`            | `TomatoTd`    | The cell to the right in the same row.                                                                          |
-| `td.mergedWith`         | `TomatoTd[]`  | Array of all `TomatoTd` instances in the same merged block (includes this cell).                                |
+| Property                | Type          | Description                                                                                                                           |
+| ----------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `td.value`              | `any`         | Get or set the cell's displayed value. Setting triggers DOM update via `setParams()`.                                                 |
+| `td.pKey` / `td.rowIdx` | `PKey`        | The row's primary key — a numeric index by default, or a composite string key when `isKey` columns are defined.                       |
+| `td.colIdx`             | `number`      | The column's index in the original `dataDef` array.                                                                                   |
+| `td.th`                 | `TomatoTh`    | The column header object for this cell's column.                                                                                      |
+| `td.table`              | `TomatoTable` | The parent table instance.                                                                                                            |
+| `td.checked`            | `boolean`     | Get or set whether the row is checked (for checkbox/radio tables).                                                                    |
+| `td.row`                | `number`      | Visual row position (1-based, after filtering and sorting).                                                                           |
+| `td.col`                | `number`      | Visual column position (1-based, after column reordering and hiding).                                                                 |
+| `td.rowspan`            | `number`      | Row span for merged cells.                                                                                                            |
+| `td.colspan`            | `number`      | Column span for merged cells.                                                                                                         |
+| `td.dom`                | `HTMLElement` | The cell's DOM element.                                                                                                               |
+| `td.dom.rowHolder`      | `HTMLElement` | The row holder element for this cell.                                                                                                 |
+| `td.dom.rowDecor`       | `HTMLElement` | The row decor element for this cell.                                                                                                  |
+| `td.state`              | `RowState`    | The row's current data/selection state from `table.rowProfile`, including `indeterminate`; see [row states](#rowprofile--row-states). |
+| `td.mergedWithUpper`    | `boolean`     | Whether this cell is merged with the cell above it (used by `mergable`).                                                              |
+| `td.upperTd`            | `TomatoTd`    | The cell directly above this one in the same column (for merge traversal).                                                            |
+| `td.lowerTd`            | `TomatoTd`    | The cell directly below this one in the same column.                                                                                  |
+| `td.leftTd`             | `TomatoTd`    | The cell to the left in the same row.                                                                                                 |
+| `td.rightTd`            | `TomatoTd`    | The cell to the right in the same row.                                                                                                |
+| `td.mergedWith`         | `TomatoTd[]`  | Array of all `TomatoTd` instances in the same merged block (includes this cell).                                                      |
 
 ### Additional table properties
 

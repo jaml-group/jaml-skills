@@ -131,11 +131,11 @@ export default [
 
 列表
 
-呈现列表项或简单的任务项。
+呈现由 Markdown 渲染器负责的列表项。
 
 添加缩进和列表类，以及可选的序号标记。启用 todo 时，在内容前插入由 checked 初始化的 Jam-UI checkbox 开关，并通过 clickWith 转发宿主的点击。
 
-列表数据和持久化由调用方负责；此样式不解析 Markdown，也不维护任务模型。
+仅供 Markdown 渲染使用；不要将此样式用于普通 JAML 列表或待办控件。应用集合使用 list/item 角色和数据驱动的原生子元素。此样式不解析 Markdown，也不维护应用任务数据或持久化。
 
 位置参数顺序: `indent` → `order` → `todo` → `checked`.
 
@@ -146,17 +146,7 @@ export default [
 | `todo` | `boolean` | `false` | 待办 |
 | `checked` | `boolean` | `false` | 已完成 |
 
-List item with optional order number or todo checkbox.
-
-```javascript jaml-playground
-export default [
-    {
-        type: 'element',
-        value: 'Buy groceries',
-        styles: ['element.list(todo:true;checked:false)']
-    }
-];
-```
+Reserved for Markdown-rendered list items. Ordinary JAML collections use `stylize: "list"` on their owner and `stylize: "item"` on their native children; use `buildFor` for data-driven repetition. Supply document bullets, numbering and task lists as Markdown.
 
 ### `element.image`
 

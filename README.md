@@ -24,6 +24,16 @@ Add `--global` to install for your user instead of the current project. Restart 
 
 Examples: “Use jaml to design an app with theme roles and tokens”, “Refactor this page to reuse native elements”, or “Validate this JAML and explain the plugin choices”.
 
+## Figma to JAML
+
+The [figma2jaml skill](figma2jaml/SKILL.md) implements Figma frames as native JAML UI and checks the rendered result against the source. It requires the `jaml` skill and uses connected Figma tools or attributable structured/code exports; screenshots support visual verification rather than replacing structured input. Install both skills from this source checkout with the skills CLI:
+
+```sh
+npx skills add . --skill jaml figma2jaml
+```
+
+Example: “Use figma2jaml to implement this Figma frame in the existing app and visually verify it.” The versioned offline archive below currently includes only `jaml`.
+
 ## Knowledge maintenance
 
 Framework knowledge maintenance lives with the private Jam-UI source in its repository-local `jamldoc` and `jaml-knowledge` skills. This public repository distributes the consuming `jaml` skill. Reading and using its references requires no private source access or maintenance-skill installation.

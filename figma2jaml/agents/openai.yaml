@@ -1,0 +1,4 @@
+interface:
+    display_name: 'Figma to JAML'
+    short_description: 'Build native JAML UI from Figma designs'
+    default_prompt: 'Use $figma2jaml to implement this Figma design in native JAML and verify the rendered result against the source.'

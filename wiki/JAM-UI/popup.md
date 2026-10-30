@@ -180,15 +180,37 @@ For common use cases, use the declarative `tip` and `help` params instead of cal
 }
 ```
 
-- `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
-- `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
+-   `tip` — shows on hover after a delay, uses `PopupType.tip` profile. Requires `plugins: ['popup.tip']` on the element or a parent.
+-   `help` — shows as a persistent help popup, uses `PopupType.help` profile. Requires `plugins: ['popup.helper']` on the element or a parent.
 
 ---
+
+## Anchor spacing, container clearance and width
+
+In runtimes supporting `edgePadding`, `bias` controls the gap from the anchor, while `edgePadding` independently controls clearance from the positioning container's edges. Omitted `edgePadding` retains `bias / 2`; explicit `0` allows flush placement. `allowOverflow: true` bypasses this edge clamp. Popup `edgePadding` accepts a CSS length such as `'0.5rem'`, or a numeric geometry value in pixels. CSS lengths are resolved again during subsequent position updates.
+
+For example, an integration with an existing `anchor` and `content` can use:
+
+```javascript
+jam.dropDown(anchor, content, {
+    container: document.body,
+    edgePadding: '0.5rem',
+    style: {
+        width: 'auto',
+        boxSizing: 'border-box',
+        maxWidth: 'calc(100vw - 1rem)'
+    }
+});
+```
+
+Edge clearance constrains position; it does not automatically shrink oversized generic popup/dropdown content. The content owns its width and maximum width, and `option.style` applies to that content. The example's viewport bound matches its body container and twice the requested clearance. A custom container needs a matching content bound. Flyout cross-axis sizing remains a separate contract. For theme panel popups, use the supported [`popupEdgePadding` option](../JAML/component.md#theme-panel-composition-and-readiness).
 
 ## `ShowPopupOption` fields
 
 | Field                  | Type                                 | Default                                                     | Description                                                                                                                                               |
 | ---------------------- | ------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `edgePadding`          | `number \| string`                   | `bias / 2` when omitted                                     | Independent container edge clearance; CSS lengths supported, zero allows flush placement.                                                                 |
+| `bias`                 | `number`                             | Profile-dependent                                           | Anchor gap in geometry pixels; also supplies the legacy edge fallback when `edgePadding` is omitted.                                                      |
 | `position`             | `PositionString`                     | `'top'`                                                     | Popup placement: `'top'`, `'bottom'`, `'left'`, `'right'`, `'bottom-right'`, etc.                                                                         |
 | `align`                | `MoveAlign \| MoveAlign[] \| string` | —                                                           | Alignment override passed to `MelonMove` for popup positioning.                                                                                           |
 | `snapTo`               | `'cursor' \| 'target'`               | `'target'`                                                  | What the popup snaps to for positioning — the cursor or the target element.                                                                               |

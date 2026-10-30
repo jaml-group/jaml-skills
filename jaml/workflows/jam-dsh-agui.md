@@ -2,15 +2,19 @@
 
 Load this guide when generating an interactive assistant view for the **jam-dsh host**, or explaining its local state and response boundary. `agui` is supplied by that host; ordinary Jam-UI applications and stock playgrounds do not provide it.
 
+## JAMLL availability
+
+The JAMLL-enabled jam-dsh host advertises progressive rendering, whole-message-success gating and the same reviewed response boundary as complete-definition views. Once interactive JAML is chosen, default to `text jamll` for content between paragraphs or `text jamll-artifact` for a distinct panel. Honor explicit format requests and use Markdown when it is sufficient. Follow the installed host's capability declaration; an older deployment without JAMLL uses its supported complete-definition formats. See [JAMLL records and fallback](../references/JAML/conversational-ui.md#progressive-replies-with-jamll).
+
 ## Author the view
 
 1. Apply [reply selection](../references/JAML/conversational-ui.md): use Markdown when sufficient, otherwise choose a fitting ready module, registered CC or native JAML in one pass. Complete current contracts supplied by the host need no discovery call. Retrieve only unresolved inputs, prerequisites or behavior. For L1 composition, choose the native semantic owner before its style/theme presentation; use [literal option labels](../references/JAM-UI/JAM-UI.md#literal-external-labels) for external choices.
-2. For an actual conversational form, choice or interactive result, choose a complete, explicitly closed `javascript jaml-content` fence for lightweight between-paragraph content, or `javascript jaml-artifact` for a distinct self-contained view. Presentation is independent of capability tier; see [wrapper-free native composition](../references/JAML/conversational-ui.md#native-elements-without-an-outer-wrapper). Use `javascript jaml-playground` when the user requests source inspection or editing; it reserves space for the native source editor beside the result. Its source must default-export a JAML definition. Keep functions inside handlers/builders in that definition; a top-level default-exported function is not an accepted host entry point. Keep source at or below 160,000 UTF-8 bytes.
+2. Emit a `text jamll` or `text jamll-artifact` fence with one complete element record per physical line, spaces for children and an explicit closing delimiter. Keep each record's handlers on that same physical line. Presentation is independent of capability tier; see [wrapper-free native composition](../references/JAML/conversational-ui.md#native-elements-without-an-outer-wrapper). Necessary module-scope setup, asynchronous setup or a result that cannot fit an independent record can use `javascript jaml-content` or `javascript jaml-artifact`. Only complete-definition fences use `export default` with one definition or a flat array, not a top-level function. Use `javascript jaml-playground` when the user requests editable source. Keep source at or below 160,000 UTF-8 bytes.
 3. Use the supplied Studio runtime globals `jam`, `jaml`, `Styles` and `Plugins`; compose with the installed native capabilities. The host supplies the runtime/theme and mounting lifecycle. Current jam-dsh mounts directly in the native result container and shares the page runtime and DOM. This is executable page code, not an iframe or security sandbox. Do not add network requests, external scripts or imports unless the deployment explicitly permits them. Keep local interactions in the view; use the bounded `agui` proposal API for the trusted outer response flow.
 4. Keep authored defaults in `vars`, then seed saved `agui.state` through [runtime model-data writes](../references/JAML/binder.md#runtime-data-and-authored-definitions); saved strings must not become authored expressions. Update local model values through normal [bindings](../references/JAML/binder.md), and call `agui.setState` when the state worth retaining changes. Propose a response through an explicit generated control. Describe that action as preparing a response for review.
-5. Verify a complete fence renders, editing stays local, the proposal contains the intended data, and the trusted outer **Send response** control admits it only after review. Check the actual embedded result width, a narrow viewport, content growth/shrinkage and remounting; the surrounding chat width is not the available form width. A stock playground can validate native composition but cannot establish the jam-dsh response boundary.
+5. Verify the rendered view, local editing and intended proposal. For JAMLL, verify that controls and programmatic proposals remain gated until the whole assistant message succeeds and all its blocks are valid and closed. The trusted outer **Send response** control admits a proposal only after review. Check the actual embedded result width, a narrow viewport, content growth/shrinkage and remounting; the surrounding chat width is not the available form width. A stock playground can validate native composition but cannot establish the jam-dsh response boundary.
 
-A completed fence renders automatically when its native lazy block activates; initial generated views have no extra Run gate. Streaming without a matching closing delimiter and quoted example blocks stay inert. Source-editor/result layout belongs to native Markdown; source edits create a new preview revision. See the generic [Markdown executor contract](../references/Plugins/markdown.md#content-policy-and-playground-ownership) when implementing another host.
+JAMLL records render progressively with native insertion and motion; the host owns completion signaling. Closing a fence alone does not enable controls. Interrupted live replies may retain a gated prefix; failed historical JAMLL stays literal. Complete-definition views render when their explicitly closed native block activates, with no extra Run gate. Quoted examples stay literal. Source-editor/result layout belongs to native Markdown; source edits create a new preview revision. See the generic [JAMLL executor contract](../references/Plugins/markdown.md#application-executor-opt-in) when implementing another host.
 
 ## Chart runtime prerequisite
 
@@ -44,41 +48,15 @@ Local source edits may preview and propose a response. Server admission rejects 
 
 This native input and button composition adapts the jam-dsh host fixture, restoring saved names through a runtime model-data write. The captioned CTA uses native button accessibility. Changing the input replaces local state; **Continue** prepares the proposal, and the outer host exposes **Send response** for review and admission.
 
-```javascript jaml-artifact
-const savedState = agui.state;
-export default {
-    type: 'container',
-    stylize: 'form',
-    vars: { name: 'Quiet workspace' },
-    onafterrender({ element }) {
-        if (typeof savedState?.name === 'string') {
-            element.model.vars.name = savedState.name;
-        }
-    },
-    styles: ['container.layout(display:grid)', 'container.grid(templateColumns:minmax(0,1fr))'],
-    components: [
-        {
-            type: 'input',
-            cap: 'Workspace name',
-            styles: ['label.atTop', 'label.cap.text(whitespace:normal)'],
-            value: '{{name}}',
-            onchange() {
-                this.model.vars.name = this.value;
-                agui.setState({ name: this.value });
-            }
-        },
-        {
-            type: 'button-cta',
-            cap: 'Continue',
-            onclick() {
-                agui.submit('continue', { name: this.model.vars.name });
-            }
-        }
-    ]
-};
+````text
+```text jamll-artifact
+{ type: 'container', stylize: 'form', vars: { name: 'Quiet workspace' }, onafterrender({ element }) { const saved = agui.state; if (typeof saved?.name === 'string') { element.model.vars.name = saved.name; } }, styles: ['container.layout(display:grid)', 'container.grid(templateColumns:minmax(0,1fr))'] }
+    { type: 'input', cap: 'Workspace name', styles: ['label.atTop', 'label.cap.text(whitespace:normal)'], value: '{{name}}', onchange() { agui.setState({ name: this.value }); } }
+    { type: 'button-cta', cap: 'Continue', onclick() { agui.submit('continue', { name: this.model.vars.name }); } }
 ```
+````
 
-Use the same definition with the `javascript jaml-playground` fence when the user should see and edit its source. Keep labels/captions authored and incoming names in literal data sinks; see [content trust](../references/index.md#trust-and-application-data).
+When the user requests editable source, express the same tree as one definition with `components` and `export default` in a `javascript jaml-playground` fence. Keep labels/captions authored and incoming names in literal data sinks; see [content trust](../references/index.md#trust-and-application-data).
 
 ## Recorded diff presentation
 

@@ -136,7 +136,7 @@ Adds a legacy class and recalculates child render-position markers on resize. It
 
 未发现此标记的专用原生选择器。需要已验证的结果时，使用语义 wrapper 角色和显式分组或布局样式；此标记不创建列表语义或选择行为。
 
-Legacy class marker; it does not create list semantics or bullet markers in this baseline. Use the list role for a semantic region and `element.list` for native document-item presentation.
+Legacy class marker without native wrapper styling. For an application collection, use `stylize: "list"` on its container or wrapper, `stylize: "item"` on each native peer, and an explicit layout. `buildFor` repeats data-driven items. Document bullets belong in Markdown; `element.list` is reserved for its renderer.
 
 ### `wrapper.orderedList`
 
@@ -150,7 +150,7 @@ Legacy class marker; it does not create list semantics or bullet markers in this
 
 未发现此标记的专用原生选择器。需要已验证的结果时，使用语义 wrapper 角色和显式分组或布局样式；此标记不创建列表语义或选择行为。
 
-Legacy class marker; it does not automatically number children. Compose native `element.list` items with explicit order values when document numbering is required.
+Legacy class marker; it does not automatically number children. Use Markdown for a numbered document list. For an application collection, use list/item roles and keep ordering in its data. `element.list` is reserved for the Markdown renderer.
 
 ## `wrapper.grid`
 
