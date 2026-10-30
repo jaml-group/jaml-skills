@@ -130,6 +130,16 @@ export default {
 
 The state lasts with this model. A re-created view can start from its initial values again; a DOM id alone does not preserve it. Saving across replies or sending a response to the assistant needs the host's advertised contract. See [model vars](jaml-format.md#vars), [value bindings](binder.md#variable-binder-key), [input](../JAM-UI/input.md), [switch](../JAM-UI/switch.md) and [indicator](../JAM-UI/indicator.md) when the task exceeds the forms above.
 
+## Ground the complete reply
+
+Apply the same evidence standard to the authored view, its captions, surrounding prose and optional advice. Correct output does not validate an extra factual claim.
+
+-   **API claims:** use the owning contract already in context; retrieve only a material unresolved rule. A limitation needs an explicit restriction or verification against that owner. A missing example or search hit does not establish unsupported behavior. Omit unnecessary speculative advice instead of expanding discovery to support it.
+-   **Domain claims:** distinguish supplied facts and valid derivations from assumptions about the business. A calculation or chosen UI behavior does not establish an external policy. Label a necessary assumption; ask only when the missing fact changes the requested outcome.
+-   **Action claims:** describe the actor, target and result actually observed. A local state change or tool record establishes that scope, not system-wide behavior or guarantees about other actors and infrastructure. Broader assurances require the responsible host or service contract; report material unknowns precisely.
+
+Before sending, reconcile explanations and UI text with the actual definition and evidence. Remove contradictions and unsupported asides without adding a blanket disclaimer or repeating established contract lookups.
+
 ## Host integration
 
 Keep the persistent instruction small: UI discretion, the three reuse boundaries, the fast path and where unresolved contracts live. Supply availability and complete hot contracts separately. Skills carry the reusable decision/composition guidance; MCP or another capability lookup can supply details when necessary. There is no need for a per-message keyword hook to force a UI choice.
