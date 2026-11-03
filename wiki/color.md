@@ -519,6 +519,10 @@ Predefined named colors that auto-adapt to the accent theme:
 'cta', 'normal', 'error', 'warning', 'mute', 'disable'
 ```
 
+Use semantic color to communicate state and emphasis during normal composition. Keep a readable caption or other state cue alongside it.
+
+An element's `color` establishes its local color profile. Its theme recipe or foreground styles decide how that profile appears. A themed button already supplies its own surface/foreground pairing:
+
 ```json jaml-playground
 {
     "type": "button",
@@ -526,6 +530,25 @@ Predefined named colors that auto-adapt to the accent theme:
     "color": "success"
 }
 ```
+
+For a failure label on an ordinary surface, pair the semantic context with a foreground preset:
+
+```javascript jaml-playground
+export default {
+    type: 'label',
+    cap: 'This turn failed',
+    color: 'error',
+    styles: ['color.primary']
+};
+```
+
+`color.primary` selects `fg.primary` from that context for text and inheriting icons. Use matching `color.on.*` presets for text/icons on filled accents, such as `color.on.primary` with `background.primary`. See [foreground presets](Styles/common/color.md#semantic-foreground-presets) and [surface/foreground pairing](Theme/color.md#foregrounds). Font Awesome icons can follow the selected foreground with `icon.solid(color:currentColor)` when the [font assets are available](Styles/common/icon.md#entry-icon-solid).
+
+`text(color:error)` is also supported: it resolves the semantic palette color directly at the target element. It does not select the theme's `fg.primary` foreground treatment. Use the context/preset pairing above when readable semantic emphasis is the intent.
+
+The same foreground token has different access forms: theme authoring uses `sys.color.fg.primary`; application JavaScript uses `Tokens.color.fg.primary`; CSS uses `var(--jam-color-fg-primary)`. `color.primary` is the native style path. See [token consumption](Theme/tokens.md#consuming-tokens) for resolution and runtime access.
+
+For changing status, derive color and caption from the same existing state owner. Given a model-owned boolean `failed`, the label can bind `color: '{{failed ? "error" : "success"}}'` and `cap: '{{failed ? "Failed" : "Succeeded"}}'`, retaining `color.primary`; no second state owner is needed. Follow [state/data composition](JAML/state-and-data.md) for ownership. Apply a local profile at the intended scope: a title's `color` does not recolor sibling diagnostics.
 
 ---
 

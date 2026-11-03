@@ -1,12 +1,14 @@
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
-import { checkResources, filesUnder, sha256 } from './resources.mjs';
 import { generateReferences } from './catalog-reference.mjs';
+import { checkResources, filesUnder, sha256 } from './resources.mjs';
+import { generateSkillDocMap } from './skill-doc-map.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 await generateReferences(root, { check: true });
+generateSkillDocMap(root, { check: true });
 const report = checkResources(root);
 if (report.issues.length) {
     throw new Error(report.issues.join('\n'));

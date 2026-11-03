@@ -26,7 +26,7 @@ Positional order: `color` → `strokeWidth` → `strokeColor` → `size`.
 | --- | --- | --- | --- |
 | `color` | `string` | `hsl(var(--jam-ac-h), var(--jam-ac-s), calc(var(--jam-ac-l) + 10%))` | Color<br>Shorthand |
 | `strokeWidth` | `string` | `0.0625rem` | Stroke |
-| `strokeColor` | `string` | `hsl(0, 0%, calc(var(--jam-lumi-o-base) + var(--jam-lumi-o-dev) * 20))` | Stroke color |
+| `strokeColor` | `string` | `hsl(0, 0%, calc(var(--jam-lumi-o-base) + var(--jam-lumi-o-dev) * 14))` | Stroke color |
 | `size` | `string` | Not supplied | Size |
 
 ## Variants

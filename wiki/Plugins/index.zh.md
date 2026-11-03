@@ -4,6 +4,8 @@
 
 这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。
 
+下列是已注册的插件族。底层行为引擎和全局 API 请参阅[插件概览](plugins.md#individual-plugins)，按其入口类型选择。
+
 - [composable-plugins](composable-plugins.zh.md) — 配置驱动的面板组合；需要配置与路由器。
 - [event](event.zh.md) — 通过消息系统发布滚动进度与当前章节。
 - [follow-scroll](follow-scroll.zh.md) — 跟随增长内容，并保留读者控制的暂停与恢复。

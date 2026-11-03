@@ -12,6 +12,8 @@
         "catalog:import": "node scripts/import-catalog.mjs",
         "catalog:generate": "node scripts/catalog-reference.mjs",
         "catalog:check": "node scripts/catalog-reference.mjs --check",
+        "skill-map:generate": "node scripts/skill-doc-map.mjs",
+        "skill-map:check": "node scripts/skill-doc-map.mjs --check",
         "test": "node --test test/*.test.mjs",
         "check": "node scripts/check-resources.mjs",
         "export:public": "node scripts/export-public.mjs"

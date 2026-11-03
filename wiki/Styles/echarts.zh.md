@@ -1302,7 +1302,7 @@ Styles.echarts.axis.y({ name: 'MW', nameLocation: 'end' })
 
 Maps to `yAxis.name = 'MW'` and `yAxis.nameLocation = 'end'`. Both `name` and `nameLocation` are args on the base axis style.
 
-Axis names sit outside the plot area and the default grid margins can clip them. Whenever an axis has a `name`, reserve enough space on the corresponding `top`, `right`, `bottom`, or `left` side with `echarts.grid`; the required side depends on the axis position and `nameLocation`.
+Axis names sit outside the plot area and the default grid margins can clip them. Whenever an axis has a `name`, reserve enough space on the corresponding `top`, `right`, `bottom`, or `left` side with `echarts.grid`; the required side depends on the axis position and `nameLocation`. With the default `containLabel:true`, tick labels are accounted for but axis titles are not. Centered names may also need a suitable `nameGap` to separate them from tick labels. Tune margins for the actual title, font and chart size; fixed example margins are not a universal fit.
 
 ```javascript
 Styles.echarts.grid({ top: '12%', left: '12%', right: '6%', bottom: '10%', containLabel: true })
@@ -1431,6 +1431,7 @@ Since the base `line` style defaults `smooth: true`, calling with `smooth: false
 
 ```javascript
 Styles.echarts.bar,
+Styles.echarts.grid({ top: '3rem', left: '3rem', containLabel: true }),
 Styles.echarts.axis.y({ name: 'MW', nameLocation: 'end' }),
 Styles.echarts.axis.y.nameStyle({ align: 'right', padding: [0, 8, 0, 0] }),
 Styles.echarts.axis.y.splitLine.lineStyle({ type: 'dashed' }),
@@ -1442,6 +1443,7 @@ In JAML string form:
 ```json
 [
     "echarts.bar",
+    "echarts.grid(top:3rem;left:3rem;containLabel:true)",
     "echarts.axis.y(name:MW;nameLocation:end)",
     "echarts.axis.y.nameStyle(align:right;padding:[0,8,0,0])",
     "echarts.axis.y.splitLine.lineStyle(type:dashed)",
@@ -1471,6 +1473,7 @@ Style configuration for a line chart with named Y-axis, dashed split lines, cent
 
 ```javascript
 Styles.echarts.line({ smooth: false }),
+Styles.echarts.grid({ top: '3rem', left: '3rem', containLabel: true }),
 Styles.echarts.axis.y.splitLine.lineStyle({ type: 'dashed' }),
 Styles.echarts.axis.y({ name: 'MW', nameLocation: 'end' }),
 Styles.echarts.axis.y.nameStyle({ align: 'right', padding: [0, 5, 0, 0] }),
@@ -1485,6 +1488,7 @@ In JAML string form:
 ```json
 [
     "echarts.line(smooth:false)",
+    "echarts.grid(top:3rem;left:3rem;containLabel:true)",
     "echarts.axis.y.splitLine.lineStyle(type:dashed)",
     "echarts.axis.y(name:MW;nameLocation:end)",
     "echarts.axis.y.nameStyle(align:right;padding:[0,5,0,0])",

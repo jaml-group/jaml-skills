@@ -325,7 +325,7 @@ Array of child JAML objects. Children are rendered inside the parent element in 
 
 Use this for mutually exclusive editors that must not stay subscribed to the same value. [`showIf`](#showif) only hides a child, and [`buildIf`](#buildif) detaches it without destroying its bindings. Keep the stable field container and model outside the replaced region. Subscribe the child-list binder only to the structural discriminator, such as `field.type`; bind the selected editor's caption, options, disabled state and value separately. Binding the child list to the entire field or its value can replace the editor during ordinary edits.
 
-This example keeps one keyed field and switches its single native editor. The direct `value` binder supports two-way writes through the loop alias; do not also add `valueKey` to the same editor.
+This example keeps one keyed field and switches its single native editor. The direct `value` binder supplies two-way writes through the loop alias. Add `valueKey` only for its separate [form/publication contract](#valuekey), with explicit inbound ownership.
 
 ```javascript jaml-playground
 export default {
@@ -849,9 +849,15 @@ export default {
 
 **Type:** `string`
 
-Name this component's value in the model. `model.getFormData()` collects all components with a `valueKey`. If `valueKey` matches a key in `vars`, it creates a two-way binding between the input and that reactive variable.
+`valueKey` names a field and wires the component to the messenger:
 
-`valueKey` supports the `@broker` suffix to publish to a different broker:
+| Responsibility       | Behavior                                                                                                                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Form collection      | `model.getFormData()`, `submit()` and `msgFormat` collect the current element value under this key. Invalid fields fail collection; null/undefined values are omitted.                        |
+| Publication          | A control-originated value change publishes to this key through the selected broker. Model-driven updates retain their origin rather than automatically republishing through every bound key. |
+| Default subscription | When `valueWatcher` is omitted, it defaults to `valueKey`, so messages at that key also update the control.                                                                                   |
+
+`valueKey` supports the `@broker` suffix to publish and subscribe through a different broker:
 
 ```json
 {
@@ -861,18 +867,29 @@ Name this component's value in the model. `model.getFormData()` collects all com
 }
 ```
 
-**Resolution priority:** when the value changes, the system first checks if the key exists in the local model's `vars`. If it does, `vars` is updated directly (short-circuit). Otherwise the value is published to the specified broker. This means a `valueKey` that matches a `vars` key never hits the broker — it stays local.
+Publication uses the messenger even when the key is represented in model `vars`; there is no direct-vars short circuit that bypasses the broker.
 
-> **Conflict:** `valueKey` and `value: '{{binder}}'` are mutually exclusive on the same element. Use one or the other.
+A single-variable `value` binder already provides two-way editing. Combining it with `valueKey` is supported when the field also needs form collection or publication. The same key duplicates message wiring; a different key introduces a second inbound source by default. The two stored keys are not guaranteed to stay synchronized after an external update, and divergent initial values can compete to initialize the control.
 
-```json
-{
-    "type": "input",
-    "cap": "Email",
-    "placeholder": "Enter your email address",
-    "valueKey": "email"
-}
+When the bound variable is the sole inbound owner, disable the `valueKey` shorthand subscription explicitly with `valueWatcher: ''`:
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    vars: { quantity: 2 },
+    components: [
+        {
+            type: 'input-number',
+            cap: 'Quantity',
+            value: '{{quantity}}',
+            valueKey: 'qty',
+            valueWatcher: ''
+        }
+    ]
+};
 ```
+
+Here, `quantity` drives the input, user edits update `quantity` and publish `qty`, and `model.getFormData()` collects `{ qty: currentInputValue }`. Messages to `qty` do not drive this input. Form collection reads the element, not a possibly stale stored `qty`. Supplying another nonempty `valueWatcher` deliberately adds that key as an inbound source alongside the binder. See [watcher behavior](binder.md#valuewatcher--statewatcher--datawatcher).
 
 ---
 

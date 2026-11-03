@@ -70,6 +70,8 @@ The archive installer accepts only `jaml`; private framework maintenance skills 
 
 ## Refresh the generated reference
 
+The compact element documentation map in `jaml/SKILL.md` is generated from the curated Elements and Representers tables in `wiki/JAM-UI/JAM-UI.md`. After changing those owner links, run `npm run skill-map:generate`; `npm run skill-map:check`, resource checks, packaging and source export reject a stale map. Entries without a dedicated page link point back to their index section. The generator stays in repository tooling; installed consumers receive the links, without a runtime dependency.
+
 Maintainers import an explicitly trusted publisher export, then regenerate and check:
 
 ```sh

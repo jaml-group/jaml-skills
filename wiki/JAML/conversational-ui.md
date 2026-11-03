@@ -2,6 +2,12 @@
 
 Honor the user's requested response format, including prose, tables and Mermaid. Use Markdown by default. Apply the capability tiers below only after choosing JAML. Include interactive JAML on your own initiative when a choice, form, visualization or reusable business view helps the user more than prose. A short factual answer or simple comparison usually needs only text or a table. Keep each useful interactive chunk self-contained, with normal prose around it. Choose a supported complete-definition or progressive JAMLL format from the target host's advertised renderer contract. Restrictions on JAML execution markers do not forbid ordinary Markdown or other supported formats.
 
+## Check the task's inputs
+
+Before UI discovery, determine whether the facts needed for the requested result are supplied or available through a declared ready data source or module. A fitting module can acquire its own data; the user need not supply it again. If neither route is available, ask only for the missing data or scope and let that clarification be the reply. Reference searches answer API questions, not missing business facts.
+
+Collect data with a form when data entry is the requested operation. A requested blank template or mockup can use clearly labeled defaults or sample data. Those are different tasks from reporting an actual result: do not replace missing facts with a speculative editor, zero-filled chart or an invented feed.
+
 ## Select in one pass
 
 Choose the highest fitting **ready** capability from the current host snapshot. Purpose, inputs, behavior and prerequisites must fit together; a similar name or appearance is insufficient.
@@ -89,12 +95,12 @@ If JAMLL or the success integration is absent, use the host's supported `javascr
 
 For a JAMLL-enabled host, use `text jamll` for lightweight views between paragraphs or `text jamll-artifact` for a distinct view. This choice is separate from L3/L2/L1. Independent records mount under the native result owner; do not add cards or labels around each metric merely to arrange it. Use the complete-definition or editable-source fallback above when its contract is needed.
 
-| Need                   | Native choice              | Minimal contract / boundary                                                       |
-| ---------------------- | -------------------------- | --------------------------------------------------------------------------------- |
-| One metric             | `indicator-number`         | `cap`, numeric `value`, optional `unit`/`icon`; owns all four parts.              |
-| Fraction as percentage | `indicator-percent`        | `value: 0.84` displays 84%; do not supply 84 for that result.                     |
-| Trend or comparison    | `chart-line` / `chart-bar` | Header-plus-rows `data`; ECharts must already be loaded; author a nonzero height. |
-| Local action           | `button`                   | `cap`, `onclick`; a local handler does not itself admit assistant input.          |
+| Need                   | Native choice              | Minimal contract / boundary                                                                                                                                              |
+| ---------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| One metric             | `indicator-number`         | `cap`, numeric `value`, optional `unit`/`icon`; owns all four parts.                                                                                                     |
+| Fraction as percentage | `indicator-percent`        | `value: 0.84` displays 84%; do not supply 84 for that result.                                                                                                            |
+| Trend or comparison    | `chart-line` / `chart-bar` | Header-plus-rows `data`; ECharts must already be loaded; author a nonzero height. Named axes also need [title clearance](../Styles/echarts.md#named-axis-with-location). |
+| Local action           | `button`                   | `cap`, `onclick`; a local handler does not itself admit assistant input.                                                                                                 |
 
 Default content wraps at intrinsic sizes. Native child styles provide explicit sizing; a full-width chart can follow compact metrics without an outer wrapper. The chart below uses illustrative supplied data, not a live source.
 
@@ -114,14 +120,14 @@ Use ordinary child styles for explicit sizing and long captions (for example `ca
 
 A small reply can use the following native wiring contract directly. Check the selected owner's parameters and behavior plugins before composing extra controls for behavior it already provides. Retrieve the selected element or plugin's guide for its own inputs and prerequisites; these forms do not require rereading the complete format and binder guides.
 
-| Need               | Authoring contract                                                                                                                                                                                       |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Native parts       | Put `type`, `cap`, `value` and other documented parameters at the definition's top level; object-form children use `components`, and JAMLL also supports child indentation.                              |
-| Shared local state | Put initial keys in a native owner's `vars`, such as `container`. That owner is justified when children share state, layout or lifetime. Independent elements can be separate JAMLL records.             |
-| Editable value     | `value: '{{quantity}}'` is a single-variable, two-way binding. Do not also supply `valueKey` on that element.                                                                                            |
-| Derived value      | `value: '{{quantity}} * 2'` re-evaluates when the key changes; it does not provide two-way editing. Binder support belongs to documented parameters/control keys, not arbitrary fields.                  |
-| Local command      | Use a normal handler such as `onclick() { this.model.vars.quantity = 0; }`. Its `this` is the element. Arrow functions do not acquire that receiver. Write individual keys; do not replace `model.vars`. |
-| Appearance         | `styles` is an ordered list of registered style/plugin paths; `style` is a CSS declaration object. Native semantic parts and state remain their owners.                                                  |
+| Need               | Authoring contract                                                                                                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native parts       | Put `type`, `cap`, `value` and other documented parameters at the definition's top level; object-form children use `components`, and JAMLL also supports child indentation.                                                   |
+| Shared local state | Put initial keys in a native owner's `vars`, such as `container`. That owner is justified when children share state, layout or lifetime. Independent elements can be separate JAMLL records.                                  |
+| Editable value     | `value: '{{quantity}}'` is a single-variable, two-way binding. Form collection or extra publication can justify `valueKey`; read its [inbound watcher and ownership contract](jaml-format.md#valuekey) before combining them. |
+| Derived value      | `value: '{{quantity}} * 2'` re-evaluates when the key changes; it does not provide two-way editing. Binder support belongs to documented parameters/control keys, not arbitrary fields.                                       |
+| Local command      | Use a normal handler such as `onclick() { this.model.vars.quantity = 0; }`. Its `this` is the element. Arrow functions do not acquire that receiver. Write individual keys; do not replace `model.vars`.                      |
+| Appearance         | `styles` is an ordered list of registered style/plugin paths; `style` is a CSS declaration object. Native semantic parts and state remain their owners.                                                                       |
 
 This example has one model because the input, switch, metric and restore action share values. The input owns editing, the switch owns toggling and the indicator owns the result. No separate labels or click handler are needed to reproduce those behaviors.
 
@@ -141,11 +147,11 @@ The state lasts with this model. A re-created view can start from its initial va
 
 Apply the same evidence standard to the authored view, its captions, surrounding prose and optional advice. Correct output does not validate an extra factual claim.
 
--   **API claims:** use the owning contract already in context; retrieve only a material unresolved rule. A limitation needs an explicit restriction or verification against that owner. A missing example or search hit does not establish unsupported behavior. Omit unnecessary speculative advice instead of expanding discovery to support it.
+-   **API and behavior claims:** use the owning contract already in context; retrieve only a material unresolved rule. A limitation or delivery/timing guarantee needs explicit support from that owner. A reactive relationship alone does not promise a callback for every intermediate event. A missing example or search hit does not establish unsupported behavior. Omit unnecessary speculative advice instead of expanding discovery to support it.
 -   **Domain claims:** distinguish supplied facts and valid derivations from assumptions about the business. A calculation or chosen UI behavior does not establish an external policy. Label a necessary assumption; ask only when the missing fact changes the requested outcome.
 -   **Action claims:** describe the actor, target and result actually observed. A local state change or tool record establishes that scope, not system-wide behavior or guarantees about other actors and infrastructure. Broader assurances require the responsible host or service contract; report material unknowns precisely.
 
-Before sending, reconcile explanations and UI text with the actual definition and evidence. Remove contradictions and unsupported asides without adding a blanket disclaimer or repeating established contract lookups.
+Before sending, reconcile explanations and UI text with the actual definition and evidence, including any extra calculations or summaries. Remove contradictions and unsupported asides without adding a blanket disclaimer or repeating established contract lookups. [Static validation](../validation.md) is an optional aid for mechanical questions; its result does not establish the truth of prose, data sufficiency or layout fit.
 
 ## Host integration
 

@@ -580,20 +580,47 @@ Positional order: `selector` → `group` → `placement` → `overlap` → `hand
 | `scroll` | `boolean` | `true` | Automatic edge scrolling |
 | `scrollMargin` | `number` | `48` | Edge scrolling margin (px) |
 | `scrollSpeed` | `number` | `600` | Maximum scrolling speed (px/s) |
-| `change` | `function` | Not supplied | Reorder commit callback |
+| `change` | `function` | Not supplied | function(change), called with this bound to the container element. Receives { item, from, to, oldIndex, newIndex, fromItems, toItems }. Transfers notify both containers with their own element as this; arrow functions keep their lexical this. |
 
-Reorders matching direct children by dragging. Containers with the same nonempty `group` accept transfers. The plugin changes DOM order; persist application data in `change` when needed.
+Reorders matching direct children by dragging. Containers with the same nonempty `group` accept transfers. The plugin commits visual order through CSS `order`, moving the item to the destination container for a transfer; it does not rewrite the application model.
 
-Omit `group` to keep items within their container. Live placement moves the placeholder; deferred placement commits on release. The change callback receives `{ item, from, to, oldIndex, newIndex, fromItems, toItems }`; transfers notify both containers.
+Omit `group` to keep items within their container. Live placement moves the placeholder; deferred placement commits on release. The `change` callback receives `{ item, from, to, oldIndex, newIndex, fromItems, toItems }`. A normal function runs with its container element as `this`; transfers notify both containers with their respective element as `this`. Arrow functions retain lexical `this`.
+
+Use the ordered item arrays in the event to capture the corresponding records before writing model data: a reactive write may reconcile or rebuild children. The example renders stable-keyed cards from `cards` and stores the committed order back into that same model array. Saving beyond the current model lifetime remains application-owned. For transfers, snapshot both collections before either write; update each owner deliberately. Read [keyed child rendering](../JAML/jaml-format.md#buildfor) for identity and update behavior.
 
 ```javascript jaml-playground
 export default {
     type: 'wrapper',
-    styles: ['interact.sortable', 'animation.flipchild(duration:200)'],
+    cap: 'Drag cards to reorder',
+    vars: {
+        cards: [
+            { id: 'plan', title: 'Planning' },
+            { id: 'build', title: 'Building' },
+            { id: 'check', title: 'Checking' }
+        ]
+    },
+    styles: [
+        'layout.flex(direction:column;gap:0.5rem)',
+        'css(width:20rem)',
+        Styles.interact.sortable({
+            selector: 'jam-card',
+            change({ toItems }) {
+                const _cardsById = new Map(this.vars.cards.map((card) => [card.id, { ...card }]));
+                const _cards = toItems.map((item) => _cardsById.get(item.getAttribute('data-card-id')));
+                this.vars.cards = _cards;
+            }
+        }),
+        'animation.flipchild(duration:200)'
+    ],
     components: [
-        { type: 'label', cap: 'Drag: Planning' },
-        { type: 'label', cap: 'Drag: Building' },
-        { type: 'label', cap: 'Drag: Checking' }
+        {
+            buildFor: 'card in cards',
+            key: 'id',
+            type: 'card',
+            cap: '{{card.title}}',
+            attrs: { 'data-card-id': '{{card.id}}' },
+            styles: ['css(min-height:4rem)']
+        }
     ]
 };
 ```

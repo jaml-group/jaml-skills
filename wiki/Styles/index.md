@@ -4,7 +4,7 @@ Choose the owning topic, then read the entry’s arguments, prerequisites and cl
 
 These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
 
-- [active](active.md) — Presentation for an existing state; does not activate that state.
+- [active](active.md) — Style a pressed target while its active state is present; does not activate it.
 - [after](after.md) — CSS pseudo-element presentation.
 - [animation](animation.md) — Entry, exit and motion effects.
 - [auto](auto.md) — Automatic focus, text fitting, movement/scroll synchronization and position restoration.
@@ -13,12 +13,12 @@ These descriptions help selection; they do not replace argument contracts. For a
 - [button-style](button-style.md) — Presentation for native button; select the element and behavior first.
 - [buttongroup-style](buttongroup-style.md) — Presentation for native buttongroup; select the element and behavior first.
 - [calendar-style](calendar-style.md) — Presentation for native calendar; select the element and behavior first.
-- [capslot](capslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [capslot](capslot.md) — Style the caption slot wrapper; use cap for its assigned caption content.
 - [card-style](card-style.md) — Presentation for native card; select the element and behavior first.
 - [chart-style](chart-style.md) — Presentation for native chart; select the element and behavior first.
 - [check](check.md) — Optional checked-option decoration; the native option owns selection.
 - [checkbox](checkbox.md) — Checkbox/option layout and legacy markers; native controls own selection.
-- [checked](checked.md) — Presentation for an existing state; does not activate that state.
+- [checked](checked.md) — Style the framework checked state (.jam-checked); the control owns selection.
 - [child](child.md) — Styles on child or slotted content; establish the target first.
 - [click](click.md) — Click-triggered behavior, including bringing positioned peers forward.
 - [common/agent](common/agent.md) — Style the native control backing an input.
@@ -49,21 +49,21 @@ These descriptions help selection; they do not replace argument contracts. For a
 - [common/value](common/value.md) — Specialize the native value’s presentation.
 - [container-style](container-style.md) — Presentation for native container; select the element and behavior first.
 - [datepicker-style](datepicker-style.md) — Presentation for native datepicker; select the element and behavior first.
-- [disabled](disabled.md) — Presentation for an existing state; does not activate that state.
+- [disabled](disabled.md) — Style a disabled target; disabling remains with the control owner.
 - [echarts](echarts.md) — Chart options and data presentation; start with the native chart contract.
 - [element-style](element-style.md) — Presentation for native element; select the element and behavior first.
 - [extra](extra.md) — Styles on child or slotted content; establish the target first.
-- [extraslot](extraslot.md) — Slot-wrapper styling; distinct from its assigned content.
-- [focus](focus.md) — Presentation for an existing state; does not activate that state.
+- [extraslot](extraslot.md) — Style the extra slot wrapper; use extra for its assigned additions.
+- [focus](focus.md) — Style a focused target; focus behavior remains with its owner.
 - [group](group.md) — Grouped child surfaces and layout presets.
-- [hover](hover.md) — Presentation for an existing state; does not activate that state.
-- [iconslot](iconslot.md) — Slot-wrapper styling; distinct from its assigned content.
-- [indeterminate](indeterminate.md) — Presentation for an existing state; does not activate that state.
+- [hover](hover.md) — Temporary pointer-hover presentation; does not select the target.
+- [iconslot](iconslot.md) — Style the icon slot wrapper; use icon for its assigned icon content.
+- [indeterminate](indeterminate.md) — Style the framework mixed state (.jam-indeterminate); does not set it.
 - [indicator-style](indicator-style.md) — Presentation for native indicator; select the element and behavior first.
 - [input-style](input-style.md) — Presentation for native input; select the element and behavior first.
 - [interact](interact.md) — Move, resize, fold, sort or dismiss an existing host; check the chosen behavior’s prerequisites.
 - [label-style](label-style.md) — Presentation for native label; select the element and behavior first.
-- [labelslot](labelslot.md) — Slot-wrapper styling; distinct from its assigned content.
+- [labelslot](labelslot.md) — Style the label slot wrapper; distinct from the label content assigned to it.
 - [layers/background](layers/background.md) — Decorative background content.
 - [layers/border](layers/border.md) — Decorative border layers.
 - [layers/canvas](layers/canvas.md) — Canvas-based decorative content.
@@ -94,7 +94,7 @@ These descriptions help selection; they do not replace argument contracts. For a
 - [theme](theme.md) — Local light/dark color-scheme boundaries; use on for foreground roles.
 - [timepicker-style](timepicker-style.md) — Presentation for native timepicker; select the element and behavior first.
 - [tree-style](tree-style.md) — Presentation for native tree; select the element and behavior first.
-- [visited](visited.md) — Presentation for an existing state; does not activate that state.
+- [visited](visited.md) — Visited-name selector forwarding; use explicit CSS :visited for browser link history.
 - [with](with.md) — Theme surface and trait treatments on a supported host.
 - [wrapper-style](wrapper-style.md) — Presentation for native wrapper; select the element and behavior first.
 

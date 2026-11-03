@@ -4,7 +4,7 @@
 
 这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。
 
-- [active](active.zh.md) — 已有状态的呈现；不创建该状态。
+- [active](active.zh.md) — 目标处于按下状态时的呈现；不触发该状态。
 - [after](after.zh.md) — CSS 伪元素呈现。
 - [animation](animation.zh.md) — 入场、离场与运动效果。
 - [auto](auto.zh.md) — 自动聚焦、文字适配、移动或滚动同步与位置恢复。
@@ -13,12 +13,12 @@
 - [button-style](button-style.zh.md) — 原生 button 的呈现；先选择元素与行为。
 - [buttongroup-style](buttongroup-style.zh.md) — 原生 buttongroup 的呈现；先选择元素与行为。
 - [calendar-style](calendar-style.zh.md) — 原生 calendar 的呈现；先选择元素与行为。
-- [capslot](capslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [capslot](capslot.zh.md) — 标题插槽包装器样式；分配到其中的标题内容使用 cap。
 - [card-style](card-style.zh.md) — 原生 card 的呈现；先选择元素与行为。
 - [chart-style](chart-style.zh.md) — 原生 chart 的呈现；先选择元素与行为。
 - [check](check.zh.md) — 可选的选中项装饰；选择状态由原生选项控件拥有。
 - [checkbox](checkbox.zh.md) — 复选框或选项布局及旧式标记；原生控件拥有选择状态。
-- [checked](checked.zh.md) — 已有状态的呈现；不创建该状态。
+- [checked](checked.zh.md) — 框架选中状态（.jam-checked）的呈现；选择由控件负责。
 - [child](child.zh.md) — 子项或插槽内容上的样式；先确认目标。
 - [click](click.zh.md) — 点击触发行为，包括将定位的同级内容置于前方。
 - [common/agent](common/agent.zh.md) — 设置输入控件内部原生代理的样式。
@@ -49,21 +49,21 @@
 - [common/value](common/value.zh.md) — 定制原生值的呈现。
 - [container-style](container-style.zh.md) — 原生 container 的呈现；先选择元素与行为。
 - [datepicker-style](datepicker-style.zh.md) — 原生 datepicker 的呈现；先选择元素与行为。
-- [disabled](disabled.zh.md) — 已有状态的呈现；不创建该状态。
+- [disabled](disabled.zh.md) — 禁用目标的呈现；禁用行为仍由控件所有者负责。
 - [echarts](echarts.zh.md) — 图表配置与数据呈现；先选择原生图表契约。
 - [element-style](element-style.zh.md) — 原生 element 的呈现；先选择元素与行为。
 - [extra](extra.zh.md) — 子项或插槽内容上的样式；先确认目标。
-- [extraslot](extraslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
-- [focus](focus.zh.md) — 已有状态的呈现；不创建该状态。
+- [extraslot](extraslot.zh.md) — 附加插槽包装器样式；分配到其中的附加内容使用 extra。
+- [focus](focus.zh.md) — 聚焦目标的呈现；焦点行为仍由其所有者负责。
 - [group](group.zh.md) — 子项分组表面与布局预设。
-- [hover](hover.zh.md) — 已有状态的呈现；不创建该状态。
-- [iconslot](iconslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
-- [indeterminate](indeterminate.zh.md) — 已有状态的呈现；不创建该状态。
+- [hover](hover.zh.md) — 指针悬停时的临时呈现；不选中目标。
+- [iconslot](iconslot.zh.md) — 图标插槽包装器样式；分配到其中的图标内容使用 icon。
+- [indeterminate](indeterminate.zh.md) — 框架混合状态（.jam-indeterminate）的呈现；不设置该状态。
 - [indicator-style](indicator-style.zh.md) — 原生 indicator 的呈现；先选择元素与行为。
 - [input-style](input-style.zh.md) — 原生 input 的呈现；先选择元素与行为。
 - [interact](interact.zh.md) — 移动、调整大小、折叠、排序或关闭已有宿主；检查所选行为的前提。
 - [label-style](label-style.zh.md) — 原生 label 的呈现；先选择元素与行为。
-- [labelslot](labelslot.zh.md) — 插槽包装器样式；与分配到插槽的内容不同。
+- [labelslot](labelslot.zh.md) — 标签插槽包装器样式；与分配到其中的标签内容不同。
 - [layers/background](layers/background.zh.md) — 装饰性背景内容。
 - [layers/border](layers/border.zh.md) — 装饰性边框层。
 - [layers/canvas](layers/canvas.zh.md) — 基于画布的装饰内容。
@@ -94,7 +94,7 @@
 - [theme](theme.zh.md) — 局部明暗配色边界；前景角色使用 on。
 - [timepicker-style](timepicker-style.zh.md) — 原生 timepicker 的呈现；先选择元素与行为。
 - [tree-style](tree-style.zh.md) — 原生 tree 的呈现；先选择元素与行为。
-- [visited](visited.zh.md) — 已有状态的呈现；不创建该状态。
+- [visited](visited.zh.md) — visited 名称的选择器转发；浏览器链接历史需显式 CSS :visited。
 - [with](with.zh.md) — 受支持宿主上的主题表面与特征处理。
 - [wrapper-style](wrapper-style.zh.md) — 原生 wrapper 的呈现；先选择元素与行为。
 

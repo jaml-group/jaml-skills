@@ -214,6 +214,9 @@ export function projectGuides(catalog, locale = 'en') {
     ]) {
         const _lines = ['# ' + (locale === 'zh' ? (directory === 'Styles' ? '样式参考' : '插件参考') : directory === 'Styles' ? 'Style reference' : 'Plugin reference'), '', locale === 'zh' ? '选择所属主题，再阅读具体条目的参数、前提和清理要求。' : 'Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.', ''];
         _lines.push(locale === 'zh' ? '这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。' : 'These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.', '');
+        if (kind === 'plugin') {
+            _lines.push(locale === 'zh' ? '下列是已注册的插件族。底层行为引擎和全局 API 请参阅[插件概览](plugins.md#individual-plugins)，按其入口类型选择。' : 'The entries below are registered plugin families. For underlying behavior engines and global APIs, use the [supporting API overview](plugins.md#individual-plugins) and its entry-point distinctions.', '');
+        }
         const _links = new Map();
         for (const [key, target] of _targets) {
             if (key.startsWith(kind + ':')) {

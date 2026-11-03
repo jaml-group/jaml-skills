@@ -22,6 +22,8 @@ The automatically installed chart style waits for chart readiness and resizes th
 
 Automatic grid defaults follow the completed series coordinate systems, including mixed charts; they are not limited to bar/line. Explicit non-Cartesian overrides do not acquire a grid. Automatic grid does not create axes; supply any axes not already provided by the selected chart style. See [grid defaults, opt-out and layout limits](../Styles/echarts.md#echartsgrid) before customizing legend spacing.
 
+The default `containLabel: true` accounts for tick labels, not axis-title clearance. When adding an axis `name`, reserve space with `echarts.grid` on the side where the title appears. End-position Y names need top space; end-position X names need right space for the usual left/bottom axes. Other positions and centered names need corresponding margins and, where needed, a suitable `nameGap`. See [named-axis layout](../Styles/echarts.md#named-axis-with-location). Example margins are starting values; check the actual titles, fonts and chart size.
+
 For radar, pie and geographic charts, position the legend directly with `echarts.legend.position`; do not add a Cartesian grid just to move the legend.
 
 ## JAML usage
@@ -128,7 +130,7 @@ Chart styling is done through the `styles` array — NOT through a `config` para
 {
     "type": "chart-bar",
     "cap": "Styled Bar",
-    "styles": ["css(height:15rem;width:20rem)", "echarts.legend", "echarts.axis.x(name:Month;nameLocation:center)", "echarts.axis.y(name:Sales)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
+    "styles": ["css(height:15rem;width:20rem)", "echarts.legend", "echarts.grid(top:3rem;right:4rem;containLabel:true)", "echarts.axis.x(name:Month;nameLocation:end)", "echarts.axis.y(name:Sales;nameLocation:end)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
     "data": [
         ["Month", "Sales"],
         ["Jan", 120],
@@ -151,7 +153,8 @@ export default {
         // Non-series options: axes, grid, tooltip
         Styles.eopts({
             tooltip: { trigger: 'axis' },
-            yAxis: { name: 'Revenue (USD)' }
+            grid: { top: '3rem', left: '3rem', containLabel: true },
+            yAxis: { name: 'Revenue (USD)', nameLocation: 'end' }
         }),
         // Series config: each key matches a data object's `name`
         Styles.eseries({
@@ -325,7 +328,7 @@ CashewChart.debounce = 100;
 {
     "type": "chart-bar",
     "cap": "Monthly Sales",
-    "styles": ["css(height:15rem;width:22rem)", "echarts.legend", "echarts.axis.x(name:Month;nameLocation:center)", "echarts.axis.y(name:Revenue;nameLocation:end)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
+    "styles": ["css(height:15rem;width:22rem)", "echarts.legend", "echarts.grid(top:3rem;right:4rem;containLabel:true)", "echarts.axis.x(name:Month;nameLocation:end)", "echarts.axis.y(name:Revenue;nameLocation:end)", "echarts.bar.itemStyle.border(radius:[4,4,0,0])"],
     "data": [
         ["Month", "Sales", "Returns"],
         ["Jan", 120, 15],

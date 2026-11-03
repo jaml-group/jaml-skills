@@ -296,6 +296,8 @@ Set a positive `debounce` to wait for that many milliseconds of quiet after the 
 
 Shorthand watchers that automatically set the element's `value`, `state`, or `data` when a key changes. Supports the `key@broker` syntax. `dataWatcher` targets native option/data consumers (including table and chart); it is not a generic assignment to every element. See the [shared `data` owner](state-and-data.md#shared-data-owner) for one producer and multiple consumers.
 
+Omitting `valueWatcher` defaults it to `valueKey`. An explicit `valueWatcher: ''` disables that shorthand watcher, retaining `valueKey` publication and form collection; a separate `value` binder still works. See [combining a bound value with a form field](jaml-format.md#valuekey).
+
 ```json
 {
     "type": "progress",
@@ -375,7 +377,7 @@ export default {
 };
 ```
 
-> **Conflict:** `value: '{{key}}'` and `valueKey: 'key'` must not be used together on the same element. Both wire the element to the messenger but through different paths and will interfere. Pick one.
+A single-variable `value` binder already owns two-way editing. Adding `valueKey` is supported when form collection or additional publication is needed; the same key duplicates messaging wiring, while a different key adds a second inbound source by default. Read the [valueKey composition contract](jaml-format.md#valuekey) to choose the intended owner and watcher behavior.
 
 ---
 

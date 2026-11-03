@@ -26,7 +26,7 @@
 | --- | --- | --- | --- |
 | `color` | `string` | `hsl(var(--jam-ac-h), var(--jam-ac-s), calc(var(--jam-ac-l) + 10%))` | 颜色<br>支持简写 |
 | `strokeWidth` | `string` | `0.0625rem` | 描边 |
-| `strokeColor` | `string` | `hsl(0, 0%, calc(var(--jam-lumi-o-base) + var(--jam-lumi-o-dev) * 20))` | 描边颜色 |
+| `strokeColor` | `string` | `hsl(0, 0%, calc(var(--jam-lumi-o-base) + var(--jam-lumi-o-dev) * 14))` | 描边颜色 |
 | `size` | `string` | 未提供 | 大小 |
 
 ## Variants

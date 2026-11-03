@@ -31,9 +31,14 @@ test('artifact installs independently and preserves learned corrections on repla
         }
         assert.equal(existsSync(resolve(_destination, 'jaml-knowledge')), false, 'Default install remains jaml-only');
         const _skillRoot = resolve(_destination, 'jaml');
-        for (const path of ['catalog', 'scripts', 'references/API']) {
-            assert.equal(existsSync(resolve(_skillRoot, path)), false, 'Consumer artifact must contain direct documentation only: ' + path);
+        for (const path of ['catalog', 'references/API']) {
+            assert.equal(existsSync(resolve(_skillRoot, path)), false, 'Consumer artifact must not contain a catalog engine: ' + path);
         }
+        assert.deepEqual(filesUnder(resolve(_skillRoot, 'scripts')), [resolve(_skillRoot, 'scripts/validate.mjs')]);
+        assert.equal(readFileSync(resolve(_skillRoot, 'scripts/validate.mjs'), 'utf8'), readFileSync(resolve(root, 'jaml/scripts/validate.mjs'), 'utf8'));
+        const _missingEngine = spawnSync(process.execPath, [resolve(_skillRoot, 'scripts/validate.mjs'), '-'], { cwd: _temporary, input: '{}', encoding: 'utf8' });
+        assert.equal(_missingEngine.status, 2);
+        assert.match(_missingEngine.stderr, /No validation ran/);
         const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
         assert.equal(_manifest.catalog?.path, undefined, 'Build provenance must not advertise an installed catalog');
         for (const [path, expected] of [

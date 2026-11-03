@@ -2,6 +2,8 @@
 
 Start here when writing, explaining, or diagnosing JAML. These documents are shared by people, the documentation viewer, and the `jaml` skill. Each contract has an owning page; topic indexes point to it.
 
+For element contracts, follow the actual links in the [element catalog](JAM-UI/JAM-UI.md); the skill entry includes a compact map generated from that index. Documented specializations share their base element’s guide. A capability name is not a filename: use an indexed link or a focused search result instead of inventing a page path. When the complete needed contract is already in context, no additional lookup is necessary.
+
 For style/plugin contracts, use the [style index](Styles/index.md) or [plugin index](Plugins/index.md) and read the selected family guide directly. Each guide combines usage, prerequisites and examples with generated argument types, order, defaults and option values. Check the documented framework baseline against the target runtime; missing facts remain unknown.
 
 For new UI or reusable modules, start with [Think in JAML: purpose and composition](JAML/purpose-and-composition.md). It shows how to choose a semantic owner, reuse its native parts and compose independent business modules before choosing their geometry.
@@ -57,3 +59,5 @@ For external option names, use the shared [literal option-text policy](JAM-UI/JA
 ## Maintaining this corpus
 
 Update the owning contract first. Related pages should link to it and keep only the examples needed for their own task. Search for repeated claims and obsolete API names after a correction. Report behavior against the installed runtime version; distinguish static validation from live evidence.
+
+For browser-free mechanical checks, use [Static validation](validation.md): explicit JAMLL input, the skill launcher, structured diagnostics and coverage limits.

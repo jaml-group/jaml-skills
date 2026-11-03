@@ -26,7 +26,7 @@
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `key` | `string` | 未提供 | 事件key |
+| `key` | `string` | 未提供 | 进度发布键；非空时按原值使用。省略时使用解析后滚动目标的标识加 -scroll-prog。锚点键将末尾的 -prog 替换为 -anchor；没有该后缀时追加 -anchor。 |
 | `broker` | `string` | 未提供 | 消息代理 |
 | `target` | `any` | 未提供 | 目标 |
 | `throttle` | `number` | `20` | 节流 |
@@ -37,9 +37,9 @@
 
 Publishes fractional scroll progress along `direction: 'y'` by default; use `'x'` for horizontal progress and anchor tracking. Progress retains the raw selected-axis offset divided by its scrollable extent: it is normally 0–1, but negative-origin or elastic scrolling can produce values outside that range. Anchor lookup retains the existing offset-based calculation on the selected axis; reversed-origin anchor ordering is not normalized.
 
-Progress is broadcast on a messenger key derived from the element's identity, and the last above anchor (if `anchorSelector` is set) is broadcast on a companion `-anchor` key. Both keys are cleaned up on unplug.
-
 With `updateAttr: true` (default `false`), the plugin also publishes attributes through its watcher subscription: it measures `target` and publishes `jam-overflow` direction tokens on the plugin host. All four physical edges are published regardless of `direction`; that option selects only progress and anchor coordinates, so `overflow.css(...)` and `overflow.left/right/top/bottom.css(...)` work without adding a second watcher. State refreshes on scrolling and observed layout/content changes; progress broadcasts keep their existing scroll-event throttle. The event plugin, `interact.scrollWatcher` and table progress share one scroll listener per target. Unplug releases its subscription and attribute ownership, restoring the preceding overflow attribute when applicable.
+
+非空 key 就是进度订阅键：下面的示例发布到 pageProgress，锚点发布到 pageProgress-anchor。未指定 key 时，使用解析后滚动目标的标识加 -scroll-prog。锚点键将末尾的 -prog 替换为 -anchor；没有该后缀时追加 -anchor。订阅者应使用插件所在的 broker。anchorSelector 找到锚点时，锚点值为最后一个位于滚动位置上方的 DOM 元素。卸载插件时会清理这两个键。
 
 ```javascript jaml-playground
 export default {

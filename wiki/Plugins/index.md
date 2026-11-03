@@ -4,6 +4,8 @@ Choose the owning topic, then read the entry’s arguments, prerequisites and cl
 
 These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
 
+The entries below are registered plugin families. For underlying behavior engines and global APIs, use the [supporting API overview](plugins.md#individual-plugins) and its entry-point distinctions.
+
 - [composable-plugins](composable-plugins.md) — Configuration-driven dashboard composition; requires a configuration and router.
 - [event](event.md) — Publish scroll progress and active section through the messenger.
 - [follow-scroll](follow-scroll.md) — Follow growing content while preserving reader-controlled pause/resume.

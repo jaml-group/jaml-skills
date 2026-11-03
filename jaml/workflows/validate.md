@@ -1,6 +1,8 @@
 # Validate
 
-Use `validate_jaml` as the static baseline when available. Omit `fileName` for unknown playground formats; use an explicit JAML extension only when the input format is known.
+Tool-call validation is optional: choose `validate_jaml` or the installed [thin launcher](../scripts/validate.mjs) when syntax, element/argument contracts or bindings need a mechanical check. Availability alone does not require a call for every reply. Explicitly requested validation and required project checks still apply; review the requested outcome and composition regardless of tool use.
+
+For JAMLL checks, pass raw records with `format: "jamll"` or a `.jamll` filename; omit Markdown fences. Use neutral inference only for unknown JSON/module formats. Read [validation usage and limits](../references/validation.md) for structured results and repeat checks. Correct mechanical diagnostics, then retrieve only a specific unresolved contract; a successful static check does not replace the composition and behavior review below.
 
 Inspect:
 

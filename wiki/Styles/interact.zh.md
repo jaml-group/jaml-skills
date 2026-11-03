@@ -580,20 +580,47 @@ export default {
 | `scroll` | `boolean` | `true` | 边缘自动滚动 |
 | `scrollMargin` | `number` | `48` | 边缘滚动范围(px) |
 | `scrollSpeed` | `number` | `600` | 最大滚动速度(px/s) |
-| `change` | `function` | 未提供 | 排序提交回调 |
+| `change` | `function` | 未提供 | function(change)，普通函数的 this 为容器元素。接收 { item, from, to, oldIndex, newIndex, fromItems, toItems }。跨容器转移会分别通知两个容器，this 各为对应容器；箭头函数保留词法 this。 |
 
-Reorders matching direct children by dragging. Containers with the same nonempty `group` accept transfers. The plugin changes DOM order; persist application data in `change` when needed.
+拖拽可重排匹配的直接子项。非空 group 相同的容器允许跨容器转移。插件通过 CSS order 提交视觉顺序；转移时将子项移入目标容器，但不会重写应用模型。
 
-Omit `group` to keep items within their container. Live placement moves the placeholder; deferred placement commits on release. The change callback receives `{ item, from, to, oldIndex, newIndex, fromItems, toItems }`; transfers notify both containers.
+省略 group 可将子项限制在当前容器。placement:live 实时移动占位，deferred 在释放时提交。change 回调接收 { item, from, to, oldIndex, newIndex, fromItems, toItems }。普通函数中的 this 为当前容器元素；跨容器转移会分别通知两个容器，this 各为对应容器。箭头函数保留词法 this。
+
+写入模型数据前，先根据事件中已排序的元素数组获取对应的数据记录；响应式写入可能更新或重建子项。示例从 cards 渲染具有稳定键的卡片，并将提交后的顺序写回同一模型数组。跨模型生命周期的保存仍由应用负责。跨容器转移时，先读取两个集合的快照，再分别更新其数据所有者。身份与更新行为见[带键的子项渲染](../JAML/jaml-format.md#buildfor)。
 
 ```javascript jaml-playground
 export default {
     type: 'wrapper',
-    styles: ['interact.sortable', 'animation.flipchild(duration:200)'],
+    cap: 'Drag cards to reorder',
+    vars: {
+        cards: [
+            { id: 'plan', title: 'Planning' },
+            { id: 'build', title: 'Building' },
+            { id: 'check', title: 'Checking' }
+        ]
+    },
+    styles: [
+        'layout.flex(direction:column;gap:0.5rem)',
+        'css(width:20rem)',
+        Styles.interact.sortable({
+            selector: 'jam-card',
+            change({ toItems }) {
+                const _cardsById = new Map(this.vars.cards.map((card) => [card.id, { ...card }]));
+                const _cards = toItems.map((item) => _cardsById.get(item.getAttribute('data-card-id')));
+                this.vars.cards = _cards;
+            }
+        }),
+        'animation.flipchild(duration:200)'
+    ],
     components: [
-        { type: 'label', cap: 'Drag: Planning' },
-        { type: 'label', cap: 'Drag: Building' },
-        { type: 'label', cap: 'Drag: Checking' }
+        {
+            buildFor: 'card in cards',
+            key: 'id',
+            type: 'card',
+            cap: '{{card.title}}',
+            attrs: { 'data-card-id': '{{card.id}}' },
+            styles: ['css(min-height:4rem)']
+        }
     ]
 };
 ```

@@ -1,5 +1,17 @@
 // Curated selection pointers. Complete API contracts remain in their owning guides.
 const purposes = {
+    'Styles/active': ['Style a pressed target while its active state is present; does not activate it.', '目标处于按下状态时的呈现；不触发该状态。'],
+    'Styles/disabled': ['Style a disabled target; disabling remains with the control owner.', '禁用目标的呈现；禁用行为仍由控件所有者负责。'],
+    'Styles/focus': ['Style a focused target; focus behavior remains with its owner.', '聚焦目标的呈现；焦点行为仍由其所有者负责。'],
+    'Styles/hover': ['Temporary pointer-hover presentation; does not select the target.', '指针悬停时的临时呈现；不选中目标。'],
+    'Styles/checked': ['Style the framework checked state (.jam-checked); the control owns selection.', '框架选中状态（.jam-checked）的呈现；选择由控件负责。'],
+    'Styles/indeterminate': ['Style the framework mixed state (.jam-indeterminate); does not set it.', '框架混合状态（.jam-indeterminate）的呈现；不设置该状态。'],
+    'Styles/visited': ['Visited-name selector forwarding; use explicit CSS :visited for browser link history.', 'visited 名称的选择器转发；浏览器链接历史需显式 CSS :visited。'],
+    'Styles/capslot': ['Style the caption slot wrapper; use cap for its assigned caption content.', '标题插槽包装器样式；分配到其中的标题内容使用 cap。'],
+    'Styles/iconslot': ['Style the icon slot wrapper; use icon for its assigned icon content.', '图标插槽包装器样式；分配到其中的图标内容使用 icon。'],
+    'Styles/labelslot': ['Style the label slot wrapper; distinct from the label content assigned to it.', '标签插槽包装器样式；与分配到其中的标签内容不同。'],
+    'Styles/extraslot': ['Style the extra slot wrapper; use extra for its assigned additions.', '附加插槽包装器样式；分配到其中的附加内容使用 extra。'],
+
     'Styles/animation': ['Entry, exit and motion effects.', '入场、离场与运动效果。'],
     'Styles/auto': ['Automatic focus, text fitting, movement/scroll synchronization and position restoration.', '自动聚焦、文字适配、移动或滚动同步与位置恢复。'],
     'Styles/checkbox': ['Checkbox/option layout and legacy markers; native controls own selection.', '复选框或选项布局及旧式标记；原生控件拥有选择状态。'],

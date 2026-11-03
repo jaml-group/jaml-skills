@@ -6,13 +6,15 @@ Read the relevant section below, then follow its owning guide. Use the [style in
 
 ## Selection and hover
 
-| Need                                    | Start with                                                                       | Read next                                                                         |
-| --------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| A visibly selected value                | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)    |
-| An alternative checked-state treatment  | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check styles and examples](Styles/check.md)                                      |
-| Temporary highlight of the hovered item | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | [Hover styles and shared-locator caveats](Styles/hover.md)                        |
-| Brackets that stay around one host      | `style layer.crosshair`                                                          | [Host decoration](Styles/layers/crosshair.md)                                     |
-| Decorative pointer motion               | `style layer.follower.spotlight`, `layer.follower.edge`, `layer.follower.shadow` | [Follower examples](Styles/layers/follower.md) and their activation prerequisites |
+| Need                                      | Start with                                                                       | Read next                                                                                                                      |
+| ----------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| One boolean on/off setting                | Native `switch`, or `switch-checkbox` for a checkbox appearance                  | [Boolean value and subtypes](JAM-UI/switch.md)                                                                                 |
+| A visibly selected value                  | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)                                                 |
+| An alternative checked-state treatment    | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check styles and examples](Styles/check.md)                                                                                   |
+| Temporary highlight of the hovered item   | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | [Hover styles and shared-locator caveats](Styles/hover.md)                                                                     |
+| Temporary highlight of a native table row | `style table.hoverhighlight` or `table.hovermarker`                              | [Row highlight](Styles/table-style.md#entry-table-hoverhighlight), [row marker](Styles/table-style.md#entry-table-hovermarker) |
+| Brackets that stay around one host        | `style layer.crosshair`                                                          | [Host decoration](Styles/layers/crosshair.md)                                                                                  |
+| Decorative pointer motion                 | `style layer.follower.spotlight`, `layer.follower.edge`, `layer.follower.shadow` | [Follower examples](Styles/layers/follower.md) and their activation prerequisites                                              |
 
 Keep selection state with the native option owner. Plain `buttongroup-radio` owns the selected value and checked state, and already presents checked state visually. Use a `check.*` style only when a different checked-state treatment is desired; do not recreate selection using decorative containers. Plain `buttongroup` does not become radio through an underline, a default value or a theme. For a complete tabs interaction, separately establish keyboard navigation, tab/panel semantics and panel switching; an underline is only its visual treatment.
 
@@ -154,14 +156,15 @@ A card already owns its title and [extra action slot](JAM-UI/card.md#slots). See
 
 ## Scrolling, deferred rendering and tables
 
-| Content model                                 | Choose                                               | Why                                                                                           |
-| --------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Variable-height vertical component content    | `style layout.lazyload`                              | Progressively builds content and retains visited component state.                             |
-| Regular component grid with fixed row height  | `style grid.virtualScroll`                           | Owns grid row allocation and visible/buffered cells.                                          |
-| Native table/tree rows with fixed height      | `style table.fixedrowheight`, `tree.fixednodeheight` | Uses the element's row provider and body viewport.                                            |
-| Custom fixed-height row providers             | `style interact.virtualScroll`                       | Requires explicit row providers, positioning and scroll extent; inspect its lifecycle limits. |
-| Publish scrolling progress or current section | `plugin event.scrollProgress`                        | Publishes through the messenger; it does not render a progress view.                          |
-| Show progress in a native table               | `style table.showscrollprogress`                     | Composes a native progress bar with the body scroll owner.                                    |
+| Content model                                                    | Choose                                               | Why                                                                                                                             |
+| ---------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Variable-height vertical component content                       | `style layout.lazyload`                              | Progressively builds content and retains visited component state.                                                               |
+| Regular component grid with fixed row height                     | `style grid.virtualScroll`                           | Owns grid row allocation and visible/buffered cells.                                                                            |
+| Native table/tree rows with fixed height                         | `style table.fixedrowheight`, `tree.fixednodeheight` | Uses the element's row provider and body viewport.                                                                              |
+| Custom fixed-height row providers                                | `style interact.virtualScroll`                       | Requires explicit row providers, positioning and scroll extent; inspect its lifecycle limits.                                   |
+| Follow growing content until the reader inspects earlier content | `Plugins.followScroll`                               | Owns following and reader-controlled pause/resume on one bounded viewport; [read setup and lifetime](Plugins/follow-scroll.md). |
+| Publish scrolling progress or current section                    | `plugin event.scrollProgress`                        | Publishes through the messenger; it does not render a progress view.                                                            |
+| Show progress in a native table                                  | `style table.showscrollprogress`                     | Composes a native progress bar with the body scroll owner.                                                                      |
 
 For a short initial native table/tree list, use [Plugins.showMore](Plugins/show-more.md): reveal another batch of logical leaf rows per click, then offer Show less when fully revealed. Configure `limit` and `step`; groups that already fit need no control. It composes with native fixed-height virtualization and bypasses limits while filtering. This is loaded-item disclosure, not geometric `overflow.*` styling or data fetching.
 

@@ -26,7 +26,7 @@ Positional order: `key` → `broker` → `target` → `throttle` → `anchorSele
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `key` | `string` | Not supplied | Event key |
+| `key` | `string` | Not supplied | Progress publication key, used verbatim when nonempty. If omitted, uses the resolved target identity followed by -scroll-prog. The companion anchor key replaces a trailing -prog with -anchor, otherwise appends -anchor. |
 | `broker` | `string` | Not supplied | Message broker |
 | `target` | `any` | Not supplied | Target |
 | `throttle` | `number` | `20` | Throttle |
@@ -37,9 +37,9 @@ Positional order: `key` → `broker` → `target` → `throttle` → `anchorSele
 
 Publishes fractional scroll progress along `direction: 'y'` by default; use `'x'` for horizontal progress and anchor tracking. Progress retains the raw selected-axis offset divided by its scrollable extent: it is normally 0–1, but negative-origin or elastic scrolling can produce values outside that range. Anchor lookup retains the existing offset-based calculation on the selected axis; reversed-origin anchor ordering is not normalized.
 
-Progress is broadcast on a messenger key derived from the element's identity, and the last above anchor (if `anchorSelector` is set) is broadcast on a companion `-anchor` key. Both keys are cleaned up on unplug.
-
 With `updateAttr: true` (default `false`), the plugin also publishes attributes through its watcher subscription: it measures `target` and publishes `jam-overflow` direction tokens on the plugin host. All four physical edges are published regardless of `direction`; that option selects only progress and anchor coordinates, so `overflow.css(...)` and `overflow.left/right/top/bottom.css(...)` work without adding a second watcher. State refreshes on scrolling and observed layout/content changes; progress broadcasts keep their existing scroll-event throttle. The event plugin, `interact.scrollWatcher` and table progress share one scroll listener per target. Unplug releases its subscription and attribute ownership, restoring the preceding overflow attribute when applicable.
+
+A nonempty `key` is the exact progress subscription key: the example below publishes on `pageProgress` and its companion `pageProgress-anchor`. Without a key, progress uses the resolved scroll target's identity followed by `-scroll-prog`. The companion key replaces a trailing `-prog` with `-anchor`; otherwise it appends `-anchor`. Subscribe on the plugin's broker. The anchor value is the last above DOM element, when `anchorSelector` finds one. Both keys are cleaned up on unplug.
 
 ```javascript jaml-playground
 export default {
