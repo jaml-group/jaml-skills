@@ -265,15 +265,7 @@ export default [
 
 <a id="entry-agent-css"></a>
 
-CSS styles
-
-Apply CSS that has no more specific native style helper, including explicitly scoped rules.
-
-Accepts a property dictionary or cssText; callable cssText receives the host and returns a dictionary or declaration string. Explicit state, selector, or direct arguments select rule application; otherwise the path chooses the method, falling back to inline properties.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
-
-vars writes path-derived custom properties and requires a matching consumer. Rule targeting and direct-child matching are different from direct inline targeting; do not infer descendant-wide behavior from a component prefix.
+Notes: [`css`](css.md#entry-css).
 
 Positional order: `display` → `position` → `width` → `height` → `minWidth` → `minHeight` → `maxWidth` → `maxHeight` → `padding` → `paddingTop` → `paddingRight` → `paddingBottom` → `paddingLeft` → `margin` → `marginTop` → `marginRight` → `marginBottom` → `marginLeft` → `gap` → `color` → `background` → `backgroundColor` → `border` → `borderRadius` → `opacity` → `overflow` → `transform` → `transition` → `whiteSpace` → `zIndex` → `setProperty` → `removeProperty` → `getPropertyValue` → `selector` → `method` → `direct` → `cssText`.
 

@@ -510,8 +510,6 @@ background.lower selects the surface.lower fill token; border.lower adds a solid
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.higher`
 
 <a id="entry-background-higher"></a>
@@ -522,8 +520,6 @@ background.higher selects the surface.higher fill token; border.higher adds a so
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.lowest`
 
 <a id="entry-background-lowest"></a>
@@ -533,8 +529,6 @@ Lowest
 background.lowest selects the surface.lowest fill token; border.lowest adds a solid border using surface.lowest and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `background.repeat`
 
@@ -562,8 +556,6 @@ Sets background-color from sys.color.surface.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.highest`
 
 <a id="entry-background-highest"></a>
@@ -573,8 +565,6 @@ Highest
 background.highest selects the surface.highest fill token; border.highest adds a solid border using surface.highest and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `background.neutral`
 
@@ -586,8 +576,6 @@ Sets background-color from sys.color.neutral.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.primary`
 
 <a id="entry-background-primary"></a>
@@ -598,8 +586,6 @@ background.primary selects the primary.default fill token; border.primary adds a
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.elevated`
 
 <a id="entry-background-elevated"></a>
@@ -609,8 +595,6 @@ Elevated
 Sets background-color from sys.color.elevated.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `background.position`
 
@@ -638,8 +622,6 @@ background.tertiary selects the tertiary.default fill token; border.tertiary add
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `background.secondary`
 
 <a id="entry-background-secondary"></a>
@@ -649,8 +631,6 @@ Secondary
 background.secondary selects the secondary.default fill token; border.secondary adds a solid border using secondary.subtle and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `background.attachment`
 
@@ -677,5 +657,3 @@ Quaternary
 background.quaternary selects the quaternary.default fill token; border.quaternary adds a solid border using quaternary.subtle and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.

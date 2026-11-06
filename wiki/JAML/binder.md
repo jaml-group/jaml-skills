@@ -541,6 +541,44 @@ export default {
 
 Use this form whenever the transform requires branching, helper calls, or anything that cannot be expressed cleanly as a single expression string.
 
+**`this` in the transform** — write the callback as a `function` to receive the component as `this`; `this.element` is its element. The transform can then set the element's state while returning the bound value. `valueStates` derives the same state declaratively; both are author choices. The transform also decides what an empty value means, whereas the `valueStates` predicates below also run on a cleared number input's `null`, where `value < 60` is true.
+
+```javascript jaml-playground
+export default {
+    type: 'container',
+    vars: { score: 43 },
+    components: [
+        { type: 'input-number', cap: 'Score', value: '{{score}}' },
+        {
+            type: 'indicator',
+            cap: 'Score',
+            value: jaml.var('score', function (score) {
+                if (score == null) {
+                    this.element.resetState();
+                } else {
+                    this.element.state = score >= 60 ? 'pass' : 'failed';
+                }
+                return score;
+            }),
+            descStyles: {
+                ':scope[state=pass]': ['color(success)'],
+                ':scope[state=failed]': ['color(error)']
+            }
+        },
+        {
+            type: 'indicator',
+            cap: 'Score',
+            value: '{{score}}',
+            valueStates: { pass: (value) => value >= 60, failed: (value) => value < 60 },
+            descStyles: {
+                ':scope[state=pass]': ['color(success)'],
+                ':scope[state=failed]': ['color(error)']
+            }
+        }
+    ]
+};
+```
+
 ---
 
 ### Cross-Broker binding
@@ -890,13 +928,4 @@ export default {
 
 Inside **watcher callbacks**, `this` refers to the **element** (same as element hooks). For other lifecycle hooks the context varies — see [JAML Format Reference](./jaml-format.md#this-context-reference) for the full table.
 
-Easy access of the element's properties:
-
-| Reference     | Points to    | Notes                                                                                                        |
-| ------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
-| `this.cmpt`   | Component    | The component that built this element                                                                        |
-| `this.model`  | Root Model   | Always the root `Model` instance                                                                             |
-| `this.ref`    | Ref map      | Shortcut to component's `ref` map                                                                            |
-| `this.vars`   | Vars proxy   | Shortcut to `this.model.vars`                                                                                |
-| `this.props`  | Props access | Resolves literals, aliases and binders; see [props and automatic element properties](./jaml-format.md#props) |
-| `this.shared` | Shared proxy | Upward-looking proxy for nearest `share: true` ancestor                                                      |
+For `this.cmpt`, `this.model`, `this.ref`, `this.vars`, `this.props` and `this.shared`, see the [`this` context reference](./jaml-format.md#this-context-reference).

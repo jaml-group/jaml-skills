@@ -400,9 +400,9 @@ export default [
 
 为宿主和解析得到的滚动目标创建 SaigonScroll，传入提供的行提供器和固定行高。它安装滚动和尺寸变化监听器；此通用样式不执行初始绘制。
 
-提供 getRowNum 和 getChildrenByRow 回调、稳定行高及可测量的滚动目标。返回的行子节点必须提供 row、buildDom()，并在构建后提供 dom。调用方必须提供行定位和完整的可滚动范围。
+提供 getRowNum 和 getChildrenByRow 回调、稳定行高及可测量的滚动目标。返回的行子节点必须提供 row、buildDom()，并在构建后提供 dom。调用方必须提供行定位和完整的可滚动范围。 水平 steps 需要完整序列，在安装所属控制器前即拒绝纵向虚拟滚动。
 
-移除时分离 SaigonScroll 监听器，但在宿主上保留实例；再次将此样式附加到该宿主时，不会创建或初始化替代实例。
+移除时销毁当前应用所属的 SaigonScroll 控制器，释放监听器及目标状态；仅当宿主引用仍指向该控制器时清除引用。重新应用可创建新的控制器。
 
 组件网格使用 grid.virtualScroll，高度可变的纵向组件使用 layout.lazyload，原生表格行使用 table.fixedrowheight。
 

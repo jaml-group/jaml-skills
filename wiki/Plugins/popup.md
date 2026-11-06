@@ -62,15 +62,15 @@ Show details on hover
 
 Show delegated hover tips using the tip popup profile.
 
-Watches mouseover targets matching selector or the tip attribute, reads supplied/attribute content and reuses one owned popup. Sub-tip content may replace a showing main tip unless subTip:false is supplied; returning to the main target restores its original content.
+Reuses one owned popup for delegated hover targets. Default matching tests the event target; hoverClosest:true resolves the nearest match inside the host and ignores transitions within that same target. Sub-tip content may temporarily replace a showing main tip unless subTip:false is supplied; returning restores the main content. With dismissOn:'click', row activation cancels its pending tip or starts native hiding; focused rows remain dismissed until focus leaves and do not consume the next Escape.
 
 Install on a containing element and annotate intended targets.
 
-Repeated application to the same host does not duplicate its delegation listener. Unplug removes that listener and destroys the owned popup, including pending display.
+Repeated application does not duplicate listeners. content(target, popup) runs synchronously after native delay; onshow starts subscriptions after mounting/positioning. onhidestart stops async work while preserving exit visuals. oncontentretire disposes each created presentation once with reason replace, hide or destroy, including content canceled before onshow. Slot/sub-tip swaps do not retire it. Unplug removes listeners and destroys the popup through that same retirement path. Retained targets that become hidden, including through a hidden ancestor, cancel pending display or hide the visible tip through the same lifecycle.
 
-Matching tests the event target directly, not its closest matching ancestor. Sub-tip replacement requires a main popup that is already showing. Provide focus-accessible help separately where needed.
+Without hoverClosest, nested descendants do not inherit ancestor hover matching. A factory that never runs has no content to retire. Lifecycle callbacks have a null receiver and frozen detail snapshots; referenced DOM objects remain live. Promise content factories are unsupported. Sub-tips need an already showing main popup. hoverClosest does not add keyboard help or change focus behavior. dismissOn:'click' does not change row activation, generic click-dropdown policy or focus matching.
 
-Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
+Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus` → `onhidestart` → `oncontentretire` → `hoverClosest` → `dismissOn`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
@@ -78,21 +78,25 @@ Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `co
 | `subTip` | `boolean` | Not supplied | Enable sub-tip replacement while the main popup is showing. Omitted or true enables it; false disables it. |
 | `subTipAttr` | `string` | `jam-sub-tip` | Attribute name for sub-tip content. |
 | `selector` | `string` | Not supplied | Selector for elements that show tips. |
-| `content` | `functionOrString` | Not supplied | Static or computed tooltip content. |
+| `content` | `functionOrString` | Not supplied | Static content or synchronous content(target, popup) returning supported slot content after native show delay. Promise returns are unsupported. |
 | `showDelay` | `number` | Not supplied | Delay in milliseconds before showing. |
 | `hideDelay` | `number` | Not supplied | Delay in milliseconds before hiding. |
 | `type` | `string` | Not supplied | Popup profile type. |
-| `onshow` | `function` | Not supplied | Callback when the popup shows. |
+| `onshow` | `function` | Not supplied | Receives a frozen { target, content, container, popup } snapshot after mounting and native positioning readiness. Start async subscriptions here; use detail, not this (null receiver). |
 | `dynamic` | `boolean` | Not supplied | Keep content/position dynamic. |
 | `position` | `string` | Not supplied | Popup position. |
 | `bias` | `numberOrString` | Not supplied | Popup position bias. |
 | `snapTo` | `string` | Not supplied | Snap target.<br>Options: `cursor`, `target` |
 | `autoFlip` | `boolean` | Not supplied | Allow automatic position flipping. |
 | `focus` | `boolean` | `false` |  |
+| `onhidestart` | `function` | Not supplied | Receives the presentation snapshot when hiding begins. Stop subscriptions and invalidate async writes while retaining visual content for exit. Null receiver. |
+| `oncontentretire` | `function` | Not supplied | Receives the presentation snapshot plus reason replace, hide or destroy exactly once. Dispose created content here, including results canceled before onshow. Null receiver. |
+| `hoverClosest` | `boolean` | `false` | False by default. True resolves the nearest selector match within the plugin host; movement among its descendants preserves the delay, while nested matching targets stay distinct. Focus behavior is unchanged. |
+| `dismissOn` | `string` | Not supplied | Optional click dismissal. 'click' captures activation on the nearest matching row inside the host and hides only its pending, visible or focused tip through native exit. Omission preserves existing behavior; the click still reaches the row action.<br>Options: `click` |
 
-Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A sub-tip target with a `jam-sub-tip` attribute updates an already showing main popup without closing it. Returning to the main target restores its original content. Matching tests the event target itself, so a nested label or icon does not inherit a matching ancestor’s tip automatically.
+Shows a tooltip on hover over `jam-tip` targets (configurable via `tipAttr` or `selector`). By default, pointer matching tests the event target directly. Set `hoverClosest:true` to use the nearest selector match inside the plugin host: moving among one row’s labels and icons preserves the pending delay and visible presentation, while nested matching rows remain distinct targets. This option does not change focus matching or keyboard behavior.
 
-The show callback receives the event detail.
+Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A `jam-sub-tip` target temporarily replaces an already showing main tip; returning restores its original content. Sub-tip swaps and direct slot updates do not retire the logical presentation.
 
 ```javascript jaml-playground
 export default {
@@ -113,6 +117,57 @@ export default {
 };
 ```
 
+### Activation and hidden targets
+
+Set `dismissOn:'click'` to dismiss the matching tooltip when its row is activated. Omission preserves existing behavior. Capture-phase delegation resolves the nearest selector match inside the host and cancels only that row’s pending, visible or focused presentation before the row’s activation callback runs; it does not cancel the click. Pending content whose factory has not run stays uncreated. A visible tip uses native hiding and keeps its content through exit. With `focus:true`, the activated row stays dismissed until focus leaves: descendant hover does not immediately reopen it, and the tooltip does not consume the next Escape.
+
+Retained targets that become hidden, including through a hidden ancestor, cancel pending tooltip display or dismiss the visible tooltip through native hiding. This also applies to the floating-tip and title profiles. It does not impose a visibility requirement on ordinary imperative click-dropdown presentations.
+
+### Content lifecycle
+
+`content(target, popup)` is synchronous and returns supported popup slot content. Native delay and target eligibility checks run first; a Promise is not a supported return. The popup keeps ownership of delay, positioning and exit animation.
+
+- `onshow(detail)` runs after content is mounted and native positioning is ready. Start asynchronous subscriptions here.
+- `onhidestart(detail)` runs when hiding begins. Stop subscriptions and invalidate pending writes, but retain the visual content for the exit animation.
+- `oncontentretire(detail)` releases the logical content exactly once on committed replacement, completed hiding, or destruction. Unsubscribe defensively and dispose owned resources here, even if `onshow` never ran.
+
+The first two callbacks receive a frozen `{ target, content, container, popup }` snapshot; retirement adds `reason: 'replace' | 'hide' | 'destroy'`. The snapshot identifies that presentation, rather than later mutable popup fields; referenced DOM objects remain live. Callbacks use a null receiver: read `detail`, not `this`.
+
+If the factory never runs, there is no created content to retire. If its result is canceled before mounting or showing, it still receives retirement. Merely queueing a replacement does not retire the visible content; canceled exits cannot retire a successor. A temporary sub-tip or `setContent`/`reapplyContent` slot change is not a new logical content lifetime.
+
+This JavaScript integration fragment accepts a caller-owned `EventTarget` named `updates`. The caller can publish text with `updates.dispatchEvent(new CustomEvent('change', { detail: 'Updated text' }))`. The returned plugin goes in a containing element’s `plugins` array; `.row` identifies its tooltip targets. DOM nodes and event subscriptions use standard browser APIs.
+
+```javascript
+function liveTip(updates) {
+    const _owners = new WeakMap();
+    const _stop = (content) => _owners.get(content)?.abort();
+    return Plugins.popup.tip({
+        selector: '.row',
+        hoverClosest: true,
+        subTip: false,
+        content(target) {
+            const _content = document.createElement('span');
+            _content.textContent = target.textContent;
+            _owners.set(_content, new AbortController());
+            return _content;
+        },
+        onshow({ content }) {
+            updates.addEventListener('change', (event) => {
+                content.textContent = String(event.detail);
+            }, { signal: _owners.get(content).signal });
+        },
+        onhidestart({ content }) {
+            _stop(content);
+        },
+        oncontentretire({ content }) {
+            _stop(content);
+            _owners.delete(content);
+            content.remove();
+        }
+    });
+}
+```
+
 ---
 
 ## `popup.floatingTip`
@@ -123,15 +178,15 @@ Floating tooltip
 
 Show delegated hover tips using the floatingTip popup profile.
 
-Watches mouseover targets matching selector or the tip attribute, reads supplied/attribute content and reuses one owned popup. Sub-tip content may replace a showing main tip unless subTip:false is supplied; returning to the main target restores its original content.
+Reuses one owned popup for delegated hover targets. Default matching tests the event target; hoverClosest:true resolves the nearest match inside the host and ignores transitions within that same target. Sub-tip content may temporarily replace a showing main tip unless subTip:false is supplied; returning restores the main content. With dismissOn:'click', row activation cancels its pending tip or starts native hiding; focused rows remain dismissed until focus leaves and do not consume the next Escape.
 
 Install on a containing element and annotate intended targets.
 
-Repeated application to the same host does not duplicate its delegation listener. Unplug removes that listener and destroys the owned popup, including pending display.
+Repeated application does not duplicate listeners. content(target, popup) runs synchronously after native delay; onshow starts subscriptions after mounting/positioning. onhidestart stops async work while preserving exit visuals. oncontentretire disposes each created presentation once with reason replace, hide or destroy, including content canceled before onshow. Slot/sub-tip swaps do not retire it. Unplug removes listeners and destroys the popup through that same retirement path. Retained targets that become hidden, including through a hidden ancestor, cancel pending display or hide the visible tip through the same lifecycle.
 
-Matching tests the event target directly, not its closest matching ancestor. Sub-tip replacement requires a main popup that is already showing. Provide focus-accessible help separately where needed.
+Without hoverClosest, nested descendants do not inherit ancestor hover matching. A factory that never runs has no content to retire. Lifecycle callbacks have a null receiver and frozen detail snapshots; referenced DOM objects remain live. Promise content factories are unsupported. Sub-tips need an already showing main popup. hoverClosest does not add keyboard help or change focus behavior. dismissOn:'click' does not change row activation, generic click-dropdown policy or focus matching.
 
-Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
+Positional order: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus` → `onhidestart` → `oncontentretire` → `hoverClosest` → `dismissOn`.
 
 Common arguments: [popup.tip](#entry-popup-tip).
 
@@ -164,7 +219,7 @@ Replace native title tooltips with a framework hover popup.
 
 Captures mouseenter on titled targets, temporarily clears the native title and shows its text in an owned popup. Moving to another titled target restores the previous target first.
 
-Leaving or unmounting the active target restores its suppressed title. Unplug also restores the active title, removes listeners and destroys the owned popup, cancelling pending display. Reapplying the same instance does not duplicate listeners; separate hosts retain separate state.
+Leaving or unmounting the active target restores its suppressed title. Unplug also restores the active title, removes listeners and destroys the owned popup, cancelling pending display. Reapplying the same instance does not duplicate listeners; separate hosts retain separate state. A retained title target becoming hidden, including through an ancestor, cancels pending display or hides the visible popup through native dismissal.
 
 A newer nonempty title or removed title attribute is preserved during restoration. An external assignment of the same empty title is indistinguishable from the plugin suppression. Hover tooltips do not supply keyboard or focus help by themselves.
 

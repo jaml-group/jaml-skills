@@ -92,11 +92,7 @@ export default [
 
 大
 
-gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字号变量；border.l 只设置边框宽度；shadow.l 和 shadow.primary.l 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.l 和 shadow.primary.l 设置盒阴影。
 
 ## `shadow.m`
 
@@ -104,11 +100,7 @@ gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字�
 
 中等
 
-gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字号变量；border.m 只设置边框宽度；shadow.m 和 shadow.primary.m 设置盒阴影；shadow.text.m 和 shadow.text.primary.m 设置文本阴影；border.default 设置 xs 宽度的实线 surface-default 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.m 和 shadow.primary.m 设置盒阴影。
 
 ## `shadow.s`
 
@@ -116,11 +108,7 @@ gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字�
 
 小
 
-gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字号变量；border.s 只设置边框宽度；shadow.s 和 shadow.primary.s 设置盒阴影；shadow.text.s 和 shadow.text.primary.s 设置文本阴影；border.faint 和 border.muted 设置 xs 宽度的实线轮廓角色边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.s 和 shadow.primary.s 设置盒阴影。
 
 ## `shadow.xl`
 
@@ -128,11 +116,7 @@ gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字�
 
 极大
 
-gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 xl 字号变量；border.xl 只设置边框宽度；shadow.xl 和 shadow.primary.xl 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.xl 和 shadow.primary.xl 设置盒阴影。
 
 ## `shadow.xs`
 
@@ -140,11 +124,7 @@ gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 x
 
 极小
 
-gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 xs 字号变量；border.xs 只设置边框宽度；shadow.xs 和 shadow.primary.xs 设置盒阴影；shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影；border.subtle 设置 xs 宽度的实线 outline-subtle 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.xs 和 shadow.primary.xs 设置盒阴影。
 
 ## `shadow.text.m`
 
@@ -152,11 +132,7 @@ gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 x
 
 中等
 
-gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字号变量；border.m 只设置边框宽度；shadow.m 和 shadow.primary.m 设置盒阴影；shadow.text.m 和 shadow.text.primary.m 设置文本阴影；border.default 设置 xs 宽度的实线 surface-default 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.m 和 shadow.text.primary.m 设置文本阴影。
 
 ## `shadow.text.s`
 
@@ -164,11 +140,7 @@ gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字�
 
 小
 
-gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字号变量；border.s 只设置边框宽度；shadow.s 和 shadow.primary.s 设置盒阴影；shadow.text.s 和 shadow.text.primary.s 设置文本阴影；border.faint 和 border.muted 设置 xs 宽度的实线轮廓角色边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.s 和 shadow.text.primary.s 设置文本阴影。
 
 ## `shadow.text.xs`
 
@@ -176,11 +148,7 @@ gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字�
 
 极小
 
-gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 xs 字号变量；border.xs 只设置边框宽度；shadow.xs 和 shadow.primary.xs 设置盒阴影；shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影；border.subtle 设置 xs 宽度的实线 outline-subtle 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影。
 
 ## `shadow.primary.l`
 
@@ -188,11 +156,7 @@ gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 x
 
 大
 
-gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字号变量；border.l 只设置边框宽度；shadow.l 和 shadow.primary.l 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.l 和 shadow.primary.l 设置盒阴影。
 
 ## `shadow.primary.m`
 
@@ -200,11 +164,7 @@ gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字�
 
 中等
 
-gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字号变量；border.m 只设置边框宽度；shadow.m 和 shadow.primary.m 设置盒阴影；shadow.text.m 和 shadow.text.primary.m 设置文本阴影；border.default 设置 xs 宽度的实线 surface-default 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.m 和 shadow.primary.m 设置盒阴影。
 
 ## `shadow.primary.s`
 
@@ -212,11 +172,7 @@ gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字�
 
 小
 
-gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字号变量；border.s 只设置边框宽度；shadow.s 和 shadow.primary.s 设置盒阴影；shadow.text.s 和 shadow.text.primary.s 设置文本阴影；border.faint 和 border.muted 设置 xs 宽度的实线轮廓角色边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.s 和 shadow.primary.s 设置盒阴影。
 
 ## `shadow.primary.xl`
 
@@ -224,11 +180,7 @@ gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字�
 
 极大
 
-gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 xl 字号变量；border.xl 只设置边框宽度；shadow.xl 和 shadow.primary.xl 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.xl 和 shadow.primary.xl 设置盒阴影。
 
 ## `shadow.primary.xs`
 
@@ -236,11 +188,7 @@ gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 x
 
 极小
 
-gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 xs 字号变量；border.xs 只设置边框宽度；shadow.xs 和 shadow.primary.xs 设置盒阴影；shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影；border.subtle 设置 xs 宽度的实线 outline-subtle 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.xs 和 shadow.primary.xs 设置盒阴影。
 
 ## `shadow.text.primary.m`
 
@@ -248,11 +196,7 @@ gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 x
 
 中等
 
-gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字号变量；border.m 只设置边框宽度；shadow.m 和 shadow.primary.m 设置盒阴影；shadow.text.m 和 shadow.text.primary.m 设置文本阴影；border.default 设置 xs 宽度的实线 surface-default 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.m 和 shadow.text.primary.m 设置文本阴影。
 
 ## `shadow.text.primary.s`
 
@@ -260,11 +204,7 @@ gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字�
 
 小
 
-gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字号变量；border.s 只设置边框宽度；shadow.s 和 shadow.primary.s 设置盒阴影；shadow.text.s 和 shadow.text.primary.s 设置文本阴影；border.faint 和 border.muted 设置 xs 宽度的实线轮廓角色边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.s 和 shadow.text.primary.s 设置文本阴影。
 
 ## `shadow.text.primary.xs`
 
@@ -272,8 +212,4 @@ gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字�
 
 极小
 
-gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 xs 字号变量；border.xs 只设置边框宽度；shadow.xs 和 shadow.primary.xs 设置盒阴影；shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影；border.subtle 设置 xs 宽度的实线 outline-subtle 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影。

@@ -112,6 +112,22 @@ export function projectGuides(catalog, locale = 'en') {
             const _link = _common.has(_basePath) ? '#' + _common.get(_basePath) : (file === _target.file ? '' : posix.relative(posix.dirname(file), _target.file)) + '#' + _target.anchor;
             return { path: _basePath, args: _args, link: _link };
         };
+        // A contextual entry keeps its own arguments and points to the root that owns its prose.
+        const _sharedProse = (path) => {
+            const _schema = manifest.argSchemas[path];
+            if (!catalog.authoringFields.some((field) => _schema[field])) {
+                return undefined;
+            }
+            const _parts = path.split('.');
+            for (let depth = _parts.length - 1; depth > 0; depth--) {
+                const _root = _parts.slice(depth).join('.');
+                const _target = _targets.get(kind + ':' + _root);
+                if (_target && _target.anchor !== entryAnchor(path) && manifest.argSchemas[_root] && catalog.authoringFields.every((field) => (manifest.argSchemas[_root][field] ?? '') === (_schema[field] ?? ''))) {
+                    return { path: _root, link: (file === _target.file ? '' : posix.relative(posix.dirname(file), _target.file)) + '#' + _target.anchor };
+                }
+            }
+            return undefined;
+        };
         const _prose = (schema, inherited = {}) => {
             const _printed = new Set();
             for (const field of catalog.authoringFields) {
@@ -140,7 +156,12 @@ export function projectGuides(catalog, locale = 'en') {
             _seen.add(path);
             const _schema = manifest.argSchemas[path];
             _lines.push(`<a id="${entryAnchor(path)}"></a>`, '');
-            _prose(_schema, inherited);
+            const _root = _sharedProse(path);
+            if (_root) {
+                _lines.push((locale === 'zh' ? '说明见 ' : 'Notes: ') + `[${code(_root.path)}](${_root.link})` + (locale === 'zh' ? '。' : '.'), '');
+            } else {
+                _prose(_schema, inherited);
+            }
             if (_schema.argumentContract === 'passthrough') {
                 _lines.push(locale === 'zh' ? `参数转发至 ${code(_schema.argumentSource)}；未声明字段的类型、默认值和补全尚不可用。空参数表不表示拒绝参数。` : `Arguments are forwarded to ${code(_schema.argumentSource)}. Undeclared fields have no inferred types, defaults or completion; an empty argument table does not reject arguments.`, '');
             }
@@ -212,8 +233,8 @@ export function projectGuides(catalog, locale = 'en') {
         ['style', 'Styles'],
         ['plugin', 'Plugins']
     ]) {
-        const _lines = ['# ' + (locale === 'zh' ? (directory === 'Styles' ? '样式参考' : '插件参考') : directory === 'Styles' ? 'Style reference' : 'Plugin reference'), '', locale === 'zh' ? '选择所属主题，再阅读具体条目的参数、前提和清理要求。' : 'Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.', ''];
-        _lines.push(locale === 'zh' ? '这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。' : 'These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.', '');
+        const _lines = ['# ' + (locale === 'zh' ? (directory === 'Styles' ? '样式参考' : '插件参考') : directory === 'Styles' ? 'Style reference' : 'Plugin reference'), '', locale === 'zh' ? '选择所属主题，再阅读具体条目的参数、前提和清理要求。' : 'Choose the owning topic, then read its entry.', ''];
+        _lines.push(locale === 'zh' ? '这里的说明用于选型，不替代参数契约。控件、输入或指标先选[原生元素](../JAM-UI/JAM-UI.md)；用途不明确时，阅读[选型指南](../choosing-native-capabilities.md)中的相关主题。已确定的能力可直接进入所属参考。' : 'For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.', '');
         if (kind === 'plugin') {
             _lines.push(locale === 'zh' ? '下列是已注册的插件族。底层行为引擎和全局 API 请参阅[插件概览](plugins.md#individual-plugins)，按其入口类型选择。' : 'The entries below are registered plugin families. For underlying behavior engines and global APIs, use the [supporting API overview](plugins.md#individual-plugins) and its entry-point distinctions.', '');
         }

@@ -1075,7 +1075,7 @@ export default {
 };
 ```
 
-Because `style` writes inline declarations, a scoped state rule such as `hover(...)` cannot override the same property. When the base value needs a state override, put it in the `styles` array with `css(method:rule;...)`; see [State overrides and `method:rule`](../Styles/common/css.md#state-overrides-and-methodrule).
+Inline declarations take precedence over scoped state rules for the same property; see [State overrides and `method:rule`](../Styles/common/css.md#state-overrides-and-methodrule) when a base value needs a state override.
 
 ### `styles`
 
@@ -1117,113 +1117,7 @@ export default {
 
 See [Styles](../Styles/styles.md) for the full reference.
 
-**Scoped style variants:**
-
-Beyond `styles` (which targets the element itself), JAML provides several scoped style params whose selectors are resolved relative to an element. Most target its subtree; dictionary `descStyles` can also target the owning element with `:scope`. All are resolved at mount time and scoped to the component's unique selector so they don't leak.
-
-| Param          | Array value targets                      | Dictionary value                                                    |
-| -------------- | ---------------------------------------- | ------------------------------------------------------------------- |
-| `childStyles`  | `:scope > *` — direct children           | Keys are sub-selectors scoped to `element > `                       |
-| `descStyles`   | `*` — all descendants                    | Keys are scoped to `element`; `:scope` can match the element itself |
-| `optionStyles` | `:scope > .jam-option` — option children | —                                                                   |
-| `[name]Styles` | CSS selector derived from the key name   | —                                                                   |
-| `globalStyles` | —                                        | Keys registered globally (no element scope)                         |
-| `stateStyles`  | —                                        | Keys are state names; styles applied when that state is active      |
-
-**`childStyles`** — styles applied to direct children only:
-
-```javascript
-{
-    type: 'wrapper',
-    // array form: all direct children get the style
-    childStyles: ['size.fullsize', 'layout.overflow(hidden)'],
-}
-```
-
-```javascript
-{
-    type: 'wrapper',
-    // dictionary form: target specific child selectors scoped to `element > `
-    childStyles: {
-        '.jam-option': ['hover.highlight'],
-        'button': ['layout.autoalign']
-    }
-}
-```
-
-**`descStyles`** — array form styles all descendants; dictionary form uses selectors relative to the owning element:
-
-```javascript
-{
-    type: 'container',
-    // array form: all descendants get the style
-    // equivalent to `descStyles: { '*': ['text.mono'] }`
-    descStyles: ['text.mono'],
-}
-```
-
-```javascript
-{
-    type: 'container',
-    // dictionary form: target specific descendant types scoped to the element
-    descStyles: {
-        'wrapper': [Styles.layout.alignlabel],
-        '*': [Styles.hover.withbg],
-        'table,tags,input': ['animation.entry.frombottom(delay:seq(50,100))']
-    }
-}
-```
-
-Dictionary selectors are relative to the element that owns `descStyles` and pass through `Styles.refineSelector()`. For example, `list-legend > item` resolves to `.jam-list-style[jam-variant="legend"] > .jam-item-style` within that element's scope. Plain selectors match descendants. Use `:scope` when the selector should match the owning element itself:
-
-```javascript
-descStyles: {
-    ':scope[state=pass]': ['color(green)']
-}
-```
-
-From an ancestor's `descStyles`, use `indicator[state=pass]` to target matching descendant indicators.
-
-Simple selector refinement is limited to JavaScript selector dictionaries such as `descStyles` and a theme's `index.mjs` `styles` object. Raw CSS/SCSS does not use this grammar; write literal runtime selectors in `index.scss`.
-
-**`[name]Styles`** — any `*Styles` key not in the table above targets the CSS selector derived from its name. The key is lowercased (first letter) and stripped of a leading `desc` and the trailing `Styles` suffix:
-
-```javascript
-({
-    // "buttonStyles" → targets "button" within the element's scope (elements of JAM-UI)
-    buttonStyles: ['layout.autoalign'],
-
-    // "optionStyles" → targets ":scope > .jam-option" (elements with options)
-    optionStyles: ['hover.highlight'],
-
-    // ".fooStyles" → targets ".foo" within the element's scope (any custom class)
-    '.fooStyles': ['text.bold']
-});
-```
-
-**`stateStyles`** — map state names to style arrays. Merged into `states` so the styles activate whenever the component transitions to that state:
-
-```javascript
-{
-    type: 'switch',
-    stateStyles: {
-        checked: ['css(background-color:rgba(255,255,255,0.2))'],
-        disabled: ['css(opacity:0.4)']
-    }
-}
-```
-
-**`globalStyles`** — dictionary form only; keys are registered globally without any element scope, so they apply to every matching element in the document. Use sparingly:
-
-```javascript
-{
-    type: 'container',
-    globalStyles: {
-        '.autoalign': ['layout.autoalign'],
-        'indicator': [Styles.hover.highlightcap]
-    }
-}
-```
+**Scoped style variants:** `childStyles`, `descStyles`, `optionStyles`, `[name]Styles`, `globalStyles` and `stateStyles` apply styles relative to an element. See [Scoped style params](../Styles/styles.md#scoped-style-params) for their targets, value forms and selector patterns.
 
 ---
 

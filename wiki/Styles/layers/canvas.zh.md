@@ -6,7 +6,7 @@
 
 `Styles.layer.canvas.*` — canvas-based particle and visual effects.
 
-All three particle variants rebuild after resize, dark-mode, global accent-color, and element-color changes. Rebuilds are debounced by 100 ms so generated colors and geometry stay current without redundant work.
+All three particle variants rebuild when client dimensions or device pixel ratio changes. Resize notifications with unchanged geometry preserve the current animation. Dark-mode, global accent-color and element-color changes force a rebuild. Rebuilds are debounced by 100 ms.
 
 ---
 
@@ -233,7 +233,7 @@ export default jaml.wrapper({
 
 为宿主提供可测量的宽高，并使用支持二维画布上下文的浏览器。
 
-在初始尺寸设置、后续尺寸变化以及深色模式、强调色、颜色事件后重建。重建会取消上一次粒子动画；正在运行的画布循环会在画布断开连接时自行取消。
+初始应用创建粒子。后续尺寸通知仅在客户区宽度、高度或设备像素比变化时重建；几何尺寸不变时保留动画。深色模式、强调色及元素颜色变化强制重建。重建沿用 100 ms 防抖并取消之前的动画；移除时取消待执行工作并释放所属资源。
 
 纯 CSS 图像可使用 layer.background.bubbles 或 layer.background.gradient。使用 layer.scroller.particles 移动重复的粒子画布，或使用 onTick 更新单个粒子。
 
@@ -306,7 +306,7 @@ export default [
 
 为宿主提供可测量的宽高，并使用支持二维画布上下文的浏览器。
 
-在初始尺寸设置、后续尺寸变化以及深色模式、强调色、颜色事件后重建。重建会取消上一次粒子动画；正在运行的画布循环会在画布断开连接时自行取消。
+初始应用创建粒子。后续尺寸通知仅在客户区宽度、高度或设备像素比变化时重建；几何尺寸不变时保留动画。深色模式、强调色及元素颜色变化强制重建。重建沿用 100 ms 防抖并取消之前的动画；移除时取消待执行工作并释放所属资源。
 
 纯 CSS 图像可使用 layer.background.bubbles 或 layer.background.gradient。使用 layer.scroller.particles 移动重复的粒子画布，或使用 onTick 更新单个粒子。
 
@@ -372,7 +372,7 @@ export default [
 
 为宿主提供可测量的宽高，并使用支持二维画布上下文的浏览器。
 
-在初始尺寸设置、后续尺寸变化以及深色模式、强调色、颜色事件后重建。重建会取消上一次粒子动画；正在运行的画布循环会在画布断开连接时自行取消。
+初始应用创建粒子。后续尺寸通知仅在客户区宽度、高度或设备像素比变化时重建；几何尺寸不变时保留动画。深色模式、强调色及元素颜色变化强制重建。重建沿用 100 ms 防抖并取消之前的动画；移除时取消待执行工作并释放所属资源。
 
 纯 CSS 图像可使用 layer.background.bubbles 或 layer.background.gradient。使用 layer.scroller.particles 移动重复的粒子画布，或使用 onTick 更新单个粒子。
 

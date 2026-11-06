@@ -24,7 +24,7 @@ Three globals are registered at startup:
 | `jame` | `jame(option)`                       | `HTMLElement`            | Build a static element — no reactivity, no messaging |
 | `jamd` | `jamd(container, markdown, option?)` | `Model`                  | Render a Markdown document                           |
 
-For retained auxiliary panels and file previews, see [`jaml.drawer` and `jaml.previewer`](drawer-and-previewer.md). Both return definitions; mounting and lifetime remain with their owning component or modal.
+For retained tab workspaces, see [`jaml.tabs`](tabs.md). For auxiliary panels and file previews, see [`jaml.drawer` and `jaml.previewer`](drawer-and-previewer.md). These builders return definitions; mounting and lifetime remain with their owning component or modal.
 
 ### Core `jaml.*` API
 
@@ -53,6 +53,7 @@ On development runtimes with the unified builder override contract, structured b
 | ---------------------------------- | ----------------------------------------------------------------------- |
 | Page, application, sidebar, drawer | `jaml.<builder>(layout, jamlOverride?)`                                 |
 | Theme panel                        | `jaml.themePanel(options?, jamlOverride?)`                              |
+| Tabs                               | `jaml.tabs(items, options?, jamlOverride?)`                             |
 | Previewer                          | `jaml.previewer(resource, options?, jamlOverride?)`                     |
 | Git diff                           | `jaml.gitdiff(content, options?, jamlOverride?)`                        |
 | Confirmation content               | `jaml.yesNoDialog(prompt, yes?, no?, styles?, options?, jamlOverride?)` |
@@ -104,6 +105,12 @@ Use the named builder inputs to customize an existing internal region. The final
 `jaml.gitdiff({ before, after, language? }, options?, jamlOverride?)` displays a single-file comparison through the optional input-code bundle. Both documents are literal strings. Git access, file/revision selection, finding validation and stale-source policy belong to the caller. Standalone source previews are separate capabilities.
 
 Options include `mode: 'unified' | 'split'` (default unified), `lineWrapping` (default true), `syncScroll` (default true), `collapseUnchanged: false | { margin?, minSize? }` (default margin 3/minSize 4), and `scrollToChange` (default true). Synchronized split mode uses one shared vertical viewport; false gives each pane independent scrolling. Unified gutters show paired old/new numbers with at least four digits per column. `beforeLabel`, `afterLabel` and `unchangedLabel` support localization; the unchanged label uses `$` for its line count.
+
+For a content-sized comparison, set `--jam-git-diff-height: auto` and cap the native scroll viewport with `--jam-git-diff-max-height`. Remove conflicting fixed heights or flex-fill sizing from its surrounding containers. Short content fits naturally; long content scrolls inside the viewer in unified and both split modes. Loading or failed viewers reserve no fixed-height space. These are CSS custom properties, not builder options; omitting them preserves the default `24rem` height. Heavily wrapped supplied hunks retain known last-line reachability limitations after font or width changes, including with fixed sizing.
+
+```javascript jaml-playground
+jaml.gitdiff({ before: 'const count = 1;', after: 'const count = 2;', language: 'JavaScript' }, { mode: 'unified' }, { styles: ['css(--jam-git-diff-height:auto;--jam-git-diff-max-height:min(22rem,calc(100vh - 7rem)))'] });
+```
 
 For comparisons that supply only changed regions, use `{ hunks, language? }` instead of document strings. Each hunk is `{ oldStart, oldLines, newStart, newLines, lines }`; each entry in `lines` is one physical line prefixed with a space (context), `-` (removed) or `+` (added). Counts must match those rows, and spans must be ordered and nonoverlapping on both sides. Starts/counts must be safe integers; nonempty spans start at one or above, while zero-count spans anchor after a nonnegative start. An optional `\ No newline at end of file` entry annotates the preceding row. Do not mix hunks with `before`/`after` fields.
 

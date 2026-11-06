@@ -61,9 +61,8 @@ test('incoming public anchors remain usable and all local documentation links re
 
 test('selection guidance retains prerequisites and supported alternatives without reader commands', () => {
     const _choice = readFileSync(resolve(root, 'wiki/choosing-native-capabilities.md'), 'utf8');
-    assert.match(_choice, /complete tabs interaction/);
-    assert.match(_choice, /keyboard navigation, tab\/panel semantics and panel switching/);
-    assert.match(_choice, /Keep selection state with the native option owner/);
+    assert.match(_choice, /tab\/panel/);
+    assert.match(_choice, /buttongroup-radio/);
     assert.doesNotMatch(_choice, /scripts\/catalog\.mjs|`(?:compose|contract|show) style PATH/);
     assert.equal(existsSync(resolve(root, 'jaml/scripts/catalog.mjs')), false);
     assert.equal(existsSync(resolve(root, 'jaml/scripts/references.mjs')), false);

@@ -63,7 +63,7 @@ Use a composite JAML `type` directly — for example `"type": "input-number"`.
 | `"input"`          | `'text'`     | Standard text input (default)                                                                                  |
 | `"input-search"`   | `'search'`   | Search input with search styling and a built-in clear button                                                   |
 | `"input-textarea"` | `'textarea'` | Multi-line text area                                                                                           |
-| `"input-number"`   | `'number'`   | Numeric input (returns number via `getValue()`)                                                                |
+| `"input-number"`   | `'number'`   | Numeric input (finite number or `null`; see below)                                                             |
 | `"input-password"` | `'password'` | Masked password input                                                                                          |
 | `"input-color"`    | `'color'`    | Color picker                                                                                                   |
 | `"input-code"`     | `'code'`     | Code editor (uses CodeMirror when available)                                                                   |
@@ -72,6 +72,12 @@ Use a composite JAML `type` directly — for example `"type": "input-number"`.
 | `"input-range"`    | `'range'`    | Range slider. Shows a value tooltip on hover when `showValueTip: true`.                                        |
 
 ---
+
+## Number input publication
+
+In the current development runtime, `input-number` reads and publishes finite numbers, including zero. Clearing the input, whitespace-only input and non-finite numeric conversion produce `null`. This normalization belongs to number inputs; it does not normalize computed indicator values.
+
+Publication and validation are separate: an optional empty field can be valid, while a partial native number or numeric overflow remains invalid. The input preserves native editing behavior. For a derived result that should remain empty until both operands exist, test for null before calculating: `value: '{{quantity == null || price == null ? null : quantity * price}}'`. Multiplication alone coerces null to zero.
 
 ## Slots
 
@@ -101,16 +107,23 @@ These follow the shared [named-slot lifecycle](./JAM-UI.md#named-slot-lifecycle)
 
 Inherits all `AbstractInputElement` methods, plus:
 
-| Method                                               | Description                                                                         |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `input.focus()`                                      | Focus the input (async for code editor).                                            |
-| `input.blur()`                                       | Blur the input (async for code editor).                                             |
-| `input.formatContent()`                              | Reformat code content; current development runtime skips read-only/disabled inputs. |
-| `input.getContent()`                                 | Get the raw string content from the input agent.                                    |
-| `input.setContent(value)`                            | Set the raw display content.                                                        |
-| `input.updateValueAndTriggerChange(value, oldValue)` | Set value and fire `valuechange` in one call.                                       |
+| Method                                               | Description                                                                                                                                           |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `input.revealLine(line)`                             | Return `Promise<boolean>`; reveal a one-based source line in connected code mode without taking focus. See [source-line reveal](#source-line-reveal). |
+| `input.focus()`                                      | Focus the input (async for code editor).                                                                                                              |
+| `input.blur()`                                       | Blur the input (async for code editor).                                                                                                               |
+| `input.formatContent()`                              | Reformat code content; current development runtime skips read-only/disabled inputs.                                                                   |
+| `input.getContent()`                                 | Get the raw string content from the input agent.                                                                                                      |
+| `input.setContent(value)`                            | Set the raw display content.                                                                                                                          |
+| `input.updateValueAndTriggerChange(value, oldValue)` | Set value and fire `valuechange` in one call.                                                                                                         |
 
 ---
+
+## Source-line reveal
+
+`await input.revealLine(line)` requires code mode and matching optional input-code assets. Supply a positive safe integer. It initializes a deferred editor, waits for pending formatting, selects the target line start and centers it; a line beyond the document uses its last line. It does not take focus.
+
+The promise resolves `false` for invalid input, an unavailable editor, a disconnected/destroyed input, a newer reveal request, or source/editor replacement while waiting. A successful reveal returns `true`. For initial file navigation, use the previewer's [line option](../JAML/drawer-and-previewer.md#source-line-preview).
 
 ## Compose input and inline tokens
 

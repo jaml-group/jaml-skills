@@ -400,9 +400,9 @@ Virtualize fixed-height DOM rows through SaigonScroll.
 
 Creates a SaigonScroll for the host and resolved scroll target, passing the supplied row providers and fixed row height. It attaches scroll and resize listeners; the generic style does not perform an initial draw.
 
-Supply getRowNum and getChildrenByRow callbacks, a stable row height, and a measurable scroll target. Returned row children must expose row, buildDom(), and dom when built. The caller must provide row positioning and the full scrollable extent.
+Supply getRowNum and getChildrenByRow callbacks, a stable row height, and a measurable scroll target. Returned row children must expose row, buildDom(), and dom when built. The caller must provide row positioning and the full scrollable extent. Horizontal steps require the complete sequence and reject vertical virtualization before an owner is installed.
 
-Removal detaches SaigonScroll listeners but retains the instance on the host; attaching this style again to that host does not create or initialize a replacement.
+Removal destroys this application's SaigonScroll controller and releases its listeners and per-target state. The host reference is cleared only if it still points to that controller. Reapplication can create a fresh controller.
 
 Use grid.virtualScroll for component grids, layout.lazyload for variable-height vertical components and table.fixedrowheight for native table rows.
 

@@ -232,8 +232,6 @@ Sets color from sys.color.fg.faint.
 
 Use foreground roles with an appropriate surface; a foreground preset does not paint its background.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.muted`
 
 <a id="entry-color-muted"></a>
@@ -245,8 +243,6 @@ Use the theme muted foreground role.
 Sets color from sys.color.fg.muted.
 
 Use foreground roles with an appropriate surface; a foreground preset does not paint its background.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `color.strong`
 
@@ -284,8 +280,6 @@ Sets color from sys.color.fg.default.
 
 Use foreground roles with an appropriate surface; a foreground preset does not paint its background.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.primary`
 
 <a id="entry-color-primary"></a>
@@ -312,8 +306,6 @@ Sets color from sys.color.fg.tertiary and adds the colored class.
 
 Use foreground roles with an appropriate surface; a foreground preset does not paint its background.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.secondary`
 
 <a id="entry-color-secondary"></a>
@@ -338,8 +330,6 @@ Sets color from sys.color.fg.quaternary and adds the colored class.
 
 Use foreground roles with an appropriate surface; a foreground preset does not paint its background.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.on.primary`
 
 <a id="entry-color-on-primary"></a>
@@ -351,8 +341,6 @@ Choose a foreground intended for the primary surface role.
 Sets color from sys.color.on.primary.
 
 Pair with background.primary or an equivalent theme role; this foreground preset does not create that surface.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `color.on.tertiary`
 
@@ -366,8 +354,6 @@ Sets color from sys.color.on.tertiary.
 
 Pair with background.tertiary or an equivalent theme role; this foreground preset does not create that surface.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.on.secondary`
 
 <a id="entry-color-on-secondary"></a>
@@ -380,8 +366,6 @@ Sets color from sys.color.on.secondary.
 
 Pair with background.secondary or an equivalent theme role; this foreground preset does not create that surface.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `color.on.quaternary`
 
 <a id="entry-color-on-quaternary"></a>
@@ -393,5 +377,3 @@ Choose a foreground intended for the quaternary surface role.
 Sets color from sys.color.on.quaternary.
 
 Pair with background.quaternary or an equivalent theme role; this foreground preset does not create that surface.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.

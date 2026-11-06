@@ -51,26 +51,26 @@ test('direct entry documentation retains prose and complete argument dependency 
 
 test('known limitations, state ownership and open-contract uncertainty remain alongside their entries', () => {
     const _projection = projectGuides(catalog);
-    const _check = section(_projection, 'style', 'check.underscore');
-    assert.match(_check, /does not implement tabs keyboard navigation/);
-    assert.match(_check, /hide the existing locator when none is checked/);
-    assert.match(_check, /delay is used before the first locator is created/);
-    const _table = section(_projection, 'style', 'table.fixedrowheight');
-    assert.match(_table, /supported animation-name string or false/);
-    assert.match(_table, /true is not supported/);
-    assert.match(_table, /Expanded detail rows disable the fixed virtual path/);
-    const _drop = section(_projection, 'plugin', 'interact.droppable');
-    assert.match(_drop, /[Nn]on-function accept values currently fall back to accepting drags/);
-    assert.match(_drop, /not a file importer or a security boundary/);
-    assert.match(_drop, /Unplug removes the drop-zone registration; document drag listeners remain shared/);
-    assert.match(section(_projection, 'style', 'interact.sortable'), /does not persist the application model/);
+    for (const [kind, path] of [
+        ['style', 'check.underscore'],
+        ['style', 'table.fixedrowheight'],
+        ['plugin', 'interact.droppable'],
+        ['style', 'interact.sortable'],
+        ['style', 'interact.movable']
+    ]) {
+        const _profile = lookup(catalog, kind, path).profile;
+        const _page = _projection.files.get(_projection.targets.get(kind + ':' + path).file);
+        assert.ok(_profile.caveats || _profile.lifecycle, path + ' has authored limits');
+        for (const field of ['caveats', 'lifecycle']) {
+            if (_profile[field]) {
+                assert.ok(_page.includes(_profile[field]), path + ':' + field);
+            }
+        }
+    }
     const _open = section(_projection, 'style', 'interact.movable');
     assert.match(_open, /jam.makeMovable/);
-    assert.match(_open, /no inferred types, defaults or completion/);
     assert.match(_open, /HTMLElement/);
     assert.match(_open, /intent-interact-movable/);
-    assert.match(_open, /Unmount, style teardown or host destruction/);
-    assert.match(_open, /does not restore previous coordinates/);
 });
 
 test('constraints, UI hints, raw options and unfamiliar metadata survive family projection without mutating the source', () => {
@@ -146,4 +146,26 @@ test('metadata-owned guides keep runnable examples and their assets in source re
         }
     }
     assert.ok(_count > 0, 'Metadata-owned family guides must retain runnable examples');
+});
+
+test('contextual entries link shared prose to their root and keep their own arguments', () => {
+    for (const locale of ['en', 'zh']) {
+        const _projection = projectGuides(catalog, locale);
+        const _note = locale === 'zh' ? '说明见 ' : 'Notes: ';
+        const _contextual = section(_projection, 'style', 'table.tdslot.layout');
+        const _root = lookup(catalog, 'style', 'layout', locale).profile;
+        assert.ok(_contextual.includes(_note + '[`layout`]('), locale);
+        assert.ok(!_contextual.includes(_root.behavior), locale);
+        assert.ok(_contextual.includes('`display`'), locale);
+        assert.ok(_projection.files.get(_projection.targets.get('style:layout').file).includes(_root.behavior), locale);
+    }
+    const _english = projectGuides(catalog, 'en');
+    const _differing = section(_english, 'style', 'badge.cap.text.mono');
+    assert.ok(!_differing.includes('Notes: [`text.mono`]('));
+    assert.ok(_differing.includes(lookup(catalog, 'style', 'badge.cap.text.mono').profile.behavior));
+    const _width = lookup(catalog, 'style', 'border.m').profile.caveats;
+    assert.ok(_width);
+    assert.ok(section(_english, 'style', 'border.m').includes(_width));
+    assert.ok(!section(_english, 'style', 'badge.text.size.m').includes(_width));
+    assert.ok(!section(_english, 'style', 'margin.m').includes(_width));
 });

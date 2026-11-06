@@ -1,8 +1,8 @@
 # Style reference
 
-Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.
+Choose the owning topic, then read its entry.
 
-These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
+For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
 
 - [active](active.md) — Style a pressed target while its active state is present; does not activate it.
 - [after](after.md) — CSS pseudo-element presentation.
@@ -79,6 +79,7 @@ These descriptions help selection; they do not replace argument contracts. For a
 - [layers/scroller](layers/scroller.md) — Scrolling layer effects.
 - [layers/spinner](layers/spinner.md) — Decorative activity; use a progress owner for measured completion.
 - [layers/watermark](layers/watermark.md) — Watermark decoration.
+- [list](list.md)
 - [map-style](map-style.md) — Presentation for native map; select the element and behavior first.
 - [notify-style](notify-style.md) — Presentation for native notify; select the element and behavior first.
 - [on](on.md) — Foreground roles for an existing light or dark surface.
@@ -86,6 +87,7 @@ These descriptions help selection; they do not replace argument contracts. For a
 - [popup-style](popup-style.md) — Presentation for native popup; select the element and behavior first.
 - [progress-style](progress-style.md) — Presentation for native progress; select the element and behavior first.
 - [select-style](select-style.md) — Presentation for native select; select the element and behavior first.
+- [steps](steps.md)
 - [stylize](stylize.md) — Deprecated compatibility aliases for group styles; use group for new composition.
 - [switch-style](switch-style.md) — Presentation for native switch; select the element and behavior first.
 - [sync](sync.md) — Copy a computed dimension on framework resize; prefer flex/grid when sufficient.

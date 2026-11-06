@@ -6,9 +6,9 @@ For the larger composition model, see [purpose and independent business modules]
 
 ## Selection and content
 
-For tab-like navigation, start with `buttongroup-radio`. It owns mutually exclusive selection, the selected value and checked state, including native visible checked presentation. `check.*` is optional alternative presentation; an underline does not create selection or complete tabs behavior.
+For tab-like navigation, start with `buttongroup-radio`. It owns mutually exclusive selection, the selected value and checked state, including native visible checked presentation. `check.*` is optional alternative presentation.
 
-The preferred relationship is **selection owner → published value → listening content**. This is inversion of control through state: the publisher does not locate its consumers, and consumers depend on the published value rather than the identity of its publisher. Another consumer can join without editing the selector. Generic buttons with click handlers that locate and change a panel can work, but rebuilding native exclusive selection adds unnecessary orchestration. This example publishes `page` through `valueKey`; containers consume it through `showIf`:
+The preferred relationship is **selection owner → published value → listening content**. This is inversion of control through state: the publisher does not locate its consumers, and consumers depend on the published value rather than the identity of its publisher. Another consumer can join without editing the selector. Generic buttons with click handlers that locate and change a panel can work, and the native group saves that orchestration. This example publishes `page` through `valueKey`; containers consume it through `showIf`:
 
 ```javascript jaml-playground
 export default {
@@ -31,13 +31,13 @@ export default {
 };
 ```
 
-`showIf` hides retained content; it does not destroy the panel or suspend its work. Choose [visibility and construction](jaml-format.md#showif) according to the intended lifetime. This is a content switcher, not a complete accessible tabs implementation: verify tab/panel relationships, focus, keyboard navigation and activation separately. Do not invent a `switchable` element from the conceptual name. Add `styles: ['check.underscore']` to the group only when that visual design is wanted.
+`showIf` hides retained content, which keeps the panel and its work running. Choose [visibility and construction](jaml-format.md#showif) according to the intended lifetime. This is a content switcher, not a complete accessible tabs implementation: verify tab/panel relationships, focus, keyboard navigation and activation separately. Add `styles: ['check.underscore']` to the group only when that visual design is wanted.
 
 For direct actions, an `onclick` handler may call a documented method on a referenced element. Use the existing [ref and `model.ref` contract](jaml-format.md#ref); check the target's method and readiness. A one-off command need not become shared state. Conversely, another component's need to observe the current selection is a good reason to publish state instead of manually commanding it.
 
 ## Private runtime data
 
-A renderer can react to request/options state, fetch its own data and redraw. Its parent need not fetch and distribute the result. The [URL suffix](jaml-format.md#param-suffixes--keysuffix) accepts a URL string or a request-options object: `dataUrl` writes the response into `data`, while `valueUrl` writes into `value`. The target must support that parameter and response shape. There is no universal request-signal parameter on every element.
+A renderer can react to request/options state, fetch its own data and redraw. Its parent need not fetch and distribute the result. The [URL suffix](jaml-format.md#param-suffixes--keysuffix) accepts a URL string or a request-options object: `dataUrl` writes the response into `data`, while `valueUrl` writes into `value`. The target must support that parameter and response shape.
 
 This complete definition requires an application endpoint `/api/sales/chart` returning the chart's dataset format, such as `[['Period', 'Sales'], ['Jan', 120]]`, and the chart integration:
 
@@ -72,7 +72,7 @@ When several consumers share one logical dataset, prefer the invisible `data` vi
 
 **`data.valueUrl` → `data.value` → `valueKey: 'salesData'` → listening consumers**
 
-`data` is a hidden input-capable representer, not a rendered data view. `valueUrl` fetches its value; value changes publish through `valueKey`. Do not substitute `dataUrl` on this producer: the shared payload is its `value`. Consumers that support option data, including tables and charts, can use `dataWatcher: 'salesData'`; other shapes use a bound projection into a supported parameter. A shared key does not make one response format suitable for every renderer.
+`data` is a hidden input-capable representer. `valueUrl` fetches its value, value changes publish through `valueKey`, and the shared payload is its `value`. Consumers that support option data, including tables and charts, can use `dataWatcher: 'salesData'`; other shapes use a bound projection into a supported parameter. Each renderer still needs a response format it supports.
 
 The following application definition requires `/api/sales` to return records such as `[{ period: 'Jan', sales: 120 }]`. The table consumes the records; the chart derives a dataset without fetching again:
 
@@ -101,9 +101,9 @@ export default {
 };
 ```
 
-Keep producer and consumers in the intended model/broker scope. For an explicitly named broker, use `valueKey: 'salesData@brokerName'` and `dataWatcher: 'salesData@brokerName'`; bound projections must resolve that same data scope. See [brokers](binder.md#brokers) and [watchers](binder.md#valuewatcher--statewatcher--datawatcher) for initialization and scope. Updating a value to an equal value need not emit another change. Loading, errors, refresh lifetime and empty states still need application decisions; a shared owner is not automatically a polling or status UI.
+Keep producer and consumers in the intended model/broker scope. For an explicitly named broker, use `valueKey: 'salesData@brokerName'` and `dataWatcher: 'salesData@brokerName'`; bound projections must resolve that same data scope. See [brokers](binder.md#brokers) and [watchers](binder.md#valuewatcher--statewatcher--datawatcher) for initialization and scope. Updating a value to an equal value need not emit another change. Loading, errors, refresh lifetime and empty states still need application decisions.
 
-Independent table/chart fetching remains valid when their request ownership is independent. For one shared dataset, a dedicated owner makes ownership and consistency explicit; request caching does not establish that architecture.
+Independent table/chart fetching remains valid when their request ownership is independent. For one shared dataset, a dedicated owner makes ownership and consistency explicit.
 
 ## Request sharing and cache limits
 

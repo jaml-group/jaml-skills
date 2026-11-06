@@ -57,7 +57,7 @@ Use a stable, meaningful `id` for repeated outcomes of one operation. Normal sam
 
 `duration` governs native dismissal, not business eligibility: hovering can defer removal, and pinning retains a notice. A time-limited Undo action must check its own deadline and eligibility, exclude duplicate pending requests and settle only after success or retirement; failure can remain retryable. Follow the [archive/Undo transitions](#archive-and-undo) even while its notification remains visible. A repeated outcome and a notice already awaiting removal are distinct lifecycle cases; verify the latter against the consuming runtime. Retire owned pending actions and notifications when their application owner is disposed.
 
-Verify the selected composition as well as visible text: a plain-message path should retain native plain mode and defaults, literal external text should remain literal, and repeated IDs should not create duplicate notices. For interactive content, exercise the actual control, stale-result replacement and any deadline/retirement rules. Styling or a test that only checks a nested label's text does not establish that custom composition was necessary.
+Verify the selected composition as well as visible text: a plain-message path should retain native plain mode and defaults, literal external text should remain literal, and repeated IDs should not create duplicate notices. For interactive content, exercise the actual control, stale-result replacement and any deadline/retirement rules. Reserve custom composition for content that needs it.
 
 ---
 

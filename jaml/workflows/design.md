@@ -1,30 +1,27 @@
 # Design
 
-Read the reference map and the owning pages for the capabilities under consideration. For an application, read roles and token consumption before designing its surfaces.
+Use this for a new app, substantial feature, theme or migration. Pages, builders, CCs and framework-provided UI all follow the composition section; application setup applies only to a new app.
 
-## UI composition design
+## UI composition
 
-Apply this section to pages, builders, CCs and framework-provided UI. Selecting an element includes selecting the native parts and behavior it owns.
-
-Follow [Building a JAML UI](../references/building-ui.md) for the shared design-to-verification path and the relevant dashboard, landing-page, form or application choices.
-
-Read [Think in JAML](../references/JAML/purpose-and-composition.md) for purpose-to-composition reasoning. Name what each unit represents or lets the user do, compare the complete operation owner (builder, CC or behavior) before its element parts, then decide which independent units need grouping. Use the [composition review pass](../references/JAML/purpose-and-composition.md#review-the-reasoning-as-well-as-the-syntax) before drawing the tree. A metric's tile appearance does not require a card around its indicator.
-
-Use [intent-first element selection](../references/building-ui.md#choose-elements-by-user-intent) to establish the important user operations, state/data shape, responsive behavior, accessibility and lifecycle expectations. For edits, confirmations and supporting views, first follow [interaction and presentation choice](../references/JAML/purpose-and-composition.md#choose-interaction-and-presentation): select the trigger, location, attention demand and return path. Map that contract to an existing native element, public style/plugin or a specific extension gap. Read candidate detail pages and inheritance before selecting a custom implementation. A documented control name alone does not establish keyboard, accessibility or state-preservation guarantees.
-
-For streamed or external data, read the [literal-text boundary](../references/index.md#trust-and-application-data), [Markdown policy and execution ownership](../references/Plugins/markdown.md#content-policy-and-playground-ownership), and [owned subscription/follow-scroll contracts](../references/utils.md#owned-external-subscriptions-and-follow-scrolling). Choose the sink and lifecycle owner before composing the view.
+1. **Define the experience and host.** Follow the shared path in [Building a JAML UI](../references/building-ui.md) with its dashboard, landing-page, form or application choices. Establish the user operations, state and data shape, responsive behavior, accessibility and lifecycle.
+2. **Choose interaction and presentation.** For edits, confirmations and supporting views, select the trigger, location, attention demand and return path through [interaction and presentation choice](../references/JAML/purpose-and-composition.md#choose-interaction-and-presentation).
+3. **Choose owners.** Follow the [composition order](../references/JAML/purpose-and-composition.md#decide-what-the-object-means) and [intent-first selection](../references/building-ui.md#choose-elements-by-user-intent). Read candidate pages and inheritance, and confirm keyboard, accessibility and state-preservation guarantees in their contracts. Map each need to a native element, public style or plugin, or a specific extension gap. Read the [chooser](../references/choosing-native-capabilities.md) topic when a choice stays open.
+4. **Review the reasoning.** Run the [composition review pass](../references/JAML/purpose-and-composition.md#review-the-reasoning-as-well-as-the-syntax) before drawing the tree.
+5. **Plan roles and theme.** For an application, read [roles](../references/Theme/stylize.md) and [token consumption](../references/Theme/tokens.md#consuming-tokens) before designing its surfaces.
+6. **Choose sinks for streamed or external data.** Read the [literal-text boundary](../references/index.md#trust-and-application-data), [Markdown policy and execution ownership](../references/Plugins/markdown.md#content-policy-and-playground-ownership) and [owned subscription and follow-scroll contracts](../references/utils.md#owned-external-subscriptions-and-follow-scrolling), then choose the sink and lifecycle owner before composing the view.
 
 Record a compact design with:
 
--   Business purposes, chosen interaction/presentation and its context or interruption rationale, the complete native operation candidates considered, selected owners/parts and the specific remaining gap that justifies custom work. Preserve async, keyboard and host-lifecycle requirements when a candidate covers only part of the operation.
--   Structural regions and semantic roles; theme/token consumption and business-color strategy.
+-   Business purposes, the chosen interaction and presentation with its rationale, the complete native operation candidates considered, selected owners and parts, and the specific gap that justifies custom work. Carry async, keyboard and host-lifecycle requirements alongside a candidate that covers part of the operation.
+-   Structural regions and semantic roles; theme and token consumption and business-color strategy.
 -   Data, reactivity, localization, navigation and cleanup ownership. For asynchronous operations, specify [pending, retry, departure and concurrency transitions](../references/JAML/purpose-and-composition.md#own-asynchronous-operations), including any backend prerequisite.
 -   Reused capabilities, proposed extensions and the requirements each extension satisfies.
--   Intended module locations, registration timing and verification scenarios for the chosen parts and interactions in each requested presentation. Carry these choices into implementation and review; revise the design when an evidenced gap changes an owner.
+-   Intended module locations, registration timing and verification scenarios for the chosen parts and interactions in each requested presentation. Carry these choices into implementation and review, and revise the design when an evidenced gap changes an owner.
 
 ## Application setup
 
-During authorized new-app setup, merge a concise JAML section into the project's applicable `AGENTS.md` using [the template](../assets/project-agents.md). Preserve unrelated rules, update an existing JAML section instead of duplicating it, and use project-relative links. If instructions belong in an existing nested file, use that scope. This declaration is a setup output, not a prerequisite for using the skill.
+During authorized new-app setup, merge a concise JAML section into the project's applicable `AGENTS.md` using [the template](../assets/project-agents.md). Preserve unrelated rules, update an existing JAML section in place, and use project-relative links. Use a nested file's scope when the instructions belong there. This declaration is a setup output, and the skill works without it.
 
 Use existing project directories when equivalent responsibilities already exist. A new app can use:
 
@@ -42,18 +39,18 @@ Use existing project directories when equivalent responsibilities already exist.
 | `adapters/` | External integrations behind an explicit contract     |
 | `utils/`    | Focused helpers without concealed widget ownership    |
 
-Declare the convention in the design; create directories as their implementations are needed. Use an explicit registration entry point after required runtime readiness and before rendering consumers. Avoid importing registration side effects before the runtime is available.
+Declare the convention in the design and create directories as their implementations are needed. Use an explicit registration entry point that runs after runtime readiness and before rendering consumers.
 
 ## Theme design
 
-Read [Theme](../references/Theme/theme.md), then its selected authoring, token, stylesheet and recipe references. Establish semantic token responsibilities, supported variants, mode/swatch behavior, density and component consumers. A theme may define new documented recipes; an application must verify that the active theme provides a recipe before consuming it. Preserve the framework role vocabulary unless the task explicitly changes that framework contract.
+Read [Theme](../references/Theme/theme.md), then its selected authoring, token, stylesheet and recipe references. Establish semantic token responsibilities, supported variants, mode and swatch behavior, density and component consumers. A theme may define new documented recipes; an application verifies that the active theme provides a recipe before consuming it. Keep the framework role vocabulary unless the task explicitly changes that contract.
 
 ## Framework context
 
-For Jam-UI source work, identify the owning implementation, public contract and verification seam in the existing package architecture. Use existing fixture/test locations. The app scaffold and generated app declaration do not apply to framework maintenance. Builders, CCs and demos still follow the UI composition design above; only the application setup steps are excluded.
+For Jam-UI source work, identify the owning implementation, public contract and verification seam in the existing package architecture, and use existing fixture and test locations. Builders, CCs and demos follow UI composition above. The app scaffold and generated app declaration belong to applications.
 
 ## Done
 
 For substantial designs, include an **Upstream candidates** section using the [shared assessment](upstream-candidates.md).
 
-The design resolves capability ownership, theme consumption/authoring scope, extension gaps, lifecycle and verification. A design-only request returns this design without creating app source or instructions. An authorized build can continue directly into Compose; do not introduce an extra approval round when scope is already clear.
+The design resolves capability ownership, theme consumption and authoring scope, extension gaps, lifecycle and verification. A design-only request returns this design without creating app source or instructions. An authorized build with clear scope continues directly into [Compose](compose.md).

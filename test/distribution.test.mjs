@@ -42,11 +42,11 @@ test('artifact installs independently and preserves learned corrections on repla
         const _manifest = JSON.parse(readFileSync(resolve(_bundle, 'manifest.json'), 'utf8'));
         assert.equal(_manifest.catalog?.path, undefined, 'Build provenance must not advertise an installed catalog');
         for (const [path, expected] of [
-            ['Styles/common/layout.zh.md', '有界应用布局'],
-            ['Styles/interact.md', 'does not persist the application model'],
-            ['Styles/table-style.md', 'true is not supported'],
-            ['choosing-native-capabilities.md', 'complete tabs interaction'],
-            ['Styles/check.md', 'native element owns selection']
+            ['Styles/common/layout.zh.md', 'layout.application'],
+            ['Styles/interact.md', 'interact.sortable'],
+            ['Styles/table-style.md', 'table.fixedrowheight'],
+            ['choosing-native-capabilities.md', 'buttongroup-radio'],
+            ['Styles/check.md', 'check.underscore']
         ]) {
             assert.ok(readFileSync(resolve(_skillRoot, 'references', path), 'utf8').includes(expected), path);
         }

@@ -6,7 +6,7 @@
 
 `Styles.layer.canvas.*` — canvas-based particle and visual effects.
 
-All three particle variants rebuild after resize, dark-mode, global accent-color, and element-color changes. Rebuilds are debounced by 100 ms so generated colors and geometry stay current without redundant work.
+All three particle variants rebuild when client dimensions or device pixel ratio changes. Resize notifications with unchanged geometry preserve the current animation. Dark-mode, global accent-color and element-color changes force a rebuild. Rebuilds are debounced by 100 ms.
 
 ---
 
@@ -233,7 +233,7 @@ Builds particle shapes in a sized canvas. onTick receives particle state, normal
 
 Give the host measurable width and height and use a browser with a 2D canvas context.
 
-Rebuilds after initial resize setup, later resize events and dark-mode/accent/color events. Rebuilding cancels the previous particle animation; an active canvas loop cancels itself when its canvas is disconnected.
+Initial setup builds the particles. Later resize notifications rebuild only when client width, client height or device pixel ratio changed; unchanged geometry preserves the animation. Dark-mode, accent-color and element-color changes force rebuilding. Rebuilds use the existing 100 ms debounce and cancel the previous animation; removal cancels pending work and releases the owner.
 
 Use layer.background.bubbles or layer.background.gradient for CSS-only imagery. Use layer.scroller.particles to move a repeating particle canvas, or onTick to update individual particles.
 
@@ -306,7 +306,7 @@ Draws large blurred triangles, squares and circles with overlapping accent-relat
 
 Give the host measurable width and height and use a browser with a 2D canvas context.
 
-Rebuilds after initial resize setup, later resize events and dark-mode/accent/color events. Rebuilding cancels the previous particle animation; an active canvas loop cancels itself when its canvas is disconnected.
+Initial setup builds the particles. Later resize notifications rebuild only when client width, client height or device pixel ratio changed; unchanged geometry preserves the animation. Dark-mode, accent-color and element-color changes force rebuilding. Rebuilds use the existing 100 ms debounce and cancel the previous animation; removal cancels pending work and releases the owner.
 
 Use layer.background.bubbles or layer.background.gradient for CSS-only imagery. Use layer.scroller.particles to move a repeating particle canvas, or onTick to update individual particles.
 
@@ -372,7 +372,7 @@ Uses sprinkle-shaped particles with fill distribution and a small grid gap; appe
 
 Give the host measurable width and height and use a browser with a 2D canvas context.
 
-Rebuilds after initial resize setup, later resize events and dark-mode/accent/color events. Rebuilding cancels the previous particle animation; an active canvas loop cancels itself when its canvas is disconnected.
+Initial setup builds the particles. Later resize notifications rebuild only when client width, client height or device pixel ratio changed; unchanged geometry preserves the animation. Dark-mode, accent-color and element-color changes force rebuilding. Rebuilds use the existing 100 ms debounce and cancel the previous animation; removal cancels pending work and releases the owner.
 
 Use layer.background.bubbles or layer.background.gradient for CSS-only imagery. Use layer.scroller.particles to move a repeating particle canvas, or onTick to update individual particles.
 

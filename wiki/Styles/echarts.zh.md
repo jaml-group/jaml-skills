@@ -978,9 +978,9 @@ Tooltip config. Args: `trigger` (item/axis/none), `showContent`, `triggerOn`, `s
 
 配置图表图例。
 
-写入图例布局、图形项尺寸、可见性、名称和选择选项；提供文字、图形项、线条、边框和阴影样式。
+设置图例布局、图项尺寸、可见性、名称和选择选项，并提供文字、图项、线条、边框和阴影样式。绘制后，若仅有一个可见的水平图例、top 与 bottom 均未设置或为 auto，且没有网格或雷达策略负责其位置，则使用 0.5rem 的顶部间距；保留作者设置的水平位置。
 
-布局使用 position 和 orient。自定义 data 控制显示项，应与目标系列或图形项名称匹配。
+使用 position 和 orient 明确指定布局。无论组合顺序如何，作者设置的 top 或 bottom 都优先。响应式 media、多图例、隐藏及垂直图例保留原有位置。启用的网格策略（包括退出自动布局的选项）及雷达布局继续负责定位。自定义 data 控制显示项，应与目标系列或数据项名称匹配。
 
 位置参数顺序: `type` → `height` → `width` → `orient` → `align` → `itemGap` → `itemWidth` → `itemHeight` → `selectedMode` → `inactiveColor` → `inactiveBorderColor` → `icon` → `data` → `show` → `padding` → `backgroundColor` → `formatter` → `left` → `top` → `right` → `bottom`.
 
@@ -999,11 +999,11 @@ Tooltip config. Args: `trigger` (item/axis/none), `showContent`, `triggerOn`, `s
 | `inactiveBorderColor` | `string` | 未提供 | 图例未选中边框颜色 |
 | `icon` | `string` | 未提供 | 图例图标 |
 | `data` | `array` | 未提供 | 图例数据 |
-| `show` | `boolean` | `true` | 显示 |
+| `show` | `boolean` | 未提供 | 显示 |
 | `padding` | `array` | 未提供 | 内边距 |
 | `backgroundColor` | `functionOrString` | 未提供 | 背景色 |
 | `formatter` | `functionOrString` | 未提供 | 格式化器 |
-| `left` | `numberOrString` | `center` | 左边距 |
+| `left` | `numberOrString` | 未提供 | 左边距 |
 | `top` | `numberOrString` | 未提供 | 上边距 |
 | `right` | `numberOrString` | 未提供 | 右边距 |
 | `bottom` | `numberOrString` | 未提供 | 下边距 |

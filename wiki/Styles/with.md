@@ -18,8 +18,6 @@ The background trait rules target hosts marked with jam or slot attributes.
 
 Use this paired surface treatment when both foreground and background should coordinate; use a background preset for a fill alone.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `with.accent`
 
 <a id="entry-with-accent"></a>
@@ -47,5 +45,3 @@ Adds jam-bg-elevated; the stylesheet supplies the matching surface and foregroun
 The background trait rules target hosts marked with jam or slot attributes.
 
 Use this paired surface treatment when both foreground and background should coordinate; use a background preset for a fill alone.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.

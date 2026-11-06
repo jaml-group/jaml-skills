@@ -79,6 +79,7 @@
 - [layers/scroller](layers/scroller.zh.md) — 滚动层效果。
 - [layers/spinner](layers/spinner.zh.md) — 装饰性活动效果；可测量完成度应使用进度所有者。
 - [layers/watermark](layers/watermark.zh.md) — 水印装饰。
+- [list](list.zh.md)
 - [map-style](map-style.zh.md) — 原生 map 的呈现；先选择元素与行为。
 - [notify-style](notify-style.zh.md) — 原生 notify 的呈现；先选择元素与行为。
 - [on](on.zh.md) — 已有浅色或深色表面上的前景角色。
@@ -86,6 +87,7 @@
 - [popup-style](popup-style.zh.md) — 原生 popup 的呈现；先选择元素与行为。
 - [progress-style](progress-style.zh.md) — 原生 progress 的呈现；先选择元素与行为。
 - [select-style](select-style.zh.md) — 原生 select 的呈现；先选择元素与行为。
+- [steps](steps.zh.md)
 - [stylize](stylize.zh.md) — 分组样式的已弃用兼容别名；新组合使用 group。
 - [switch-style](switch-style.zh.md) — 原生 switch 的呈现；先选择元素与行为。
 - [sync](sync.zh.md) — 在框架尺寸事件中同步计算尺寸；能表达关系时优先使用 flex/grid。

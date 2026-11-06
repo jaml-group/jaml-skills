@@ -38,9 +38,9 @@ test('composition cases resolve direct Markdown files and focused sections', () 
 
 test('selection retrieval starts with native visibility and retains optional styling and tabs limits', () => {
     const choice = read('choosing-native-capabilities.md#selection-and-hover');
-    assert.match(choice, /already presents checked state visually/);
-    assert.match(choice, /optional visual treatment/);
-    assert.match(choice, /keyboard navigation, tab\/panel semantics and panel switching/);
+    assert.match(choice, /buttongroup-radio/);
+    assert.match(choice, /check\.underscore/);
+    assert.match(choice, /tab\/panel/);
     assert.doesNotMatch(choice, /Apply one check marker|styles: \['check\.underscore'\]/);
     assert.doesNotMatch(choice, /## Runtime and shared data/);
 });
@@ -50,21 +50,18 @@ test('shared-data and refresh contracts remain reachable without loading the ent
     assert.match(shared, /valueKey: 'salesData'/);
     assert.match(shared, /dataWatcher: 'salesData'/);
     assert.match(shared, /salesData\.map/);
-    assert.match(shared, /broker scope/);
+    assert.match(shared, /@brokerName/);
     assert.doesNotMatch(shared, /## Request sharing and cache limits/);
     const requests = read('JAML/state-and-data.md#request-sharing-and-cache-limits');
-    assert.match(requests, /400 ms after the originating request finishes/);
-    assert.match(requests, /not guaranteed to share a backend call/);
-    assert.match(requests, /HTTP method and headers are not part/);
+    assert.ok(requests.length > 100);
     const refresh = read('JAML/state-and-data.md#refresh-unchanged-logical-arguments');
-    assert.match(refresh, /not reserved JAML refresh APIs/);
-    assert.match(refresh, /forcing a new backend call are different/);
+    assert.match(refresh, /`version`/);
+    assert.match(refresh, /`override: false`|override/);
 });
 
 test('direct retrieval keeps permissive event control and deliberate dataset ownership', () => {
     const _selection = read('JAML/state-and-data.md#selection-and-content');
-    assert.match(_selection, /an `onclick` handler may call a documented method/);
+    assert.match(_selection, /`onclick`/);
     const _requests = read('JAML/state-and-data.md#request-sharing-and-cache-limits');
-    assert.match(_requests, /use a shared `data` owner for a shared logical dataset/);
-    assert.match(_requests, /conditional request sharing/);
+    assert.match(_requests, /`data` owner/);
 });

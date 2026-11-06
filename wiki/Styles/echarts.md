@@ -978,9 +978,9 @@ Legend
 
 Configure the chart legend.
 
-Writes legend layout, item dimensions, visibility, names and selection options; exposes text, item, line, border and shadow styling.
+Writes legend layout, item dimensions, visibility, names and selection options; exposes text, item, line, border and shadow styling. After drawing, a single visible horizontal legend with top and bottom unset or auto gets a 0.5rem top inset when no grid or radar policy owns its placement. Authored horizontal placement is preserved.
 
-Use position and orient for layout. Custom data controls displayed entries and should match the intended series or item names.
+Use position and orient for explicit layout. Authored top or bottom takes precedence in either composition order. Responsive media and multiple legends keep their own placement; hidden or vertical legends are unchanged. Active grid policies, including opt-outs, and radar layouts retain placement ownership. Custom data controls displayed entries and should match the intended series or item names.
 
 Positional order: `type` → `height` → `width` → `orient` → `align` → `itemGap` → `itemWidth` → `itemHeight` → `selectedMode` → `inactiveColor` → `inactiveBorderColor` → `icon` → `data` → `show` → `padding` → `backgroundColor` → `formatter` → `left` → `top` → `right` → `bottom`.
 
@@ -999,11 +999,11 @@ Positional order: `type` → `height` → `width` → `orient` → `align` → `
 | `inactiveBorderColor` | `string` | Not supplied | Inactive legend border color |
 | `icon` | `string` | Not supplied | Legend icon |
 | `data` | `array` | Not supplied | Legend data |
-| `show` | `boolean` | `true` | Show |
+| `show` | `boolean` | Not supplied | Show |
 | `padding` | `array` | Not supplied | Padding |
 | `backgroundColor` | `functionOrString` | Not supplied | Background color |
 | `formatter` | `functionOrString` | Not supplied | Formatter |
-| `left` | `numberOrString` | `center` | Left spacing |
+| `left` | `numberOrString` | Not supplied | Left spacing |
 | `top` | `numberOrString` | Not supplied | Top spacing |
 | `right` | `numberOrString` | Not supplied | Right spacing |
 | `bottom` | `numberOrString` | Not supplied | Bottom spacing |

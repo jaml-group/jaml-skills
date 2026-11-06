@@ -324,7 +324,7 @@ export default {
 
 Keep an ordinary click/keyboard entry point even when right-click is supported. The helper does not prevent the browser context menu itself; the application handler does so. Native popup profiles own positioning and outside-click dismissal. This primitive example does not implement a complete accessible menu: the application still owns initial focus, Escape/restore behavior, expanded state and any menu-specific keyboard semantics. Do not add menu roles without those interactions. Keep callbacks scoped to the selected record and recheck action eligibility when activated; close the owned popup when the view becomes invalid.
 
-For this helper path, a top-level `onafterrender` callback inside the popup content definition is not a visible-readiness hook: content is built directly rather than rendered through that Model hook. Use the popup's owned `showing` event and verify focus eligibility; cancel deferred focus when ownership ends. The `hiding` event follows exit completion, while `papaya.showing` becomes false earlier. See [popup content, focus and dismissal timing](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) before implementing initial focus or expanded-state synchronization.
+For this helper path, a top-level `onafterrender` callback inside the popup content definition is not a visible-readiness hook: content is built directly rather than rendered through that Model hook. Use the popup's owned `showing` event and verify focus eligibility; cancel deferred focus when ownership ends. Use `hidestart` for immediate interaction cleanup and the matching `contentretire` snapshot for final presentation disposal; `hiding` follows exit completion. See [popup content, focus and dismissal timing](JAM-UI/popup.md#helper-content-focus-and-dismissal-timing) before implementing initial focus or expanded-state synchronization.
 
 <a id="jamlyesnodialogprompt-onyes-onno-styles-options"></a>
 
@@ -794,6 +794,12 @@ lime.green('Success in green');
 | `jam.keepSize(el, type?)` / `jam.releaseSize(el, type?)`      | Keep/release element size by setting CSS custom properties.                                                           |
 | `jam.syncSize(el, option?)`                                   | Sync element size to CSS custom properties for later use.                                                             |
 
+### Layout invalidation
+
+`jam.invalidateLayout(container)` publishes an external layout change to owners subscribed to that exact container. Use it after application-owned DOM or CSS transactions affect measured layout, such as custom class changes or reordering children. Native framework mutations already publish their own invalidation.
+
+This notification schedules the owner's existing geometry work; it is not a synchronous flush, descendant resize broadcast or substitute for readiness. It does not bubble to parents: notify each affected layout container. An absent container or a container without subscribers is a no-op. See [resize observation and layout notification](JAM-UI/JAM-UI.md#resize-observation-and-layout-notification).
+
 ### Styling & FLIP animation
 
 | Method                                                           | Description                                                                                                                                                    |
@@ -819,19 +825,20 @@ lime.green('Success in green');
 
 ### Number utilities
 
-| Method                                 | Description                                                                                                     |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `jam.random(start?, end?)`             | Rounded random offset from start. Defaults: start=0, end=start+100; integer endpoints yield inclusive integers. |
-| `jam.randomValue(start?, end?)`        | Alias for `jam.random` — random integer in range.                                                               |
-| `jam.randomIn(...args)`                | Pick a random argument from the list.                                                                           |
-| `jam.toNumber(value, parsePct?)`       | Extract number from any value (string, CSS unit, percent).                                                      |
-| `jam.isNumber(value)`                  | Strict type check — is value a valid number (not NaN, not leading-zero string).                                 |
-| `jam.clamp(value, min, max)`           | Clamp a number to the inclusive `min`–`max` range.                                                              |
-| `jam.round(number, decimalPlace?)`     | Round a number to the specified decimal places.                                                                 |
-| `jam.toInteger(value)`                 | Round to integer.                                                                                               |
-| `jam.toFixed(number, decimalPlace?)`   | Round and return fixed-point string.                                                                            |
-| `jam.toPercent(value, decimalPlace?)`  | Convert to percentage string (e.g., 0.5 → `"50.00%"`).                                                          |
-| `jam.seq(end)` / `jam.seq(start, end)` | Generate an array of sequential integers.                                                                       |
+| Method                                                  | Description                                                                                                                                                                                                                                |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `jam.random(start?, end?)`                              | Rounded random offset from start. Defaults: start=0, end=start+100; integer endpoints yield inclusive integers.                                                                                                                            |
+| `jam.randomValue(start?, end?)`                         | Alias for `jam.random` — random integer in range.                                                                                                                                                                                          |
+| `jam.randomIn(...args)`                                 | Pick a random argument from the list.                                                                                                                                                                                                      |
+| `jam.toNumber(value, parsePct?)`                        | Extract number from any value (string, CSS unit, percent).                                                                                                                                                                                 |
+| `jam.isNumber(value)`                                   | Strict type check — is value a valid number (not NaN, not leading-zero string).                                                                                                                                                            |
+| `jam.clamp(value, min, max)`                            | Clamp a number to the inclusive `min`–`max` range.                                                                                                                                                                                         |
+| `jam.round(number, decimalPlace?)`                      | Round a number to the specified decimal places.                                                                                                                                                                                            |
+| `jam.toInteger(value)`                                  | Round to integer.                                                                                                                                                                                                                          |
+| `jam.toFixed(number, decimalPlace?)`                    | Round and return fixed-point string.                                                                                                                                                                                                       |
+| `jam.toGrouped(number, decimalPlace?, fixed?, locale?)` | Round and return locale-grouped text. Defaults: `decimalPlace: 0`, `fixed: false`, environment locale. `fixed: true` retains trailing fractional zeros; formatting precision is bounded to 0–20. Non-finite rounded values become strings. |
+| `jam.toPercent(value, decimalPlace?)`                   | Convert to percentage string (e.g., 0.5 → `"50.00%"`).                                                                                                                                                                                     |
+| `jam.seq(end)` / `jam.seq(start, end)`                  | Generate an array of sequential integers.                                                                                                                                                                                                  |
 
 ### Date & time utilities
 

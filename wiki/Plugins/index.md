@@ -1,8 +1,8 @@
 # Plugin reference
 
-Choose the owning topic, then read the entry’s arguments, prerequisites and cleanup requirements.
+Choose the owning topic, then read its entry.
 
-These descriptions help selection; they do not replace argument contracts. For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
+For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md) first. For an ambiguous purpose, read the relevant [chooser topic](../choosing-native-capabilities.md). A known fitting capability can go directly to its guide.
 
 The entries below are registered plugin families. For underlying behavior engines and global APIs, use the [supporting API overview](plugins.md#individual-plugins) and its entry-point distinctions.
 

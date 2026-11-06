@@ -159,8 +159,6 @@ Sets font-family from sys.typography.fontFamily.ui on the selected target.
 
 Use for ordinary interface text; use text.mono or text.digit for their distinct font or numeric-variant intent.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 Uses the active theme's `--jam-typography-font-family-ui` font family. No args.
 
 ### `mono`

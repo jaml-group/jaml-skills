@@ -62,15 +62,15 @@ Popup plugins attach tooltip, help, floating-tip, or more-action popups. Each va
 
 使用 tip 弹出层配置显示委托式悬停提示。
 
-观察匹配 selector 或 tip 属性的 mouseover 目标，读取提供的内容或属性内容，并复用一个拥有的弹出层。除非指定 subTip:false，否则子提示内容可替换正在显示的主提示；返回主目标时恢复其原始内容。
+为委托式悬停目标复用一个拥有的弹出层。默认直接匹配事件目标；hoverClosest:true 查找宿主内最近的匹配元素，并忽略同一目标内部的移动。除非指定 subTip:false，子提示可暂时替换已显示的主提示；返回时恢复主内容。 启用 dismissOn:'click' 后，行激活会取消待显示提示或开始原生隐藏；聚焦行在焦点离开前保持已关闭状态，且不会消耗下一次 Escape。
 
 安装在容纳目标的元素上，并标注预期目标。
 
-重复应用于同一宿主不会重复添加委托监听器。卸载时移除此监听器并销毁拥有的弹出层，包括待显示的弹出层。
+重复应用不会重复添加监听器。content(target, popup) 在原生延迟后同步执行；onshow 在挂载和定位就绪后启动订阅。onhidestart 停止异步任务并保留退场视觉。oncontentretire 以 replace、hide 或 destroy 为原因，对每份已创建内容执行一次最终释放，包括 onshow 前被取消的内容。插槽或子提示切换不触发最终释放。卸载移除监听器并销毁弹出层，沿用同一释放路径。 保留在 DOM 中的目标自身或其祖先变为隐藏时，取消待显示提示或沿同一生命周期隐藏已显示提示。
 
-匹配直接检查事件目标，而不是其最近的匹配祖先。子提示替换需要主弹出层已经显示。需要时另行提供可通过焦点访问的帮助。
+未启用 hoverClosest 时，嵌套后代不会继承祖先的悬停匹配。工厂未执行就没有需要释放的内容。生命周期回调接收者为 null，detail 是冻结快照，但其引用的 DOM 对象仍可变化。不支持返回 Promise 的内容工厂。子提示需要主弹出层已经显示。hoverClosest 不新增键盘帮助，也不改变焦点行为。 dismissOn:'click' 不改变行激活行为、普通点击下拉弹窗策略或焦点匹配。
 
-位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
+位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus` → `onhidestart` → `oncontentretire` → `hoverClosest` → `dismissOn`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
@@ -78,21 +78,25 @@ Popup plugins attach tooltip, help, floating-tip, or more-action popups. Each va
 | `subTip` | `boolean` | 未提供 | 主弹出层显示期间启用子提示替换。省略或 true 时启用；false 时禁用。 |
 | `subTipAttr` | `string` | `jam-sub-tip` | 子提示内容的属性名。 |
 | `selector` | `string` | 未提供 | 显示提示的元素选择器。 |
-| `content` | `functionOrString` | 未提供 | 静态或动态计算的提示内容。 |
+| `content` | `functionOrString` | 未提供 | 静态内容，或在原生显示延迟后同步执行的 content(target, popup)，返回受支持的插槽内容；不支持返回 Promise。 |
 | `showDelay` | `number` | 未提供 | 显示前的延迟（毫秒）。 |
 | `hideDelay` | `number` | 未提供 | 隐藏前的延迟（毫秒）。 |
 | `type` | `string` | 未提供 | 弹出层配置类型。 |
-| `onshow` | `function` | 未提供 | 弹出层显示时的回调。 |
+| `onshow` | `function` | 未提供 | 内容挂载且原生定位就绪后，接收冻结的 { target, content, container, popup } 快照。可在此开始异步订阅；使用 detail，不依赖 this（接收者为 null）。 |
 | `dynamic` | `boolean` | 未提供 | 保持内容和位置动态更新。 |
 | `position` | `string` | 未提供 | 弹出层位置。 |
 | `bias` | `numberOrString` | 未提供 | 弹出层位置偏移。 |
 | `snapTo` | `string` | 未提供 | 吸附目标。<br>选项: `cursor`, `target` |
 | `autoFlip` | `boolean` | 未提供 | 允许自动翻转位置。 |
 | `focus` | `boolean` | `false` |  |
+| `onhidestart` | `function` | 未提供 | 开始隐藏时接收本次展示的快照。停止订阅并使异步写入失效，但保留视觉内容以完成退场动画。接收者为 null。 |
+| `oncontentretire` | `function` | 未提供 | 接收展示快照及 reason（replace、hide 或 destroy），每份已创建内容恰好回调一次。在此释放内容资源，包括 onshow 前被取消的结果。接收者为 null。 |
+| `hoverClosest` | `boolean` | `false` | 默认 false。true 时使用插件宿主内最近的选择器匹配元素；在其后代间移动保留显示延迟，嵌套匹配目标仍各自独立。不改变焦点行为。 |
+| `dismissOn` | `string` | 未提供 | 可选的点击关闭方式。'click' 在捕获阶段处理宿主内最近匹配行的激活，仅通过原生退场路径关闭该行待显示、已显示或由焦点触发的提示。省略时保留原有行为；点击仍会执行行操作。<br>选项: `click` |
 
-Shows a tooltip popup on hover when the cursor enters an element with a `jam-tip` attribute (configurable via `tipAttr`). Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A sub-tip target with a `jam-sub-tip` attribute updates an already showing main popup without closing it. Returning to the main target restores its original content. Matching tests the event target itself, so a nested label or icon does not inherit a matching ancestor’s tip automatically.
+Shows a tooltip on hover over `jam-tip` targets (configurable via `tipAttr` or `selector`). By default, pointer matching tests the event target directly. Set `hoverClosest:true` to use the nearest selector match inside the plugin host: moving among one row’s labels and icons preserves the pending delay and visible presentation, while nested matching rows remain distinct targets. This option does not change focus matching or keyboard behavior.
 
-The show callback receives the event detail.
+Sub-tip replacement is enabled when `subTip` is omitted or true; `subTip:false` disables it. A `jam-sub-tip` target temporarily replaces an already showing main tip; returning restores its original content. Sub-tip swaps and direct slot updates do not retire the logical presentation.
 
 ```javascript jaml-playground
 export default {
@@ -113,6 +117,57 @@ export default {
 };
 ```
 
+### Activation and hidden targets
+
+Set `dismissOn:'click'` to dismiss the matching tooltip when its row is activated. Omission preserves existing behavior. Capture-phase delegation resolves the nearest selector match inside the host and cancels only that row’s pending, visible or focused presentation before the row’s activation callback runs; it does not cancel the click. Pending content whose factory has not run stays uncreated. A visible tip uses native hiding and keeps its content through exit. With `focus:true`, the activated row stays dismissed until focus leaves: descendant hover does not immediately reopen it, and the tooltip does not consume the next Escape.
+
+Retained targets that become hidden, including through a hidden ancestor, cancel pending tooltip display or dismiss the visible tooltip through native hiding. This also applies to the floating-tip and title profiles. It does not impose a visibility requirement on ordinary imperative click-dropdown presentations.
+
+### Content lifecycle
+
+`content(target, popup)` is synchronous and returns supported popup slot content. Native delay and target eligibility checks run first; a Promise is not a supported return. The popup keeps ownership of delay, positioning and exit animation.
+
+- `onshow(detail)` runs after content is mounted and native positioning is ready. Start asynchronous subscriptions here.
+- `onhidestart(detail)` runs when hiding begins. Stop subscriptions and invalidate pending writes, but retain the visual content for the exit animation.
+- `oncontentretire(detail)` releases the logical content exactly once on committed replacement, completed hiding, or destruction. Unsubscribe defensively and dispose owned resources here, even if `onshow` never ran.
+
+The first two callbacks receive a frozen `{ target, content, container, popup }` snapshot; retirement adds `reason: 'replace' | 'hide' | 'destroy'`. The snapshot identifies that presentation, rather than later mutable popup fields; referenced DOM objects remain live. Callbacks use a null receiver: read `detail`, not `this`.
+
+If the factory never runs, there is no created content to retire. If its result is canceled before mounting or showing, it still receives retirement. Merely queueing a replacement does not retire the visible content; canceled exits cannot retire a successor. A temporary sub-tip or `setContent`/`reapplyContent` slot change is not a new logical content lifetime.
+
+This JavaScript integration fragment accepts a caller-owned `EventTarget` named `updates`. The caller can publish text with `updates.dispatchEvent(new CustomEvent('change', { detail: 'Updated text' }))`. The returned plugin goes in a containing element’s `plugins` array; `.row` identifies its tooltip targets. DOM nodes and event subscriptions use standard browser APIs.
+
+```javascript
+function liveTip(updates) {
+    const _owners = new WeakMap();
+    const _stop = (content) => _owners.get(content)?.abort();
+    return Plugins.popup.tip({
+        selector: '.row',
+        hoverClosest: true,
+        subTip: false,
+        content(target) {
+            const _content = document.createElement('span');
+            _content.textContent = target.textContent;
+            _owners.set(_content, new AbortController());
+            return _content;
+        },
+        onshow({ content }) {
+            updates.addEventListener('change', (event) => {
+                content.textContent = String(event.detail);
+            }, { signal: _owners.get(content).signal });
+        },
+        onhidestart({ content }) {
+            _stop(content);
+        },
+        oncontentretire({ content }) {
+            _stop(content);
+            _owners.delete(content);
+            content.remove();
+        }
+    });
+}
+```
+
 ---
 
 ## `popup.floatingTip`
@@ -123,15 +178,15 @@ export default {
 
 使用 floatingTip 弹出层配置显示委托式悬停提示。
 
-观察匹配 selector 或 tip 属性的 mouseover 目标，读取提供的内容或属性内容，并复用一个拥有的弹出层。除非指定 subTip:false，否则子提示内容可替换正在显示的主提示；返回主目标时恢复其原始内容。
+为委托式悬停目标复用一个拥有的弹出层。默认直接匹配事件目标；hoverClosest:true 查找宿主内最近的匹配元素，并忽略同一目标内部的移动。除非指定 subTip:false，子提示可暂时替换已显示的主提示；返回时恢复主内容。 启用 dismissOn:'click' 后，行激活会取消待显示提示或开始原生隐藏；聚焦行在焦点离开前保持已关闭状态，且不会消耗下一次 Escape。
 
 安装在容纳目标的元素上，并标注预期目标。
 
-重复应用于同一宿主不会重复添加委托监听器。卸载时移除此监听器并销毁拥有的弹出层，包括待显示的弹出层。
+重复应用不会重复添加监听器。content(target, popup) 在原生延迟后同步执行；onshow 在挂载和定位就绪后启动订阅。onhidestart 停止异步任务并保留退场视觉。oncontentretire 以 replace、hide 或 destroy 为原因，对每份已创建内容执行一次最终释放，包括 onshow 前被取消的内容。插槽或子提示切换不触发最终释放。卸载移除监听器并销毁弹出层，沿用同一释放路径。 保留在 DOM 中的目标自身或其祖先变为隐藏时，取消待显示提示或沿同一生命周期隐藏已显示提示。
 
-匹配直接检查事件目标，而不是其最近的匹配祖先。子提示替换需要主弹出层已经显示。需要时另行提供可通过焦点访问的帮助。
+未启用 hoverClosest 时，嵌套后代不会继承祖先的悬停匹配。工厂未执行就没有需要释放的内容。生命周期回调接收者为 null，detail 是冻结快照，但其引用的 DOM 对象仍可变化。不支持返回 Promise 的内容工厂。子提示需要主弹出层已经显示。hoverClosest 不新增键盘帮助，也不改变焦点行为。 dismissOn:'click' 不改变行激活行为、普通点击下拉弹窗策略或焦点匹配。
 
-位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus`.
+位置参数顺序: `tipAttr` → `subTip` → `subTipAttr` → `selector` → `content` → `showDelay` → `hideDelay` → `type` → `onshow` → `dynamic` → `position` → `bias` → `snapTo` → `autoFlip` → `focus` → `onhidestart` → `oncontentretire` → `hoverClosest` → `dismissOn`.
 
 公共参数: [popup.tip](#entry-popup-tip).
 
@@ -164,7 +219,7 @@ export default {
 
 捕获带 title 目标上的 mouseenter，暂时清空原生 title，并在拥有的弹出层中显示其文本。移动到另一个带 title 的目标时，先恢复前一个目标。
 
-离开或卸载当前目标时，恢复被抑制的 title。卸载插件时也恢复当前 title、移除监听器并销毁拥有的弹出层，取消待显示内容。重新应用同一实例不会重复添加监听器；不同宿主保留独立状态。
+离开或卸载当前目标时，恢复被抑制的 title。卸载插件时也恢复当前 title、移除监听器并销毁拥有的弹出层，取消待显示内容。重新应用同一实例不会重复添加监听器；不同宿主保留独立状态。 保留在 DOM 中的 title 目标自身或其祖先变为隐藏时，原生关闭路径会取消待显示弹窗或隐藏已显示弹窗。
 
 恢复时保留较新的非空 title 或已移除的 title 属性。外部再次赋予相同空 title 的操作无法与插件抑制区分。悬停提示本身不提供键盘或焦点帮助。
 

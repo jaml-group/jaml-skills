@@ -27,7 +27,7 @@
 | `color` | `string` | `hsl(var(--jam-ac-h), var(--jam-ac-s), calc(var(--jam-ac-l) + 10%))` | 颜色<br>支持简写 |
 | `strokeWidth` | `string` | `0.0625rem` | 描边 |
 | `strokeColor` | `string` | `hsl(0, 0%, calc(var(--jam-lumi-o-base) + var(--jam-lumi-o-dev) * 14))` | 描边颜色 |
-| `size` | `string` | 未提供 | 大小 |
+| `size` | `string` | 未提供 | 图标字号：CSS 长度（如 1.25rem）或字体大小令牌（xxs、xs、s、m、l、xl、xxl、3xl、4xl）。 |
 
 ## Variants
 
@@ -319,15 +319,7 @@ Creates a shaped arrow icon. Numeric input value changes point it down for negat
 
 <a id="entry-icon-text"></a>
 
-字体族
-
-为路径选中的目标配置字体排版。
-
-映射字体、字号、字重、样式、装饰、间距、阴影、对齐、换行、行高、选择、缩进、光标和前景色字段；icon 路径使用自己的字体和阴影键。
-
-字体排版选择 text，盒对齐选择 layout 或 align；包装元素需要保留几何结构时，针对插槽内容设置样式。
-
-根据预期目标选择宿主、插槽内容或插槽包装元素的路径；插槽包装元素与分配给它的内容是不同的目标。
+说明见 [`text`](text.zh.md#entry-text)。
 
 位置参数顺序: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -352,15 +344,7 @@ Creates a shaped arrow icon. Numeric input value changes point it down for negat
 
 <a id="entry-icon-color"></a>
 
-颜色
-
-为路径选中的目标设置前景色。
-
-通过依赖路径的样式方式转发 color 和可选的颜色通道参数。
-
-使用语义化颜色预设实现随主题变化的前景色角色；根路径 color.accent 具有独立的颜色配置契约。
-
-根据预期目标选择宿主、插槽内容或插槽包装元素的路径；插槽包装元素与分配给它的内容是不同的目标。
+说明见 [`color`](color.zh.md#entry-color)。
 
 位置参数顺序: `h` → `s` → `l` → `a` → `color`.
 
@@ -428,11 +412,7 @@ color.strong 使用 strong 前景色变量；嵌套的 color.accent 使用 prima
 
 大
 
-gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字号变量；border.l 只设置边框宽度；shadow.l 和 shadow.primary.l 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.l 使用 l 字号变量。
 
 ## `icon.text.size.m`
 
@@ -440,11 +420,7 @@ gap.l、margin.l 和 padding.l 使用 l 间距变量；text.size.l 使用 l 字�
 
 中等
 
-gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字号变量；border.m 只设置边框宽度；shadow.m 和 shadow.primary.m 设置盒阴影；shadow.text.m 和 shadow.text.primary.m 设置文本阴影；border.default 设置 xs 宽度的实线 surface-default 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.m 使用 m 字号变量。
 
 ## `icon.text.size.s`
 
@@ -452,11 +428,7 @@ gap.m、margin.m 和 padding.m 使用 m 间距变量；text.size.m 使用 m 字�
 
 小
 
-gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字号变量；border.s 只设置边框宽度；shadow.s 和 shadow.primary.s 设置盒阴影；shadow.text.s 和 shadow.text.primary.s 设置文本阴影；border.faint 和 border.muted 设置 xs 宽度的实线轮廓角色边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.s 使用 s 字号变量。
 
 ## `icon.text.size.xl`
 
@@ -464,11 +436,7 @@ gap.s、margin.s 和 padding.s 使用 s 间距变量；text.size.s 使用 s 字�
 
 极大
 
-gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 xl 字号变量；border.xl 只设置边框宽度；shadow.xl 和 shadow.primary.xl 设置盒阴影。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.xl 使用 xl 字号变量。
 
 ## `icon.text.size.xs`
 
@@ -476,11 +444,7 @@ gap.xl、margin.xl 和 padding.xl 使用 xl 间距变量；text.size.xl 使用 x
 
 极小
 
-gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 xs 字号变量；border.xs 只设置边框宽度；shadow.xs 和 shadow.primary.xs 设置盒阴影；shadow.text.xs 和 shadow.text.primary.xs 设置文本阴影；border.subtle 设置 xs 宽度的实线 outline-subtle 边框。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.xs 使用 xs 字号变量。
 
 ## `icon.text.size.3xl`
 
@@ -516,11 +480,7 @@ gap.xs、margin.xs 和 padding.xs 使用 xs 间距变量；text.size.xs 使用 x
 
 超大
 
-gap.xxl、margin.xxl 和 padding.xxl 使用 xxl 间距变量；text.size.xxl 使用 xxl 字号变量。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.xxl 使用 xxl 字号变量。
 
 ## `icon.text.size.xxs`
 
@@ -528,8 +488,4 @@ gap.xxl、margin.xxl 和 padding.xxl 使用 xxl 间距变量；text.size.xxl 使
 
 超小
 
-gap.xxs、margin.xxs 和 padding.xxs 使用 xxs 间距变量；text.size.xxs 使用 xxs 字号变量。
-
-先选择属性族，再选择尺度或角色。间距、字体、边框和阴影使用相同后缀，不代表尺寸相同。
-
-这些是局部样式应用。可复用的调色板和色阶修改属于主题变量；应用预设不重新定义主题。仅设置边框宽度的预设需要已有的可见边框样式。
+text.size.xxs 使用 xxs 字号变量。

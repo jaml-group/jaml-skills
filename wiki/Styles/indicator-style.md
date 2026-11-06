@@ -423,19 +423,23 @@ export default {
 };
 ```
 
+## `indicator.sub`
+
+<a id="entry-indicator-sub"></a>
+
+Indicator sub-caption
+
+Place supporting content, such as a comparison line or tags, under an indicator's caption and value.
+
+Apply it to a child in the indicator's layer slot. The child takes its own row from the caption column to the end, follows the indicator's alignment, and uses sub-caption typography. Children follow source order.
+
+The child must be a direct child of an indicator with slot: 'layer'.
+
 ## `indicator.grid`
 
 <a id="entry-indicator-grid"></a>
 
-Grid
-
-Configure grid-related arguments for the path-selected target.
-
-Maps templateColumns, templateRows, autoColumns, autoRows and templateAreas to their CSS grid properties; gap stays gap, and area uses gridArea unless the owning path overrides its CSS key.
-
-Set display:grid on the grid container separately, for example with css(display:grid). Use grid.area for explicit row/column placement of its items.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`grid`](common/grid.md#entry-grid).
 
 Positional order: `templateColumns` → `templateRows` → `autoColumns` → `autoRows` → `templateAreas` → `gap` → `area`.
 
@@ -453,15 +457,7 @@ Positional order: `templateColumns` → `templateRows` → `autoColumns` → `au
 
 <a id="entry-indicator-text"></a>
 
-Font family
-
-Configure typography on the path-selected target.
-
-Maps font, size, weight, style, decoration, spacing, shadow, alignment, wrapping, line height, selection, indentation, caret, and foreground fields; icon paths use their own font and shadow keys.
-
-Choose text for typography and layout or align for box alignment; target the slotted content when the wrapper should retain its geometry.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`text`](common/text.md#entry-text).
 
 Positional order: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -486,15 +482,7 @@ Positional order: `font` → `size` → `weight` → `style` → `decoration` �
 
 <a id="entry-indicator-color"></a>
 
-Color
-
-Set foreground color for the target selected by the path.
-
-Forwards color and optional channel arguments through the path-dependent styling method.
-
-Use semantic color presets for theme-following foreground roles; color.accent at the root has a separate color-profile contract.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`color`](common/color.md#entry-color).
 
 Positional order: `h` → `s` → `l` → `a` → `color`.
 
@@ -554,15 +542,7 @@ Adds trailing-icon; label and indicator stylesheets position their own icon slot
 
 <a id="entry-indicator-icon-text"></a>
 
-Font family
-
-Configure typography on the path-selected target.
-
-Maps font, size, weight, style, decoration, spacing, shadow, alignment, wrapping, line height, selection, indentation, caret, and foreground fields; icon paths use their own font and shadow keys.
-
-Choose text for typography and layout or align for box alignment; target the slotted content when the wrapper should retain its geometry.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`text`](common/text.md#entry-text).
 
 Positional order: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -593,21 +573,13 @@ Use the theme monospace font family on the path-selected target.
 
 Nested text.mono presets select sys.typography.fontFamily.mono.
 
-The root text.mono extension instead uses the generic monospace family. These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
+The root text.mono extension instead uses the generic monospace family.
 
 ## `indicator.unit.text`
 
 <a id="entry-indicator-unit-text"></a>
 
-Font family
-
-Configure typography on the path-selected target.
-
-Maps font, size, weight, style, decoration, spacing, shadow, alignment, wrapping, line height, selection, indentation, caret, and foreground fields; icon paths use their own font and shadow keys.
-
-Choose text for typography and layout or align for box alignment; target the slotted content when the wrapper should retain its geometry.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`text`](common/text.md#entry-text).
 
 Positional order: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -632,15 +604,7 @@ Positional order: `font` → `size` → `weight` → `style` → `decoration` �
 
 <a id="entry-indicator-unit-color"></a>
 
-Color
-
-Set foreground color for the target selected by the path.
-
-Forwards color and optional channel arguments through the path-dependent styling method.
-
-Use semantic color presets for theme-following foreground roles; color.accent at the root has a separate color-profile contract.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`color`](common/color.md#entry-color).
 
 Positional order: `h` → `s` → `l` → `a` → `color`.
 
@@ -682,15 +646,7 @@ These are different roles. The root color.accent path has a separate color-profi
 
 <a id="entry-indicator-unitslot-text"></a>
 
-Font family
-
-Configure typography on the path-selected target.
-
-Maps font, size, weight, style, decoration, spacing, shadow, alignment, wrapping, line height, selection, indentation, caret, and foreground fields; icon paths use their own font and shadow keys.
-
-Choose text for typography and layout or align for box alignment; target the slotted content when the wrapper should retain its geometry.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`text`](common/text.md#entry-text).
 
 Positional order: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -715,15 +671,7 @@ Positional order: `font` → `size` → `weight` → `style` → `decoration` �
 
 <a id="entry-indicator-capslot-layout"></a>
 
-Layout
-
-Adjust layout properties without switching to a specialized layout preset.
-
-Sets display, position, order, overflow, gap, stacking, box sizing, transform, and transition when provided.
-
-Use layout.grid or layout.flex for their specialized layout contracts; coordinate transform and overflow with motion or scroll owners.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`layout`](common/layout.md#entry-layout).
 
 Positional order: `display` → `position` → `order` → `overflow` → `gap` → `zIndex` → `boxSizing` → `transform` → `transition`.
 
@@ -743,15 +691,7 @@ Positional order: `display` → `position` → `order` → `overflow` → `gap` 
 
 <a id="entry-indicator-unitslot-color"></a>
 
-Color
-
-Set foreground color for the target selected by the path.
-
-Forwards color and optional channel arguments through the path-dependent styling method.
-
-Use semantic color presets for theme-following foreground roles; color.accent at the root has a separate color-profile contract.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`color`](common/color.md#entry-color).
 
 Positional order: `h` → `s` → `l` → `a` → `color`.
 
@@ -767,15 +707,7 @@ Positional order: `h` → `s` → `l` → `a` → `color`.
 
 <a id="entry-indicator-valueslot-text"></a>
 
-Font family
-
-Configure typography on the path-selected target.
-
-Maps font, size, weight, style, decoration, spacing, shadow, alignment, wrapping, line height, selection, indentation, caret, and foreground fields; icon paths use their own font and shadow keys.
-
-Choose text for typography and layout or align for box alignment; target the slotted content when the wrapper should retain its geometry.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`text`](common/text.md#entry-text).
 
 Positional order: `font` → `size` → `weight` → `style` → `decoration` → `spacing` → `shadow` → `align` → `whitespace` → `lineheight` → `userselect` → `indent` → `caretColor` → `color`.
 
@@ -806,21 +738,11 @@ Sets background-color from sys.color.tint.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.iconslot.layout`
 
 <a id="entry-indicator-iconslot-layout"></a>
 
-Layout
-
-Adjust layout properties without switching to a specialized layout preset.
-
-Sets display, position, order, overflow, gap, stacking, box sizing, transform, and transition when provided.
-
-Use layout.grid or layout.flex for their specialized layout contracts; coordinate transform and overflow with motion or scroll owners.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`layout`](common/layout.md#entry-layout).
 
 Positional order: `display` → `position` → `order` → `overflow` → `gap` → `zIndex` → `boxSizing` → `transform` → `transition`.
 
@@ -854,15 +776,7 @@ This is a class convention, not an unconditional inline display declaration.
 
 <a id="entry-indicator-unitslot-layout"></a>
 
-Layout
-
-Adjust layout properties without switching to a specialized layout preset.
-
-Sets display, position, order, overflow, gap, stacking, box sizing, transform, and transition when provided.
-
-Use layout.grid or layout.flex for their specialized layout contracts; coordinate transform and overflow with motion or scroll owners.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`layout`](common/layout.md#entry-layout).
 
 Positional order: `display` → `position` → `order` → `overflow` → `gap` → `zIndex` → `boxSizing` → `transform` → `transition`.
 
@@ -882,15 +796,7 @@ Positional order: `display` → `position` → `order` → `overflow` → `gap` 
 
 <a id="entry-indicator-valueslot-color"></a>
 
-Color
-
-Set foreground color for the target selected by the path.
-
-Forwards color and optional channel arguments through the path-dependent styling method.
-
-Use semantic color presets for theme-following foreground roles; color.accent at the root has a separate color-profile contract.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`color`](common/color.md#entry-color).
 
 Positional order: `h` → `s` → `l` → `a` → `color`.
 
@@ -920,15 +826,7 @@ This is a class convention, not an unconditional inline display declaration.
 
 <a id="entry-indicator-valueslot-layout"></a>
 
-Layout
-
-Adjust layout properties without switching to a specialized layout preset.
-
-Sets display, position, order, overflow, gap, stacking, box sizing, transform, and transition when provided.
-
-Use layout.grid or layout.flex for their specialized layout contracts; coordinate transform and overflow with motion or scroll owners.
-
-Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
+Notes: [`layout`](common/layout.md#entry-layout).
 
 Positional order: `display` → `position` → `order` → `overflow` → `gap` → `zIndex` → `boxSizing` → `transform` → `transition`.
 
@@ -950,11 +848,7 @@ Positional order: `display` → `position` → `order` → `overflow` → `gap` 
 
 Large
 
-gap.l, margin.l, and padding.l use the l space token; text.size.l uses the l typography size token; border.l sets only border width; shadow.l and shadow.primary.l set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.l uses the l typography size token.
 
 ## `indicator.text.size.m`
 
@@ -962,11 +856,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.m uses the m typography size token.
 
 ## `indicator.text.size.s`
 
@@ -974,11 +864,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.s uses the s typography size token.
 
 ## `indicator.text.size.xl`
 
@@ -986,11 +872,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra large
 
-gap.xl, margin.xl, and padding.xl use the xl space token; text.size.xl uses the xl typography size token; border.xl sets only border width; shadow.xl and shadow.primary.xl set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xl uses the xl typography size token.
 
 ## `indicator.text.size.xs`
 
@@ -998,11 +880,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xs uses the xs typography size token.
 
 ## `indicator.text.size.3xl`
 
@@ -1016,8 +894,6 @@ Sets font-size from sys.typography.fontSize.3xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.text.size.4xl`
 
 <a id="entry-indicator-text-size-4xl"></a>
@@ -1030,19 +906,13 @@ Sets font-size from sys.typography.fontSize.4xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.text.size.xxl`
 
 <a id="entry-indicator-text-size-xxl"></a>
 
 Extra extra large
 
-gap.xxl, margin.xxl, and padding.xxl use the xxl space token; text.size.xxl uses the xxl typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxl uses the xxl typography size token.
 
 ## `indicator.text.size.xxs`
 
@@ -1050,11 +920,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra extra small
 
-gap.xxs, margin.xxs, and padding.xxs use the xxs space token; text.size.xxs uses the xxs typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxs uses the xxs typography size token.
 
 ## `indicator.unit.text.mono`
 
@@ -1066,7 +932,7 @@ Use the theme monospace font family on the path-selected target.
 
 Nested text.mono presets select sys.typography.fontFamily.mono.
 
-The root text.mono extension instead uses the generic monospace family. These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
+The root text.mono extension instead uses the generic monospace family.
 
 ## `indicator.unit.color.accent`
 
@@ -1090,7 +956,7 @@ Use the theme monospace font family on the path-selected target.
 
 Nested text.mono presets select sys.typography.fontFamily.mono.
 
-The root text.mono extension instead uses the generic monospace family. These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
+The root text.mono extension instead uses the generic monospace family.
 
 ## `indicator.valueslot.text.mono`
 
@@ -1102,7 +968,7 @@ Use the theme monospace font family on the path-selected target.
 
 Nested text.mono presets select sys.typography.fontFamily.mono.
 
-The root text.mono extension instead uses the generic monospace family. These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
+The root text.mono extension instead uses the generic monospace family.
 
 ## `indicator.unit.background.tint`
 
@@ -1113,8 +979,6 @@ Tint
 Sets background-color from sys.color.tint.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `indicator.unitslot.color.accent`
 
@@ -1150,8 +1014,6 @@ Sets background-color from sys.color.tint.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.valueslot.background.tint`
 
 <a id="entry-indicator-valueslot-background-tint"></a>
@@ -1162,19 +1024,13 @@ Sets background-color from sys.color.tint.default.
 
 Pair the fill with a foreground role appropriate to that surface. Choose the path for the intended host, slotted content, or slot wrapper; a slot wrapper and the content assigned to it are different targets.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.unit.text.size.l`
 
 <a id="entry-indicator-unit-text-size-l"></a>
 
 Large
 
-gap.l, margin.l, and padding.l use the l space token; text.size.l uses the l typography size token; border.l sets only border width; shadow.l and shadow.primary.l set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.l uses the l typography size token.
 
 ## `indicator.unit.text.size.m`
 
@@ -1182,11 +1038,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.m uses the m typography size token.
 
 ## `indicator.unit.text.size.s`
 
@@ -1194,11 +1046,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.s uses the s typography size token.
 
 ## `indicator.unit.text.size.xl`
 
@@ -1206,11 +1054,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra large
 
-gap.xl, margin.xl, and padding.xl use the xl space token; text.size.xl uses the xl typography size token; border.xl sets only border width; shadow.xl and shadow.primary.xl set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xl uses the xl typography size token.
 
 ## `indicator.unit.text.size.xs`
 
@@ -1218,11 +1062,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xs uses the xs typography size token.
 
 ## `indicator.unit.text.size.3xl`
 
@@ -1236,8 +1076,6 @@ Sets font-size from sys.typography.fontSize.3xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.unit.text.size.4xl`
 
 <a id="entry-indicator-unit-text-size-4xl"></a>
@@ -1250,19 +1088,13 @@ Sets font-size from sys.typography.fontSize.4xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.unit.text.size.xxl`
 
 <a id="entry-indicator-unit-text-size-xxl"></a>
 
 Extra extra large
 
-gap.xxl, margin.xxl, and padding.xxl use the xxl space token; text.size.xxl uses the xxl typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxl uses the xxl typography size token.
 
 ## `indicator.unit.text.size.xxs`
 
@@ -1270,11 +1102,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra extra small
 
-gap.xxs, margin.xxs, and padding.xxs use the xxs space token; text.size.xxs uses the xxs typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxs uses the xxs typography size token.
 
 ## `indicator.unitslot.text.size.l`
 
@@ -1282,11 +1110,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Large
 
-gap.l, margin.l, and padding.l use the l space token; text.size.l uses the l typography size token; border.l sets only border width; shadow.l and shadow.primary.l set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.l uses the l typography size token.
 
 ## `indicator.unitslot.text.size.m`
 
@@ -1294,11 +1118,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.m uses the m typography size token.
 
 ## `indicator.unitslot.text.size.s`
 
@@ -1306,11 +1126,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.s uses the s typography size token.
 
 ## `indicator.unitslot.text.size.xl`
 
@@ -1318,11 +1134,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra large
 
-gap.xl, margin.xl, and padding.xl use the xl space token; text.size.xl uses the xl typography size token; border.xl sets only border width; shadow.xl and shadow.primary.xl set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xl uses the xl typography size token.
 
 ## `indicator.unitslot.text.size.xs`
 
@@ -1330,11 +1142,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xs uses the xs typography size token.
 
 ## `indicator.valueslot.text.size.l`
 
@@ -1342,11 +1150,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Large
 
-gap.l, margin.l, and padding.l use the l space token; text.size.l uses the l typography size token; border.l sets only border width; shadow.l and shadow.primary.l set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.l uses the l typography size token.
 
 ## `indicator.valueslot.text.size.m`
 
@@ -1354,11 +1158,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.m uses the m typography size token.
 
 ## `indicator.valueslot.text.size.s`
 
@@ -1366,11 +1166,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.s uses the s typography size token.
 
 ## `indicator.unitslot.text.size.3xl`
 
@@ -1384,8 +1180,6 @@ Sets font-size from sys.typography.fontSize.3xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.unitslot.text.size.4xl`
 
 <a id="entry-indicator-unitslot-text-size-4xl"></a>
@@ -1398,19 +1192,13 @@ Sets font-size from sys.typography.fontSize.4xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.unitslot.text.size.xxl`
 
 <a id="entry-indicator-unitslot-text-size-xxl"></a>
 
 Extra extra large
 
-gap.xxl, margin.xxl, and padding.xxl use the xxl space token; text.size.xxl uses the xxl typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxl uses the xxl typography size token.
 
 ## `indicator.unitslot.text.size.xxs`
 
@@ -1418,11 +1206,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra extra small
 
-gap.xxs, margin.xxs, and padding.xxs use the xxs space token; text.size.xxs uses the xxs typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxs uses the xxs typography size token.
 
 ## `indicator.valueslot.text.size.xl`
 
@@ -1430,11 +1214,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra large
 
-gap.xl, margin.xl, and padding.xl use the xl space token; text.size.xl uses the xl typography size token; border.xl sets only border width; shadow.xl and shadow.primary.xl set box shadows.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xl uses the xl typography size token.
 
 ## `indicator.valueslot.text.size.xs`
 
@@ -1442,11 +1222,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xs uses the xs typography size token.
 
 ## `indicator.valueslot.text.size.3xl`
 
@@ -1460,8 +1236,6 @@ Sets font-size from sys.typography.fontSize.3xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.valueslot.text.size.4xl`
 
 <a id="entry-indicator-valueslot-text-size-4xl"></a>
@@ -1474,19 +1248,13 @@ Sets font-size from sys.typography.fontSize.4xl.
 
 Combine with the appropriate font, line height, and wrapping behavior; changing font size changes text metrics and can affect wrapping and layout.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `indicator.valueslot.text.size.xxl`
 
 <a id="entry-indicator-valueslot-text-size-xxl"></a>
 
 Extra extra large
 
-gap.xxl, margin.xxl, and padding.xxl use the xxl space token; text.size.xxl uses the xxl typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxl uses the xxl typography size token.
 
 ## `indicator.valueslot.text.size.xxs`
 
@@ -1494,8 +1262,4 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra extra small
 
-gap.xxs, margin.xxs, and padding.xxs use the xxs space token; text.size.xxs uses the xxs typography size token.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+text.size.xxs uses the xxs typography size token.

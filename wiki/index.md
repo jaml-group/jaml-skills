@@ -1,8 +1,8 @@
 # JAML reference map
 
-Start here when writing, explaining, or diagnosing JAML. These documents are shared by people, the documentation viewer, and the `jaml` skill. Each contract has an owning page; topic indexes point to it.
+Start here when writing, explaining, or diagnosing JAML. These documents are shared by people, the documentation viewer, and the `jaml` skill. Each contract has one owning page, and topic indexes point to it. Read progressively: this map, then the owning page, then the section the task needs.
 
-For element contracts, follow the actual links in the [element catalog](JAM-UI/JAM-UI.md); the skill entry includes a compact map generated from that index. Documented specializations share their base element’s guide. A capability name is not a filename: use an indexed link or a focused search result instead of inventing a page path. When the complete needed contract is already in context, no additional lookup is necessary.
+For element contracts, follow the actual links in the [element catalog](JAM-UI/JAM-UI.md); the skill entry includes a compact map generated from that index. Documented specializations share their base element’s guide. Use an indexed link or a focused search result to reach a page. When the complete needed contract is already in context, no additional lookup is necessary.
 
 For style/plugin contracts, use the [style index](Styles/index.md) or [plugin index](Plugins/index.md) and read the selected family guide directly. Each guide combines usage, prerequisites and examples with generated argument types, order, defaults and option values. Check the documented framework baseline against the target runtime; missing facts remain unknown.
 
@@ -34,25 +34,25 @@ For state ownership, private requests and shared datasets, see [State and data c
 
 ## Choose the owner before the API
 
-1. Identify the business purpose and data, then select the element or module that owns it. Reuse its native parts and check its inheritance. An input's `value` contract does not make `value` a parameter of every element.
+1. Follow the [composition order](JAML/purpose-and-composition.md#decide-what-the-object-means) to select the element or module that owns the purpose. Reuse its native parts and check its inheritance, since each parameter belongs to the elements that declare or inherit it.
 2. Give structural regions their [semantic roles](./Theme/stylize.md#common-choices). Use the active theme's `variant` only for a supported alternate recipe.
 3. Use a public style when it already owns the requested appearance or interaction. For example, moving a card uses `interact.movable`; sorting children uses `interact.sortable`. See the [plugin decision table](./Plugins/plugins.md#choose-an-entry-point).
 4. Use token-backed styles for theme decisions. [Tokens](./Theme/tokens.md#consuming-tokens) explains which paths work in JavaScript, JAML CSS, and SCSS.
 5. Add an explicit plugin or imperative engine only when its lifecycle or application API is needed. Read its owning page before combining it with a style that installs the same behavior.
 
-## Agent workflow
+## Reading path
 
-For a new dashboard, landing page, form or app, follow [Building a JAML UI](./building-ui.md). Read [Tutorial](./tutorial.md) for syntax, then JAML Format and only the element/style/plugin pages the task needs. For theme work, start at [Theme](./Theme/theme.md). For a correction, follow the owning reference back to its implementation rather than copying a similar example.
+For a new dashboard, landing page, form or app, read [Building a JAML UI](./building-ui.md). Read [Tutorial](./tutorial.md) for syntax, then JAML Format and only the element/style/plugin pages the task needs. For theme work, start at [Theme](./Theme/theme.md). For a correction, follow the owning reference back to its implementation.
 
 Verify examples in layers:
 
 -   **Static syntax:** JSON/JavaScript must parse. A `jaml-playground`, `jaml-artifact` or `jaml-content` fence is a complete example; API signatures and partial dictionaries use ordinary fences.
 -   **Static semantics:** use the current source registry to check types, inherited parameters, style paths, and arguments. Dynamic builders and open argument dictionaries can exceed static metadata; investigate a diagnostic before accepting or rejecting the code.
--   **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. A static pass does not prove visibility, resource loading, or lifecycle behavior.
+-   **Runtime:** check rendered structure and nonzero geometry, exercise the important interaction, then inspect resulting state and diagnostics. Visibility, resource loading and lifecycle need runtime evidence.
 
 ## Trust and application data
 
-JAML definitions, authored `vars` initializers, props, handlers, binding expressions and external plugin modules are trusted application code. Populate external records through [runtime model-data writes](JAML/binder.md#runtime-data-and-authored-definitions); never concatenate them into executable definitions, expressions or module locations. A data value remaining literal does not make an HTML-capable display setter safe: use [Text nodes or `textContent`](JAM-UI/JAM-UI.md#slot-content-and-literal-text) for literal captions. `noBinder` and `jaml.pre()` do not sanitize content or sandbox executable code. Markdown dialect selection is not sanitization either. Use the explicit safe policy for untrusted Markdown and supply an execution hook only for intentionally enabled interactive blocks. See [Markdown policy and execution ownership](Plugins/markdown.md#content-policy-and-playground-ownership).
+JAML definitions, authored `vars` initializers, props, handlers, binding expressions and external plugin modules are trusted application code. Populate external records through [runtime model-data writes](JAML/binder.md#runtime-data-and-authored-definitions); never concatenate them into executable definitions, expressions or module locations. For an HTML-capable display setter, use [Text nodes or `textContent`](JAM-UI/JAM-UI.md#slot-content-and-literal-text) for literal captions. `noBinder` and `jaml.pre()` do not sanitize content or sandbox executable code. Markdown dialect selection is not sanitization either. Use the explicit safe policy for untrusted Markdown and supply an execution hook only for intentionally enabled interactive blocks. See [Markdown policy and execution ownership](Plugins/markdown.md#content-policy-and-playground-ownership).
 
 For external option names, use the shared [literal option-text policy](JAM-UI/JAM-UI.md#literal-external-labels); keep names as strings for native filtering and selection.
 

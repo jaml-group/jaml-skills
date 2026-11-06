@@ -17,21 +17,64 @@ The global `jamd` function is an alias for `MandarinMarkdown.render()`.
 
 ## MarkdownOption
 
-| Option          | Type                                  | Default      | Description                                                                                          |
-| --------------- | ------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
-| `margin`        | `string`                              | `undefined`  | Document margin. When `buildToc` is false, defaults to `'12.5%'`. When true, defaults to `'4.4rem'`. |
-| `lineBefore`    | `string`                              | `'0.5em'`    | Margin-top for each block element.                                                                   |
-| `lineAfter`     | `string`                              | `'0.5em'`    | Margin-bottom for each block element.                                                                |
-| `lineHeight`    | `number`                              | `1.6`        | Line height for paragraph text (in `em`).                                                            |
-| `firstLine`     | `string`                              | `''`         | Text indent for the first line of paragraphs.                                                        |
-| `buildToc`      | `boolean`                             | `false`      | Enable table of contents, title bar, scroll progress bar, and "back to top" button.                  |
-| `style`         | `Dictionary`                          | `{}`         | Additional CSS styles applied to the root container.                                                 |
-| `styles`        | `StyleOption[]`                       | `[]`         | Additional `StyleOption` entries.                                                                    |
-| `dialect`       | `'commonmark' \| 'gfm' \| 'mandarin'` | `'mandarin'` | Select CommonMark, GFM extensions, or GFM plus Mandarin extensions.                                  |
-| `contentPolicy` | `'trusted' \| 'safe'`                 | `'trusted'`  | Restrict content originating in Markdown; see the policy contract below.                             |
-| `playground`    | `MarkdownPlayground`                  | `undefined`  | Application-owned executor and context for eligible playground fences.                               |
-| `eagerEditor`   | `boolean`                             | `false`      | Request code editors immediately, including offscreen code.                                          |
-| `printMode`     | `boolean`                             | `false`      | Enable eager code-editor initialization for print-oriented documents.                                |
+| Option                 | Type                                           | Default      | Description                                                                                                                                       |
+| ---------------------- | ---------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `margin`               | `string`                                       | `undefined`  | Document margin. When `buildToc` is false, defaults to `'12.5%'`. When true, defaults to `'4.4rem'`.                                              |
+| `lineBefore`           | `string`                                       | `'0.5em'`    | Margin-top for each block element.                                                                                                                |
+| `lineAfter`            | `string`                                       | `'0.5em'`    | Margin-bottom for each block element.                                                                                                             |
+| `lineHeight`           | `number`                                       | `1.6`        | Line height for paragraph text (in `em`).                                                                                                         |
+| `firstLine`            | `string`                                       | `''`         | Text indent for the first line of paragraphs.                                                                                                     |
+| `buildToc`             | `boolean`                                      | `false`      | Enable table of contents, title bar, scroll progress bar, and "back to top" button.                                                               |
+| `style`                | `Dictionary`                                   | `{}`         | Additional CSS styles applied to the root container.                                                                                              |
+| `styles`               | `StyleOption[]`                                | `[]`         | Additional `StyleOption` entries.                                                                                                                 |
+| `dialect`              | `'commonmark' \| 'gfm' \| 'mandarin'`          | `'mandarin'` | Select CommonMark, GFM extensions, or GFM plus Mandarin extensions.                                                                               |
+| `contentPolicy`        | `'trusted' \| 'safe'`                          | `'trusted'`  | Restrict content originating in Markdown; see the policy contract below.                                                                          |
+| `resolveImage`         | `(destination: string) => string \| undefined` | `undefined`  | Synchronously map parsed image destinations; see [host image resolution](#host-image-destination-resolution).                                     |
+| `resolveReference`     | `(request) => target \| undefined`             | `undefined`  | Synchronous host reference lookup for trusted Markdown; requires `onReferenceActivate`. See [references](#host-reference-activation).             |
+| `onReferenceActivate`  | `(reference, request) => void`                 | `undefined`  | Host-owned reference action.                                                                                                                      |
+| `annotations`          | `MarkdownAnnotation[]`                         | `undefined`  | Exact source-range decorations in static safe Markdown; pass `[]` initially to enable later updates. See [annotations](#static-safe-annotations). |
+| `onAnnotationActivate` | `(annotation) => void`                         | `undefined`  | Host action for an annotation explicitly marked `actionable: true`.                                                                               |
+| `playground`           | `MarkdownPlayground`                           | `undefined`  | Application-owned executor and context for eligible playground fences.                                                                            |
+| `eagerEditor`          | `boolean`                                      | `false`      | Request code editors immediately, including offscreen code.                                                                                       |
+| `printMode`            | `boolean`                                      | `false`      | Enable eager code-editor initialization for print-oriented documents.                                                                             |
+
+## Host image destination resolution
+
+Configure `resolveImage` on the host's `MarkdownOption` passed to `MandarinMarkdown.render()`, `MandarinMarkdown.stream()`, `MandarinMarkdown.parse()` or `jaml.md()`. Authored replies continue to use ordinary Markdown image syntax. The callback receives the parsed/decoded image destination synchronously, before the renderer's existing URL encoding and HTML attribute escaping. Return a replacement destination, or `undefined` to preserve the original; do not return a Promise.
+
+Rendering can call the resolver repeatedly. Supply a deterministic mapping using resources already available to the host; keep resource acquisition and cleanup with the host rather than performing them per callback. The callback does not rewrite the Markdown source or its reference definitions.
+
+The mapping applies to parsed images in static and streamed Markdown, including nested content and reference images. Native image preview uses the rendered image source. `contentPolicy: 'safe'` never invokes the resolver and continues to show literal alt text without fetching images. Ordinary link destinations, raw HTML and authored JAML widgets are unchanged.
+
+## Host reference activation
+
+For trusted Markdown, supply both `resolveReference(request)` and `onReferenceActivate(reference, request)`. The resolver receives `{ kind: 'link' | 'code', value: string }`: a parsed link destination or inline-code text outside a link. Return `{ id: string, label?: string, title?: string }` synchronously, or `undefined` to retain ordinary rendering. Invalid results and resolver exceptions also retain ordinary links/inert code. Raw HTML and image destinations do not participate; safe Markdown does not invoke these hooks.
+
+The optional label replaces content as literal text; otherwise the existing formatting remains. The optional title is literal and the ID is opaque host data. Recognized references invoke the host callback on unmodified primary click, Enter or Space. The host owns authorization, navigation, resource identity and the meaning of each ID; the renderer performs no filesystem or skill discovery.
+
+Static documents activate references as their content materializes. Streams defer reference activation until finalization: await `finish()`. Deferred content settles when materialized, and repeated finishing preserves existing widgets. The document releases activation listeners on disposal. Use a fresh callback closure/document when the source or session identity changes.
+
+## Static safe annotations
+
+Use host-authored annotations to decorate known source ranges in **static** `contentPolicy: 'safe'` Markdown rendered through `render`, `parse` or `jaml.md`. Trusted documents and streams ignore annotations. Each descriptor has this shape:
+
+```typescript signature
+type MarkdownAnnotation = {
+    from: number;
+    to: number;
+    raw: string;
+    id: string;
+    label: string;
+    icon?: string;
+    actionable?: boolean;
+};
+```
+
+`[from, to)` uses UTF-16 offsets into the original Markdown, with `raw === source.slice(from, to)`. A range must fit one eligible parsed text node. Headings, code, links/images, raw HTML tokens/blocks and fences are excluded; ordinary text between escaped inline HTML tags can remain eligible. Invalid, stale, overlapping or inexact ranges remain ordinary Markdown. Whole decoded/escaped atoms can be selected; partial atoms, surrogate halves and ranges crossing formatting boundaries cannot.
+
+Labels, raw-text hover titles and icon class tokens are literal host presentation data. Activation requires both `actionable: true` and `onAnnotationActivate`; ordinary click, Enter and Space invoke that callback. The host retains business permissions and resource/session identity.
+
+Pass `annotations: []` on initial rendering if updates will be needed. Call `MandarinMarkdown.updateAnnotations(model.element, nextDescriptors)` with the exact rendered document root, rather than its mounting host or a descendant. It returns `false` without an eligible mounted static owner. An update keeps the source and model, matching annotation identity by range and ID; unchanged label/icon retains the native label and eligible focus. Clearing a descriptor or making it inert removes activation. Changed source/session identity needs a new document owner. Destruction releases labels and listeners.
 
 ## Embedded documents in a parent scroll viewport
 
@@ -70,13 +113,14 @@ Verify parent scroll growth during streaming, upward wheel over reasoning and an
 
 ## Static Methods
 
-| Method                                                    | Description                                                                                  |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `MandarinMarkdown.render(container, markdown, option?)`   | Parse markdown and render into the container.                                                |
-| `MandarinMarkdown.render(container, components, option?)` | Render pre-built components into the container.                                              |
-| `MandarinMarkdown.parse(markdown, option?)`               | Parse markdown into a `ModelOption` without rendering.                                       |
-| `MandarinMarkdown.stream(container, option?)`             | Mount a document and return a `MarkdownStream` session.                                      |
-| `MandarinMarkdown.prepareForPrint(container)`             | Publish queued fragments and await scoped editors and enhancements; returns `Promise<void>`. |
+| Method                                                          | Description                                                                                                                          |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `MandarinMarkdown.render(container, markdown, option?)`         | Parse markdown and render into the container.                                                                                        |
+| `MandarinMarkdown.render(container, components, option?)`       | Render pre-built components into the container.                                                                                      |
+| `MandarinMarkdown.parse(markdown, option?)`                     | Parse markdown into a `ModelOption` without rendering.                                                                               |
+| `MandarinMarkdown.stream(container, option?)`                   | Mount a document and return a `MarkdownStream` session.                                                                              |
+| `MandarinMarkdown.updateAnnotations(documentRoot, annotations)` | Replace descriptors on an eligible static safe document; returns `boolean`. See [static safe annotations](#static-safe-annotations). |
+| `MandarinMarkdown.prepareForPrint(container)`                   | Publish queued fragments and await scoped editors and enhancements; returns `Promise<void>`.                                         |
 
 ## Streaming
 

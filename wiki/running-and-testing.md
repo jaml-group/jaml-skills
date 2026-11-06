@@ -49,14 +49,14 @@ For a first smoke test, use the complete [Local activity example](building-ui.md
 
 Check the observable sequence:
 
-1. **Mount:** the card is visible with nonzero dimensions; the metric starts at **0** and the status at **Ready**. In framework testground, verify the fixture beneath `#result`; the route URL alone is insufficient.
+1. **Mount:** the card is visible with nonzero dimensions; the metric starts at **0** and the status at **Ready**. In framework testground, verify the fixture beneath `#result`.
 2. **Interact:** click **Record a press** and observe **1 / Recorded**. Focus the button and activate it by keyboard; the count increases again.
 3. **Inspect:** check a screenshot, relevant wrapping/overlap, console errors and failed resource requests. Read the failed response when a module has the wrong content type.
 4. **Reset:** reload the scenario and confirm **0 / Ready**. This example owns local state; persistence is not expected.
 
 For the actual feature, exercise its meaningful behavior: validation and submission for a form, the decision and dismissal paths for a confirmation, data refresh for a metric, or remount/cleanup for an owned subscription. Use the element's native caption, icon, value, unit and named slots before adding new structure. See [Think in JAML](JAML/purpose-and-composition.md) and [Choose native capabilities](choosing-native-capabilities.md).
 
-Separate the evidence in your report: static parsing/registry validation, resource/packaging checks, and live interaction checks establish different things. Record the runtime tested, route/scenario, expected and observed result, and any remaining failure. A successful build does not prove that a page renders or an interaction works.
+Separate the evidence in your report: static parsing/registry validation, resource/packaging checks, and live interaction checks establish different things. Record the runtime tested, route/scenario, expected and observed result, and any remaining failure. After a build, confirm rendering and interaction in the running page.
 
 ## If the page does not load
 

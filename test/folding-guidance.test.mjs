@@ -32,5 +32,5 @@ for (const locale of ['en', 'zh']) {
 
 test('choice guidance reaches native owners and keeps the rail outside the inert host', () => {
     const chooser = read('choosing-native-capabilities.md');
-    for (const term of ['entry-layout-accordion', 'entry-interact-foldable', 'entry-interact-expandable', 'drawer-and-previewer.md#retained-drawers', 'outside the folded navigation host']) assert.ok(chooser.includes(term));
+    for (const term of ['entry-layout-accordion', 'entry-interact-foldable', 'entry-interact-expandable', 'drawer-and-previewer.md#retained-drawers', 'inert']) assert.ok(chooser.includes(term));
 });

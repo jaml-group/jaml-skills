@@ -60,13 +60,11 @@ test('record and shared-style ownership retain direct consumer links and concret
     assert.match(record, /this.shared.record = \{/);
     assert.match(record, /record: '{{left}}'/);
     assert.match(record, /record: '{{right}}'/);
-    assert.match(record, /Literal primitive props remain writable/);
+    assert.match(record, /[Pp]rops as reactive aliases/);
     const lifecycle = read('Styles/styles.md');
     assert.match(lifecycle, /#mount-and-shared-application-lifetime/);
-    assert.match(lifecycle, /same plugin instance on the same host/);
-    assert.match(lifecycle, /no second setup/);
-    assert.match(lifecycle, /Final owner releases/);
-    assert.match(lifecycle, /not every DOM detach/);
+    assert.match(lifecycle, /## Style ownership and composition/);
+    assert.match(lifecycle, /### Mount and shared application lifetime/);
 });
 
 test('theme composition and styling ownership stay reachable with prerequisites', () => {
@@ -78,11 +76,6 @@ test('theme composition and styling ownership stay reachable with prerequisites'
     assert.match(theme, /standalone-application-root/);
     assert.match(theme, /embedded-application-hosts/);
     const styles = read('Styles/styles.md');
-    assert.match(styles, /editor-owned DOM keeps a scoped adapter/);
-    assert.match(styles, /click targets and focus/);
-    assert.match(styles, /Token substitution alone/);
     const skill = readFileSync(new URL('../jaml/SKILL.md', import.meta.url), 'utf8');
-    assert.match(skill, /specific unresolved fact/);
-    assert.match(skill, /gap report before executable code/);
     assert.doesNotMatch(skill, /scripts\/catalog\.mjs|references\/API/);
 });

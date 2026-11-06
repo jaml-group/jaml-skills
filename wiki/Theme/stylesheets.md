@@ -64,7 +64,7 @@ styles: {
 
 When a theme needs to change a baseline recipe, declare the exact same selector key in its `styles` object. Do not make a theme depend on an undocumented baseline recipe; author its required role and variant selectors explicitly instead.
 
-For the base grammar, see [Scoped style params](../Styles/styles.md#scoped-style-params) and [JAML scoped style variants](../JAML/jaml-format.md#styles).
+For the base grammar, see [Scoped style params](../Styles/styles.md#scoped-style-params).
 
 This is intentional. Some theme behavior can be expressed as static CSS; some behavior needs JAML's style/plugin runtime.
 

@@ -265,15 +265,7 @@ export default [
 
 <a id="entry-agent-css"></a>
 
-CSS 样式
-
-应用没有更具体原生样式辅助函数的 CSS，包括显式限定作用范围的规则。
-
-接受属性字典或 cssText；函数形式的 cssText 接收宿主，并返回字典或声明字符串。显式提供 state、selector 或 direct 参数时使用规则方式；否则由路径选择方式，最终回退为内联属性。
-
-根据预期目标选择宿主、插槽内容或插槽包装元素的路径；插槽包装元素与分配给它的内容是不同的目标。
-
-vars 写入由路径派生的自定义属性，需要对应的使用方。规则定位及直接子元素匹配与直接内联定位不同；不要根据组件前缀推断其作用于全部后代。
+说明见 [`css`](css.zh.md#entry-css)。
 
 位置参数顺序: `display` → `position` → `width` → `height` → `minWidth` → `minHeight` → `maxWidth` → `maxHeight` → `padding` → `paddingTop` → `paddingRight` → `paddingBottom` → `paddingLeft` → `margin` → `marginTop` → `marginRight` → `marginBottom` → `marginLeft` → `gap` → `color` → `background` → `backgroundColor` → `border` → `borderRadius` → `opacity` → `overflow` → `transform` → `transition` → `whiteSpace` → `zIndex` → `setProperty` → `removeProperty` → `getPropertyValue` → `selector` → `method` → `direct` → `cssText`.
 

@@ -1,14 +1,15 @@
 # Choose native capabilities
 
-For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Appearance does not establish state ownership. This guide supplies selection context; the linked family guides and curated owners supply current contracts.
+For an ambiguous intent, choose the relevant topic below, compare its candidates and no-fit conditions, then retrieve exact contracts. Known capabilities go straight to their contracts. Load this guide when a choice remains open; a resolved design or known capability needs no second selection pass. Record the result as `need → owner → parts → gap`. This guide supplies selection context; the linked family guides and curated owners supply current contracts.
 
-Read the relevant section below, then follow its owning guide. Use the [style index](Styles/index.md) and [plugin index](Plugins/index.md) to locate a known capability directly. Keep shared family context, argument tables and linked prerequisites with the selected entry; expand the guide when its examples or explanations matter.
+Read the relevant section below, then follow its owning guide. Use the [style index](Styles/index.md) and [plugin index](Plugins/index.md) to locate a known capability directly.
 
 ## Selection and hover
 
 | Need                                      | Start with                                                                       | Read next                                                                                                                      |
 | ----------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | One boolean on/off setting                | Native `switch`, or `switch-checkbox` for a checkbox appearance                  | [Boolean value and subtypes](JAM-UI/switch.md)                                                                                 |
+| Retained tab/panel workspace              | `jaml.tabs`                                                                      | [Tabs, close requests and retained lifetime](JAML/tabs.md)                                                                     |
 | A visibly selected value                  | Native `radio`, `buttongroup-radio`, or the appropriate checkbox subtype         | [Option ownership](JAM-UI/options.md), [button groups](JAM-UI/button-group.md)                                                 |
 | An alternative checked-state treatment    | `style check.frame`, `check.shade`, `check.underscore`, `check.pipe`             | [Check styles and examples](Styles/check.md)                                                                                   |
 | Temporary highlight of the hovered item   | `style hover.frame`, `hover.shade`, `hover.crosshair`                            | [Hover styles and shared-locator caveats](Styles/hover.md)                                                                     |
@@ -16,7 +17,7 @@ Read the relevant section below, then follow its owning guide. Use the [style in
 | Brackets that stay around one host        | `style layer.crosshair`                                                          | [Host decoration](Styles/layers/crosshair.md)                                                                                  |
 | Decorative pointer motion                 | `style layer.follower.spotlight`, `layer.follower.edge`, `layer.follower.shadow` | [Follower examples](Styles/layers/follower.md) and their activation prerequisites                                              |
 
-Keep selection state with the native option owner. Plain `buttongroup-radio` owns the selected value and checked state, and already presents checked state visually. Use a `check.*` style only when a different checked-state treatment is desired; do not recreate selection using decorative containers. Plain `buttongroup` does not become radio through an underline, a default value or a theme. For a complete tabs interaction, separately establish keyboard navigation, tab/panel semantics and panel switching; an underline is only its visual treatment.
+Keep selection state with the native option owner. Plain `buttongroup-radio` owns the selected value and checked state, and already presents checked state visually. Use a `check.*` style when a different checked-state treatment is desired. Choose `buttongroup-radio` explicitly for selection, since plain `buttongroup` has no selection mode. For a complete tabs interaction, use [native tabs](JAML/tabs.md), which own keyboard navigation, tab/panel semantics and retained switching.
 
 ```javascript jaml-playground
 export default {
@@ -30,15 +31,15 @@ export default {
 };
 ```
 
-For tab-like navigation, start with plain `buttongroup-radio`; `check.underscore` is an optional visual treatment. Prefer publishing the selected value and letting content consume it through [state bindings and visibility](JAML/state-and-data.md#selection-and-content). Direct event-driven control remains supported. For multiple selection, preserve the checkbox owner's feedback: the generated check contract describes a single locator, not one marker for every selected item.
+For value-driven view selection without tab/panel lifetime ownership, use `buttongroup-radio`; `check.underscore` is an optional visual treatment. Use `jaml.tabs` when the destination panels themselves must remain retained. Prefer publishing the selected value and letting content consume it through [state bindings and visibility](JAML/state-and-data.md#selection-and-content). Direct event-driven control remains supported. For multiple selection, preserve the checkbox owner's feedback: the generated check contract describes a single locator, not one marker for every selected item.
 
 ## Decorative activity and actual progress
 
-For a moving highlight on running-status text, choose [`text.shimmer`](Styles/common/text.md#shimmer), with `shimmer:true` and a contrasting base such as `color:faint`. Application activity state owns enabling and removal; the style does not detect pending work or report measured progress. It sweeps in one direction and renders plain text under reduced motion. Use a content-sized text element: percentage band width and travel follow the element background box, so short text in a full-width row receives only a brief part of the sweep. Avoid applying it to a surface with its own background/animation or text inside a shadow root.
+For a moving highlight on running-status text, choose [`text.shimmer`](Styles/common/text.md#shimmer), with `shimmer:true` and a contrasting base such as `color:faint`. Application activity state owns enabling and removal, and measured progress belongs to the progress element. It sweeps in one direction and renders plain text under reduced motion. Use a content-sized text element: percentage band width and travel follow the element background box, so short text in a full-width row receives only a brief part of the sweep. Avoid applying it to a surface with its own background/animation or text inside a shadow root.
 
 For an ornamental ring, arc, orbit, repeated object or particle effect, inspect `style layer.spinner.background`, `.frets`, `.comet`, `.orbit`, `.object` or `.particles`. [Spinner styles](Styles/layers/spinner.md) describe variant behavior, sizing, animation prerequisites and composition examples.
 
-Decide whether the requirement is decoration, unknown-duration activity or measured progress before choosing the visual. Use the [progress element](JAM-UI/progress.md) when a progress value is part of the contract. Let application state control whether busy decoration is present and provide meaningful status text. A spinner neither detects pending work nor prevents interaction. Standalone spinner rotation requires `spin`; composite roulette, radar and reddit presets rotate when it is omitted. `spin:false` stops their rotation, while independent animation effects keep their own controls.
+Decide whether the requirement is decoration, unknown-duration activity or measured progress before choosing the visual. Use the [progress element](JAM-UI/progress.md) when a progress value is part of the contract. For the status of each stage in a sequence, use [`steps`](JAM-UI/list.md#steps). Let application state control whether busy decoration is present, provide meaningful status text, and manage pending interaction in the application. Standalone spinner rotation requires `spin`; composite roulette, radar and reddit presets rotate when it is omitted. `spin:false` stops their rotation, while independent animation effects keep their own controls.
 
 ## Move, resize, reorder or transfer data
 
@@ -49,9 +50,9 @@ Decide whether the requirement is decoration, unknown-duration activity or measu
 | Reorder peer children      | `style interact.sortable`                                 | Container items and a `change` handler that updates data order |
 | Transfer browser drag data | `plugin interact.draggable` + `plugin interact.droppable` | Payload producer, acceptance policy and receiving handler      |
 
-Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/interact-plugins.md) for examples. Do not install two competing gesture owners on the same drag handle. Consult the interaction guide's forwarding caveat for movable/resizable rather than inventing a closed argument list. Native data transfer is not free positioning, and a rendered reordering is not durable model persistence. Preserve an alternate accessible operation when the product requires one.
+Read [interaction styles](Styles/interact.md) and [drag/drop plugins](Plugins/interact-plugins.md) for examples. Give each drag handle one gesture owner. Consult the interaction guide's forwarding caveat for movable/resizable. Native data transfer and free positioning are separate operations, and durable order needs the model update. Preserve an alternate accessible operation when the product requires one.
 
-For drop filtering, read `interact.droppable` in the [drag/drop guide](Plugins/interact-plugins.md): its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin, not a reason to search unrelated families.
+For drop filtering, read `interact.droppable` in the [drag/drop guide](Plugins/interact-plugins.md): its `accept` input is a browser event, while `dataHandler` receives decoded data. Keep payload validation and backend authorization/persistence with their owners. A known server-side requirement is a structural no-fit for a visual plugin and belongs to the backend.
 
 ## Fold regions or reveal a side panel
 
@@ -65,7 +66,7 @@ Choose the layout owner first. Accordion requires explicit parent grid templates
 
 Keep a persistent interactive rail in a separate track or sibling outside the folded navigation host. A nonzero `foldSize` preserves a visible strip, but the entire folded host is still inert and hidden from accessibility; putting the reopen button inside it makes that button unusable. The [accordion example](Styles/common/layout.md#entry-layout-accordion) keeps both external buttons usable while navigation and inspector fold independently.
 
-Drawer serves one host-relative retained panel and selects docked/overlay modes; it is not the owner for several independent grid folds. Its ordinary overlay is non-blocking. Do not substitute nested drawers merely to obtain multiple independent accordion tracks. Native grid gaps, minima and hard maxima remain authored layout constraints; neither choice implies storage persistence or a breakpoint policy beyond its declared contract.
+Drawer serves one host-relative retained panel and selects docked/overlay modes, and its ordinary overlay is non-blocking. Accordion owns several independent grid folds. Native grid gaps, minima and hard maxima remain authored layout constraints; neither choice implies storage persistence or a breakpoint policy beyond its declared contract.
 
 ## Container layout and child placement
 
@@ -81,7 +82,7 @@ Drawer serves one host-relative retained panel and selects docked/overlay modes;
 
 Read [layout contracts and examples](Styles/common/layout.md) before combining these layers. Put container geometry on the container and grid placement on its children. Repeated tiles can use autogrid; numeric repeat is a fixed count, not a responsive promise. For explicit placement, pair a grid parent with gridpos/gridsize children.
 
-Keep the shell's regions and scroll ownership with its [layout-owned roles](Theme/stylize.md#layout-owned-stylize-profiles). The navigator helper requires an existing button group; the `buttongroup.tilted` appearance style is not an overflow implementation. If the verified owners do not meet the required interaction, retain the gap and choose an appropriate [extension](JAML/component.md) instead of assuming a style name supplies it.
+Keep the shell's regions and scroll ownership with its [layout-owned roles](Theme/stylize.md#layout-owned-stylize-profiles). The navigator helper requires an existing button group and owns overflow; `buttongroup.tilted` is an appearance style. If the verified owners do not meet the required interaction, retain the gap and choose an appropriate [extension](JAML/component.md).
 
 For whole-row table highlighting from a cell value, use the table’s `descStyles` plus a class on `rowHolder`, initialized by `ontdbuild` and updated by the cell’s `onvaluechange`. Read [the recipe and hook limits](JAM-UI/table.md#whole-row-styling-from-a-cell-value): equal-value assignments do not provide a generic row-state event, and editable cells need an explicit writeback owner.
 
@@ -105,13 +106,13 @@ For recorded unified-diff text, choose native `input-code` with `lang: 'diff'` a
 
 For a real interactive terminal, use the separately loaded [optional terminal surface](Plugins/terminal-surface.md) around the existing xterm engine, with native JAML controls. A code input is not a terminal emulator. The application owns explicit connection/input permission, process retention, transport acknowledgements and close; mounting the screen does not connect a process.
 
-Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [icon styles](Styles/common/icon.md) and [interaction styles](Styles/interact.md) for the relevant composition. Keep an element's slots distinct from the wrappers that distribute them: a caption, caption slot and internal input agent are different styling targets. A familiar style name is not proof that it implements an action or has a current stylesheet consumer; read the selected guide's behavior and caveats before adopting legacy markers.
+Read [inputs](JAM-UI/input.md), [indicator styles](Styles/indicator-style.md), [icon styles](Styles/common/icon.md) and [interaction styles](Styles/interact.md) for the relevant composition. Keep an element's slots distinct from the wrappers that distribute them: a caption, caption slot and internal input agent are different styling targets. Read the selected guide's behavior and caveats before adopting a style, including legacy markers.
 
 For sidebar rows, see [native bar icons, font assets and caption alignment](JAM-UI/button.md#sidebar-icons-and-left-aligned-captions).
 
 ## Popups, notifications and observers
 
-For size observation versus layout publication, read [the resize contract](JAM-UI/JAM-UI.md#resize-observation-and-layout-notification). A custom layout owner can publish `resize` to affected consumers; observing `passiveresize` does not replace that responsibility.
+For size observation versus layout publication, read [the resize contract](JAM-UI/JAM-UI.md#resize-observation-and-layout-notification). A custom layout owner publishes `resize` to affected consumers, alongside any `passiveresize` observation.
 
 For element size tracking, start with [shared `passiveresize`](JAM-UI/JAM-UI.md#shared-passive-resize): JAML `on.passiveresize` or paired `jam.bindEvent`/`jam.unbindEvent` subscriptions provide deferred content-box notifications and native measurements in `event.detail` on the updated runtime. Choose a directly owned `ResizeObserver` only when native timing, a different observed box, or native batching is required. Read the linked runtime and cleanup prerequisites before replacing an existing observer.
 
@@ -152,7 +153,18 @@ First choose the [interaction and presentation](JAML/purpose-and-composition.md#
 
 A card already owns its title and [extra action slot](JAM-UI/card.md#slots). See the [document composition example](JAML/purpose-and-composition.md#one-document-reuses-button-and-card-parts) for native parts, contextual actions and closable presentation together.
 
-`stylize: 'modal'` identifies a semantic surface. It does not by itself mount an overlay, center it, block the background or manage a decision. Read the selected helper's host, positioning and lifecycle contract. Add extra structure only when it represents a distinct purpose; use native slots for additions to the existing element.
+`stylize: 'modal'` identifies a semantic surface; mounting, centering, background blocking and decisions belong to the selected helper. Read the selected helper's host, positioning and lifecycle contract. Add structure for a distinct purpose, and use native slots for additions to the existing element.
+
+## Lists, checklists and steps
+
+| Content                                    | Choose                                          | Contract to read                        |
+| ------------------------------------------ | ----------------------------------------------- | --------------------------------------- |
+| Items or instructions, flat or grouped     | `list`; `list.ordered` for an order to follow   | [Lists](JAM-UI/list.md#lists)           |
+| Tasks with completion                      | `list-todo`; `updateViaValue` for saved results | [Checklists](JAM-UI/list.md#checklists) |
+| Status of each stage and the current stage | `steps`; `steps.horizontal` for one row         | [Steps](JAM-UI/list.md#steps)           |
+| Records compared across several fields     | `table`                                         | [table](JAM-UI/table.md)                |
+
+These own their item roles, keyboard and checkboxes. Key records by `id`; the application owns step status and completion data.
 
 ## Scrolling, deferred rendering and tables
 
@@ -168,19 +180,19 @@ A card already owns its title and [extra action slot](JAM-UI/card.md#slots). See
 
 For a short initial native table/tree list, use [Plugins.showMore](Plugins/show-more.md): reveal another batch of logical leaf rows per click, then offer Show less when fully revealed. Configure `limit` and `step`; groups that already fit need no control. It composes with native fixed-height virtualization and bypasses limits while filtering. This is loaded-item disclosure, not geometric `overflow.*` styling or data fetching.
 
-Choose the content model before the visual treatment. Component child-rendering styles require a component-owned container and one rendering owner per container. Use a bounded viewport, verify the actual scroll target, and preserve identity/state across updates. Deferred rendering does not itself fetch data. Do not combine two virtualization strategies on one container or use fixed-height row math for arbitrary variable-height layouts.
+Choose the content model before the visual treatment. Component child-rendering styles require a component-owned container and one rendering owner per container. Use a bounded viewport, verify the actual scroll target, and preserve identity/state across updates. Data fetching stays with the data owner. Use one virtualization strategy per container, and reserve fixed-height row math for fixed-height rows.
 
-See [layout](Styles/common/layout.md), [grid](Styles/common/grid.md), [scrolling](Plugins/scroll.md), [table styles](Styles/table-style.md) and [tree styles](Styles/tree-style.md). Compose native `table.stripy`, `table.gridline`, `table.bento`, `table.hoverhighlight` or `table.hovermarker` after choosing the row owner. Hover markers do not select rows. Header presets `table.thead.accent`, `.tint` and `.elevated` consume semantic colors; custom headers belong to `table.thead`. `table.showpageinfo` is a reserved no-op, so compose page status from actual pagination state.
+See [layout](Styles/common/layout.md), [grid](Styles/common/grid.md), [scrolling](Plugins/scroll.md), [table styles](Styles/table-style.md) and [tree styles](Styles/tree-style.md). Compose native `table.stripy`, `table.gridline`, `table.bento`, `table.hoverhighlight` or `table.hovermarker` after choosing the row owner. Selection stays with the table. Header presets `table.thead.accent`, `.tint` and `.elevated` consume semantic colors; custom headers belong to `table.thead`. `table.showpageinfo` is a reserved no-op, so compose page status from actual pagination state.
 
 ## Runtime and shared data
 
 A renderer may own a reactive `dataUrl` request. When a table and chart share one logical dataset, prefer a hidden `data` owner with `valueUrl` and `valueKey`; compatible consumers use `dataWatcher` or a bound projection. Keep the producer and consumers in the intended broker scope. See [runtime requests](JAML/state-and-data.md#private-runtime-data) and [shared data](JAML/state-and-data.md#shared-data-owner).
 
-Independent fetchers remain supported. Request-promise sharing is conditional, and ordinary component URL requests bypass it by default; it does not replace shared ownership. Read [request sharing](JAML/state-and-data.md#request-sharing-and-cache-limits) only when request duplication or refresh matters.
+Independent fetchers remain supported. Request-promise sharing is conditional, and ordinary component URL requests bypass it by default. Read [request sharing](JAML/state-and-data.md#request-sharing-and-cache-limits) only when request duplication or refresh matters.
 
 ## Charts and data transformations
 
-For chart sizing, check [the containing layout and resize notifications](JAM-UI/chart.md#sizing-and-resize); `redrawOnResize` does not enable observation.
+For chart sizing, check [the containing layout and automatic canvas sizing](JAM-UI/chart.md#sizing-and-resize). The current development runtime observes the plotting container automatically; `redrawOnResize` additionally rebuilds chart options, rather than enabling observation.
 
 Start with the native [chart element and chart styles](Styles/chart-style.md), then inspect the [ECharts family](Styles/echarts.md) and exact `style echarts` paths. Separate three decisions:
 
@@ -190,30 +202,30 @@ Start with the native [chart element and chart styles](Styles/chart-style.md), t
 2. **Option composition:** axis, legend, title, grid, tooltip, label and visual-map helpers write to particular option owners. Query the full path, including case, before sharing a helper across series.
 3. **Transformations and specialized recipes:** presets such as `echarts.bar.stackBar`, `echarts.pie.doubleCircle` or map layers may rewrite data/series or require specific shapes. Inspect their exact prerequisites and caveats; an attractive example is not a general-purpose chart contract.
 
-Provide a measurable host and the required chart integration. A nested text shadow, item shadow and chart-level function can share a short name while targeting different structures. Legacy helper wiring and option-key limits are documented; when a helper does not fit, use a supported option composition or a bounded extension instead of guessing new arguments. Verify the chosen composition with realistic empty, changing and out-of-range data, and both theme modes when relevant.
+Provide a measurable host and the required chart integration. A nested text shadow, item shadow and chart-level function can share a short name while targeting different structures. Legacy helper wiring and option-key limits are documented; when a helper does not fit, use a supported option composition or a bounded extension. Verify the chosen composition with realistic empty, changing and out-of-range data, and both theme modes when relevant.
 
 ## Decoration and motion
 
 Choose [layer](Styles/layers/layer.md) families by what they render: [backgrounds](Styles/layers/background.md), [borders](Styles/layers/border.md), [canvas](Styles/layers/canvas.md), [chart overlays](Styles/layers/chart.md), [ribbons](Styles/layers/ribbon.md), [watermarks](Styles/layers/watermark.md), [glare](Styles/layers/glare.md) or [scrollers](Styles/layers/scroller.md). Query the exact `style layer.*` identity before combining them.
 
-A layer style generally creates its own decorative child. Configure one layer's related properties through that layer's arguments/CSS; a second layer style does not automatically modify the first. Background fills, full borders and width-only border presets need different setup. A `combo.masked` name does not establish that every variant creates an automatic mask. Inspect activation prerequisites for movement, pointer following and scrolling rather than inferring animation from appearance.
+A layer style generally creates its own decorative child, so configure one layer's related properties through that layer's arguments/CSS. Background fills, full borders and width-only border presets need different setup, and `combo.masked` variants each state their own mask behavior. Inspect activation prerequisites for movement, pointer following and scrolling.
 
 Use [animation styles](Styles/animation.md) for framework entry/exit behavior or supplied keyframes, and inspect their mount/unmount ownership. Entry, exit, pointer effects and value animations have different triggers. Preserve meaningful state/progress outside decorative layers, and verify the product's reduced-motion behavior separately.
 
 ## Theme, tokens and common styling targets
 
-Use [theme roles](Theme/stylize.md) and [tokens](Theme/tokens.md) before local cosmetic overrides. The layout owns its shell regions, including `stylize: 'frame'` and the `jam-frame-style` class where supported; theme recipes own their appearance. A style plugin is not another role declaration key.
+Use [theme roles](Theme/stylize.md) and [tokens](Theme/tokens.md) before local cosmetic overrides. The layout owns its shell regions, including `stylize: 'frame'` and the `jam-frame-style` class where supported; theme recipes own their appearance. Roles are declared with `stylize`.
 
-For theme settings, follow [theme-panel composition and readiness](JAML/component.md#theme-panel-composition-and-readiness). For styling placement, use the [style ownership decision](Styles/styles.md#style-ownership-and-composition). For shared semantic meaning, inspect native foreground/background/border role presets and [color mapping](Styles/common/color.md). Use `color.stateMap` for discrete state accents and `color.valueMap` for a numeric scale only when those mappings fit the domain. A day/night switch style changes its appearance; the application must still connect its value to the theme controller. Business palettes belong in the existing color registry, not a new set of ad hoc theme tokens.
+For theme settings, follow [theme-panel composition and readiness](JAML/component.md#theme-panel-composition-and-readiness). For styling placement, use the [style ownership decision](Styles/styles.md#style-ownership-and-composition). For shared semantic meaning, inspect native foreground/background/border role presets and [color mapping](Styles/common/color.md). Use `color.stateMap` for discrete state accents and `color.valueMap` for a numeric scale only when those mappings fit the domain. A day/night switch style changes its appearance, and the application connects its value to the theme controller. Business palettes belong in the existing color registry.
 
-For plain CSS, use [css()](Styles/common/css.md) with `styles`, `childStyles` or `descStyles` according to the target. Query a full generated style path: host, slotted content, slot wrapper and agent variables have different consumers, and a suffix such as `m` can denote spacing, type size, border width or shadow in different families. Use a registered style for a repeated complex presentation contract. Keep explicit geometry with the layout and avoid modifying theme-owned shell structure to achieve a cosmetic result.
+For plain CSS, use [css()](Styles/common/css.md) with `styles`, `childStyles` or `descStyles` according to the target. Query a full generated style path: host, slotted content, slot wrapper and agent variables have different consumers, and a suffix such as `m` can denote spacing, type size, border width or shadow in different families. Use a registered style for a repeated complex presentation contract. Keep explicit geometry with the layout, and leave theme-owned shell structure in place for cosmetic changes.
 
 ## Application services and extensions
 
-Use the built-in [breadcrumb CC](JAML/component.md#breadcrumb-navigation) for a navigation path: router mode reads existing route ownership; updated explicit-item mode displays literal application data and returns stable action keys. Do not fabricate router state solely for a header.
+Use the built-in [breadcrumb CC](JAML/component.md#breadcrumb-navigation) for a navigation path: router mode reads existing route ownership; updated explicit-item mode displays literal application data and returns stable action keys, which suits a header without routes.
 
-Use the [minimap CC](JAML/component.md#minimap-navigation) for a compact ordered overview with several viewport-visible items highlighted at once. The caller supplies identity, visibility, preview content and navigation; the rail owns magnification and its native floating tip. It is not a viewport observer or a bookmark store.
+Use the [minimap CC](JAML/component.md#minimap-navigation) for a compact ordered overview with several viewport-visible items highlighted at once. The caller supplies identity, visibility, preview content and navigation; the rail owns magnification and its native floating tip.
 
-Use `plugin i18n` to load the required dictionaries through the existing localization system; retain `@tr` expressions and locale configuration. Use `plugin router`/`subRouter` for navigation ownership, checking parent/child lifetime and state retention in [routing](Plugins/router-plugins.md). `plugin composable.composable` serves a configuration-driven dashboard with shared routing state; it is not a small local grid decorator.
+Use `plugin i18n` to load the required dictionaries through the existing localization system; retain `@tr` expressions and locale configuration. Use `plugin router`/`subRouter` for navigation ownership, checking parent/child lifetime and state retention in [routing](Plugins/router-plugins.md). `plugin composable.composable` serves a configuration-driven dashboard with shared routing state.
 
-When a native capability is insufficient, retain the exact missing contract and choose a [registered style/plugin, builder, component/CC, usage or suffix](JAML/component.md) that owns it. Follow the skill's upstream-candidate assessment for reusable additions. A successful syntax check establishes neither a good capability choice nor runtime correctness; validate the intended operation, its failure path and teardown.
+When a native capability is insufficient, retain the exact missing contract and choose a [registered style/plugin, builder, component/CC, usage or suffix](JAML/component.md) that owns it. Follow the skill's upstream-candidate assessment for reusable additions. Validate the intended operation, its failure path and teardown.

@@ -116,11 +116,9 @@ export default [
 
 Large
 
-gap.l, margin.l, and padding.l use the l space token; text.size.l uses the l typography size token; border.l sets only border width; shadow.l and shadow.primary.l set box shadows.
+border.l sets only border width.
 
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+Border-width-only presets require an existing visible border style.
 
 ## `border.m`
 
@@ -128,11 +126,9 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
+border.m sets only border width.
 
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+Border-width-only presets require an existing visible border style.
 
 ## `border.s`
 
@@ -140,11 +136,9 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
+border.s sets only border width.
 
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+Border-width-only presets require an existing visible border style.
 
 ## `border.xl`
 
@@ -152,11 +146,9 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra large
 
-gap.xl, margin.xl, and padding.xl use the xl space token; text.size.xl uses the xl typography size token; border.xl sets only border width; shadow.xl and shadow.primary.xl set box shadows.
+border.xl sets only border width.
 
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+Border-width-only presets require an existing visible border style.
 
 ## `border.xs`
 
@@ -164,11 +156,9 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
+border.xs sets only border width.
 
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+Border-width-only presets require an existing visible border style.
 
 ## `border.color`
 
@@ -192,11 +182,7 @@ Positional order: `value`.
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+border.faint and border.muted set solid outline-role borders with xs width.
 
 ## `border.image`
 
@@ -226,19 +212,13 @@ background.lower selects the surface.lower fill token; border.lower adds a solid
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `border.muted`
 
 <a id="entry-border-muted"></a>
 
 Small
 
-gap.s, margin.s, and padding.s use the s space token; text.size.s uses the s typography size token; border.s sets only border width; shadow.s and shadow.primary.s set box shadows; shadow.text.s and shadow.text.primary.s set text shadows; border.faint and border.muted set solid outline-role borders with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+border.faint and border.muted set solid outline-role borders with xs width.
 
 ## `border.style`
 
@@ -282,8 +262,6 @@ background.higher selects the surface.higher fill token; border.higher adds a so
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `border.lowest`
 
 <a id="entry-border-lowest"></a>
@@ -293,8 +271,6 @@ Lowest
 background.lowest selects the surface.lowest fill token; border.lowest adds a solid border using surface.lowest and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `border.radius`
 
@@ -318,11 +294,7 @@ Positional order: `value`.
 
 Extra small
 
-gap.xs, margin.xs, and padding.xs use the xs space token; text.size.xs uses the xs typography size token; border.xs sets only border width; shadow.xs and shadow.primary.xs set box shadows; shadow.text.xs and shadow.text.primary.xs set text shadows; border.subtle sets a solid outline-subtle border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+border.subtle sets a solid outline-subtle border with xs width.
 
 ## `border.default`
 
@@ -330,11 +302,7 @@ These are local style applications. Reusable palette and scale changes belong to
 
 Medium
 
-gap.m, margin.m, and padding.m use the m space token; text.size.m uses the m typography size token; border.m sets only border width; shadow.m and shadow.primary.m set box shadows; shadow.text.m and shadow.text.primary.m set text shadows; border.default sets a solid surface-default border with xs width.
-
-Select the property family first, then its scale or role. Equal suffixes across spacing, typography, border, and shadow do not mean equal dimensions.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme. Border-width-only presets require an existing visible border style.
+border.default sets a solid surface-default border with xs width.
 
 ## `border.highest`
 
@@ -346,8 +314,6 @@ background.highest selects the surface.highest fill token; border.highest adds a
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `border.primary`
 
 <a id="entry-border-primary"></a>
@@ -358,8 +324,6 @@ background.primary selects the primary.default fill token; border.primary adds a
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `border.tertiary`
 
 <a id="entry-border-tertiary"></a>
@@ -369,8 +333,6 @@ Tertiary
 background.tertiary selects the tertiary.default fill token; border.tertiary adds a solid border using tertiary.subtle and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `border.topColor`
 
@@ -478,8 +440,6 @@ background.secondary selects the secondary.default fill token; border.secondary 
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
 
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
-
 ## `border.imageSlice`
 
 <a id="entry-border-imageslice"></a>
@@ -521,8 +481,6 @@ Quaternary
 background.quaternary selects the quaternary.default fill token; border.quaternary adds a solid border using quaternary.subtle and the xs border-width token.
 
 Choose background for a fill or border for an edge; the two families do not have the same CSS effect.
-
-These are local style applications. Reusable palette and scale changes belong to theme tokens; applying a preset does not redefine the theme.
 
 ## `border.rightColor`
 

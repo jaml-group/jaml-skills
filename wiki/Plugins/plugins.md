@@ -1,6 +1,6 @@
 # JAML Plugins
 
-Use the [plugin index](index.md) to find the complete family guide for an exported capability. Read its signatures, defaults, option values, prerequisites and examples together. This page explains ownership and composition across families. Check the documented framework baseline against the target runtime; absent prose is not a behavior guarantee.
+Find an exported capability's family guide through the [plugin index](index.md). This page explains plugin ownership and composition across families.
 
 Plugins attach behavior to an element through `plug(el)` and release their owned resources through `unplug(el)`. Public `Styles.*` recipes often compose plugins internally. The `styles` key resolves style entries through `Styles`; the `plugins` key resolves behavior entries through `Plugins`.
 
@@ -56,6 +56,12 @@ interface IPlugin {
 `getData(target)` / `removeData(target)` let a plugin store private per-element state in the framework's per-target plugin-data store.
 
 ---
+
+## Direct function-plugin target validation
+
+For a directly constructed `FunctionPlugin` or `pluginBuilder` option, `validateTarget(target): void` runs synchronously before application state and destroy cleanup are registered. Throw from this hook to reject an incompatible host before installing behavior. Ordinary plug callbacks are risk-handled and do not provide the same rejection boundary.
+
+This option belongs to the direct construction contract. `Plugins.registerPlugin` does not currently forward `validateTarget` through its registration parameter shape.
 
 ## The `plugins` param
 

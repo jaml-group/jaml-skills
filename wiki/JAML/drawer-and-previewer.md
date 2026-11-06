@@ -4,6 +4,8 @@
 
 Use `jaml.drawer` for one retained host-relative edge panel whose presentation may switch between docked and overlay. For multiple independently foldable grid regions, use [layout.accordion](../Styles/common/layout.md#entry-layout-accordion) on the explicit-template parent and [interact.foldable](../Styles/interact.md#entry-interact-foldable) on each single-track region. A legacy paired sibling expansion uses [interact.expandable](../Styles/interact.md#entry-interact-expandable); its accordion adapter delegates state and sizing to the neighboring foldable. Keep persistent navigation rail controls outside folded hosts, because even a visible nonzero folded strip is inert.
 
+For multiple retained destinations inside one region, compose [native tabs](tabs.md) within that region. The tab owner manages pane selection/lifetime; the enclosing drawer or layout keeps sizing and presentation ownership.
+
 ## Retained drawers
 
 `jaml.drawer(layout, jamlOverride?)` returns a container definition with required `content` and `drawer` component definitions. Use it for an inspector whose component identity and scroll position should survive closing. The builder owns its region structure: `jamlOverride` cannot replace generated children, alternate rendering inputs or the container type. Put panel captions, icons, styles and panel children in `layout.drawer`; the final override targets the two-region host. Its `components` array appends host children after the generated regions, not inside the panel. See the [final override contract](component.md#final-jaml-overrides) for merging and existing-hook composition.
@@ -40,6 +42,21 @@ Panel content is built on first opening and retained after closing. The host own
 
 The rendered host exposes `drawerOpen` and `drawer`. Set `host.drawerOpen`, or call `host.drawer.setOpen(boolean)` and `host.drawer.configure(options)`. Read `host.drawer.open` and its resolved `mode`. Bubbling `draweropenchange` carries `{ open }`; `drawersizechange` carries `{ size }` in rem. Mirror native dismissal into application state when binding `open`. Docked resizing retains preferred size separately from temporary host clamping. Persistence, route dismissal and fetching remain application-owned.
 
+## File descriptions
+
+The built-in `file` component accepts literal secondary text through `props.description`. A nonblank string appears in `list` and `inline` presentations; `tile` and `thumbnail` omit it. It uses the native caption area and follows description updates without adding an independent label or action. Markup-looking text stays literal.
+
+```javascript
+const file = {
+    type: 'file',
+    props: {
+        presentation: 'list',
+        resource: { id: 'notes', name: 'notes.txt', kind: 'text', resolve: () => ({ text: 'Meeting notes' }) },
+        description: 'Updated today'
+    }
+};
+```
+
 ## File thumbnails
 
 Use the `file` component with `props.presentation: 'thumbnail'` for a standalone file thumbnail. Its default image fit is `contain`. On development runtimes with the thumbnail-fit correction, set `props.fit: 'cover'` to fill and crop the image inside the thumbnail frame; explicit fit also applies to the native loading-thumbnail part and supports reactive updates. On development runtimes with native cover reveal, a cover thumbnail reuses the file builder’s animated sizing: hover reveals the whole image, and leaving returns to cover even if focus remains after closing preview. Keep only the existing `presentation`, `fit` and size configuration in the app; do not add image-part hover CSS or pointer state. Default/contain thumbnails remain fully visible. Omit `fit` wherever the whole image should remain visible. This does not change tile hover behavior or the separately opened preview's fit.
@@ -53,6 +70,14 @@ const thumbnail = {
         resource: { id: 'photo', name: 'photo.jpg', mime: 'image/jpeg', src: '/photo.jpg' }
     }
 };
+```
+
+## Source-line preview
+
+Pass a positive safe-integer `line` in the previewer's second argument to open the initial text resource as source and reveal that one-based line. This includes Markdown/JAML text that would otherwise use rich rendering. The line is tied to the initial resource's `id` and `revision`; navigating to another identity or revision does not reuse it. Non-text resources keep their native presentation. Source navigation uses [input.revealLine](../JAM-UI/input.md#source-line-reveal), including its editor-readiness and cancellation rules.
+
+```javascript
+const preview = jaml.previewer(resource, { line: 12 }); // resource is supplied by the application
 ```
 
 ## File preview definitions
@@ -79,13 +104,35 @@ A resource requires `id` and `name`. Optional fields are `revision`, `mime`, `ki
 
 `resolve(AbortSignal)` returns an object or promise with optional `src`, `text`, `blob`, `bytes`, `width`, `height` and `release()`. Authentication and acquisition policy belong to the caller. Caller URLs remain caller-owned; preview-created resources and resolver cleanup belong to the session. Do not share exclusive cleanup ownership between competing sessions.
 
-Options include `fit`, `lang`, `markdown` and `actions`; actions use `{ name, icon?, run(resource), disabled? }`. `budgetBytes` defaults to 64 MiB, `concurrency` to 3, and `cancelOnSwitch` to `false`. The budget estimates retained resources, not total browser memory; the selected resource may exceed it.
+Options include `presentation` (`'modal'` by default or `'inline'`), `fit`, `lang`, `markdown` and `actions`; actions use `{ name, icon?, run(resource), disabled? }`. `budgetBytes` defaults to 64 MiB, `concurrency` to 3, and `cancelOnSwitch` to `false`. The budget estimates retained resources, not total browser memory; the selected resource may exceed it.
 
-`navigation` accepts a live owner with `navigate(request)` and optional `subscribe(refresh, detach)`. The originating view owns membership, order and selection; see [navigation](../Plugins/navigation.md). `preload` accepts `false` or `{ previous?, next? }`, defaulting to one candidate each way from enabled navigation. `mountBottom(host)` mounts caller-owned DOM and may return synchronous restoration cleanup. Empty footer and bottom-dock surroundings dismiss through the native modal curtain, respecting its click-to-close policy. Media, controls, mounted content and scrollbar gutters remain interactive. The previewer does not treat blank space inside caller-mounted content as its own dismissal surface.
+`navigation` accepts a live owner with `navigate(request)` and optional `subscribe(refresh, detach)`. The originating view owns membership, order and selection; see [navigation](../Plugins/navigation.md). `preload` accepts `false` or `{ previous?, next? }`, defaulting to one candidate each way from enabled navigation. `mountBottom(host)` mounts caller-owned DOM and may return synchronous restoration cleanup. In modal presentation, empty footer and bottom-dock surroundings dismiss through the native modal curtain, respecting its click-to-close policy. Media, controls, mounted content and scrollbar gutters remain interactive. The previewer does not treat blank space inside caller-mounted content as its own dismissal surface.
+
+### Inline previews
+
+On development runtimes with inline preview support, set `presentation: 'inline'` when embedding a preview in a tab, inspector or other caller-sized container. The default `'modal'` retains viewport positioning for `jam.renderModal`; the option chooses preview geometry/chrome, not mounting or modal policy.
+
+```javascript jaml-playground
+export default jaml.tabs(
+    [
+        {
+            id: 'notes:1',
+            label: 'notes.txt',
+            content: jaml.previewer({ id: 'notes', revision: 1, name: 'notes.txt', kind: 'text', resolve: () => ({ text: 'A retained inline preview.' }) }, { presentation: 'inline' })
+        }
+    ],
+    { label: 'Files' },
+    { style: { height: '24rem' } }
+);
+```
+
+The inline preview fills its parent, uses a native surface without the modal bottom scrim, and wraps metadata/Download alongside extra actions. It has no standalone close control, curtain forwarding or internal horizontal page resizer. Supply nonzero parent dimensions; the enclosing owner decides closing, resizing and focus containment. An optional `mountBottom` dock is bounded to 40% of the parent height and reserves space once for the stage and actions. Modal dock limits remain viewport-relative.
+
+Hiding a retained pane is not disposal: its preview session and pending read stay alive. Removing the pane, destroying its owner or unmounting the preview cancels pending resolution and releases session resources. A late resolver result cannot revive a removed view and still receives cleanup. Use a fresh tab occurrence when closing/reopening should create a new session. To expand a file, mount a separate default/modal preview through the existing modal API; the caller owns that session and any composer handoff.
 
 ### Custom preview actions
 
-Use `actions` for simple named callbacks. Use `extra: BaseComponentOption[]` for richer native controls, including a split control composed from buttons and a popup. The previewer copies these definitions into its top-right extra slot. Do not mutate the returned `components` array to add controls.
+Use `actions` for simple named callbacks. Use `extra: BaseComponentOption[]` for richer native controls, including a split control composed from buttons and a popup. The previewer copies these definitions into its extra slot: top-right in modal presentation and the bottom action row in inline presentation. Do not mutate the returned `components` array to add controls.
 
 Extra controls inherit the read-only `currentResource` prop. Bind with `jaml.var('currentResource', callback)` or a string-path alias; watch `currentResource` when reacting to target changes. In native handlers, read `this.shared.currentResource`; `this` is the invoking control and can be used as a popup anchor. This value follows initial selection, navigation and `selectResource`, including while content loads or fails. Active-resource invalidation clears it to null. Unmount under a surviving model also clears it; terminal destruction removes the backing state. Treat null/missing as unavailable. Detached components can republish on remount under a surviving model; a closed modal is destroyed and must be rendered anew.
 

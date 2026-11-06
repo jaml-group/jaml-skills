@@ -8,9 +8,9 @@ For setup from an existing app, a packaged playground or a framework checkout, f
 
 At first MCP use in a conversation, run `jaml-playground-mcp skill-info --json` and compare the installed skill's `version.json` → `framework.version` with the reported `framework.version`. Share this check between playground and copilot; recheck only in a new conversation or after a relevant package change. New MCP releases retain framework-baseline metadata and install the skill separately; older releases also report a bundled path. The result is an expected baseline, not a scan of the installed skill or a live latest-version query.
 
-Matching nonempty framework baselines pass. Independent skill release versions such as `0.1.0-dev.0` are informational: a different or missing skill release version must not trigger an update when `framework.version` matches. Keep that installed skill unchanged.
+Matching nonempty framework baselines pass. Independent skill release versions such as `0.1.0-dev.0` are informational. When `framework.version` matches, keep that installed skill unchanged.
 
-Differing or missing framework baselines are compatibility questions. Report both values for review; do not infer compatibility from a newer skill release or framework version. Legacy metadata without `framework.version` also needs review; neither the independent `version` nor the distribution identifies a replacement baseline. Resolve the compatibility question before choosing an update.
+Differing or missing framework baselines are compatibility questions. Report both values for review. Legacy metadata without `framework.version` also needs review. Resolve the compatibility question before choosing an update.
 
 When authorized setup requires an absent skill, install from the public source:
 
@@ -20,11 +20,11 @@ npx skills add jaml-group/jaml-skills --skill jaml
 
 MCP releases with `install-skill` expose the same installer as `jaml-playground-mcp install-skill`. Choose the agent and project/global scope explicitly; for example, `--agent codex --global` installs for Codex across projects. Omit `--global` for project scope. Installation does not configure the MCP server.
 
-Before updating, preserve local edits and installed `LEARNED.md`; the external installer does not merge them. Keep repository symlinks and update their owning checkout through its own workflow instead of overwriting them. After installation, restore preserved corrections where applicable and reread `framework.version` and compare it with the expected framework baseline. Report the result and reload the skill through the client, requesting a restart/reload only if needed. A successful installer exit alone does not prove compatibility. MCP startup and tool calls do not install or update skills automatically.
+Before updating, preserve local edits and installed `LEARNED.md`; the external installer does not merge them. Keep repository symlinks and update their owning checkout through its own workflow instead of overwriting them. After installation, restore preserved corrections where applicable and reread `framework.version` and compare it with the expected framework baseline. Report the result and reload the skill through the client, requesting a restart/reload only if needed. Confirm compatibility from that reread value. Skill installation and updates are explicit actions, separate from MCP startup and tool calls.
 
 ## Live playground
 
-1. Use serve mode and the browser owner documented by the server. Validate source, start/reuse the playground and submit with `setjaml`. A successful `browserSync` confirms command pickup, not rendering completion; verify the resulting state separately.
+1. Use serve mode and the browser owner documented by the server. Review the source, using optional [static validation](../references/validation.md) when it resolves uncertainty or the task requires it, then start/reuse the playground and submit with `setjaml`. A successful `browserSync` confirms command pickup, not rendering completion; verify the resulting state separately.
 2. After user edits, read `getjaml` before replacing source. Use rendered action tools for UI interaction.
 3. Inspect the rendered tree and JAM host locators. Verify nonzero geometry, relevant wrapping/overlap, reactive state, requested interactions and lifecycle.
 4. Check diagnostics and account separately for harness/resource noise and scenario failures.
@@ -33,12 +33,12 @@ Before updating, preserve local edits and installed `LEARNED.md`; the external i
 
 Use copilot mode for an already-served app. Call `open_page` then `wait_ready`; inspect the returned payload for an `error`, including a normal tool result that carries one. Require `jamReady:true` and `agentReady:true` before interaction. Inspect from a body-scoped snapshot and use rendered JAM host locators. After source or route changes, await readiness again and verify intended state, geometry, behavior and diagnostics.
 
-Static `validate_jaml` is read-only. Live browser execution follows the user's authorization; an ordinary explanation or static review does not start a browser.
+Static `validate_jaml` is read-only. Live browser execution follows the user's authorization, and explanation or static review runs without a browser.
 
-Keep local development control services on loopback unless the user explicitly requests a reviewed remote setup. Browser access and executable JAML can affect the connected application; static validation is not a sandbox.
+Keep local development control services on loopback unless the user explicitly requests a reviewed remote setup. Browser access and executable JAML can affect the connected application, so handle them with that authorization.
 
 ## Completion and recovery
 
-A command timeout does not cancel its queued mutation. Reconcile the live state before resubmitting; blind retries can duplicate side effects. Use the current tool schema and a bounded recovery attempt, then report the unresolved command and observed state if the browser cannot be inspected.
+A queued mutation continues after a command timeout. Reconcile the live state before resubmitting, since a blind retry can duplicate side effects. Use the current tool schema and a bounded recovery attempt, then report the unresolved command and observed state if the browser cannot be inspected.
 
-The default `wait_for` path can use a cached snapshot. Request an explicit live scope, such as `body`, a selector or a JID, when verifying a mutation. Read returned errors even when the tool call itself succeeds. An old matching locator does not prove a new render completed: verify the intended new value, content or generation together with its current geometry and behavior.
+The default `wait_for` path can use a cached snapshot. Request an explicit live scope, such as `body`, a selector or a JID, when verifying a mutation. Read returned errors even when the tool call itself succeeds. To confirm a new render, verify the intended new value, content or generation together with its current geometry and behavior.

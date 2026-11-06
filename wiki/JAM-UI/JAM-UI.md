@@ -29,6 +29,7 @@ Each element type is used as the `"type"` value in JAML. Click through to the in
 | `indicator`       | `IcacoIndicator`          | [indicator](./indicator.md)       |
 | `input`           | `ImbeInput`               | [input](./input.md)               |
 | `label`           | `LeekLabel`               | [label](./label.md)               |
+| `list`            | `LettuceList`             | [list](./list.md)                 |
 | `locator`         | `LoganLocator`            | [locator](./locator.md)           |
 | `map`             | `MedlarMap`               | [map](./map.md)                   |
 | `notify`          | `NutmegNotify`            | [notify](./notify.md)             |
@@ -39,6 +40,7 @@ Each element type is used as the `"type"` value in JAML. Click through to the in
 | `select`          | `SugarcaneSelect`         | [select](./select.md)             |
 | `shortcuts`       | `SafouShortcuts`          | [shortcuts](./shortcuts.md)       |
 | `step`            | `ShaddockStep`            | [step](./step.md)                 |
+| `steps`           | `ShaddockSteps`           | [list](./list.md#steps)           |
 | `switch`          | `SunflowerSwitch`         | [switch](./switch.md)             |
 | `table`           | `TomatoTable`             | [table](./table.md)               |
 | `tags`            | `ToughpearTags`           | [tags](./tags.md)                 |
@@ -345,7 +347,7 @@ Choose the event by the responsibility it serves:
 
 These events are separate. A `passiveresize` notification does not automatically publish `resize`. Direct CSS writes can change an observed size without invoking the layout owner's notification path; switching a consumer's event is not automatically the right repair. Conversely, layout can move a fixed-size descendant without changing its content box.
 
-Native layout operations own their existing notifications. For a custom layout operation, publish once the new logical layout is applied and ready for consumers to measure. Do not defer that publication solely until a decorative animation ends or add another publisher around an operation that already supplies it. A later geometry change may need another notification from its own owner.
+Native layout operations own their existing notifications. For a custom layout operation, publish once the new logical layout is applied and ready for consumers to measure. Do not defer that publication solely until a decorative animation ends or add another publisher around an operation that already supplies it. A later geometry change may need another notification from its own owner. For external DOM or CSS changes that affect framework layout caches, use [layout invalidation](../utils.md#layout-invalidation) on the exact container whose geometry changed.
 
 ```javascript
 // Integration fragment: host is an existing layout element owned by this operation.
@@ -681,12 +683,13 @@ export default {
 
 ### Number formatting
 
-| Param        | Type                         | Description                                                                                                                                   |
-| ------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `decimalPos` | `number`                     | Number of decimal places (default `2`).                                                                                                       |
-| `toFixed`    | `boolean \| number`          | Use `toFixed()` instead of `round()` for display. Pass a number to also set `decimalPos`.                                                     |
-| `pattern`    | `string`                     | Date/time format pattern (e.g. `'yyyy-MM-dd'`).                                                                                               |
-| `symbol`     | `'auto' \| 'both' \| 'none'` | Sign display for numeric formatting. `'both'` prefixes positive numbers with `+`; `'none'` hides the minus sign in display. Default `'auto'`. |
+| Param        | Type                         | Description                                                                                                                                                                                                                                                                    |
+| ------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `grouping`   | `boolean`                    | Default `false`. Opt-in locale digit grouping in the default number/percent formatter, respecting `decimalPos` and `toFixed`. A custom formatter owns its output. `value.grouped` enables this parameter; see [grouped values](../Styles/common/value.md#entry-value-grouped). |
+| `decimalPos` | `number`                     | Number of decimal places (default `2`).                                                                                                                                                                                                                                        |
+| `toFixed`    | `boolean \| number`          | Use `toFixed()` instead of `round()` for display. Pass a number to also set `decimalPos`.                                                                                                                                                                                      |
+| `pattern`    | `string`                     | Date/time format pattern (e.g. `'yyyy-MM-dd'`).                                                                                                                                                                                                                                |
+| `symbol`     | `'auto' \| 'both' \| 'none'` | Sign display for numeric formatting. `'both'` prefixes positive numbers with `+`; `'none'` hides the minus sign in display. Default `'auto'`.                                                                                                                                  |
 
 ---
 

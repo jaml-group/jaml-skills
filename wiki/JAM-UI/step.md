@@ -2,7 +2,7 @@
 
 **Class:** `ShaddockStep` · **Type:** `"step"` · **Extends:** `AbstractInputElement`
 
-A static sequence of labeled steps with arrow separators. Use it to describe a process or pipeline. It does not highlight an active step or control wizard navigation.
+A static sequence of labeled steps with arrow separators. Use it to describe a process or pipeline. It does not highlight an active step or control wizard navigation. For per-step status and a current step, choose [`steps`](./list.md#steps).
 
 ---
 

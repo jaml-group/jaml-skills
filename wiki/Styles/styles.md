@@ -1,6 +1,6 @@
 # JAML Styles
 
-Use the [style index](index.md) to find the complete family guide for an exported capability. Read its signatures, defaults, option values, prerequisites and examples together. This page explains ownership and composition across families. Check the documented framework baseline against the target runtime; absent prose is not a behavior guarantee.
+Find an exported capability's family guide through the [style index](index.md). This page explains style ownership and composition across families.
 
 The style system in JAM-UI is a plugin-based declarative styling layer. Styles are applied as an ordered array — the order matters, and styles can be reverted or toggled.
 
@@ -30,11 +30,13 @@ Start with the native element, semantic role and public style/plugin that alread
 | One component's local presentation                                | Keep declarations with its JAML definition: singular `style` or token-aware `css(...)` in `styles`; use `childStyles` for direct children and `descStyles` for the owning subtree/context.                                          |
 | Theme-level visual language or generic control/state appearance   | Use the existing theme roles, tokens and recipes. Identify a theme-owned extension when warranted; keep its design/implementation in the separately scoped theme workflow.                                                          |
 | Presentation reused by multiple components                        | Give the shared recipe a named owner; reuse a public style or register a shared style plugin. Shared CSS should express actual cross-component concerns, not collect unrelated component rules.                                     |
-| Repeated structure, behavior and presentation                     | Extract the smallest suitable [CC, builder or usage](../JAML/component.md), with its styling beside that composition. Moving repeated selectors into a shared stylesheet alone does not remove duplicated component responsibility. |
+| Repeated structure, behavior and presentation                     | Extract the smallest suitable [CC, builder or usage](../JAML/component.md), with its styling beside that composition. Repeated responsibility moves into that composition along with its selectors.                                 |
 | Local selectors, media queries or other stylesheet-only mechanics | Keep a scoped stylesheet/recipe with the owning component or adapter; follow the [stylesheet scoping contract](#stylesstylesheet--inject-css-rules). File format does not turn local behavior into a global responsibility.         |
 | External or early-startup integration                             | Retain a bounded adapter for editor-owned DOM, OS/window chrome, print output or pre-framework startup as needed. Record the exact rules/files, owner and reason; app ownership alone is not an exception for an entire stylesheet. |
 
 Apply [scoped style params](#scoped-style-params) at the component that owns the affected children. Putting every descendant override on the application root recreates global coupling. Keep shared theme definitions in the [theme-authoring workflow](../Theme/authoring.md); application style refactoring should consume that contract rather than silently redesign it.
+
+Style presets are local applications, and reusable palette and scale changes belong to theme tokens. Suffixes are specific to their family, so select the property family first, then its scale or role.
 
 Prefer existing semantic tokens for UI spacing, typography, radii and other supported dimensions. Use deliberate `rem`/`em` values for scalable custom dimensions when no suitable token exists. Retain `px` for a justified pixel-based or external contract, such as measured coordinates, a raster/canvas boundary or an integration API; record the reason and conversion boundary. A stylesheet's length or pixel count locates review candidates, not proven defects. Do not mechanically convert every pixel value or replace a meaningful dimension with an arbitrary token.
 
@@ -44,7 +46,7 @@ Token shorthand is [property-aware](./common/css.md#property-aware-token-values)
 
 For a settings/workspace refactor, assign each declaration before moving it: header/sidebar sizing and scroll boundaries stay with the shell; repeated card presentation uses a registered recipe; repeated editor structure uses a CC/builder/usage; theme-wide surface and state appearance follows the theme; editor-owned DOM keeps a scoped adapter. A native status badge consumes `success`, `warn` or `error` before considering a domain palette. If changing themes changes decorative margins, verify the shell's intended usable width, click targets and focus at its relevant breakpoints; a semantic role alone does not promise equal geometry. Keep the [layout-owned frame contract](../Theme/stylize.md#layout-owned-stylize-profiles) with the layout owner.
 
-A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds. Token substitution alone does not meet that criterion.
+A structural style refactor is complete when local declarations, shared recipes and reusable compositions have clear owners and the required visual/interaction parity holds.
 
 ### Choose inline CSS, local rules or shared CC styles
 
@@ -466,14 +468,14 @@ Each element has its own style variants (e.g. `button.cta`, `indicator.tweening`
 
 Beyond the `styles` array (which targets the element itself), JAML provides scoped params whose selectors are resolved relative to an element. Most target its subtree; dictionary `descStyles` can also target the owning element with `:scope`. All are resolved at mount time and scoped to the component's unique selector so they don't leak.
 
-| Param          | Type                                             | Description                                         | Notes                                                                                             |
-| -------------- | ------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `childStyles`  | `StyleOption[] \| { [selector]: StyleOption[] }` | Styles applied to direct children                   | Array form targets `:scope > *`. Dict form: keys are child selectors                              |
-| `descStyles`   | `StyleOption[] \| { [selector]: StyleOption[] }` | Scoped styles for descendants or the owning element | Array form targets `*`. Dict form: plain selectors target descendants; `:scope` targets the owner |
-| `optionStyles` | `StyleOption[]`                                  | Styles applied to option children                   | Targets `:scope > .jam-option`                                                                    |
-| `[name]Styles` | `StyleOption[]`                                  | Custom selector derived from the key name           | e.g. `buttonStyles` targets `button`, `.fooStyles` targets `.foo`                                 |
-| `globalStyles` | `{ [selector]: StyleOption[] }`                  | Styles registered globally                          | No element scope — applies to every matching element in the document                              |
-| `stateStyles`  | `{ [state]: StyleOption[] }`                     | Styles applied when element is in that state        | Merged into `states`                                                                              |
+| Param          | Type                                             | Description                                         | Notes                                                                                                                                           |
+| -------------- | ------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `childStyles`  | `StyleOption[] \| { [selector]: StyleOption[] }` | Styles applied to direct children                   | Array form targets `:scope > *`. Dict form: keys are child selectors                                                                            |
+| `descStyles`   | `StyleOption[] \| { [selector]: StyleOption[] }` | Scoped styles for descendants or the owning element | Array form targets `*`. Dict form: plain selectors target descendants; `:scope` targets the owner                                               |
+| `optionStyles` | `StyleOption[]`                                  | Styles applied to option children                   | Targets `:scope > .jam-option`                                                                                                                  |
+| `[name]Styles` | `StyleOption[]`                                  | Custom selector derived from the key name           | Lowercases the first letter and strips a leading `desc` and the trailing `Styles`: `buttonStyles` targets `button`, `.fooStyles` targets `.foo` |
+| `globalStyles` | `{ [selector]: StyleOption[] }`                  | Styles registered globally                          | Dictionary form only, with no element scope, so it applies to every matching element in the document; use sparingly                             |
+| `stateStyles`  | `{ [state]: StyleOption[] }`                     | Styles applied when element is in that state        | Merged into `states`, so the styles activate on each transition to that state                                                                   |
 
 ```javascript jaml-playground
 export default {
