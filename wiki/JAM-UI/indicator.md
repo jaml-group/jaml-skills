@@ -96,7 +96,7 @@ Inherits all `AbstractInputElement` methods, plus:
 
 ### Metric cards in a reply
 
-A parent's `childStyles` gives every card one treatment: `stylize: 'list'` with `stylize.bento` on the parent and `params(stylize:item)` on each card, `value.major()` and `cap.main(0.75)` for the hierarchy, and `value.grouped` for thousands separators. Each card adds its own sub-caption as a child with `slot: 'layer'` and `indicator.sub`, which places it under the caption and value in muted sub-caption text.
+A parent's `childStyles` gives every card one treatment: `stylize: 'list'` with `stylize.bento` on the parent and `params(stylize:item)` on each card, `value.major()` and `cap.main(0.75)` for the hierarchy, and `value.grouped` for thousands separators. Each card adds a divider and a sub-caption as children with `slot: 'layer'` and `indicator.sub(above)`, which places them between the caption and the value, in source order, with muted sub-caption text; plain `indicator.sub` places a child after the value instead.
 
 <!-- generated-reply-demo:kpiCards:start -->
 
@@ -104,11 +104,14 @@ A parent's `childStyles` gives every card one treatment: `stylize: 'list'` with 
 ```text jamll
 { type: 'wrapper', stylize: 'list', style: { width: '100%' }, styles: ['layout.autoalign', 'stylize.bento'], childStyles: ['params(stylize:item)', 'value.major()', 'cap.main(0.75)', 'value.color.primary', 'value.grouped', 'css(padding:l;gap:xs)'] }
     { type: 'indicator-number', icon: '📦', cap: 'Orders', value: 1284 }
-        { type: 'label', cap: '+8% vs last week', slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: '+8% vs last week', slot: 'layer', styles: ['indicator.sub(above)'] }
     { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94 }
-        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub(above)'] }
     { type: 'indicator-number', icon: '⭐', cap: 'Rating', value: 4.7, decimalPos: 1, unit: '/ 5' }
-        { type: 'label', cap: '312 reviews', slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: '312 reviews', slot: 'layer', styles: ['indicator.sub(above)'] }
 ```
 ````
 

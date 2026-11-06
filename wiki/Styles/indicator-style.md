@@ -431,9 +431,15 @@ Indicator sub-caption
 
 Place supporting content, such as a comparison line or tags, under an indicator's caption and value.
 
-Apply it to a child in the indicator's layer slot. The child takes its own row from the caption column to the end, follows the indicator's alignment, and uses sub-caption typography. Children follow source order.
+Apply it to a child in the indicator's layer slot. The child takes its own row from the caption column to the end, follows the indicator's alignment, and uses muted sub-caption typography. With row 'below', the default, it follows the value; with 'above' it sits between the caption and the value. Children in the same row setting follow source order.
 
 The child must be a direct child of an indicator with slot: 'layer'.
+
+Positional order: `row`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `row` | `string` | `below` | Row: 'below' places the child after the value, 'above' between the caption and the value<br>Shorthand<br>Options: `below`, `above` |
 
 ## `indicator.grid`
 
