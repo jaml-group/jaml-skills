@@ -233,6 +233,7 @@ export default {
 
 ## Notes
 
+-   Use [`options.disc`](../Styles/options-style.md#entry-options-disc) for round checkbox or radio controls.
 -   Use `keyword` param to filter options by text match in real time.
 -   Option groups are built from the `group` field in data entries. Groups are collapsible in checkbox mode.
 -   The `type` key selects between `"radio"` (single select) and `"checkbox"` (multi-select).

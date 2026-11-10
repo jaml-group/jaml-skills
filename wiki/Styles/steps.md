@@ -140,7 +140,7 @@ Winding steps
 
 Show a sequence as a winding path that alternates from side to side.
 
-Offsets every other marker across the sequence and places its name and status on the side away from the line, centred on the marker. Curved lines join neighbouring markers. Combine with steps.horizontal for a strip whose markers alternate up and down.
+Offsets every other marker across the sequence and centres its label and any status on the outer side. Combine with steps.horizontal for a strip whose markers alternate up and down.
 
 ## `steps.gridline`
 
@@ -189,6 +189,18 @@ Adds markdown for the native table Markdown stylesheet.
 
 This does not parse arbitrary Markdown into table data; supply the normal native table model.
 
+## `steps.connected`
+
+<a id="entry-steps-connected"></a>
+
+Connected steps
+
+Join neighbouring step markers with lines.
+
+Draws a curved line from each marker to the next, which follows layout and status changes and flows into the current step. Steps apply it by default; set connect: false on the steps to leave it out.
+
+connect is read when the steps initialize; changing it later has no effect.
+
 ## `steps.horizontal`
 
 <a id="entry-steps-horizontal"></a>
@@ -197,7 +209,7 @@ Horizontal steps
 
 Show the steps in a single row that scrolls when it runs out of space.
 
-Places each caption and status below its numbered marker, with a line to the next marker. Tracks grow to fit their content and the row scrolls inside the component when needed.
+Places each caption and any status below its numbered marker. Tracks grow to fit their content and the row scrolls inside the component when needed.
 
 Use with a complete sequence. Row virtualization and Show more require vertical layout.
 

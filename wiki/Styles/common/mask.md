@@ -20,9 +20,9 @@ Shares target observers and at most one scroll listener with other watchers. Unm
 
 Apply to the actual clipped text box or scrolling viewport. The target must have bounded dimensions and authored clipping/scrolling. It owns its watcher subscription; no separate interact.scrollWatcher is needed. Each target resets its own mask edge variables.
 
-Masks the entire target, potentially including native scrollbars. With listenScroll:false, scroll-only changes are not observed. Apply as a runtime style to the actual element; it is not exposed through child, shadow slot or agent style menus. Does not expose a public callback API. Threshold is clamped to 0–1; zero applies full length immediately on overflowing edges, and nonfinite values fall back to 0.1. This is a ramp distance, not a minimum fade length. A zero or negative distance applies full size immediately on overflowing edges; a nonfinite converted distance falls back to threshold. Use a concrete length such as rem or px.
+Masks the entire target, potentially including native scrollbars. With listenScroll:false, scroll-only changes are not observed. Apply as a runtime style to the actual element, or name a shadow-root scroller with target; it is not exposed through child, shadow slot or agent style menus. With target, the mask uses the fixed size: dynamic, threshold and distance apply to the element itself only, and a target that is not found throws on mount. Does not expose a public callback API. Threshold is clamped to 0–1; zero applies full length immediately on overflowing edges, and nonfinite values fall back to 0.1. This is a ramp distance, not a minimum fade length. A zero or negative distance applies full size immediately on overflowing edges; a nonfinite converted distance falls back to threshold. Use a concrete length such as rem or px.
 
-Positional order: `size` → `listenScroll` → `dynamic` → `threshold` → `distance`.
+Positional order: `size` → `listenScroll` → `dynamic` → `threshold` → `distance` → `target`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
@@ -31,6 +31,7 @@ Positional order: `size` → `listenScroll` → `dynamic` → `threshold` → `d
 | `dynamic` | `boolean` | `false` | Scale fade length with edge distance or progress; default false |
 | `threshold` | `number` | `0.1` | Scroll fraction at which the fade reaches size; default 0.1 |
 | `distance` | `numberOrString` | Not supplied | Optional fixed ramp length, e.g. 3rem or 48px; numbers use rem; overrides threshold with dynamic:true<br>Unit: `rem` |
+| `target` | `string` | Not supplied | Selector for a scroller to mask instead of the element, such as ':host slot[name="tag"]' for a part of its shadow root |
 
 ```javascript jaml-playground
 export default {

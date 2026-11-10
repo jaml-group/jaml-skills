@@ -20,9 +20,9 @@
 
 应用到实际裁剪文本框或滚动视口，并设置有界尺寸及裁剪或滚动方式。自动持有观察订阅，无需另加 interact.scrollWatcher。每个目标重置自身渐隐变量。
 
-遮罩影响整个目标，可能包括原生滚动条。listenScroll:false 不观察仅由滚动引起的变化。作为运行时样式应用到实际元素，不通过子目标、影子槽和 agent 样式菜单提供，不暴露公开回调接口。 threshold 限制在 0–1；零表示溢出边立即使用完整长度，非有限值回退到 0.1。这是渐变距离比例，不是最小渐隐长度。 distance 为零或负值时，溢出边立即使用完整长度；换算结果非有限时回退到 threshold。使用 rem 或 px 等明确长度。
+遮罩影响整个目标，可能包括原生滚动条。listenScroll:false 不观察仅由滚动引起的变化。作为运行时样式应用到实际元素，或用 target 指定影子根中的滚动容器；不通过子目标、影子槽和 agent 样式菜单提供，不暴露公开回调接口。使用 target 时遮罩为固定长度：dynamic、threshold 和 distance 仅对元素自身生效，挂载时找不到 target 会抛出错误。 threshold 限制在 0–1；零表示溢出边立即使用完整长度，非有限值回退到 0.1。这是渐变距离比例，不是最小渐隐长度。 distance 为零或负值时，溢出边立即使用完整长度；换算结果非有限时回退到 threshold。使用 rem 或 px 等明确长度。
 
-位置参数顺序: `size` → `listenScroll` → `dynamic` → `threshold` → `distance`.
+位置参数顺序: `size` → `listenScroll` → `dynamic` → `threshold` → `distance` → `target`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
@@ -31,6 +31,7 @@
 | `dynamic` | `boolean` | `false` | 随边缘距离或进度调整渐隐长度，默认 false |
 | `threshold` | `number` | `0.1` | 渐隐达到 size 所需的滚动比例，默认 0.1 |
 | `distance` | `numberOrString` | 未提供 | 可选固定渐变距离，如 3rem 或 48px；数值使用 rem；dynamic:true 时优先于 threshold<br>Unit: `rem` |
+| `target` | `string` | 未提供 | 要遮罩的滚动容器选择器，替代元素自身，如用 ':host slot[name="tag"]' 指定影子根中的部分 |
 
 ```javascript jaml-playground
 export default {

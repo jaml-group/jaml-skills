@@ -32,6 +32,16 @@ export default [
 ];
 ```
 
+## `tags.chip`
+
+<a id="entry-tags-chip"></a>
+
+紧凑强调色标签
+
+将标签显示为小号粗体标签片，例如放在指标下方，并按名称为每个标签设置颜色。
+
+内置标签使用较小的粗体文字和实心强调色背景，文字使用强调色 lumi 色阶。标签片样式移除其边框和阴影。记录的 color 可取 yellow、blue、green 等调色板名称（向主题强调色混合），或 success、warning 等语义名称。未设置 color 的标签使用继承的强调色。
+
 ## `tags.grid`
 
 <a id="entry-tags-grid"></a>

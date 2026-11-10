@@ -93,6 +93,16 @@ export default [
 ];
 ```
 
+## `options.disc`
+
+<a id="entry-options-disc"></a>
+
+Disc boxes
+
+Show the checkboxes and radios of options, list-todo items or table rows as large round discs.
+
+Adds disc. A checked box shows a filled disc with a check or radio dot cut out. An indeterminate checkbox shows a lighter disc with a bar cut out. An unchecked box shows an empty ring. Options and list-todo size the disc in em, so the font size sets it; table rows fill their row badge with it.
+
 ## `options.grid`
 
 <a id="entry-options-grid"></a>

@@ -38,12 +38,14 @@ When the selected contract is complete and current in context, choose from it di
 
 ## Practical choices
 
+Use the [reply demos](reply-demos.md) to choose and adapt a runnable pattern when the host confirms its prerequisites.
+
 For “How is AAPL doing after that incident?”, a ready stock-summary module would receive the symbol and requested period and acquire its own prices. That module is conditional on the host actually advertising it. Explaining the news or a market move needs sources beyond a price chart. Without such a module, use fitting registered chart/metric CCs and available data. Without those CCs, compose native JAML. Without a data source, explain what is missing or request data.
 
 For choosing several alerts, the built-in [dropdown CC](component.md#built-in-registered-components) already owns its tags, removal and selection menu. If the host advertises it as ready, its minimal invocation is:
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'dropdown', props: { value: ['earnings'], data: [{ name: 'Price changes', value: 'prices' }, { name: 'Earnings', value: 'earnings' }, { name: 'Dividends', value: 'dividends' }] } }
 ```
 ````
@@ -53,25 +55,25 @@ This performs local selection. Sending the selection back to an assistant needs 
 If no registered metric CC is available, a native indicator remains a suitable L1 choice for supplied data:
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'indicator-number', cap: 'Available stock', value: 128, unit: 'units' }
 ```
 ````
 
-It already owns caption, value and unit. Instructions to follow, tasks to tick off and the progress of a process also have native owners: [`list`, `list-todo` and `steps`](../JAM-UI/list.md), each needing only records keyed by `id`. Take types from the element catalog and the host's registered CCs, and choose each by purpose: `breadcrumb`, for example, serves hierarchical navigation.
+It already owns caption, value and unit. Use [`steps`](../JAM-UI/steps.md) for ordered instructions and process stages. Add `status` only to report progress. Use [`list-todo`](../JAM-UI/list.md#checklists) for tasks to tick off. Both use records keyed by `id`. Take types from the element catalog and the host's registered CCs, and choose each by purpose: `breadcrumb`, for example, serves hierarchical navigation.
 
 ## Progressive replies with JAMLL
 
 Once interactive JAML is chosen, default to **JAMLL (JAML Lines)** when the host advertises it with whole-message-success integration. Markdown remains the ordinary reply default, and explicit user format requests take precedence. Choose the native owners first, then emit their definitions in useful reading order. JAMLL changes how a view is delivered; the L3/L2/L1 choice, element contracts, dependencies and data ownership remain the same.
 
-Author the fence `text jamll` for lightweight content between paragraphs or `text jamll-artifact` for a distinct panel. Write one complete JavaScript expression yielding an element object per physical line. A documented synchronous builder returning one element object can be a record, including the first line; see the [builder-record example](../Plugins/markdown.md#record-grammar-and-composition). Use spaces to indent a child under the preceding owner; siblings share an indentation level. The first record starts at column one. Close the fence normally. The first token, `text`, is the ordinary Markdown language hint; the second token selects our renderer. There is no `export default` or outer array. Use native styles for layout; a JAMLL directive does not enable the complete-content `layout=grid` hint.
+Author `text jamll-content` for lightweight content between paragraphs, `text jamll-artifact` for a distinct panel, or `text jamll-playground` for editable records and a preview. The first token identifies the source syntax. The second chooses the presentation. Write one complete JavaScript expression yielding an element object per physical line. A [documented synchronous builder](../Plugins/markdown.md#record-grammar-and-composition) returning one element object can be a record, including the first line. Start the first record at column one, indent children with spaces and close the fence.
 
 For supplied metrics, emit native indicators directly. Each owns its icon, caption, value and unit, and independent records need no authored wrapper. `valueStates` derives a state from the value, and `color.stateMap` gives that state its semantic color:
 
 <!-- generated-reply-demo:metrics:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'indicator-number', icon: '📦', cap: 'Orders', value: 1284, styles: ['indicator.bigicon'] }
 { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94, valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['indicator.bigicon', 'color.stateMap(good:success;watch:warn;late:error)', 'value.color.primary'] }
 { type: 'indicator-number', icon: '↩️', cap: 'Returns', value: 37, unit: 'this week', valueStates: { good: 'value<20', watch: 'value<50', high: 'value>=50' }, styles: ['indicator.bigicon', 'color.stateMap(good:success;watch:warn;high:error)', 'value.color.primary', 'indicator.unit.color.accent'] }
@@ -90,15 +92,15 @@ For a shared-state interaction, emit the owner and its initial `vars` before the
 ```
 ````
 
-Records evaluate independently; share values through native model state and references, not JavaScript declarations on previous lines. Existing bindings can update earlier elements normally. Each fence has its own model; cross-fence state, persistence and assistant submission require the host's contract. Keep streamed source append-only: repeating an `id` is not a patch operation. Use complete-definition `javascript jaml-content` or `javascript jaml-artifact` when necessary module-scope setup, asynchronous setup, cross-record lexical dependencies or a ready result cannot fit independent records. Only that fallback uses `export default` with one definition or a flat array. Independent elements can remain separate JAMLL records; an array is not required just to compose them. Ordinary inline handlers and nested `components` remain native JAML.
+Records evaluate independently; share values through native model state and references, not JavaScript declarations on previous lines. Existing bindings can update earlier elements normally. Each fence has its own model; cross-fence state, persistence and assistant submission require the host's contract. Keep streamed source append-only: repeating an `id` is not a patch operation. Use complete-definition `javascript jaml-content` or `javascript jaml-artifact` when necessary module-scope setup, asynchronous setup, cross-record lexical dependencies or a ready result cannot fit independent records. A JavaScript module uses `export default` with one definition or a flat array. Independent elements can remain separate JAMLL records; an array is not required just to compose them. Ordinary inline handlers and nested `components` remain native JAML.
 
-Emit the records and closing fence; the renderer owns insertion, default child zoom entry and interaction gating. Parent layout updates immediately without renderer-owned FLIP or scaling. The host enables controls only after the **whole message succeeds**, not when one record or fence finishes. An interrupted or invalid reply can retain its partial display without becoming interactive. Records contain elements; the renderer and host own completion, mounting and animation. Interaction gating does not defer initialization, timers or requests; these keep their ordinary execution and cleanup contracts.
+Content and artifact records can render as they arrive. The renderer owns insertion and default child zoom entry. Parent layout updates immediately. The host enables progressive controls after the **whole message succeeds** and all progressive JAMLL blocks are valid and closed. An interrupted or invalid reply can retain an inactive prefix. In jam-dsh, the editable JAMLL playground opens after whole-message success. Native initialization, timers and requests retain their own execution and cleanup contracts.
 
-If JAMLL or the success integration is absent, use the host's supported `javascript jaml-content` or `javascript jaml-artifact` complete-definition format. Use `javascript jaml-playground` when editable source is the task. Application executors opt in through `playground.openJamll` and own their success, state and response integration. The JAMLL-enabled jam-dsh host supplies that integration; older or other hosts must advertise their own support. A deployment's output format follows its own declaration. For detailed record, error, trust and lifecycle rules, read [JAMLL rendering](../Plugins/markdown.md#jamll-progressive-native-elements).
+Choose a supported complete-definition fence when the task calls for JSON or module setup, or when the host lacks JAMLL. Use strict JSON for an object or flat array, or JavaScript for a module that default-exports the definition. Both formats offer content, artifact and editable playground presentations. Follow the host's declaration and the [fence matrix](../Plugins/markdown.md#playground-presentation). For record grammar, errors and host integration, read [JAMLL rendering](../Plugins/markdown.md#jamll-progressive-native-elements).
 
 ## Native elements without an outer wrapper
 
-For a JAMLL-enabled host, use `text jamll` for lightweight views between paragraphs or `text jamll-artifact` for a distinct view. This choice is separate from L3/L2/L1. Independent records mount under the native result owner, and native child styles arrange them. Use the complete-definition or editable-source fallback above when its contract is needed.
+For a JAMLL-enabled host, use `text jamll-content` for lightweight views between paragraphs or `text jamll-artifact` for a distinct view. This choice is separate from L3/L2/L1. Independent records mount under the native result owner, and native child styles arrange them. Use the complete-definition or editable-source fallback above when its contract is needed.
 
 | Need                   | Native choice              | Minimal contract / boundary                                                                                                                                              |
 | ---------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -110,7 +112,7 @@ For a JAMLL-enabled host, use `text jamll` for lightweight views between paragra
 Default content wraps at intrinsic sizes. Native child styles provide explicit sizing; a full-width chart can follow compact metrics without an outer wrapper. The chart below uses illustrative supplied data, not a live source.
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'indicator-number', cap: 'Orders', value: 128, unit: 'orders' }
 { type: 'indicator-percent', cap: 'Completion', value: 0.84 }
 { type: 'chart-bar', cap: 'Orders by month', style: { width: '100%', height: '16rem' }, data: [['Month', 'Orders'], ['Jan', 40], ['Feb', 88]] }
@@ -122,12 +124,12 @@ For several related views, compose a panel. `layout.autoalign` fits the tiles to
 <!-- generated-reply-demo:panel:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', style: { width: '100%' }, styles: ['layout.autoalign', 'group.bento'], childStyles: ['props(minHeight:8rem;padding:0.75rem)'] }
     { type: 'indicator-number', icon: '📦', cap: 'Orders', value: 1284, styles: ['indicator.trailingIcon', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'value.color.primary', 'value.grouped'] }
-        { type: 'label', cap: 'Four weeks to date', slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'label', cap: 'Four weeks to date', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
     { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94, valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['indicator.trailingIcon', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'color.stateMap(good:success;watch:warn;late:error)', 'value.color.primary'] }
-        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
     { type: 'chart-line', cap: 'Orders by week', style: { width: '100%', height: '14rem' }, styles: ['echarts.line.gradientBg'], data: [['Week', 'Orders'], ['W1', 280], ['W2', 312], ['W3', 305], ['W4', 387]] }
         { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)'] }
     { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], data: [{ region: 'North', orders: 482 }, { region: 'South', orders: 256 }], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
@@ -136,7 +138,7 @@ For several related views, compose a panel. `layout.autoalign` fits the tiles to
 
 <!-- generated-reply-demo:panel:end -->
 
-Complete-definition content additionally offers the host layout hint `javascript jaml-content layout=grid` for equal responsive tracks. In that format, default-export a definition or flat array; a child can span the row with `style: { gridColumn: '1 / -1' }`. Unknown layout hints fall back to wrapping. This hint is not a JAMLL layout control; keep JAMLL fence info canonical and use native composition/styles for its layout.
+For complete-definition content, add `layout=grid` to a `json jaml-content` or `javascript jaml-content` fence for equal responsive tracks. A child can span the row with a `gridColumn` style of `1 / -1`. Unknown layout hints fall back to wrapping. Use native composition and styles to lay out JAMLL records.
 
 Use ordinary child styles for explicit sizing and long captions (for example `cap.text(whitespace:normal)`); the host does not infer business hierarchy from element types. More complex shared state or relationships can still justify an authored container. See [indicator](../JAM-UI/indicator.md), [chart prerequisites/data](../JAM-UI/chart.md) and [presentation/lifetime](../Plugins/markdown.md#playground-presentation) for unresolved details. State stays within its block unless the host declares otherwise.
 
@@ -156,7 +158,7 @@ A small reply can use the following native wiring contract directly. Check the s
 This example has one model because the input, switch, metric and restore action share values. The input owns editing, the switch owns toggling and the indicator owns the result.
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', vars: { quantity: 2, enabled: true } }
     { type: 'input-number', cap: 'Quantity', value: '{{quantity}}' }
     { type: 'switch', cap: 'Include', value: '{{enabled}}' }
@@ -170,11 +172,11 @@ An emptied number input publishes `null`, and `null` multiplies as zero. Keep an
 <!-- generated-reply-demo:calculator:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', vars: { packs: 4, price: 7.5 }, styles: ['layout.autoalign', 'group.bento'] }
     { type: 'input-number', cap: 'Packs', value: '{{packs}}' }
     { type: 'input-number', cap: 'Price', decimalPos: 2, value: '{{price}}' }
-    { type: 'indicator-number', cap: 'Total', decimalPos: 2, unit: 'credits', placeholder: '—', value: '{{packs == null || price == null ? null : packs * price}}', styles: ['value.color.primary'] }
+    { type: 'indicator-number', cap: 'Total', decimalPos: 2, unit: 'credits', placeholder: '—', value: '{{packs == null || price == null ? null : packs * price}}', styles: ['value.major()'] }
 ```
 ````
 

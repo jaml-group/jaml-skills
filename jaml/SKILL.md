@@ -33,7 +33,7 @@ For a small conversational view, use the local composition contract below and re
 
 ## JAMLL format
 
-Once interactive JAML is chosen, default to **JAMLL** when the host advertises it with whole-message-success integration: `text jamll` for content between paragraphs, `text jamll-artifact` for a distinct panel. Write both tokens: the first is the Markdown language hint and the second selects the renderer. Emit complete element records directly, one per physical line, with spaces for child indentation and without `export default`. Native composition and state ownership stay the same. Use a complete module when necessary setup or its result cannot fit independent records, and playground when editable source is requested. See [JAMLL examples and format fallback](references/JAML/conversational-ui.md#progressive-replies-with-jamll).
+Once interactive JAML is chosen, default to **JAMLL** when the host advertises it with whole-message-success integration: `text jamll-content` for content between paragraphs, `text jamll-artifact` for a distinct panel. Use `text jamll-playground` for editable records when the host supports it. The first token identifies the source syntax. The second chooses the presentation. Write one complete expression yielding an element object per physical line, and use spaces for child indentation. Use a complete JavaScript module when setup or its result needs module scope. See [JAMLL examples and format fallback](references/JAML/conversational-ui.md#progressive-replies-with-jamll). Choose a matching [reply demo](references/JAML/reply-demos.md) when you need a runnable pattern.
 
 ## Retrieve for the current decision
 
@@ -58,10 +58,10 @@ Generated from the [element catalog](references/JAM-UI/JAM-UI.md); entries witho
 -   [`daterangepicker`, `timerangepicker`](references/JAM-UI/JAM-UI.md#elements) · [`element`](references/JAM-UI/element.md) · [`indicator`](references/JAM-UI/indicator.md) · [`input`, `code`](references/JAM-UI/input.md)
 -   [`label`](references/JAM-UI/label.md) · [`list`](references/JAM-UI/list.md) · [`locator`](references/JAM-UI/locator.md) · [`map`](references/JAM-UI/map.md)
 -   [`notify`](references/JAM-UI/notify.md) · [`option`](references/JAM-UI/option.md) · [`options`, `checkbox`, `radio`](references/JAM-UI/options.md) · [`popup`](references/JAM-UI/popup.md)
--   [`progress`](references/JAM-UI/progress.md) · [`select`](references/JAM-UI/select.md) · [`shortcuts`](references/JAM-UI/shortcuts.md) · [`step`](references/JAM-UI/step.md)
--   [`steps`](references/JAM-UI/list.md#steps) · [`switch`](references/JAM-UI/switch.md) · [`table`](references/JAM-UI/table.md) · [`tags`](references/JAM-UI/tags.md)
--   [`timepicker`](references/JAM-UI/timepicker.md) · [`tree`](references/JAM-UI/tree.md) · [`wrapper`](references/JAM-UI/wrapper.md) · [`data`](references/JAML/state-and-data.md#shared-data-owner)
--   [`divider`, `hr`, `placeholder`, `tag`, `textarea`, `vr`, `unknown`](references/JAM-UI/JAM-UI.md#representers) · [`vanilla`](references/JAM-UI/vanilla.md)
+-   [`progress`](references/JAM-UI/progress.md) · [`select`](references/JAM-UI/select.md) · [`shortcuts`](references/JAM-UI/shortcuts.md) · [`steps`](references/JAM-UI/steps.md)
+-   [`switch`](references/JAM-UI/switch.md) · [`table`](references/JAM-UI/table.md) · [`tags`](references/JAM-UI/tags.md) · [`timepicker`](references/JAM-UI/timepicker.md)
+-   [`tree`](references/JAM-UI/tree.md) · [`wrapper`](references/JAM-UI/wrapper.md) · [`data`](references/JAML/state-and-data.md#shared-data-owner) · [`divider`, `hr`, `placeholder`, `tag`, `textarea`, `vr`, `unknown`](references/JAM-UI/JAM-UI.md#representers)
+-   [`vanilla`](references/JAM-UI/vanilla.md)
 
 <!-- generated-element-doc-map:end -->
 

@@ -427,11 +427,11 @@ export default {
 
 <a id="entry-indicator-sub"></a>
 
-Indicator sub-caption
+Indicator sub row
 
 Place supporting content, such as a comparison line or tags, under an indicator's caption and value.
 
-Apply it to a child in the indicator's layer slot. The child takes its own row from the caption column to the end, follows the indicator's alignment, and uses muted sub-caption typography. With row 'below', the default, it follows the value; with 'above' it sits between the caption and the value. Children in the same row setting follow source order.
+Apply it to a child in the indicator's layer slot. The child takes its own row from the caption column to the end and follows the indicator's alignment; its own typography is unchanged. For a muted sub-caption, also add cap.sub to a label, which then fades to 0.65 opacity. With row 'below', the default, it follows the value; with 'above' it sits between the caption and the value. With indicator.valueTop, the value stays in the first row and 'above' children follow the caption instead. Children in the same row setting follow source order.
 
 The child must be a direct child of an indicator with slot: 'layer'.
 

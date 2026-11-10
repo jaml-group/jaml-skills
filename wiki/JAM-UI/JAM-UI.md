@@ -39,8 +39,7 @@ Each element type is used as the `"type"` value in JAML. Click through to the in
 | `progress`        | `PeachProgress`           | [progress](./progress.md)         |
 | `select`          | `SugarcaneSelect`         | [select](./select.md)             |
 | `shortcuts`       | `SafouShortcuts`          | [shortcuts](./shortcuts.md)       |
-| `step`            | `ShaddockStep`            | [step](./step.md)                 |
-| `steps`           | `ShaddockSteps`           | [list](./list.md#steps)           |
+| `steps`           | `ShaddockSteps`           | [steps](./steps.md)               |
 | `switch`          | `SunflowerSwitch`         | [switch](./switch.md)             |
 | `table`           | `TomatoTable`             | [table](./table.md)               |
 | `tags`            | `ToughpearTags`           | [tags](./tags.md)                 |

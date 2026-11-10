@@ -152,20 +152,20 @@ The public `jam.MarkdownParser` is DOM-free: `new jam.MarkdownParser({ dialect }
 
 ## JAMLL: progressive native elements
 
-In the current JAMLL-capable Mandarin runtime, author `text jamll` for content between paragraphs or `text jamll-artifact` for a panel. The first fence token is the ordinary Markdown language hint; the second exact token is the rendering directive. A bare `jamll` or `jamll-artifact` language hint, a misspelled directive or a marker only in third position does not select JAMLL. Other first-token language hints are accepted, and trailing labels do not override the second token. Encoded aliases or whitespace that make the raw and parsed directives disagree are rejected. Author the canonical two-token form; a JAMLL directive does not enable the complete-content `layout=grid` hint. There is no JAMLL source-editor mode. For the default once interactive JAML is chosen, see [progressive replies](../JAML/conversational-ui.md#progressive-replies-with-jamll).
+Use `text jamll-content` for content between paragraphs, `text jamll-artifact` for a panel, and `text jamll-playground` for editable records and a result pane. The first token identifies the source syntax. The second chooses the presentation. See the [exact fence pairs](#playground-presentation) and the [reply workflow](../JAML/conversational-ui.md#progressive-replies-with-jamll).
 
 ### Record grammar and composition
 
 -   Each physical nonblank line evaluates synchronously as one JavaScript expression yielding an element object. Single quotes, inline handlers and documented builder calls returning one element object are supported, including a builder call as the first record. Records are executable JAML, not JSONL or a static-only subset.
 -   Emit an object per record, without `export default`, imports, standalone declarations, trailing record commas or semicolons. An array, primitive, `null`, line-only comment or multiline object/handler is not an element record. Visual editor wrapping does not add a record boundary.
 -   Start the first nonblank record at column one. Indent with spaces: greater indentation makes a child of the preceding record, equal indentation makes a sibling, and a dedent returns to an existing ancestor level. No fixed indentation step is required. Tabs are rejected; blank lines and CRLF are accepted.
--   Records evaluate independently. Put shared `vars` on a parent before its dependent children, and use native bindings/references rather than cross-line JavaScript lexical variables. Ordinary `components` fields remain supported; indentation spells the tree without an outer array or end-node records.
+-   Records evaluate independently. Put shared `vars` on a parent before its dependent children, and use native bindings/references rather than cross-line JavaScript lexical variables. Indentation spells the tree directly. In an editable playground, a parent with both inline and indented children uses a static `components` array.
 -   Multiple top-level records are supported. Each fence owns an independent model and releases it on destruction. Native elements still own data acquisition and cleanup; a record format supplies neither durable persistence nor cross-fence state.
 
 The builder call is the first record here. Its returned wrapper owns the counter shared by both children; the indented records become its native children:
 
 ````text
-```text jamll
+```text jamll-content
 jaml.wrapper({ cap: 'Counter', vars: { count: 7 } })
     { type: 'indicator-number', cap: 'Count', value: '{{count}}' }
     { type: 'button', cap: 'Increment', onclick() { this.model.vars.count++; } }
@@ -174,19 +174,19 @@ jaml.wrapper({ cap: 'Counter', vars: { count: 7 } })
 
 The builder must return one element object synchronously, not a function, array or Promise. A marked fence already selects the JAMLL renderer; this contract does not imply that an unlabelled playground source detector recognizes a builder call. Records retain independent lexical scopes, so share values through model state rather than declarations on earlier lines.
 
-Complete lines mount progressively through native component insertion, retaining earlier elements and state. Already consumed source cannot be rewritten; repeated IDs do not update earlier records. This append-only source rule does not prevent ordinary model writes or reactive updates. Normal JAML capabilities remain available; initialize an owning model's shared state before its consuming children arrive. Data acquisition may stay on its native element. A malformed record stops that block and retains its valid prefix; it does not recover by guessing another parent. An unfinished line waits for more source, and a closing fence flushes a final record without a newline.
+For content and artifacts, complete lines mount progressively through native component insertion, retaining earlier elements and state. Already consumed source cannot be rewritten; repeated IDs do not update earlier records. This append-only source rule does not prevent ordinary model writes or reactive updates. Normal JAML capabilities remain available; initialize an owning model's shared state before its consuming children arrive. Data acquisition may stay on its native element. A malformed record stops that block and retains its valid prefix; it does not recover by guessing another parent. An unfinished line waits for more source, and a closing fence flushes a final record without a newline.
 
 ### Message outcome and host ownership
 
-Controls stay inactive until the **entire message succeeds**. `finish()` alone does not enable them: it can also finalize an interrupted answer for display. After the host confirms successful whole-message completion, call `await reply.completeMessage()`. This finalizes the stream and returns `true` only if all JAMLL blocks are closed and valid; otherwise it returns `false`. An executor session's `finalize` failure invalidates its block, retains the inactive prefix and yields `false`; other stream-rendering failures may reject. One invalid or unclosed JAMLL block keeps all JAMLL blocks in that message gated; successful completion does not validate arbitrary handlers or business references. This call belongs to the host adapter, not generated element records. For static replay, pass `messageComplete: true` only when the saved message succeeded. Omit it for interrupted/failed replay.
+Progressive controls stay inactive until the **entire message succeeds**. `finish()` alone does not enable them: it can also finalize an interrupted answer for display. After the host confirms successful whole-message completion, call `await reply.completeMessage()`. This finalizes the stream and returns `true` only if all progressive JAMLL blocks are closed and valid. Otherwise it returns `false`. An executor session's `finalize` failure invalidates its block, retains the inactive prefix and yields `false`; other stream-rendering failures may reject. One invalid or unclosed progressive block keeps the progressive controls gated. Successful completion verifies the progressive source and lifecycle. This call belongs to the host adapter, not generated element records. For static replay, pass `messageComplete: true` only when the saved message succeeded. Omit it for interrupted/failed replay.
 
-New records default to child entry animation `animation.entry.zoom(scale:0.8;duration:240)`. Parent layout updates immediately without renderer-owned FLIP or scaling, and earlier elements retain identity. Static replay, print mode and reduced-motion preference skip the default entry animation; authored styles retain their normal override behavior.
+New streamed records default to child entry animation `animation.entry.zoom(scale:0.8;duration:240)`. Parent layout updates immediately without renderer-owned FLIP or scaling, and earlier elements retain identity. Static replay, print mode and reduced-motion preference skip the default entry animation; authored styles retain their normal override behavior.
 
 JAMLL uses trusted native Mandarin rendering or an application executor that explicitly opts in with `playground.openJamll`. Safe Markdown without that opt-in, quoted fences, other dialects and executors without `openJamll` keep it literal. `jamll: 'literal'` also keeps failed/interrupted history literal without rerunning initialization. Advertise JAMLL to an authoring agent only when both rendering and whole-message outcome integration are available; otherwise use the host-supported complete-definition format. It does not automatically acquire a host's persistence, action-submission or admission API. Interaction gating covers the native subtree and anchored native popups; it is not an execution sandbox. Initialization, bindings, timers and requests retain normal execution/cleanup semantics. Hosts own any unrelated external surfaces.
 
 ### Application executor opt-in
 
-Add `playground.openJamll(request)` alongside the existing complete-definition `render` callback. It may return a session directly or through a Promise; record evaluation waits for that session. Native Markdown retains record parsing, parent/child insertion, interaction gating and model destruction. The host supplies lexical APIs and its state/response boundary through the session.
+Add `playground.openJamll(request)` alongside the existing complete-definition `render` callback. It may return a session directly or through a Promise; record evaluation waits for that session. Native Markdown retains record parsing, parent/child insertion, interaction gating and model destruction for content and artifact fences. The host supplies lexical APIs and its state/response boundary through the session. The same opt-in allows editable JAMLL, whose full preview revisions use the [render callback](#content-policy-and-playground-ownership).
 
 The request contains `container`, native-owned `mount`, `blockId`, `generation`, `presentation`, `source`, `rawSource`, `closed`, `replay`, application `context`, lifetime `signal` and `canInteract()`. `generation` identifies this occurrence rather than each source append. `source` is Markdown-normalized evaluation text; `rawSource` preserves the original body bytes as decoded text, including indentation and line endings. Use the raw source for exact-source identity. `mount` can add native host controls with owned cleanup; it does not transfer ownership of the shared result container.
 
@@ -206,7 +206,7 @@ For historical stream replay, `jamllReplay: true` suppresses entry motion and st
 
 ### Streaming space and scroll ownership
 
-`MarkdownOption.onJamllStream?: (element: HTMLElement) => void | (() => void)` is an optional host callback. It receives the native JAMLL block element once when an open block starts rendering in an incremental stream. Return a cleanup function to release that block's presentation resources. Markdown runs it once on fence closure, transport finish or disposal, including invalid or interrupted content. A callback that destroys its own stream has its returned cleanup released immediately. Cleanup errors are reported without aborting teardown.
+`MarkdownOption.onJamllStream?: (element: HTMLElement) => void | (() => void)` is an optional host callback. It receives the native JAMLL block element once when open content or an open artifact starts rendering in an incremental stream. Return a cleanup function to release that block's presentation resources. Markdown runs it once on fence closure, transport finish or disposal, including invalid or interrupted content. A callback that destroys its own stream has its returned cleanup released immediately. Cleanup errors are reported without aborting teardown.
 
 The hook is not called for static replay, historical `jamllReplay`, print rendering or literal fences. A block already closed before its first rendering does not acquire a streaming lease. Transport finished before that first rendering also suppresses the hook, even for an unclosed fence. The hook follows the same JAMLL admission rules above: an application executor needs `openJamll`; adding this presentation callback alone does not enable it.
 
@@ -249,9 +249,9 @@ A syntax profile selects grammar, not trust. The default trusted policy preserve
 
 `contentPolicy: 'safe'` applies to both static string rendering and `stream()`. It escapes raw HTML, permits relative links and `http:`, `https:` and `mailto:` links, rejects other schemes, protocol-relative links and control-character/backslash destinations, and replaces images with their literal alt text without fetching them. It suppresses evaluated document styles, inline auto-replacements, interactive badges/footnote tooltips, and math/Mermaid enhancement. Ordinary formatting, lists, tables and literal code remain available. Options, pre-built component objects and callbacks are trusted application inputs; this policy does not sanitize arbitrary JAML objects.
 
-Safe Markdown with no `playground` hook treats executable fences as literal code. The complete-definition `render` hook accepts explicit Mandarin fences whose second info token is `jaml-playground`, `jaml-artifact` or `jaml-content`. The separate [JAMLL opt-in](#application-executor-opt-in) handles second-token `jamll` and `jamll-artifact` directives through `openJamll`, never by falling back to `render`. Playground retains editable source and result; artifact is a distinct result panel; content is a lightweight block between paragraphs. `jaml-result` is a result CSS class, not a fence alias. Quoted fences never invoke these hooks. Tool output and quoted examples should use a separate safe renderer without execution hooks when execution is not intended.
+Safe Markdown uses literal code unless the host supplies an executor for eligible [Mandarin fence pairs](#playground-presentation). The `render` hook handles complete JSON and JavaScript definitions. The [JAMLL opt-in](#application-executor-opt-in) handles streaming content and artifacts through `openJamll`, and admits editable JAMLL through `render` after whole-message success. Quoted fences stay outside these hooks. Keep tool output and example fences in a separate safe renderer without execution hooks.
 
-The complete-definition hook requires an actual matching closing delimiter in static and streamed input. Parser `closed` records that delimiter separately from `open`: EOF and `finish()` can end an unclosed block without setting `closed`. Thus interrupted complete-definition source is not executed by the hook. JAMLL can render records before closure, but remains gated until whole-message success. Trusted native `jaml-playground` rendering without a hook retains its existing EOF behavior; complete-definition artifact/content fences always require an explicit closing delimiter. Eligible results still activate through normal visibility or explicit print preparation; completion does not force invisible blocks to run.
+The complete-definition hook requires an actual matching closing delimiter in static and streamed input. Parser `closed` records that delimiter separately from `open`: EOF and `finish()` can end an unclosed block without setting `closed`. Thus interrupted complete-definition source is not executed by the hook. JAMLL content and artifacts can render records before closure and stay gated until whole-message success. Editable JAMLL requires explicit closure and evaluates a complete preview revision. Trusted native `jaml-playground` rendering without a hook retains its existing EOF behavior; complete-definition artifact/content fences always require an explicit closing delimiter. Eligible results still activate through normal visibility or explicit print preparation; completion does not force invisible blocks to run.
 
 ```typescript signature
 type MarkdownPlaygroundRequest = {
@@ -259,6 +259,8 @@ type MarkdownPlaygroundRequest = {
     mount<T extends ModelOption | ModelOption[]>(content: T): (T extends ModelOption[] ? IModel[] : IModel) | undefined;
     source: string;
     language?: string;
+    format?: 'json' | 'javascript' | 'jamll';
+    rawSource?: string;
     blockId: string;
     revision: number;
     mode: 'source' | 'result';
@@ -273,7 +275,7 @@ type MarkdownPlayground = {
 };
 ```
 
-The JAMLL request/session members are described in [Application executor opt-in](#application-executor-opt-in); the following revision rules concern the complete-definition `render` callback.
+Use `format` to select the source parser for an explicit fence. `language` carries the Markdown language token. `rawSource` is available for editable JAMLL while the revision matches the original source. It preserves the original body and line endings for exact-source checks. See [Application executor opt-in](#application-executor-opt-in) for the streaming session API.
 
 `context` is passed by identity. `blockId` and monotonically increasing `revision` identify work within this document/block, not a durable application/session identifier. `container` is the actual native result pane, shared across revisions. Authored JAML roots mount directly under it, without an intermediate revision wrapper.
 
@@ -318,21 +320,23 @@ Destroy the owning model/session when removing the message. Source edits use the
 
 ### Playground presentation
 
-Choose presentation independently of whether the content uses a purpose module, registered CC or native elements:
+Choose the actual source syntax with the first token and the presentation with the second.
 
-| Second fence token | Presentation                                                                                   | Choose when                                                                   |
-| ------------------ | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `jaml-content`     | Intrinsically sized, left-aligned wrapping block between paragraphs, without panel decoration. | A few controls, metrics or a small chart belong naturally in the explanation. |
-| `jaml-artifact`    | A distinct self-contained result panel.                                                        | The view should read as a separate interactive artifact.                      |
-| `jaml-playground`  | Editable source plus result, with available-width pane reflow.                                 | Source inspection or editing is useful.                                       |
+| Source                 | Content between paragraphs | Distinct artifact panel    | Editable source and result   |
+| ---------------------- | -------------------------- | -------------------------- | ---------------------------- |
+| JAMLL records          | `text jamll-content`       | `text jamll-artifact`      | `text jamll-playground`      |
+| Strict JSON definition | `json jaml-content`        | `json jaml-artifact`       | `json jaml-playground`       |
+| JavaScript module      | `javascript jaml-content`  | `javascript jaml-artifact` | `javascript jaml-playground` |
 
-Default-export one JAML definition or a flat array; no authored outer container is required merely for layout. The native result owner still owns mounting, lazy activation and revision cleanup. Content is a block between paragraphs, not an inline insertion inside sentence text. Each element retains its own styles and semantic parts. Charts require ECharts in the mounting runtime and an explicit nonzero height.
+JAMLL uses one synchronous element expression per physical line with indented children. JSON parses a JAML definition object or flat array using strict JSON syntax. Author JavaScript as a module that default-exports a JAML definition or flat array. Bare, retired, encoded or mismatched fence markers display as ordinary code.
 
-For content only, the optional third info token `layout=grid` selects equal responsive tracks with a 12rem minimum capped at the available width. Omission, `layout=wrap`, and unknown values use intrinsic wrapping. Other presentations ignore this layout hint. Grid keeps source order; a child can span the full row with `style: { gridColumn: '1 / -1' }`. Explicit child widths remain authoritative within the host's maximum width. Use a full-row span instead of an unconditional numeric span that might create extra columns on a narrow surface. See the [compact native selection and panel example](../JAML/conversational-ui.md#native-elements-without-an-outer-wrapper).
+Content wraps at intrinsic sizes and aligns to the start of its block. Artifacts provide a distinct result surface. A playground shows the editor beside or above the result, depending on available width. The native owner manages mounting, lazy activation and revision cleanup. Each element retains its own styles and semantic parts. Charts require ECharts in the mounting runtime and an explicit nonzero height.
+
+For complete-definition content, the optional third info token `layout=grid` selects equal responsive tracks with a 12rem minimum capped at the available width. Omission, `layout=wrap`, and unknown values use intrinsic wrapping. Other presentations ignore this layout hint. Grid keeps source order; a child can span the full row with `style: { gridColumn: '1 / -1' }`. Explicit child widths remain authoritative within the host's maximum width. Use a full-row span instead of an unconditional numeric span that might create extra columns on a narrow surface. See the [compact native selection and panel example](../JAML/conversational-ui.md#native-elements-without-an-outer-wrapper).
 
 The public builder accepts `playground(code, indent?, presentation?, lang?, blockId?, layout?)`. `presentation` is `false` (default, editable playground), `true` or `'artifact'` (artifact), or `'content'`; `layout` is `'wrap'` (default) or `'grid'` and applies only to content. Boolean builder calls remain supported. The executor keeps `mode: 'source' | 'result'` and also receives the explicit `presentation`. Presentation/layout does not create a new executor, persistence mechanism or capability tier.
 
-`jaml-playground-result` is removed, not an alias. Existing saved occurrences remain literal code and cannot invoke the executor; hosts using the new contract must also reject them for response admission. Do not silently rewrite saved source: fence edits can shift later block offsets and invalidate durable source proof. A user-requested migration must address those identities separately.
+Saved `text jamll` and `jaml-playground-result` fences display as literal code and are ineligible for response admission. Preserve their original source. Fence edits can shift later block offsets and invalidate durable source proof, so a migration must account for those identities.
 
 The renderer has no saved-source Show-source toggle. Editable previews retain their height cap; verify long controls remain reachable in the installed host. The executor may size its supplied result container and descendants but does not own the sibling editor. Existing state, cancellation, print and trust contracts apply to all three presentations.
 

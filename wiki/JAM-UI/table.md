@@ -444,7 +444,7 @@ Give each column the element that fits its values: `menu` maps codes to labels, 
 <!-- generated-reply-demo:table:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'table', cap: 'Delivery by region', style: { width: '100%' }, styles: ['table.stripy', 'table.gridline', 'table.stretchrow', 'table.thead.accent', 'table.hovermarker(style:arrow)'], data: [{ region: 'North', tier: 1, orders: 482, onTime: 0.97 }, { region: 'Central', tier: 1, orders: 391, onTime: 0.88 }, { region: 'South', tier: 2, orders: 256, onTime: 0.64 }, { region: 'Coastal', tier: 2, orders: 155, onTime: 0.92 }], dataDef: [{ key: 'region', cap: 'Region', sort: 'ascend' }, { key: 'tier', cap: 'Tier', align: 'center', filterable: true, menu: { 1: 'Priority', 2: 'Standard' } }, { key: 'orders', cap: 'Orders', type: 'indicator-number', unit: 'orders', styles: ['indicator.capslot.hide', 'indicator.unit.color.accent'] }, { key: 'onTime', cap: 'On time', type: 'progress', width: '8rem', valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['color.stateMap(good:success;watch:warn;late:error)'] }] }
 ```
 ````

@@ -32,6 +32,16 @@ export default [
 ];
 ```
 
+## `tags.chip`
+
+<a id="entry-tags-chip"></a>
+
+Compact accent chips
+
+Show tags as small bold chips, for example under an indicator, colored per tag by name.
+
+Built-in tag labels use smaller bold text and a solid accent fill with accent-lumi text. The chip treatment removes their border and shadow. Set a record's color to a palette name such as yellow, blue or green (blended toward the theme accent) or a semantic name such as success or warning. Labels without a color use the inherited accent.
+
 ## `tags.grid`
 
 <a id="entry-tags-grid"></a>

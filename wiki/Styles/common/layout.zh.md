@@ -336,20 +336,21 @@ export default [
 
 将换行的子节点对齐到共同的网格轨道。
 
-在尺寸变化时测量已渲染的行，计算共同的列跨度和可选的比例行轨道，然后调用函数形式的 afterAlign 回调。
+在子项目插入、移除或尺寸变化时测量已渲染的行，更新共同的列跨度和可选的比例行轨道，然后调用 afterAlign。逐步插入时可启用 incremental，让新项目独立入场。
 
 需要可测量的原生子节点；希望采用确定的编写轨道时使用显式网格。
 
-位置参数顺序: `afterAlign` → `scaledRows`.
+位置参数顺序: `afterAlign` → `scaledRows` → `incremental`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
 | `afterAlign` | `functionOrString` | 未提供 | 对齐后<br>支持简写 |
 | `scaledRows` | `boolean` | `true` | 缩放行 |
+| `incremental` | `boolean` | `false` | 让新项目独立于对齐过程播放入场动画。 |
 
 Measures wrapped rows and assigns shared grid tracks. Compose `layout.alignlabel` explicitly when field labels should align; use `layout.flex(direction:column)` for vertical stacking.
 
-Use `afterAlign` for work that depends on completed alignment.
+Use `afterAlign` for work that depends on completed alignment. Incremental mode calls it before the updated layout paints. The default mode calls it after repaint. For children that arrive in separate updates, use `layout.autoalign(incremental:true)` to let the incoming child run its entry independently of alignment. Live JAMLL handles sibling FLIP when the grid changes. Reduced motion still aligns the grid.
 
 ```javascript jaml-playground
 export default [

@@ -85,7 +85,7 @@ Inherits all `AbstractInputElement` methods, plus:
 <!-- generated-reply-demo:metrics:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'indicator-number', icon: '📦', cap: 'Orders', value: 1284, styles: ['indicator.bigicon'] }
 { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94, valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['indicator.bigicon', 'color.stateMap(good:success;watch:warn;late:error)', 'value.color.primary'] }
 { type: 'indicator-number', icon: '↩️', cap: 'Returns', value: 37, unit: 'this week', valueStates: { good: 'value<20', watch: 'value<50', high: 'value>=50' }, styles: ['indicator.bigicon', 'color.stateMap(good:success;watch:warn;high:error)', 'value.color.primary', 'indicator.unit.color.accent'] }
@@ -96,22 +96,22 @@ Inherits all `AbstractInputElement` methods, plus:
 
 ### Metric cards in a reply
 
-A parent's `childStyles` gives every card one treatment: `stylize: 'list'` with `stylize.bento` on the parent and `params(stylize:item)` on each card, `value.major()` and `cap.main(0.75)` for the hierarchy, and `value.grouped` for thousands separators. Each card adds a divider and a sub-caption as children with `slot: 'layer'` and `indicator.sub(above)`, which places them between the caption and the value, in source order, with muted sub-caption text; plain `indicator.sub` places a child after the value instead.
+A parent's `childStyles` gives every card one treatment: `stylize: 'list'` with `stylize.bento` on the parent and `params(stylize:item)` on each card, `value.major()` and `cap.main(0.75)` for the hierarchy, and `value.grouped` for thousands separators. Each card adds a divider and a sub-caption as children with `slot: 'layer'` and `indicator.sub(above)`, which places them between the caption and the value, in source order; plain `indicator.sub` places a child after the value instead. `indicator.sub` only places the row, so the sub-caption label also adds `cap.sub` for muted sub-caption text.
 
 <!-- generated-reply-demo:kpiCards:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'wrapper', stylize: 'list', style: { width: '100%' }, styles: ['layout.autoalign', 'stylize.bento'], childStyles: ['params(stylize:item)', 'value.major()', 'cap.main(0.75)', 'value.color.primary', 'value.grouped', 'css(padding:l;gap:xs)'] }
     { type: 'indicator-number', icon: '📦', cap: 'Orders', value: 1284 }
         { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
-        { type: 'label', cap: '+8% vs last week', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: '+8% vs last week', slot: 'layer', styles: ['indicator.sub(above)', 'cap.sub'] }
     { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94 }
         { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
-        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub(above)', 'cap.sub'] }
     { type: 'indicator-number', icon: '⭐', cap: 'Rating', value: 4.7, decimalPos: 1, unit: '/ 5' }
         { type: 'hr', slot: 'layer', styles: ['indicator.sub(above)'] }
-        { type: 'label', cap: '312 reviews', slot: 'layer', styles: ['indicator.sub(above)'] }
+        { type: 'label', cap: '312 reviews', slot: 'layer', styles: ['indicator.sub(above)', 'cap.sub'] }
 ```
 ````
 
@@ -122,9 +122,9 @@ One featured figure: `indicator.vertical` with `indicator.bigicon` stacks icon, 
 <!-- generated-reply-demo:heroStat:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'indicator-number', icon: '💧', cap: 'Water saved this month', value: 2480, unit: 'litres', styles: ['indicator.vertical', 'indicator.bigicon', 'value.major()', 'cap.main(0.75)', 'value.color.primary', 'value.grouped'] }
-    { type: 'label', cap: 'About 16 full baths', slot: 'layer', styles: ['indicator.sub'] }
+    { type: 'label', cap: 'About 16 full baths', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
 ```
 ````
 
@@ -135,7 +135,7 @@ Compact facts: `indicator.inline` puts caption and value on one row; a shared wi
 <!-- generated-reply-demo:inlineFacts:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', style: { width: '100%' }, styles: ['layout.flex(direction:column)', 'css(gap:xs)'], childStyles: ['indicator.inline', 'value.color.primary', 'css(width:18rem)'] }
     { type: 'indicator-number', icon: '🛣️', cap: 'Distance', value: 12.4, decimalPos: 1, unit: 'km' }
     { type: 'indicator-number', icon: '⏱️', cap: 'Moving time', value: 58, unit: 'min' }
@@ -150,7 +150,7 @@ A stat card stacks caption, a large value and one line of context: `indicator.ve
 <!-- generated-reply-demo:statCard:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', styles: ['stylize.bento'] }
     { type: 'indicator-number', cap: 'Monthly revenue', value: 48200, unit: 'USD', styles: ['css(padding:l)', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'value.color.primary', 'value.grouped'] }
         { type: 'label', cap: '+12% vs last month', color: 'success', slot: 'layer', styles: ['indicator.sub', 'cap.sub(1)', 'color.primary'] }
@@ -164,11 +164,11 @@ Tags added the same way list what stands behind the number.
 <!-- generated-reply-demo:tagCard:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'container', styles: ['stylize.bento'] }
     { type: 'indicator-number', cap: 'Open tickets', value: 23, styles: ['css(padding:l)', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'value.color.primary'] }
-        { type: 'label', cap: 'Most reported', slot: 'layer', styles: ['indicator.sub'] }
-        { type: 'tags', data: ['Billing', 'Login', 'Export'], showCount: false, slot: 'layer', styles: ['indicator.sub'] }
+        { type: 'label', cap: 'Most reported', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
+        { type: 'tags', data: ['Billing', 'Login', 'Export'], showCount: false, slot: 'layer', styles: ['indicator.sub', 'tags.chip'] }
 ```
 ````
 

@@ -336,20 +336,21 @@ Automatic alignment
 
 Align wrapped children into common grid tracks.
 
-Measures rendered rows on resize, computes shared column spans and optionally proportional row tracks, then invokes a function-valued afterAlign callback.
+Measures rendered rows after child insertion or removal and on resize. Commits shared column spans and optional proportional row tracks, then calls afterAlign. Enable incremental to allow independent entry during progressive insertion.
 
 Requires measurable native children; use an explicit grid when deterministic authored tracks are preferable.
 
-Positional order: `afterAlign` → `scaledRows`.
+Positional order: `afterAlign` → `scaledRows` → `incremental`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
 | `afterAlign` | `functionOrString` | Not supplied | After alignment<br>Shorthand |
 | `scaledRows` | `boolean` | `true` | Scale rows |
+| `incremental` | `boolean` | `false` | Let each new item enter independently of the alignment pass. |
 
 Measures wrapped rows and assigns shared grid tracks. Compose `layout.alignlabel` explicitly when field labels should align; use `layout.flex(direction:column)` for vertical stacking.
 
-Use `afterAlign` for work that depends on completed alignment.
+Use `afterAlign` for work that depends on completed alignment. Incremental mode calls it before the updated layout paints. The default mode calls it after repaint. For children that arrive in separate updates, use `layout.autoalign(incremental:true)` to let the incoming child run its entry independently of alignment. Live JAMLL handles sibling FLIP when the grid changes. Reduced motion still aligns the grid.
 
 ```javascript jaml-playground
 export default [

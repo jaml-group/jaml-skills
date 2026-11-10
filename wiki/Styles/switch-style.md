@@ -61,6 +61,16 @@ export default [
 ];
 ```
 
+## `switch.disc`
+
+<a id="entry-switch-disc"></a>
+
+Disc box
+
+Show a single checkbox or radio switch as a large round disc.
+
+Adds disc. A checked switch shows a filled disc with a check or radio dot cut out. An indeterminate checkbox shows a lighter disc with a bar cut out. An unchecked switch shows an empty ring. The disc is sized in em, so the switch's font size sets it.
+
 ## `switch.grid`
 
 <a id="entry-switch-grid"></a>

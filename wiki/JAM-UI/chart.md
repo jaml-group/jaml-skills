@@ -26,6 +26,10 @@ The default `containLabel: true` accounts for tick labels, not axis-title cleara
 
 For charts without a grid or radar placement owner, `echarts.legend` places one visible horizontal legend at a `0.5rem` top inset when both vertical offsets are unset or `auto`. Explicit offsets, horizontal alignment, responsive media and multiple legends retain their own placement. Radar and active grid policies retain ownership. Use `echarts.legend.position` for explicit placement; a Cartesian grid is unnecessary just to move a non-Cartesian legend.
 
+## Default bar fill
+
+`chart-bar` applies the theme's component overlay gradient to each default palette fill. An explicit series or item `itemStyle.color` keeps its authored fill, including colors supplied by a preset. When the palette color or overlay colors cannot be resolved, the bar keeps its original fill.
+
 ## Bar corners
 
 `chart-bar` rounds exposed bar ends with the theme's `sys.border.radius.xs`. An end stays square where it rests on a visible baseline or a visible stack neighbour, so a stack rounds its outer end and a segment floating above an invisible offset rounds both ends. For the standard axis configuration, the baseline counts as visible when the category axis line or the value axis gridlines show; hiding both rounds both ends of each unstacked bar. This is a visibility heuristic, not geometric contact detection: offset axes, gridlines missing zero and axis clipping are not resolved. Hiding an outer stack series through the legend does not recalculate the newly exposed end. A series `itemStyle.borderRadius` takes precedence, for example `echarts.bar.itemStyle.border([4, 4, 0, 0])`. Bar series in a chart of another type keep their own styling. Stacked or negative bars carry per-item data, so formatters and chart events should read `params.value` and `params.name`; `params.data` is an item object for those series. Corners stay on the positive end, and stacks stay square, when series share a dataset in a layout that cannot be remapped safely, such as candlestick beside bars, several series on a time axis or row-based series. Per-item corner inference supports header-first column datasets. An explicit `sourceHeader: false` preserves the dataset and its `encode` mappings without sign- or stack-specific corner inference; `sourceHeader: true` explicitly identifies a header row.
@@ -335,7 +339,7 @@ Compare several series over time:
 <!-- generated-reply-demo:trend:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'chart-line', cap: 'Visits by channel', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.line.symbol(show:true)'], data: [['Month', 'Search', 'Direct'], ['Jan', 120, 80], ['Feb', 132, 90], ['Mar', 158, 96], ['Apr', 171, 104]] }
     { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
@@ -348,7 +352,7 @@ Show one series with its area:
 <!-- generated-reply-demo:singleTrend:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'chart-line', cap: 'Revenue', style: { width: '100%', height: '16rem' }, styles: ['echarts.line.gradientBg', 'echarts.line.symbol(show:true)'], data: [['Month', 'Revenue'], ['Jan', 42], ['Feb', 48], ['Mar', 45], ['Apr', 57]] }
     { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
@@ -361,7 +365,7 @@ Show parts of a total. Each stack rounds its outer end:
 <!-- generated-reply-demo:stacked:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'chart-bar', cap: 'Output by source', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.bar(stack:output;maxWidth:28)'], data: [['Quarter', 'Solar', 'Wind'], ['Q1', 30, 44], ['Q2', 52, 38], ['Q3', 61, 29], ['Q4', 34, 47]] }
     { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
@@ -374,7 +378,7 @@ Point out the highest value:
 <!-- generated-reply-demo:leader:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'chart-bar', cap: 'Sales by store', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:28)', 'echarts.bar.maxHightLight', 'echarts.bar.label(show:true;position:top)'], data: [['Store', 'Sales'], ['Elm', 42], ['Oak', 68], ['Pine', 51], ['Ash', 37]] }
     { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
@@ -387,9 +391,9 @@ Compare a benchmark where smaller is better. List the slowest first, so the best
 <!-- generated-reply-demo:ranked:start -->
 
 ````text
-```text jamll
-{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.bar.label(show:true;position:right)'], data: [['Page', 'Load time'], ['Checkout', 1380], ['Search', 1140], ['Product', 960], ['Home', 820]] }
-    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.5)'] }
+```text jamll-content
+{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.grid(right:3.5rem)', 'echarts.bar.label(show:true;position:right)'], data: [['Page', 'Load time'], ['Checkout', 1380], ['Search', 1140], ['Product', 960], ['Home', 820]] }
+    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)'] }
 ```
 ````
 
@@ -400,7 +404,7 @@ Show shares of a whole. A pie has no value axis, so put the numbers beside it: a
 <!-- generated-reply-demo:ring:start -->
 
 ````text
-```text jamll
+```text jamll-content
 { type: 'chart-pie', cap: 'Traffic share', style: { width: '100%', height: '16rem' }, styles: ['echarts.tooltip(trigger:item)', 'echarts.pie.ring', 'echarts.pie.position(innerR:45%;outerR:70%;cX:35%)'], data: [['Source', 'Share'], ['Search', 46], ['Direct', 31], ['Referral', 23]] }
     { type: 'container', slot: 'layer', styles: ['layout.flex(direction:column)', 'css(gap:xs;position:absolute;right:15%;top:50%;transform:translateY(-50%))'], childStyles: ['indicator.inline', 'value.color.primary', 'css(width:9rem)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Search', value: 0.46, styles: ['indicator.icon.text(color:ac0)'] }

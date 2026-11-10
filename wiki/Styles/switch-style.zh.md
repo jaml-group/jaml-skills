@@ -61,6 +61,16 @@ export default [
 ];
 ```
 
+## `switch.disc`
+
+<a id="entry-switch-disc"></a>
+
+圆盘选框
+
+将单个复选或单选开关显示为大圆盘。
+
+添加 disc。选中时为镂空对勾或圆点的实心圆盘。部分选中的复选框为镂空横线的浅色圆盘，未选时为空心圆环。圆盘以 em 设定尺寸，由开关字号决定。
+
 ## `switch.grid`
 
 <a id="entry-switch-grid"></a>

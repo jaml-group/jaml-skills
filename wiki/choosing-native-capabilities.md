@@ -39,7 +39,7 @@ For a moving highlight on running-status text, choose [`text.shimmer`](Styles/co
 
 For an ornamental ring, arc, orbit, repeated object or particle effect, inspect `style layer.spinner.background`, `.frets`, `.comet`, `.orbit`, `.object` or `.particles`. [Spinner styles](Styles/layers/spinner.md) describe variant behavior, sizing, animation prerequisites and composition examples.
 
-Decide whether the requirement is decoration, unknown-duration activity or measured progress before choosing the visual. Use the [progress element](JAM-UI/progress.md) when a progress value is part of the contract. For the status of each stage in a sequence, use [`steps`](JAM-UI/list.md#steps). Let application state control whether busy decoration is present, provide meaningful status text, and manage pending interaction in the application. Standalone spinner rotation requires `spin`; composite roulette, radar and reddit presets rotate when it is omitted. `spin:false` stops their rotation, while independent animation effects keep their own controls.
+Decide whether the requirement is decoration, unknown-duration activity or measured progress before choosing the visual. Use the [progress element](JAM-UI/progress.md) when a progress value is part of the contract. For the status of each stage in a sequence, use [`steps`](JAM-UI/steps.md#progress). Let application state control whether busy decoration is present, provide meaningful status text, and manage pending interaction in the application. Standalone spinner rotation requires `spin`; composite roulette, radar and reddit presets rotate when it is omitted. `spin:false` stops their rotation, while independent animation effects keep their own controls.
 
 ## Move, resize, reorder or transfer data
 
@@ -157,12 +157,13 @@ A card already owns its title and [extra action slot](JAM-UI/card.md#slots). See
 
 ## Lists, checklists and steps
 
-| Content                                    | Choose                                          | Contract to read                        |
-| ------------------------------------------ | ----------------------------------------------- | --------------------------------------- |
-| Items or instructions, flat or grouped     | `list`; `list.ordered` for an order to follow   | [Lists](JAM-UI/list.md#lists)           |
-| Tasks with completion                      | `list-todo`; `updateViaValue` for saved results | [Checklists](JAM-UI/list.md#checklists) |
-| Status of each stage and the current stage | `steps`; `steps.horizontal` for one row         | [Steps](JAM-UI/list.md#steps)           |
-| Records compared across several fields     | `table`                                         | [table](JAM-UI/table.md)                |
+| Content                                | Choose                                          | Contract to read                                    |
+| -------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| Items, flat or grouped                 | `list`                                          | [Lists](JAM-UI/list.md#lists)                       |
+| Instructions to follow in sequence     | `steps` without statuses                        | [How-to steps](JAM-UI/steps.md#how-to-instructions) |
+| Tasks with completion                  | `list-todo`; `updateViaValue` for saved results | [Checklists](JAM-UI/list.md#checklists)             |
+| Process progress and the current stage | `steps` with statuses                           | [Progress](JAM-UI/steps.md#progress)                |
+| Records compared across several fields | `table`                                         | [table](JAM-UI/table.md)                            |
 
 These own their item roles, keyboard and checkboxes. Key records by `id`; the application owns step status and completion data.
 

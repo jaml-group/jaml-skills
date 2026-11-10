@@ -185,6 +185,7 @@ export default {
 
 ## Notes
 
+-   Use [`switch.disc`](../Styles/switch-style.md#entry-switch-disc) for a round checkbox or radio switch.
 -   Setting `value` to `true` automatically clears `indeterminate` to `false`.
 -   The `checked` property is a direct alias for `value`. Reading `el.checked` returns the current boolean state; setting `el.checked = true` is equivalent to `el.setValue(true)`.
 -   The `button`/`ghost`/`outline` subtypes apply `Stylize.button` and add `jam-ghost` for ghost mode.

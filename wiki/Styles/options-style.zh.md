@@ -93,6 +93,16 @@ export default [
 ];
 ```
 
+## `options.disc`
+
+<a id="entry-options-disc"></a>
+
+圆盘选框
+
+将选项、待办列表项或表格行的复选框和单选框显示为大圆盘。
+
+添加 disc。选中时为镂空对勾或圆点的实心圆盘。部分选中的复选框为镂空横线的浅色圆盘，未选时为空心圆环。选项和待办列表以 em 设定圆盘尺寸，由字号决定；表格行的圆盘填满行标记。
+
 ## `options.grid`
 
 <a id="entry-options-grid"></a>
