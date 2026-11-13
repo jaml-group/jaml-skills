@@ -56,7 +56,7 @@ Positional order: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filt
 | `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` | Entry animation |
 | `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` | Exit animation |
 
-Standard layer args also apply: `zIndex`, `opacity`, `mask`, `filter`, `padding`, `borderRadius`, `entryAnimation`, `exitAnimation`, etc.
+A layer’s `clipPath` or `mask` also clips the visible result of its `filter`, including the shadow from `dropShadow`. For a glowing rim use [`layer.glow`](./layer.md#entry-layer-glow). For a shadow cast by a filled shape use [`layer.shade`](./layer.md#entry-layer-shade). Both keep the filter on the outer layer and clip the paint inside it. To build this arrangement yourself, clip or mask an inner element or pseudo-element and put the drop-shadow filter on the outer layer. [`layer.ribbon.bookmark`](./ribbon.md#entry-layer-ribbon-bookmark) uses a filter on the ribbon layer and a clip on its `::after`.
 
 ```javascript jaml-playground
 export default [

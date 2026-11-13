@@ -49,7 +49,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `1rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `true`, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -122,7 +122,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `1rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `true`, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -186,7 +186,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `1rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | Not supplied | Rotation<br>Omit to keep preset motion, or pass false to stop rotation throughout this composite. Other values do not override directions fixed by the preset. This does not disable independent animation effects.<br>Options: `false` — None, `true`, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |

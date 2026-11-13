@@ -465,11 +465,11 @@ export default [
 
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
-| `colors` | `array` | 颜色集 |
+| `colors` | `array` | 前景区域的填充色集，默认为地图的色集。 |
 | `z` | `number` | z |
 | `offsetX` | `number` | 地图水平偏移量 |
 | `offsetY` | `number` | 地图垂直偏移量 |
-| `shadow` | `dictionaryOrString` | 阴影 |
+| `shadow` | `dictionaryOrString` | 前景区域的阴影令牌、阴影对象或 `none`。 |
 | `shadowColor` | `dictionaryOrString` | 阴影颜色 |
 | `shadowBlur` | `number` | 阴影模糊度 |
 | `shadowOffsetX` | `number` | 阴影水平偏移量 |
@@ -482,17 +482,18 @@ export default [
 | `borderJoin` | `string` | 边框连接类型 |
 | `borderMiterLimit` | `number` | 边框斜接限制 |
 | `opacity` | `number` | 透明度 |
-| `tuner` | `functionOrString` | 颜色调整器 |
+| `tuner` | `functionOrString` | 使用命名的颜色调整器或 JavaScript 回调转换前景填充色集。回调接收规范化的 `chroma.Color` 并返回 `chroma.Color`。显式设置优先于地图元素的调整器。调整时使用纯色。 |
 | `showLabel` | `boolean` | 是否显示前景标签 |
-| `label` | `dictionary` | 前景标签 |
+| `label` | `dictionary` | 内置前景地名。`color` 可设为主题颜色令牌或 CSS 颜色，`textShadow` 可设为文字阴影令牌、阴影对象或 `none`。 |
 | `hover` | `dictionary` | 高亮效果 |
 
-Geographic map chart. `Styles.echarts.map()` updates the foreground map defaults; it does not create another geo layer.
+Use this style for the existing foreground regions and their built-in names. In a theme, put it on the map itself under `map-standard` → `&`. See [standard role recipes](../Theme/authoring.md#standard-role-recipes) for the complete recipe shape and the separate selectors for overlaid JAML items.
 
-Positive offsets move the map right or down. Individual shadow fields override the corresponding shared shadow fields. JavaScript tuner callbacks receive each normalized `chroma.Color`.
+The built-in foreground name style starts with white ink in light mode and near-white ink in dark mode, independent of the region fill. Set `label.color` alongside the fill palette and tuner. Foreground names are drawn for the highlighted regions on map levels that show the native name series. Either `showLabel: false` or `label.show: false` hides those names.
 
-Map offsets are converted through each ECharts geo coordinate system, so they remain pixel-based after zooming or resizing.
-Either `showLabel: false` or `label.show: false` hides the corresponding labels. The global deferred-shadow precedence rules also apply to `label.textShadow`.
+For both foreground and replicated layers, `border: 'none'` clears the border. Use `borderColor`, `borderWidth` and, as needed, `borderType`, `borderCap`, `borderJoin` or `borderMiterLimit` for a visible outline. Numeric border widths are ECharts pixels. Length strings such as `0.0625rem` are converted for ECharts. The `shadow` and `label.textShadow` shorthands accept a matching theme token, a `{ color, blur, offsetX, offsetY }` object, or `'none'`. Explicit shadow fields override the matching object fields. `'none'` clears all fields of that shadow.
+
+Numeric offsets are ECharts pixels. Positive values move the map right or down, and the geo alignment pipeline keeps the offsets pixel-based through zoom and resize.
 
 #### `echarts.map.background`
 
@@ -556,11 +557,11 @@ merge 无法获得几何数据时，不追加图层。图层偏移属于地图�
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
 | `merge` | `boolean` | 是否合并 |
-| `colors` | `array` | 颜色集 |
+| `colors` | `array` | 新增图层的填充色集，默认为地图的色集。 |
 | `z` | `number` | z |
 | `offsetX` | `number` | 地图水平偏移量 |
 | `offsetY` | `number` | 地图垂直偏移量 |
-| `shadow` | `dictionaryOrString` | 阴影 |
+| `shadow` | `dictionaryOrString` | 图层的阴影令牌、阴影对象或 `none`。 |
 | `shadowColor` | `dictionaryOrString` | 阴影颜色 |
 | `shadowBlur` | `number` | 阴影模糊度 |
 | `shadowOffsetX` | `number` | 阴影水平偏移量 |
@@ -573,11 +574,11 @@ merge 无法获得几何数据时，不追加图层。图层偏移属于地图�
 | `borderJoin` | `string` | 边框连接类型 |
 | `borderMiterLimit` | `number` | 边框斜接限制 |
 | `opacity` | `number` | 透明度 |
-| `tuner` | `functionOrString` | 颜色调整器 |
+| `tuner` | `functionOrString` | 使用与前景样式相同的命名调整器或回调调整本图层的填充色集。未设置时沿用地图元素的调整器。 |
 
-Creates an explicit replicated geo layer at render time.
+Adds a silent geographic layer beneath the foreground at draw time. Give it its own region fills, tuner, border, opacity and shadow. Its defaults use the map color set and element tuner. A foreground style’s `colors` and `tuner` apply to that foreground.
 
-Merged geometry is cached per source map and sorted region set. The layer uses the foreground map styling family, excluding `showLabel`, `label` and `hover`.
+Use `merge: true` for one silhouette of the highlighted regions, or omit it to draw the regions individually. Merged geometry is cached per source map and sorted region set. Use the [foreground map style](#entry-echarts-map) for built-in name ink and visibility.
 
 #### `echarts.map.layer.image`
 
@@ -1163,7 +1164,8 @@ Calendar coordinate system. Args: `width`, `height`, `range`, `cellSize`, `orien
 
 ## Utility styles
 
--   **`echarts.shadow`** — shadow config. Sub-style: `shadow.item` (offsetX, offsetY, blur, color).
+-   [`echarts.shadow.item`](#entry-echarts-shadow-item) sets the native single shadow. [`echarts.shadow.layered`](#entry-echarts-shadow-layered) paints a layered box-shadow recipe around bars, pies, and named custom paths.
+-   [`echarts.border.custom`](#entry-echarts-border-custom) supplies outline defaults for named shapes in a custom series.
 -   **`echarts.animation`** — shared series animation type, easing and index-based delay. Args: `delay`, `type`, `easing`. Sub-style: `animation.scale`.
 
 ---
@@ -2509,6 +2511,28 @@ pie.ring 用它显示中心内容；title.text 需单独设置。
 | `color` | `functionOrString` | 颜色 |
 | `opacity` | `number` | 透明度 |
 
+## `echarts.border.custom`
+
+<a id="entry-echarts-border-custom"></a>
+
+自定义形状描边
+
+为自定义系列中具名的形状应用统一描边。
+
+为匹配的形状提供默认的 `stroke` 和 `lineWidth`。渲染器显式指定的描边颜色和宽度分别优先。
+
+用于通过函数式 `renderItem` 绘制自定义系列的图表，并为目标形状设置匹配的 `name`。
+
+描边在图表重绘时应用。移除样式会撤销绘制任务，并重绘仍连接的图表。
+
+位置参数顺序: `target` → `color` → `width`.
+
+| 参数 | 类型 | 契约 |
+| --- | --- | --- |
+| `target` | `string` | 自定义系列渲染器返回的形状名称，也可匹配组内的形状。 |
+| `color` | `string` | 描边颜色。可使用 CSS 颜色或兼容的主题颜色令牌。 |
+| `width` | `numberOrString` | 正数描边宽度。数值使用 ECharts 像素。rem、em 或 px 长度和兼容的主题宽度令牌会在渲染前解析。 |
+
 ## `echarts.geo.itemStyle`
 
 <a id="entry-echarts-geo-itemstyle"></a>
@@ -2851,6 +2875,28 @@ pie.ring 用它显示中心内容；title.text 需单独设置。
 | `backgroundColor` | `functionOrString` | 未提供 | 背景色 |
 | `show` | `boolean` | `true` | 显示 |
 | `formatter` | `functionOrString` | 未提供 | 格式化器 |
+
+## `echarts.shadow.layered`
+
+<a id="entry-echarts-shadow-layered"></a>
+
+系列多层阴影
+
+为柱形、饼图和具名自定义形状应用主题的多层阴影。
+
+使用图表解析后的盒阴影配方。完整且均匀的饼图共用一个轮廓，环形图保留内孔。非完整或不均匀的饼图使用各自的扇区。
+
+图表渲染时重新计算装饰。移除样式会清除其装饰，并恢复受影响图形的原生阴影。
+
+可用于图表的 `styles` 或主题的 `chart-standard` 配方。为自定义填充路径设置与 `target` 匹配的名称。原生单层阴影选项使用 `echarts.shadow.item`。
+
+位置参数顺序: `shadow` → `target` → `wholeStack`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `shadow` | `string` | `l` | 主题盒阴影尺寸或 CSS `box-shadow` 值，支持多层、内阴影和扩展距离。<br>支持简写 |
+| `target` | `string` | 未提供 | 自定义系列项中有填充的路径名称。原生柱形和饼图按系列类型匹配。 |
+| `wholeStack` | `boolean` | `true` | 为相连的同号堆叠柱形绘制一个阴影。设为 `false` 可为每个柱段分别绘制。 |
 
 ## `echarts.title.position`
 

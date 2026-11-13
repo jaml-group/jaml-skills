@@ -8,7 +8,7 @@ In a theme file, the `styles` section is not only for raw CSS. It registers glob
 -   `Styles.css(...)`, `Styles.rule(...)`, style strings, or custom style objects for normal CSS style work.
 -   style plugins that add classes, layers, runtime listeners, measurements, animation helpers, or other JavaScript behavior.
 
-The `styles` object uses the same selector-to-style-array grammar as an element's `descStyles` dictionary, but at theme scope. Each selector key scopes its registered styles. Use the reserved `document.header` entry for a complete document-level stylesheet. Theme-owned registrations are removed when that theme is unapplied, and attachment order controls cascade priority; a theme-root selector is not added.
+The theme’s `styles` object and an element’s `descStyles` share the selector syntax. Each selector key scopes its registered styles. Use the reserved `document.header` entry for a complete document-level stylesheet. Theme-owned registrations are removed when that theme is unapplied, and attachment order controls cascade priority; a theme-root selector is not added.
 
 Selector refinement stops at that JavaScript dictionary boundary:
 
@@ -20,7 +20,11 @@ Selector refinement stops at that JavaScript dictionary boundary:
 
 Do not write `list-legend > item` in SCSS expecting Jam-UI expansion. Sass emits it unchanged as ordinary type selectors.
 
-Nested objects are interpreted as nested selectors. Array values are interpreted as `StyleOption[]`. Plain objects inside an array become `Styles.css(...)`; `{ method, args }` objects call the named style method; strings and style plugin objects are parsed through the normal style runtime.
+### Style entry forms
+
+Nested objects in the theme’s `styles` map define selectors. In each selector’s array, use a registered style path string or a constructed style such as `Styles.layer.background(args)`. Theme arrays also accept two plain object forms. A `{ method, args }` entry calls the registered style factory named by `method` with `args`. A CSS declaration dictionary such as `{ position: 'relative' }` becomes `Styles.css(...)`. For an anonymous plugin-backed style, pass the style returned by `Styles.style({ desc, plugins })()`.
+
+In a component’s `styles` or `descStyles` arrays, use a style path string or call the factory directly with its argument object. Use `Styles.css(declarations)` for a CSS dictionary in those arrays. The [component style formats](../Styles/styles.md#styleoption-formats) describe the anonymous style object form.
 
 Every `Theme` starts with Jam-UI's small built-in baseline map; its own `styles` object replaces an entry with the same selector key. When no theme is selected, that baseline map is registered globally. Treat it as an overrideable implementation default, not as a catalogue of stable theme recipes: its selectors and treatments may evolve with the framework.
 
@@ -116,7 +120,7 @@ jam-table > .jam-td {
 
 `Styles.stylesheet(importedStyle)` in a theme’s `document.header` entry attaches a complete document-level stylesheet. Other registration keys scope its element selectors to that key, for both imported strings and dictionary-form sheets. Use `document.header` for a complete theme sheet; registering that same sheet under `button`, for example, changes its selector scope.
 
-Keep the imported theme stylesheet unwrapped. Jam-UI attaches the compiled CSS when the theme is applied, so attachment time—not a theme-root selector—controls priority. The imported string does not pass through `refineSelector()`; use the literal role selectors described above.
+Keep the imported theme stylesheet unwrapped. Jam-UI attaches the compiled CSS when the theme is applied, so attachment time—not a theme-root selector—controls priority. The document order is: the framework stylesheet, the built-in token values, then the theme's registered stylesheets, and finally the theme's token values. Styles an application registers after the theme, such as element `descStyles`, follow it and win at equal specificity. A theme rule therefore wins over a framework rule of equal specificity; to override a more specific framework rule, match its specificity rather than adding a wrapper. The imported string does not pass through `refineSelector()`; use the literal role selectors described above.
 
 ```scss
 .jam-sidebar-style {
@@ -177,7 +181,7 @@ export default {
 
 `document.header` is the reserved registration key that keeps a complete stylesheet at document scope. `button` and `tile` are style keys that apply style plugins when matching elements resolve external theme styles.
 
-Think of this as a theme-level `descStyles` map: each key is a selector, and each value is the same `StyleOption[]` grammar used by normal JAML element styles.
+Each key is a selector. See [style entry forms](#style-entry-forms) for the accepted array entries.
 
 ## Reuse Built-In Style Recipes
 
@@ -191,6 +195,50 @@ Prefer built-in style plugins when they already own the semantic treatment or ru
 | Child-group layout | `group.bento`, `group.gridline`, `group.stripy`, `group.divider` |
 
 Attach them in JAML or the theme `styles` map. A theme may tune the framework-owned selectors they emit, but it should not reproduce their classes, child management, or runtime behavior in a project-specific selector.
+
+## Decorative Layers
+
+Decoration that sits on a surface — corner brackets, gloss, stripes, grids, scanlines, glows that follow the pointer — comes from the [layer styles](../Styles/layers/layer.md). A layer is a light-DOM child projected through the host's `layerslot`; it brings its own lifecycle, accent-color sync and cleanup. Choose the layer before reaching for pseudo-elements or stacked background images:
+
+| Effect                             | Layer                                                                                                                                                                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HUD or viewfinder corner brackets  | [`layer.crosshair`](../Styles/layers/crosshair.md): accent brackets with glow that breathe on hover, with `corners` and `ticks` to choose what draws; [`hover.crosshair`](../Styles/hover.md) for one marker that moves to the hovered target |
+| Gloss, reflection, metal           | [`layer.glare.*`](../Styles/layers/glare.md): `gloss`, `reflect`, `metal`, `spot`, `light`                                                                                                                                                    |
+| Static patterns and gradients      | [`layer.background.*`](../Styles/layers/background.md): `stripy`, `grid`, `chess`, `bubbles`, `gradient.*`, `crystal`, `glassify`                                                                                                             |
+| Moving patterns, such as scanlines | [`layer.scroller.*`](../Styles/layers/scroller.md): `stripy`, `grid`, `particles`, `bubbles`, `text`                                                                                                                                          |
+| Pointer-following light            | [`layer.follower.*`](../Styles/layers/follower.md): `spotlight`, `edge`, `shadow`                                                                                                                                                             |
+| Ribbons and watermarks             | [`layer.ribbon.*`](../Styles/layers/ribbon.md), [`layer.watermark.*`](../Styles/layers/watermark.md)                                                                                                                                          |
+| Anything else                      | [`layer.css(...)`](../Styles/layers/css.md) with explicit position, size and `pointerEvents:none`                                                                                                                                             |
+
+Attach layers from the theme `styles` map by role key:
+
+```js
+styles: {
+    'document.header': [Styles.stylesheet(indexStyle)],
+    'main > tile': ['layer.crosshair(glow:6;width:2)'],
+    'body > app': ['layer.scroller.stripy']
+}
+```
+
+-   The theme applies its layers to existing and later-mounted matches, and switching themes removes them with the rest of the theme's recipes.
+-   An exact baseline key such as `tile` replaces the baseline entry, including its hover and entry animation; a different key such as `'main > tile'` adds the layer alongside it. See [default-style replacement](#reuse-built-in-style-recipes) above.
+-   The host needs a positioned context. Give a static role `position: relative` in the theme stylesheet; a host that is already positioned, such as `app`, works as it is. On a static host the layer measures against an unrelated ancestor.
+-   A layer starts at the host’s content position. Give a backdrop the full host with `inset: 0`. In the theme’s `styles` map, the `{ method, args }` entry passes the nested CSS dictionary to the layer factory.
+
+    ```js
+    'main > tile': [{ method: 'layer.background', args: { zIndex: -1, css: { inset: '0', clipPath: 'var(--my-clip)' } } }]
+    ```
+
+    In a component’s `styles` array, call the factory with the same arguments.
+
+    ```js
+    styles: [Styles.layer.background({ zIndex: -1, css: { inset: '0', clipPath: 'var(--my-clip)' } })];
+    ```
+
+-   Layers are projected above the host's own background. Put a backdrop behind content with `zIndex:-1` on the layer and `isolation: isolate` on the host; keep overlays click-through with `pointerEvents:none`.
+-   A layer is a descendant of its host, so the host’s `clip-path` and `overflow` apply to it. For cut corners, use [`shape.chamfer`](../Styles/shape.md#entry-shape-chamfer), clip the backdrop to `var(--jam-shape)`, and use [`layer.glow`](../Styles/layers/layer.md#entry-layer-glow) for a lit rim or [`layer.shade`](../Styles/layers/layer.md#entry-layer-shade) for a cast shadow. Leave the host unclipped so the edge, focus rings and `layer.crosshair` brackets can extend beyond it. The edge layer owns its filter, which allows a separate backdrop layer to keep its blur. When only some corners are cut, `layer.crosshair(corners:tr bl)` draws brackets on the uncut ones.
+-   Color every crosshair from the theme stylesheet with `--jam-locator-color` and `--jam-locator-glow-color`, and set its resting opacity with `--jam-locator-rest-opacity` (0.5 by default), for example on `body`. A `color` or `restOpacity` argument overrides them for one host.
+-   Each matched element gets its own layer node. Target a few surfaces (`app`, tiles, cards) rather than every control, and keep animated layers to one or two per page.
 
 ## Group Related Rules
 

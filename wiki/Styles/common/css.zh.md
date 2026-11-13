@@ -106,9 +106,9 @@ For supported properties, a bare top-level value can name a design-system token.
 | Border side shorthands and edge-color properties                                                     | `primary`, `secondary`, `tertiary`, `quaternary`                                                            | Matching `--jam-color-*-subtle`                                           |
 | Border side shorthands and edge-color properties                                                     | `subtle`, `muted`, `faint`                                                                                  | Matching `--jam-color-outline-*`                                          |
 | Border side shorthands and edge-color properties                                                     | `lowest`, `lower`, `default`, `higher`, `highest`                                                           | Matching `--jam-color-surface-*`                                          |
-| Token segments in `box-shadow`                                                                       | `xs`, `s`, `m`, `l`, `xl`, `xxl`; `primary.xs` / `primary-xs` through `primary.xl` / `primary-xl`           | Matching `--jam-shadow-*`, including compound comma-separated values      |
+| Token segments in `box-shadow`                                                                       | `xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`; `primary.xs` / `primary-xs` through `primary.xl` / `primary-xl`    | Matching `--jam-shadow-*`, including compound comma-separated values      |
 | Token segments in `text-shadow`                                                                      | `xs`, `s`, `m`; `primary.xs` / `primary-xs` through `primary.m` / `primary-m`                               | Matching `--jam-text-shadow-*`, including compound comma-separated values |
-| Single token argument in `filter: drop-shadow(...)`                                                  | Box-shadow values above                                                                                     | Matching `--jam-shadow-*`                                                 |
+| Single token argument in `filter: drop-shadow(...)`                                                  | A token that resolves to one outer shadow with no spread length                                                                                     | Matching `--jam-shadow-*`                                                 |
 
 The compact on-color values intentionally omit the dot. Use `onprimary` inside `css(color:...)`; `color.on.primary` is the separate native style path.
 
@@ -116,7 +116,7 @@ Resolution occurs before the existing color shorthands, so property semantics wi
 
 Replacement applies to the native singular `style` param (string or dictionary), `css(...)`, every state-prefixed CSS style, `Styles.props(...)`, scoped rule dictionaries, and dictionary-form `Styles.stylesheet({...})`. Dictionary replacement is recursive, so token values inside nested selector declarations in `Styles.stylesheet({...})` are resolved too. Bare values inside `calc(...)`, gradients, `var(...)`, URLs, and quoted content are left unchanged. The one function exception is `filter: drop-shadow(token)`, where a recognized single shadow token is resolved. Use an explicit `var(--jam-...)` reference for other values inside functions.
 
-Compound shadows preserve the surrounding CSS while replacing recognized segments, for example `box-shadow: xs inset, primary-xl` and `filter: blur(2px) drop-shadow(primary.xl)`.
+For example, `box-shadow: xs inset, primary-xl` preserves both shadow layers, and `filter: blur(0.125rem) drop-shadow(primary.xl)` preserves the surrounding filter. Use a drop-shadow token whose value consists of offsets, optional blur, and color. A compound, inset, or spread-bearing box shadow needs an explicit drop-shadow recipe.
 
 A stylesheet string is already compiled CSS and is not parsed for these shorthands. In particular, theme SCSS imported as `Styles.stylesheet(indexStyle)` must use explicit `var(--jam-...)` references. Use the dictionary form only when runtime property-aware replacement is intended.
 

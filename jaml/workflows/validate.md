@@ -20,6 +20,7 @@ For JAMLL checks, pass raw records with `format: "jamll"` or a `.jamll` filename
 ## Exercise behavior
 
 -   **Interaction plugins and presentation variants:** run the promised user sequence. A hover action needs target entry, popup reveal, action invocation and dismissal. Check where actions appear in each requested variant and keep deliberate keyboard and touch access.
+-   **Slotted actions:** inspect the visible action’s role and accessible name in the rendered accessibility tree. Separately test sequential focus and the supported keyboard action, as in [closable tabs](../references/JAML/tabs.md#verify-a-closable-tab).
 -   **Demos:** use representative content and confirm visible action names match their effects. Keep adversarial strings and assertion-only actions in identified regression scenarios.
 -   **Forms:** inspect the actual native input, select or textarea, and exercise keyboard and pointer behavior, confirming the backing control is disabled and named. Use canonical rule keys `minLength` and `maxLength`, and test typed-input constraints and programmatically assigned values separately.
 -   **Visuals:** inspect screenshots at the intended viewport and theme, since clipped canvas text needs visual evidence.

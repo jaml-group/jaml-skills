@@ -17,7 +17,8 @@ Honor the user's requested response format first; a non-JAML reply finishes with
 | Small view in a reply, with its contracts known    | This file: the JAMLL format, local composition contract and final check                           |
 | Reply with an open module, format or native choice | [Reply](workflows/reply.md)                                                                       |
 | Host advertises the `agui` state and response API  | [AGUI](workflows/agui.md)                                                                         |
-| New app, substantial feature, theme or migration   | [Design](workflows/design.md), [Compose](workflows/compose.md), [Validate](workflows/validate.md) |
+| New app, substantial feature or migration          | [Design](workflows/design.md), [Compose](workflows/compose.md), [Validate](workflows/validate.md) |
+| Create a theme, add swatches or restyle a theme    | [Theme authoring](workflows/theme.md)                                                             |
 | Create or change executable JAML or extensions     | [Compose](workflows/compose.md)                                                                   |
 | Restructure a project or theme                     | [Refactor](workflows/refactor.md)                                                                 |
 | Review correctness and framework fit               | [Validate](workflows/validate.md)                                                                 |

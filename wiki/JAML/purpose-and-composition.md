@@ -30,6 +30,8 @@ An element's purpose comes from its supported parts and behavior. Putting a file
 
 Ask what the addition does for the host before choosing its slot. A reporting period or status can qualify an indicator's metric. Decrement/increment buttons can extend a value input when they operate that same value through its supported contract. A slot supplies a place for content, while state ownership, keyboard behavior, layout and cleanup keep their owners. Read the selected owner and extension contracts for those responsibilities.
 
+For an action that belongs to the selected host, try its documented native `extra` slot first. Inspect the rendered accessibility tree in the target runtime with the action visible. Confirm the host and action have the intended roles and names, then exercise focus order and activation separately. Keep a wrapper or sibling when it serves an independent responsibility or resolves a specific semantic, interaction or layout gap observed in the native composition. See [closable tabs](tabs.md#verify-a-closable-tab) for a worked check.
+
 For a file preview toolbar, a filename label displays text, metadata describes the file, a zoom input edits scale, presets select scale and Download performs an action. Group those responsibilities in a suitable toolbar/container or a module that explicitly composes them.
 
 This is a conceptual ownership sketch, not a runnable definition or a new toolbar API:

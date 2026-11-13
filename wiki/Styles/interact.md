@@ -250,7 +250,7 @@ Closable
 
 Add a close affordance to a host.
 
-Creates a named close button and wires icon-slot double-click to it; the default callback removes the nearest closable host.
+Creates a named close button in the host's extra slot. Double-clicking the host icon also closes it, except on tabs. The default callback removes the closest closable host.
 
 Provide callback when closing must update application state or request confirmation.
 
@@ -258,12 +258,8 @@ Positional order: `callback` → `label`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `callback` | `function` | Runtime-determined (function) | Callback<br>Shorthand |
+| `callback` | `function` | Runtime-determined (function) | Receives the styled host. The generated close button is the callback's this value.<br>Shorthand |
 | `label` | `functionOrString` | Not supplied | Accessible close-button name: string or (host) => string. Defaults to translated Close; refreshed on locale change. |
-
-Adds a close (&times;) button. Double-clicking the icon slot also triggers close.
-
-The close callback receives the styled element. Without a custom callback, closing removes its nearest `.jam-closable` ancestor.
 
 ```javascript jaml-playground
 export default [

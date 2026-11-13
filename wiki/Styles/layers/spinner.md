@@ -8,7 +8,7 @@ Provide a host with measurable height when using percentage size, and load frame
 
 Choose the visual variant independently of application busy/progress state. The application decides when to attach or remove it; use a progress element for measured progress.
 
-These are decorative layers: they do not detect pending work, report progress, announce status or disable controls. The spin default is false; particles and optional variant animations can still animate independently.
+These decorative layers leave busy state, progress, announcements and control availability to the application. Each spinner layer sets `--jam-spinner-animation` inline as its CSS rotation shorthand. To stop rotation for `prefers-reduced-motion: reduce`, set `--jam-spinner-animation: none !important` on the generated layer in a scoped stylesheet. Use the spinner’s `class` argument to target that layer. Particles and optional variant animations can still run independently.
 
 `Styles.layer.spinner.*` provides decorative activity layers. Read [activity versus progress](../../choosing-native-capabilities.md#decorative-activity-and-actual-progress) before using them as loading UI; the entries below describe each variant’s activation and sizing requirements.
 
@@ -41,7 +41,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `4rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `true` — Clockwise, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -101,7 +101,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `1rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `true` — Clockwise, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -160,7 +160,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `1rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `true` — Clockwise, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -219,7 +219,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `0.2rem` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `true` — Clockwise, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |
@@ -281,7 +281,7 @@ Additions and overrides:
 | `inner` | `number` | Not supplied | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | `0` | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>With nonempty `text`, any enabled spin value uses counterclockwise rotation.<br>Options: `false` — None, `true` — Clockwise in object mode, `normal` — Clockwise in object mode, `reverse` — Counterclockwise |
 | `duration` | `number` | `5000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `cubic-bezier(0.65, 0.19, 0.4, 0.84)` | Easing |
@@ -333,7 +333,7 @@ Additions and overrides:
 | `inner` | `number` | `70` | Inner edge<br>Inner edge in %. Mutually exclusive with mid. When outer is also set, width need not be specified. |
 | `size` | `string` | `100%` | Dimensions<br>A non-square host makes the spinner elliptical. Specify size in a non-percentage unit to keep it circular. |
 | `width` | `string` | Not supplied | Width<br>When width is specified, setting one of outer/mid/inner is sufficient. |
-| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `normal` — Clockwise, `reverse` — Counterclockwise |
+| `spin` | `booleanOrString` | `false` | Rotation<br>Options: `false` — None, `true` — Clockwise, `normal` — Clockwise, `reverse` — Counterclockwise |
 | `duration` | `number` | `10000` | Duration |
 | `delay` | `number` | `0` | Delay |
 | `easing` | `string` | `linear` | Easing |

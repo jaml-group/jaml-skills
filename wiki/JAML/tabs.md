@@ -2,13 +2,12 @@
 
 Use `jaml.tabs(items, options?, jamlOverride?)` for a tabbed workspace whose panels retain component identity, local input and scroll state when switching. It returns a component definition; the caller mounts it through normal JAML composition. This builder requires a development runtime with native tabs support; check the installed runtime before using it in an older application.
 
-Choose `buttongroup-radio` for selecting a value without managing tab panels. Choose [a drawer or foldable layout](drawer-and-previewer.md#choose-the-folding-owner) for changing the visibility or size of an outer region. Tabs own their tab/panel relationships, keyboard navigation and retained panel lifetime; the application still owns destinations, resource identity, persistence and close authorization. Tabs do not supply an outer drawer, modal or background focus trap.
+Choose `buttongroup-radio` for selecting a value without managing tab panels. Choose [a drawer or foldable layout](drawer-and-previewer.md#choose-the-folding-owner) for changing the visibility or size of an outer region. Tabs own selection, keyboard navigation, user-initiated removal and retained panel lifetime. The application owns its destination identities and persistence. Tabs do not supply an outer drawer, modal or background focus trap.
 
 ## Compose a workspace
 
 ```javascript jaml-playground
-let view;
-let items = [
+const items = [
     { id: 'overview', label: 'Overview', content: { type: 'label', cap: 'Workspace overview' } },
     { id: 'draft', label: 'Draft', closable: true, content: { type: 'input', value: 'Keep this draft while switching tabs' } }
 ];
@@ -16,14 +15,7 @@ let items = [
 export default jaml.tabs(
     items,
     {
-        label: 'Workspace destinations',
-        onReady(handle) {
-            view = handle;
-        },
-        onClose(id) {
-            items = items.filter((item) => item.id !== id);
-            view.update(items);
-        }
+        label: 'Workspace destinations'
     },
     { style: { height: '20rem' } }
 );
@@ -40,12 +32,12 @@ Provide a bounded height when panels should scroll inside a workspace. Keep that
 | `title`    | Optional literal hover title, defaulting to `label`. Supply full path context when the visible label is shortened.           |
 | `icon`     | Optional native icon name.                                                                                                   |
 | `content`  | Required ordinary component definition, not a factory. Captured when the ID is first introduced.                             |
-| `closable` | Optional boolean, default false. Enables the native close control and Delete-key request.                                    |
+| `closable` | Optional boolean, default false. Enables the native close control and Delete-key close.                                      |
 | `disabled` | Optional boolean, default false. Excludes the tab from selection and keyboard navigation.                                    |
 
 Options are `value?: string`, `label?: string`, `onSelect?(id)`, `onClose?(id)` and `onReady?(view)`. `value` chooses the initial eligible tab; otherwise the first eligible tab is selected. `label` supplies the tablist accessible name, defaulting to `Tabs`. `onSelect` reports later selection changes, with `undefined` when no eligible tab remains. Initialize application state from `view.value` in `onReady` if needed; do not depend on an initial selection callback.
 
-`onClose(id)` is only a request. Removing an item through `view.update` accepts the close; leaving the list unchanged keeps the pane. The callback may run application confirmation logic before updating. The native close accessible name combines the translated Close label and literal item label; metadata projection refreshes it after a locale change.
+Clicking the X or pressing Delete on a closable tab removes it and destroys its panel. Optional `onClose(id)` runs after removal and before `onSelect` reports a fallback selection. Use it to mirror the closed ID in application state. If the application later calls `view.update` with a full destination list, omit the closed ID unless you intend to reopen it. The native close accessible name combines the translated Close label and literal item label; metadata projection refreshes it after a locale change.
 
 ## Update and retain
 
@@ -64,9 +56,17 @@ Removing an inactive tab preserves selection. Removing the active tab prefers it
 
 ## Keyboard and focus
 
-Left/Right and Home/End move focus without activating a pane; Enter/Space activate it. Disabled tabs are skipped and Left/Right respect RTL. Sequential Tab enters the selected tab. Delete requests closing the focused closable tab. The sibling close control is not nested inside the tab and does not add another sequential tab stop.
+Left/Right and Home/End move focus without activating a pane; Enter/Space activate it. Disabled tabs are skipped and Left/Right respect RTL. Sequential Tab enters the selected tab. Delete closes the focused closable tab. The tab button owns the named X in its extra slot. The X stays out of the Tab sequence, and hover, selection and keyboard focus cover the whole tab.
 
 Reordering and metadata updates retain focus. Removing a focused pane/tab moves focus to its fallback tab, or the empty workspace. Updates do not move focus from outside the workspace. Keyboard navigation scrolls the tab strip to reveal the focused item and its close control without scrolling the document.
+
+### Verify a closable tab
+
+Run the workspace example above and select Draft. The native tab button uses [`interact.closable`](../Styles/interact.md#entry-interact-closable) to place the X in its own `extra` slot. Tabs handles removal and panel cleanup.
+
+1. Hover Draft to reveal the X. Move the pointer from the label onto the X and check that the highlight spans the whole tab. With the pointer away, check that selected paint spans it too. Focus Draft with the keyboard and check that the ring encloses the label and X.
+2. Inspect the browser’s **Accessibility** tree while the X is visible. Check for a tab named **Draft** and a button named **Close Draft**. Chromium exposes both roles and names in this composition.
+3. From the focused tab, press Tab to move into the selected panel. The X uses `tabindex="-1"`, so it stays out of the sequential Tab order. Return focus to Draft and press Delete. Draft and its panel should disappear, and focus should move to Overview. Reopen the example and click the X to exercise the same close by pointer.
 
 ## Preview inside a tab
 

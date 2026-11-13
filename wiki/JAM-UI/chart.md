@@ -284,6 +284,8 @@ Styles.efuncs((chart, args) => {
 });
 ```
 
+On Jam-UI 2.0.0-beta.1, a theme-level `Styles.efuncs` recipe can run on a newly mounted chart and be skipped when the theme is applied to an existing chart. Use the [theme recipe checks](../Theme/authoring.md#verify-native-recipes) for both entry paths and switching away.
+
 ---
 
 ## Event hooks

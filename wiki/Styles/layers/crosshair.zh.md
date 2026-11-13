@@ -8,6 +8,8 @@
 
 Displays a crosshair corner-bracket locator around the host element. Mouse entry and movement trigger its breathing behavior; leaving returns it to a steady state. The locator stays on the host rather than following cursor coordinates. For cursor-following decoration, use a [layer.follower](./follower.md) variant with `follow: true`.
 
+With `prefers-reduced-motion: reduce` the locator stays steady instead of breathing. `corners` limits the brackets to listed corners (`tr bl`), and `ticks: false` removes the centre ticks that appear on wide or tall hosts. The brackets lie on the host border box, so the default `bias: 0` places them over the border; a positive `bias` moves them outward. Brackets keep one length on every host (2rem, shortened only when a host side is under three bracket lengths); `size` sets another length. While breathing, each bracket travels outward by a distance that follows its length; `travel` sets that distance in pixels. Themes color every crosshair through `--jam-locator-color` and `--jam-locator-glow-color`, and set the resting opacity with `--jam-locator-rest-opacity` (0.5 by default); the `color` and `restOpacity` arguments override them for one host.
+
 ---
 
 ## Args
@@ -28,11 +30,11 @@ crosshair 子元素卸载时会移除其安装在宿主上的鼠标监听器。
 
 不会选中宿主、移动应用内容，也不提供键盘或焦点行为。
 
-位置参数顺序: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration`.
+位置参数顺序: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration` → `corners` → `ticks` → `color` → `restOpacity` → `travel`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `size` | `number` | 未提供 | 大小 |
+| `size` | `number` | 未提供 | 角标长度；默认 2rem，仅在小宿主上缩短 |
 | `width` | `numberOrString` | `auto` | 边框宽度 |
 | `bias` | `number` | `0` | 边框距离 |
 | `glow` | `number` | `5` | 发光 |
@@ -43,6 +45,11 @@ crosshair 子元素卸载时会移除其安装在宿主上的鼠标监听器。
 | `clipTarget` | `any` | 未提供 | 裁剪目标 |
 | `easing` | `string` | 未提供 | 动画缓动 |
 | `duration` | `number` | 未提供 | 动画时长 |
+| `corners` | `string` | 未提供 | 显示的角<br>以空格分隔的 tl、tr、bl、br；省略时显示全部四角。 |
+| `ticks` | `boolean` | `true` | 宽或高目标上的中点刻度 |
+| `color` | `string` | 未提供 | 角标颜色 |
+| `restOpacity` | `number` | 未提供 | 静止时的不透明度 |
+| `travel` | `number` | 未提供 | 呼吸时的外移距离；默认跟随角标长度 |
 
 ```javascript jaml-playground
 export default [

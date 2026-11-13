@@ -56,7 +56,7 @@ Adds a positioned overlay with optional content on top of the element.
 | `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` | 入场动画 |
 | `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` | 出场动画 |
 
-Standard layer args also apply: `zIndex`, `opacity`, `mask`, `filter`, `padding`, `borderRadius`, `entryAnimation`, `exitAnimation`, etc.
+图层的 `clipPath` 或 `mask` 也会裁剪 `filter` 的可见效果，包括 `dropShadow` 产生的投影。边缘发光可用 [`layer.glow`](./layer.zh.md#entry-layer-glow)，填充形状的投影可用 [`layer.shade`](./layer.zh.md#entry-layer-shade)。两者都将滤镜设在外层图层上，并裁剪内部绘制内容。自行组合时，将裁剪或遮罩设在内部元素或伪元素上，将投影滤镜设在外层图层上。[`layer.ribbon.bookmark`](./ribbon.zh.md#entry-layer-ribbon-bookmark) 将滤镜设在丝带图层上，裁剪设在其 `::after` 上。
 
 ```javascript jaml-playground
 export default [

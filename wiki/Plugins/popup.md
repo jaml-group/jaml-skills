@@ -36,7 +36,7 @@ Positional order: `target` → `getcontent` → `triggerStyles` → `click2Hide`
 
 Nested popup menu
 
-Hover opens after 100 ms; leaving cancels pending opening. Click and ArrowRight/Enter/Space open immediately. On item exit a clipped safe triangle blocks underlying hover for at most 300 ms without timer renewal. Returning to the item or entering the submenu removes protection. Clicking the triangle closes that submenu branch and consumes the click. Expiry removes only protection. Position defaults right with top alignment; native placement options can override it. With click2Hide enabled, submenu action clicks close the entire ancestor popup chain after the callback; submenu-opening items keep ancestors open. Top alignment accounts for the first item inset.
+Hover opens after 100 ms; leaving cancels pending opening. Click and ArrowRight/Enter/Space open immediately. On item exit a clipped safe triangle blocks underlying hover for at most 300 ms without timer renewal. Returning to the item or entering the submenu removes protection. Clicking the triangle closes that submenu branch and consumes the click. Expiry removes only protection. Position defaults right with top alignment and flips through native placement when space is limited. With click2Hide enabled, submenu action clicks close the entire ancestor popup chain after the callback; submenu-opening items keep ancestors open. Top alignment accounts for the first item inset.
 
 Attach to content inside a PapayaPopup. Provide native menu items and use one submenu controller per menu. Submenu content may attach the same plugin for nesting.
 
@@ -46,7 +46,7 @@ Positional order: `target` → `getcontent` → `triangleDebug`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `target` | `string` | Not supplied | Class name of submenu-opening items inside this menu container. |
+| `target` | `string` | Not supplied | Class name of submenu-opening items inside this menu container. Matching Jam buttons and menuitems show a native trailing chevron. |
 | `getcontent` | `function` | Not supplied | Synchronous getcontent(item) returns native JAML content or nodes. |
 | `triangleDebug` | `boolean` | `false` | Show the clipped pointer shield with var(--jam-color-primary-mask); false by default. |
 

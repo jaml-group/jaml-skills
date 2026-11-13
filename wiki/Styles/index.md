@@ -87,6 +87,7 @@ For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md)
 - [popup-style](popup-style.md) — Presentation for native popup; select the element and behavior first.
 - [progress-style](progress-style.md) — Presentation for native progress; select the element and behavior first.
 - [select-style](select-style.md) — Presentation for native select; select the element and behavior first.
+- [shape](shape.md)
 - [steps](steps.md)
 - [stylize](stylize.md) — Deprecated compatibility aliases for group styles; use group for new composition.
 - [switch-style](switch-style.md) — Presentation for native switch; select the element and behavior first.

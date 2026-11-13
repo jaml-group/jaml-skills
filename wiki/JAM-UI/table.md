@@ -28,7 +28,9 @@ A feature-rich data table with column headers, sorting, filtering, frozen column
 
 ### Theme style variant
 
-Set the inherited native `variant` param to opt into the active theme's alternate table recipe. The built-in recipe accents the header and shows row numbers; a theme may replace that selector with its own treatment.
+Set `variant: "standard"` when the application wants the active theme to define the table's presentation and recipe behaviors. It selects the theme's `table-standard` recipe. The built-in recipe supplies an accent header, pill row numbers, gridlines, alternating row fills, and hover highlighting. A theme can replace that recipe and choose which treatments to provide. The table's `type`, column definitions, and data still configure selection, sorting, filtering, and row identity.
+
+For an application-owned recipe, start with the base table and compose the corresponding [table styles](../Styles/table-style.md) explicitly. Theme authors can compare [header, row-number, and neck treatments](../Theme/authoring.md#verify-native-recipes) when defining the recipe.
 
 ```json
 { "type": "table", "variant": "standard", "data": [{ "name": "Alice" }] }

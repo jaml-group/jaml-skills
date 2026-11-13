@@ -94,6 +94,118 @@ Layer styles and loading guidance:
 | `layer.crosshair`   | [crosshair](./crosshair.md)   | Crosshair locator anchored to the host                        |
 | `layer.overlay`     | [overlay](./overlay.md)       | Content overlay layer                                         |
 
+## `layer.glow`
+
+<a id="entry-layer-glow"></a>
+
+Glow edge
+
+Light a shaped surface's edge from both sides, as a neon rim.
+
+Adds a full-size, pointer-transparent layer at zIndex 0. The outer layer applies drop-shadow(offsetX offsetY blur color) after any common filter and dropShadow effects. The default inner spans clip the fill (transparent by default) to the shape and the stroke (accent by default) to the ring. A custom content value replaces both spans.
+
+Give the host position:relative. Use Styles.shape(...) or Styles.shape.chamfer(...) to publish --jam-shape, or pass shape directly. A chamfer also publishes --jam-shape-ring. Pass ring to supply your own stroke outline.
+
+Pair with Styles.shape.chamfer for cut-corner panels. The host carries no filter, so a backdrop layer clipped to var(--jam-shape) with backdrop-filter keeps blurring what lies behind the host.
+
+Keep the host and edge layer unclipped for an exterior glow. On a free shape with no ring, the glow comes only from the painted fill. The default transparent fill leaves the effect invisible.
+
+Positional order: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `shape` → `ring` → `fill` → `stroke` → `color` → `blur` → `offsetX` → `offsetY`.
+
+Common arguments: [layer.overlay](overlay.md#entry-layer-overlay).
+
+Additions and overrides:
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `0` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | Not supplied |  |
+| `mask` | `string` | Not supplied |  |
+| `filter` | `string` | Not supplied |  |
+| `padding` | `string` | Not supplied |  |
+| `borderRadius` | `string` | Not supplied |  |
+| `transform` | `string` | Not supplied |  |
+| `border` | `string` | Not supplied |  |
+| `clipPath` | `string` | Not supplied |  |
+| `animation` | `string` | Not supplied |  |
+| `opacity` | `number` | Not supplied |  |
+| `css` | `dictionaryOrString` | Not supplied |  |
+| `depth` | `number` | Not supplied |  |
+| `class` | `string` | Not supplied |  |
+| `attrs` | `dictionary` | Not supplied |  |
+| `rotateX` | `number` | Not supplied |  |
+| `rotateY` | `number` | Not supplied |  |
+| `translateY` | `numberOrString` | Not supplied |  |
+| `slot` | `string` | Not supplied |  |
+| `content` | `any` | `<span class="jam-edge-fill" style="position:absolute;inset:0;clip-path:var(--jam-edge-shape);background:var(--jam-edge-fill)"></span><span class="jam-edge-ring" style="position:absolute;inset:0;clip-path:var(--jam-edge-ring);background:var(--jam-edge-stroke)"></span>` |  |
+| `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` |  |
+| `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` |  |
+| `shape` | `string` | `var(--jam-shape, none)` | Shape: the clip-path the fill follows; defaults to the host's --jam-shape |
+| `ring` | `string` | `var(--jam-shape-ring, polygon(0 0, 0 0, 0 0))` | Ring: the clip-path the stroke follows; defaults to the host's --jam-shape-ring |
+| `fill` | `string` | `transparent` | Fill color inside the shape |
+| `stroke` | `string` | `var(--jam-ac-color)` | Stroke color of the ring |
+| `color` | `string` | `hsla(var(--jam-ac-h), var(--jam-ac-s), var(--jam-ac-l), 0.45)` | Glow or shadow color |
+| `blur` | `string` | `0.5rem` | Blur radius of the glow or shadow |
+| `offsetX` | `string` | `0rem` | Horizontal shadow offset |
+| `offsetY` | `string` | `0rem` | Vertical shadow offset |
+
+## `layer.shade`
+
+<a id="entry-layer-shade"></a>
+
+Shaped shadow
+
+Cast a soft shadow from a shaped surface, such as a blob modal or a cut-corner card.
+
+Adds a full-size, pointer-transparent layer at zIndex -1. The outer layer applies drop-shadow(offsetX offsetY blur color) after any common filter and dropShadow effects. The default inner spans paint the shape with fill (the surface color by default) and draw the ring with an optional stroke. A custom content value replaces both spans.
+
+Give the host position:relative. Use Styles.shape(...) or Styles.shape.chamfer(...) to publish --jam-shape, or pass shape directly. A chamfer also publishes --jam-shape-ring. Pass ring to supply your own stroke outline.
+
+Use with Styles.shape({ path, box: true }) for a shape that scales with the host, or with Styles.shape.chamfer. Leave the host unclipped so the shadow outside the shape stays visible.
+
+Keep the host and edge layer unclipped for an exterior shadow. On a free shape with no ring, shade paints a filled silhouette and casts the shadow from that fill.
+
+Positional order: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `shape` → `ring` → `fill` → `stroke` → `color` → `blur` → `offsetX` → `offsetY`.
+
+Common arguments: [layer.overlay](overlay.md#entry-layer-overlay).
+
+Additions and overrides:
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `-1` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | Not supplied |  |
+| `mask` | `string` | Not supplied |  |
+| `filter` | `string` | Not supplied |  |
+| `padding` | `string` | Not supplied |  |
+| `borderRadius` | `string` | Not supplied |  |
+| `transform` | `string` | Not supplied |  |
+| `border` | `string` | Not supplied |  |
+| `clipPath` | `string` | Not supplied |  |
+| `animation` | `string` | Not supplied |  |
+| `opacity` | `number` | Not supplied |  |
+| `css` | `dictionaryOrString` | Not supplied |  |
+| `depth` | `number` | Not supplied |  |
+| `class` | `string` | Not supplied |  |
+| `attrs` | `dictionary` | Not supplied |  |
+| `rotateX` | `number` | Not supplied |  |
+| `rotateY` | `number` | Not supplied |  |
+| `translateY` | `numberOrString` | Not supplied |  |
+| `slot` | `string` | Not supplied |  |
+| `content` | `any` | `<span class="jam-edge-fill" style="position:absolute;inset:0;clip-path:var(--jam-edge-shape);background:var(--jam-edge-fill)"></span><span class="jam-edge-ring" style="position:absolute;inset:0;clip-path:var(--jam-edge-ring);background:var(--jam-edge-stroke)"></span>` |  |
+| `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` |  |
+| `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` |  |
+| `shape` | `string` | `var(--jam-shape, none)` | Shape: the clip-path the fill follows; defaults to the host's --jam-shape |
+| `ring` | `string` | `var(--jam-shape-ring, polygon(0 0, 0 0, 0 0))` | Ring: the clip-path the stroke follows; defaults to the host's --jam-shape-ring |
+| `fill` | `string` | `var(--jam-color-surface-default)` | Fill color inside the shape |
+| `stroke` | `string` | `transparent` | Stroke color of the ring |
+| `color` | `string` | `hsla(var(--jam-ac-h), calc(var(--jam-ac-s) * 0.5), 10%, calc(var(--jam-lumi-a-base) + var(--jam-lumi-a-dev) * 24))` | Glow or shadow color |
+| `blur` | `string` | `1rem` | Blur radius of the glow or shadow |
+| `offsetX` | `string` | `0rem` | Horizontal shadow offset |
+| `offsetY` | `string` | `0.375rem` | Vertical shadow offset |
+
 ## `layer.progress`
 
 <a id="entry-layer-progress"></a>

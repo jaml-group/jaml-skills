@@ -8,6 +8,8 @@
 
 Displays a crosshair corner-bracket locator around the host element. Mouse entry and movement trigger its breathing behavior; leaving returns it to a steady state. The locator stays on the host rather than following cursor coordinates. For cursor-following decoration, use a [layer.follower](./follower.md) variant with `follow: true`.
 
+With `prefers-reduced-motion: reduce` the locator stays steady instead of breathing. `corners` limits the brackets to listed corners (`tr bl`), and `ticks: false` removes the centre ticks that appear on wide or tall hosts. The brackets lie on the host border box, so the default `bias: 0` places them over the border; a positive `bias` moves them outward. Brackets keep one length on every host (2rem, shortened only when a host side is under three bracket lengths); `size` sets another length. While breathing, each bracket travels outward by a distance that follows its length; `travel` sets that distance in pixels. Themes color every crosshair through `--jam-locator-color` and `--jam-locator-glow-color`, and set the resting opacity with `--jam-locator-rest-opacity` (0.5 by default); the `color` and `restOpacity` arguments override them for one host.
+
 ---
 
 ## Args
@@ -28,11 +30,11 @@ Use hover.crosshair for a marker that moves between hovered targets, check.frame
 
 It does not select the host, move application content or supply keyboard/focus behavior.
 
-Positional order: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration`.
+Positional order: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration` → `corners` → `ticks` → `color` → `restOpacity` → `travel`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `size` | `number` | Not supplied | Size |
+| `size` | `number` | Not supplied | Bracket length; 2rem by default, shorter only on small hosts |
 | `width` | `numberOrString` | `auto` | Border width |
 | `bias` | `number` | `0` | Border distance |
 | `glow` | `number` | `5` | Glow |
@@ -43,6 +45,11 @@ Positional order: `size` → `width` → `bias` → `glow` → `radius` → `del
 | `clipTarget` | `any` | Not supplied | Clipping target |
 | `easing` | `string` | Not supplied | Animation easing |
 | `duration` | `number` | Not supplied | Animation duration |
+| `corners` | `string` | Not supplied | Visible corners<br>Space-separated tl, tr, bl and br; all corners when omitted. |
+| `ticks` | `boolean` | `true` | Centre ticks on wide or tall targets |
+| `color` | `string` | Not supplied | Bracket color |
+| `restOpacity` | `number` | Not supplied | Resting opacity |
+| `travel` | `number` | Not supplied | Breathing travel distance; follows the bracket length by default |
 
 ```javascript jaml-playground
 export default [

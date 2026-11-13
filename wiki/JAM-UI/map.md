@@ -70,6 +70,8 @@ Inherits all params from [CashewChart](./chart.md) (which extends [AbstractOptio
 
 **Styling:** Map inherits all ECharts styling from CashewChart. Use `Styles.echarts.*` styles, `Styles.eopts` for raw options, or `Styles.efuncs` for programmatic manipulation. See [echarts styles](../Styles/echarts.md).
 
+Set `variant: 'standard'` to select the active theme’s [standard map recipe](../Theme/authoring.md#standard-map-recipe). [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) controls foreground region fills and built-in name ink. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds separately styled geography.
+
 Direct coordinate-aware map children use `stylize: 'item'`. The `map > item` parent context covers labels and related overlays without introducing a separate map-only role. Map recipes may refine the item with native variants such as `colored`, `grayed`, `external`, and `line`; `stylize: 'item-line'` is the compact form of `stylize: 'item'` plus `variant: 'line'`. Use `variant: 'autohide'` for an authored coordinate child that stays hidden until map editing exposes it.
 
 ```json

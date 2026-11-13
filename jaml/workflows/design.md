@@ -1,6 +1,6 @@
 # Design
 
-Use this for a new app, substantial feature, theme or migration. Pages, builders, CCs and framework-provided UI all follow the composition section; application setup applies only to a new app.
+Use this for a new app, substantial feature or migration. Creating or restyling a theme follows [Theme authoring](theme.md). Pages, builders, CCs and framework-provided UI all follow the composition section; application setup applies only to a new app.
 
 ## UI composition
 

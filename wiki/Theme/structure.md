@@ -5,21 +5,110 @@ Do not hardcode the parent package or workspace folder in theme architecture. A 
 Use the theme name as the folder root:
 
 ```text
-src/ref.mjs
 src/[theme]/
-├── index.mjs
-├── recipes.mjs
+├── index.mjs          default-exported theme option
 ├── styles/
-│   ├── [stylize].scss
-│   └── ...
-├── tokens/
-│   ├── sys.mjs
-│   ├── cmpt.mjs
-│   └── chart.mjs
-└── swatches/
-    ├── [swatch].mjs
-    └── ...
+│   └── index.scss     the complete theme stylesheet
+└── tokens/
+    ├── sys.mjs        complete sys, plus an optional sparse mode branch
+    ├── cmpt.mjs       overrides of supported component seams
+    └── chart.mjs      optional ECharts overrides
 ```
+
+Add these only when the theme needs them: `swatches/[swatch].mjs` for large swatch declarations, `recipes.mjs` for design-tool recipe metadata, and a project-scope `src/ref.mjs` primitive foundation shared by several themes.
+
+## Minimal Theme Module
+
+This complete module is a working starting point. Every later decision refines one of these files.
+
+`tokens/sys.mjs` merges the exported baseline so the registered `sys` is complete, and keeps mode exceptions in a sparse branch:
+
+```js
+import { hslToken as hsl, lumiOPart as lumiO, merge, px2RemToken as rem, sysLit, tokenize } from '@jam/jam-ui';
+
+export const sys = tokenize(
+    merge(sysLit, {
+        typography: { fontFamily: { ui: '"Inter", system-ui, sans-serif' } },
+        border: { radius: { s: rem(4), m: rem(6), l: rem(8) } },
+        color: {
+            surface: {
+                lowest: hsl(215, 0.12, lumiO(48)),
+                lower: hsl(215, 0.1, lumiO(47)),
+                default: hsl(215, 0.08, lumiO(46)),
+                higher: hsl(215, 0.08, lumiO(45)),
+                highest: hsl(215, 0.08, lumiO(44))
+            }
+        }
+    })
+);
+
+export const darkSys = tokenize({
+    color: {
+        surface: { lowest: hsl(215, 0.16, lumiO(48)) }
+    }
+});
+```
+
+`tokens/cmpt.mjs` overrides only supported seams and carries `sys` references:
+
+```js
+import { tokenize } from '@jam/jam-ui';
+import { sys } from './sys.mjs';
+
+export const cmpt = tokenize({
+    button: { borderRadius: sys.border.radius.s },
+    input: { focus: { outlineColor: sys.color.primary.default } }
+});
+```
+
+`styles/index.scss` holds unwrapped recipes on framework selectors:
+
+```scss
+body {
+    font-family: var(--jam-typography-font-family-ui);
+}
+
+.jam-app-style {
+    background-color: var(--jam-color-surface-lowest);
+}
+
+.jam-card-style,
+.jam-tile-style {
+    background-color: var(--jam-color-surface-default);
+    border-radius: var(--jam-border-radius-l);
+}
+```
+
+`index.mjs` registers the stylesheet and swatches. The first swatch carries the token buckets; later swatches inherit them:
+
+```js
+import indexStyle from './styles/index.scss';
+import { cmpt } from './tokens/cmpt.mjs';
+import { darkSys, sys } from './tokens/sys.mjs';
+
+export default {
+    name: 'Harbor',
+    author: 'Example',
+    styles: {
+        'document.header': [Styles.stylesheet(indexStyle)]
+    },
+    swatches: [
+        {
+            name: 'Harbor Blue',
+            accentColor: 'hsl(211 65% 43%)',
+            colorSet: ['hsl(211 65% 43%)', 'hsl(163 43% 40%)', 'hsl(31 70% 48%)', 'hsl(285 35% 54%)'],
+            tokens: { sys, cmpt, dark: { sys: darkSys } }
+        },
+        {
+            name: 'Harbor Moss',
+            accentColor: 'hsl(150 40% 36%)',
+            colorSet: ['hsl(150 40% 36%)', 'hsl(211 55% 48%)', 'hsl(36 66% 47%)', 'hsl(305 33% 51%)']
+        }
+    ]
+};
+```
+
+In Jam-UI 2.0.0 and later the page font follows `sys.typography.fontFamily.ui`; the explicit `body` rule above keeps the same result on earlier runtimes.
 
 ## `index.mjs`
 
@@ -52,7 +141,7 @@ export default {
 
 `recipes.mjs` is intentionally not imported into the runtime theme option above. Design tools, validators, and import/export scripts may import it directly when they need design-time recipe path metadata. Recipe paths compile into full CSS stylesheets before runtime.
 
-`styles` entries use the same selector-to-style-array grammar as an element's `descStyles` dictionary. They are attached globally when the theme is applied and use attachment order for priority; Jam-UI does not add a theme-class wrapper. They may mix complete imported stylesheets and runtime style plugins. Use `Styles.stylesheet(importedStyle)` for integrated SCSS. Use normal style/plugin entries when the theme needs behavior that CSS alone cannot express.
+The `styles` map shares selector syntax with element `descStyles`. See [theme style entry forms](./stylesheets.md#style-entry-forms) for the theme’s array values. They are attached globally when the theme is applied and use attachment order for priority; Jam-UI does not add a theme-class wrapper. They may mix complete imported stylesheets and runtime style plugins. Use `Styles.stylesheet(importedStyle)` for integrated SCSS. Use normal style/plugin entries when the theme needs behavior that CSS alone cannot express.
 
 Only selector keys in the JavaScript `styles` object and element `descStyles` receive simple selector refinement. Imported SCSS does not: write literal runtime selectors such as `.jam-list-style[jam-variant='legend'] > .jam-item-style`, never the `list-legend > item` dictionary shorthand.
 
@@ -60,19 +149,13 @@ When the theme package build uses `src/*/index.mjs` as input, each theme folder 
 
 ## `styles/`
 
-`styles/` contains complete SCSS stylesheets for the theme.
-
-Keep files flat under `styles/`. Name files by the main runtime role they cover:
+`styles/index.scss` is the complete stylesheet registered under `document.header`. When it grows, split it into flat partials named by the main runtime role they cover and `@use` them from `index.scss`, so the build still produces one integrated stylesheet:
 
 ```text
-styles/header.scss
+styles/index.scss
 styles/sidebar.scss
-styles/main.scss
-styles/panel.scss
 styles/popup.scss
 ```
-
-Prefer one integrated stylesheet per role key at build time.
 
 Keep `index.scss` unwrapped and use the role-driven selector structure described in [Stylesheets](stylesheets.md). Keep recipes role-driven; a role may be refined by a stable `jam-variant` value. `body`, JAML elements, and built-in plugin roles remain available as framework-owned roots or refinements, followed by nested connectors and framework states. Theme-local custom properties are allowed; project-dependent custom classes are not.
 
@@ -157,7 +240,25 @@ A folder-theme build can emit one module per theme:
 src/*/index.mjs -> dist/[theme].mjs
 ```
 
-For automatic discovery, emit a `themes.json` index beside the compiled theme modules.
+Each compiled module is a browser ES module whose default export is the theme option. The build produces it as follows:
+
+-   Imports from `@jam/jam-ui` resolve to the runtime's `jam` global (for example `jam.tokenize`, `jam.merge`, `jam.sysLit`), so the module carries no copy of the framework.
+-   `Styles` is a runtime global and is used directly.
+-   The SCSS import compiles to a CSS string that `Styles.stylesheet(...)` receives.
+
+In a project without an existing themes build, configure the bundler with `@jam/jam-ui` as an external mapped to the global `jam` and an SCSS plugin that inlines compiled CSS as a string, or write the module by hand with those globals and a CSS string.
+
+A watch build resolves theme entry points when it starts: after adding a theme folder, restart the watch build. The theme is ready when its module is served from the themes directory and its file appears by `name` in `themes.json`. After each rebuild, confirm the served module changed and reload the page fully; changing only the URL hash keeps the previously loaded theme module.
+
+For automatic discovery, emit a `themes.json` index beside the compiled theme modules. It is a JSON array with one entry per module; the runtime reads each entry's `name`, the module file name:
+
+```json
+[{ "name": "harbor.mjs" }, { "name": "studio.mjs" }]
+```
+
+A development server may generate this file as a directory listing with extra fields such as `type`, `mtime` and `size`; the runtime reads only `name`.
+
+Theme and swatch pickers display the `name` values. Choose names that read well as labels; the runtime shows a localized label only for names the framework's own translations already cover.
 
 At runtime, `initThemes()` reads `${Theme.assetsPath}/themes.json`, loads each indexed module from the same directory, and registers its default export with `new Theme(option)`. `Theme.assetsPath` defaults to `assets/themes`; embedded hosts may set it before `jam.themeReady` starts when their assets use another base URI.
 

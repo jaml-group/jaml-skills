@@ -250,7 +250,7 @@ export default {
 
 为宿主添加关闭控件。
 
-创建带无障碍名称的关闭按钮，并将图标插槽双击连接到它；默认回调移除最近的可关闭宿主。
+在宿主的 extra 插槽创建带无障碍名称的关闭按钮。除标签页外，双击宿主图标也可关闭。默认回调移除最近的可关闭宿主。
 
 关闭时需要更新应用状态或请求确认，应提供 callback。
 
@@ -258,12 +258,8 @@ export default {
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `callback` | `function` | 运行时决定 (function) | 回调<br>支持简写 |
+| `callback` | `function` | 运行时决定 (function) | 回调接收应用此样式的宿主，this 指向生成的关闭按钮。<br>支持简写 |
 | `label` | `functionOrString` | 未提供 | 关闭按钮的无障碍名称：字符串或 (host) => string，默认使用本地化的关闭，语言切换时更新。 |
-
-Adds a close (&times;) button. Double-clicking the icon slot also triggers close.
-
-The close callback receives the styled element. Without a custom callback, closing removes its nearest `.jam-closable` ancestor.
 
 ```javascript jaml-playground
 export default [

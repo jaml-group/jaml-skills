@@ -465,11 +465,11 @@ Positional order: `colors` → `z` → `offsetX` → `offsetY` → `shadow` → 
 
 | Argument | Type | Contract |
 | --- | --- | --- |
-| `colors` | `array` | Color set |
+| `colors` | `array` | Foreground region fill palette. Defaults to the map color set. |
 | `z` | `number` | z |
 | `offsetX` | `number` | Horizontal map offset |
 | `offsetY` | `number` | Vertical map offset |
-| `shadow` | `dictionaryOrString` | Shadow |
+| `shadow` | `dictionaryOrString` | Foreground region shadow token, shadow object, or `none`. |
 | `shadowColor` | `dictionaryOrString` | Shadow color |
 | `shadowBlur` | `number` | Shadow blur |
 | `shadowOffsetX` | `number` | Horizontal shadow offset |
@@ -482,17 +482,18 @@ Positional order: `colors` → `z` → `offsetX` → `offsetY` → `shadow` → 
 | `borderJoin` | `string` | Border join type |
 | `borderMiterLimit` | `number` | Border miter limit |
 | `opacity` | `number` | Opacity |
-| `tuner` | `functionOrString` | Color tuner |
+| `tuner` | `functionOrString` | Transform the foreground fill palette with a named color tuner or a JavaScript callback from normalized `chroma.Color` to `chroma.Color`. An explicit tuner takes precedence over the map element’s tuner. Use solid colors when tuning. |
 | `showLabel` | `boolean` | Show foreground labels |
-| `label` | `dictionary` | Foreground labels |
+| `label` | `dictionary` | Built-in foreground names. Set `color` to a theme color token or CSS color, and `textShadow` to a text-shadow token, shadow object, or `none`. |
 | `hover` | `dictionary` | Highlight effect |
 
-Geographic map chart. `Styles.echarts.map()` updates the foreground map defaults; it does not create another geo layer.
+Use this style for the existing foreground regions and their built-in names. In a theme, put it on the map itself under `map-standard` → `&`. See [standard role recipes](../Theme/authoring.md#standard-role-recipes) for the complete recipe shape and the separate selectors for overlaid JAML items.
 
-Positive offsets move the map right or down. Individual shadow fields override the corresponding shared shadow fields. JavaScript tuner callbacks receive each normalized `chroma.Color`.
+The built-in foreground name style starts with white ink in light mode and near-white ink in dark mode, independent of the region fill. Set `label.color` alongside the fill palette and tuner. Foreground names are drawn for the highlighted regions on map levels that show the native name series. Either `showLabel: false` or `label.show: false` hides those names.
 
-Map offsets are converted through each ECharts geo coordinate system, so they remain pixel-based after zooming or resizing.
-Either `showLabel: false` or `label.show: false` hides the corresponding labels. The global deferred-shadow precedence rules also apply to `label.textShadow`.
+For both foreground and replicated layers, `border: 'none'` clears the border. Use `borderColor`, `borderWidth` and, as needed, `borderType`, `borderCap`, `borderJoin` or `borderMiterLimit` for a visible outline. Numeric border widths are ECharts pixels. Length strings such as `0.0625rem` are converted for ECharts. The `shadow` and `label.textShadow` shorthands accept a matching theme token, a `{ color, blur, offsetX, offsetY }` object, or `'none'`. Explicit shadow fields override the matching object fields. `'none'` clears all fields of that shadow.
+
+Numeric offsets are ECharts pixels. Positive values move the map right or down, and the geo alignment pipeline keeps the offsets pixel-based through zoom and resize.
 
 #### `echarts.map.background`
 
@@ -556,11 +557,11 @@ Positional order: `merge` → `colors` → `z` → `offsetX` → `offsetY` → `
 | Argument | Type | Contract |
 | --- | --- | --- |
 | `merge` | `boolean` | Merge |
-| `colors` | `array` | Color set |
+| `colors` | `array` | Fill palette for this added layer. Defaults to the map color set. |
 | `z` | `number` | z |
 | `offsetX` | `number` | Horizontal map offset |
 | `offsetY` | `number` | Vertical map offset |
-| `shadow` | `dictionaryOrString` | Shadow |
+| `shadow` | `dictionaryOrString` | Layer shadow token, shadow object, or `none`. |
 | `shadowColor` | `dictionaryOrString` | Shadow color |
 | `shadowBlur` | `number` | Shadow blur |
 | `shadowOffsetX` | `number` | Horizontal shadow offset |
@@ -573,11 +574,11 @@ Positional order: `merge` → `colors` → `z` → `offsetX` → `offsetY` → `
 | `borderJoin` | `string` | Border join type |
 | `borderMiterLimit` | `number` | Border miter limit |
 | `opacity` | `number` | Opacity |
-| `tuner` | `functionOrString` | Color tuner |
+| `tuner` | `functionOrString` | Tune this layer’s fill palette using the same named tuner or callback as the foreground style. Falls back to the map element’s tuner. |
 
-Creates an explicit replicated geo layer at render time.
+Adds a silent geographic layer beneath the foreground at draw time. Give it its own region fills, tuner, border, opacity and shadow. Its defaults use the map color set and element tuner. A foreground style’s `colors` and `tuner` apply to that foreground.
 
-Merged geometry is cached per source map and sorted region set. The layer uses the foreground map styling family, excluding `showLabel`, `label` and `hover`.
+Use `merge: true` for one silhouette of the highlighted regions, or omit it to draw the regions individually. Merged geometry is cached per source map and sorted region set. Use the [foreground map style](#entry-echarts-map) for built-in name ink and visibility.
 
 #### `echarts.map.layer.image`
 
@@ -1163,7 +1164,8 @@ Calendar coordinate system. Args: `width`, `height`, `range`, `cellSize`, `orien
 
 ## Utility styles
 
--   **`echarts.shadow`** — shadow config. Sub-style: `shadow.item` (offsetX, offsetY, blur, color).
+-   [`echarts.shadow.item`](#entry-echarts-shadow-item) sets the native single shadow. [`echarts.shadow.layered`](#entry-echarts-shadow-layered) paints a layered box-shadow recipe around bars, pies, and named custom paths.
+-   [`echarts.border.custom`](#entry-echarts-border-custom) supplies outline defaults for named shapes in a custom series.
 -   **`echarts.animation`** — shared series animation type, easing and index-based delay. Args: `delay`, `type`, `easing`. Sub-style: `animation.scale`.
 
 ---
@@ -2509,6 +2511,28 @@ Positional order: `color` → `opacity`.
 | `color` | `functionOrString` | Color |
 | `opacity` | `number` | Opacity |
 
+## `echarts.border.custom`
+
+<a id="entry-echarts-border-custom"></a>
+
+Custom shape outline
+
+Apply a shared outline to named shapes in a custom series.
+
+Supplies default `stroke` and `lineWidth` values for matching shapes. The renderer’s explicit stroke and width take precedence independently.
+
+Use a chart with a function-based custom-series `renderItem`, and give each target shape a matching `name`.
+
+The outline applies on chart redraw. Removing the style retires its draw task and redraws a connected chart.
+
+Positional order: `target` → `color` → `width`.
+
+| Argument | Type | Contract |
+| --- | --- | --- |
+| `target` | `string` | Name of the shape returned by a custom series renderer, including shapes nested in groups. |
+| `color` | `string` | Outline color. Accepts a CSS color or a compatible theme color token. |
+| `width` | `numberOrString` | Positive outline width. Numbers are ECharts pixels. Lengths in rem, em or px and compatible theme width tokens resolve before rendering. |
+
 ## `echarts.geo.itemStyle`
 
 <a id="entry-echarts-geo-itemstyle"></a>
@@ -2851,6 +2875,28 @@ Positional order: `width` → `height` → `rich` → `lineHeight` → `padding`
 | `backgroundColor` | `functionOrString` | Not supplied | Background color |
 | `show` | `boolean` | `true` | Show |
 | `formatter` | `functionOrString` | Not supplied | Formatter |
+
+## `echarts.shadow.layered`
+
+<a id="entry-echarts-shadow-layered"></a>
+
+Layered series shadows
+
+Give bars, pies and named custom shapes the theme’s layered shadows.
+
+Uses the chart’s resolved box-shadow recipe. A complete uniform pie shares one silhouette, preserving a ring’s hole. Partial or unequal pies use their individual sectors.
+
+Recomputes decorations as the chart renders. Removing the style clears its decorations and restores eligible marks’ native shadows.
+
+Use in the chart’s `styles` or a theme’s `chart-standard` recipe. Name filled custom paths to match `target`. Use `echarts.shadow.item` for the native single-shadow options.
+
+Positional order: `shadow` → `target` → `wholeStack`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `shadow` | `string` | `l` | Theme box-shadow size or CSS `box-shadow` value, including multiple layers, inset and spread.<br>Shorthand |
+| `target` | `string` | Not supplied | Name of a filled path in a custom-series item. Native bars and pies are matched by series type. |
+| `wholeStack` | `boolean` | `true` | Draw one shadow for connected same-sign stacked bars. Set `false` for a shadow per segment. |
 
 ## `echarts.title.position`
 

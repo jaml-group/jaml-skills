@@ -161,7 +161,7 @@ Because `style` writes inline declarations, a scoped state rule such as `hover(.
 
 ## The `styles` param
 
-Every JAM-UI element and JAML component accepts a `styles` array. Each entry is a `StyleOption`. JSON uses string paths; JavaScript can also use style builder references or results, functions, `IStyle` values, and anonymous style descriptors. Native CSS dictionaries belong in singular `style`, not `styles`.
+Every JAM-UI element and JAML component accepts a `styles` array. Each entry is a `StyleOption`. JSON uses string paths; JavaScript can also use style builder references or results, functions returning style options, `IStyle` values, and anonymous style descriptors. Use singular `style` for inline CSS declarations or `Styles.css(...)` in the array.
 
 ```json jaml-playground
 {
@@ -210,20 +210,19 @@ Rules retain their original owner when markers or DOM parents change; recovery d
 
 ## `StyleOption` formats
 
-Each entry in the `styles` array can be written in any of these forms. Use string paths in JSON; JavaScript additionally supports factory calls, builder references, functions, `IStyle` values, and object literals for custom one-off styles.
+Use registered path strings in JSON. In JavaScript, use a factory result such as `Styles.layer.background(args)` when passing an argument object. The same entry forms apply to `descStyles`. The theme’s `{ method, args }` descriptor belongs to the [theme styles map](../Theme/stylesheets.md#style-entry-forms).
 
-| Format                | Type       | Description                                           | Notes                                                                        |
-| --------------------- | ---------- | ----------------------------------------------------- | ---------------------------------------------------------------------------- |
-| String path           | `string`   | Dot-path to a style on the `Styles` global            | Leading `Styles.` prefix can be omitted. No args                             |
-| String path with args | `string`   | Dot-path with semicolon-separated args in parentheses | `"path.to.style(key:val;key2:val2)"`. Args auto-cast to declared types       |
-| Literal object string | `string`   | Dot-path with a JS object literal as args             | `"path.to.style({key:\"val\"})"`. Parsed at runtime                          |
-| `IStyle` object       | `IStyle`   | A pre-built `Style` instance                          | Returned by `Styles.path.to.style(args)`                                     |
-| Factory call          | `Function` | A style builder called with args                      | `Styles.hover.brighter({ b: 1.05 })` — JS only                               |
-| Builder reference     | `Function` | A style builder passed directly (no call)             | `Styles.hover.brighter` — when no args needed, JS only                       |
-| Plain function        | `Function` | `(el) => void`                                        | Called with the element during apply                                         |
-| Object literal        | `object`   | `{ desc, plugins }`                                   | JS only. Inline anonymous style descriptor; not a CSS declaration dictionary |
+| Format                | Type       | Description                                           | Notes                                                                  |
+| --------------------- | ---------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
+| String path           | `string`   | Dot-path to a style on the `Styles` global            | Leading `Styles.` prefix can be omitted. No args                       |
+| String path with args | `string`   | Dot-path with semicolon-separated args in parentheses | `"path.to.style(key:val;key2:val2)"`. Args auto-cast to declared types |
+| Literal object string | `string`   | Dot-path with a JS object literal as args             | `"path.to.style({key:\"val\"})"`. Parsed at runtime                    |
+| `IStyle` object       | `IStyle`   | A pre-built `Style` instance                          | Returned by `Styles.path.to.style(args)`                               |
+| Builder reference     | `Function` | A style builder passed directly (no call)             | `Styles.hover.brighter` — when no args needed, JS only                 |
+| Factory function      | `Function` | A function returning a style option                   | Invoked without arguments when parsed                                  |
+| Object literal        | `object`   | `{ desc, plugins }`                                   | JS only. Inline anonymous style descriptor                             |
 
-The `{ desc, plugins }` form describes an anonymous plugin-backed style for the `StyleStack`. It is not a native CSS dictionary such as `{ fontSize: '1.5rem' }`; put that dictionary in singular `style`.
+Use `{ desc, plugins }` for an anonymous plugin-backed style. For CSS declarations, put `Styles.css({ fontSize: '1.5rem' })` in the array or use the declaration dictionary in singular `style`.
 
 ```javascript jaml-playground
 export default {

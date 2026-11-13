@@ -386,9 +386,9 @@ Each index `jam.ac[n]` returns a builder function for color set index `n`:
 ```javascript
 jam.ac(); // → 'var(--jam-ac-color)'
 jam.ac[0](); // → 'var(--jam-ac-color-01)' — first color-set entry
-jam.ac[0](1, 1, '85%'); // → 'hsl(...)' — accent color at 85% lightness
+jam.ac[0](1, 1, '85%'); // → 'hsl(...)' — accent color at 85% lightness (a string replaces the channel; a number multiplies it)
 jam.ac[2](1, 0.5, jam.lumiO(44)); // → color set[2], half saturation, lumi-adjusted
-jam.ac[3](1, 1, 0.8, 0.5); // → set[3], 80% lightness, 50% alpha
+jam.ac[3](1, 1, 0.8, 0.5); // → set[3], 0.8 × its lightness, 50% alpha
 ```
 
 ### Theme token color builders
@@ -685,7 +685,7 @@ Studio uses semantic tokens built with adaptive `lumiO` values. Consume `--jam-c
 
 The saved choice is `jam-darkmode@milo`: `true` for Dark, `false` for Light, or `'auto'` for the system choice. The native [theme panel](JAML/component.md#theme-panel-composition-and-readiness) publishes this value. An explicit application setting can use `milo.pub('jam-darkmode', value)` after normal theme initialization. `jam.setDarkMode(value)` applies mode behavior but does not itself store its argument as a new preference; do not use it as a second persistence owner. Automatic browser mode listens to `prefers-color-scheme`; manual choice must stop that subscription. Use a runtime containing the automatic-listener cleanup correction and verify Auto → Light → OS Dark before shipping manual overrides.
 
-Wait for initialized `jam.themeReady`, then select a registered Studio theme and a swatch belonging to it. Do not overwrite saved mode on every render or panel opening. Theme swatch selection may explicitly change mode; Studio's Jade swatch leaves mode unspecified. Closing a settings popup releases its view, not the application's body theme or global preference owner.
+Wait for initialized `jam.themeReady`, then select a registered Studio theme and a swatch belonging to it. Do not overwrite saved mode on every render or panel opening. Theme swatch selection may explicitly change mode; Studio's swatches leave mode unspecified. Closing a settings popup releases its view, not the application's body theme or global preference owner.
 
 Changing the panel's theme selection confirms the action, persists `jam-theme` and uses `Theme.reload()` when the document has focus. Its default reload is page navigation. An embedded host must supply its intended reload contract and preserve application state; selecting a theme is distinct from the in-place Dark/Light/Auto controls.
 

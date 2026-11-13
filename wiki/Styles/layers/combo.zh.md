@@ -49,7 +49,7 @@ For `combo.spinner.roulette`, `.radar` and `.reddit`, omitted `spin` keeps the p
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `1rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `true`, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -122,7 +122,7 @@ export default [
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `1rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `true`, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -186,7 +186,7 @@ Reddit
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `1rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | 未提供 | 旋转<br>省略时保留预设运动，或传入 false 停止整个组合的旋转。其他值不会覆盖预设固定的方向。这不禁用独立的动画效果。<br>选项: `false` — 无, `true`, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |

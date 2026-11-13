@@ -94,6 +94,118 @@ Layer styles and loading guidance:
 | `layer.crosshair`   | [crosshair](./crosshair.md)   | Crosshair locator anchored to the host                        |
 | `layer.overlay`     | [overlay](./overlay.md)       | Content overlay layer                                         |
 
+## `layer.glow`
+
+<a id="entry-layer-glow"></a>
+
+发光边缘
+
+为有形状的表面边缘从内外两侧发光，形成霓虹轮廓。
+
+添加全尺寸、不响应指针的图层（zIndex 0）。外层先应用通用的 filter 和 dropShadow 效果，再应用 drop-shadow(offsetX offsetY blur color)。默认的两个内部元素分别将填充（默认透明）裁剪为形状，将描边（默认强调色）裁剪为描边环。自定义 content 会替换这两个元素。
+
+宿主需设置 position:relative。使用 Styles.shape(...) 或 Styles.shape.chamfer(...) 发布 --jam-shape，也可直接传入 shape。切角形状还会发布 --jam-shape-ring。传入 ring 可指定自定义描边轮廓。
+
+与 Styles.shape.chamfer 搭配用于切角面板。宿主不带 filter，因此裁剪为 var(--jam-shape) 并带 backdrop-filter 的背景图层仍可模糊宿主后方内容。
+
+若要让发光向外延伸，请保持宿主和边缘图层不裁剪。自由形状无描边环时，发光仅来自已绘制的填充。默认填充透明，效果不可见。
+
+位置参数顺序: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `shape` → `ring` → `fill` → `stroke` → `color` → `blur` → `offsetX` → `offsetY`.
+
+公共参数: [layer.overlay](overlay.zh.md#entry-layer-overlay).
+
+新增与覆盖:
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `0` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | 未提供 |  |
+| `mask` | `string` | 未提供 |  |
+| `filter` | `string` | 未提供 |  |
+| `padding` | `string` | 未提供 |  |
+| `borderRadius` | `string` | 未提供 |  |
+| `transform` | `string` | 未提供 |  |
+| `border` | `string` | 未提供 |  |
+| `clipPath` | `string` | 未提供 |  |
+| `animation` | `string` | 未提供 |  |
+| `opacity` | `number` | 未提供 |  |
+| `css` | `dictionaryOrString` | 未提供 |  |
+| `depth` | `number` | 未提供 |  |
+| `class` | `string` | 未提供 |  |
+| `attrs` | `dictionary` | 未提供 |  |
+| `rotateX` | `number` | 未提供 |  |
+| `rotateY` | `number` | 未提供 |  |
+| `translateY` | `numberOrString` | 未提供 |  |
+| `slot` | `string` | 未提供 |  |
+| `content` | `any` | `<span class="jam-edge-fill" style="position:absolute;inset:0;clip-path:var(--jam-edge-shape);background:var(--jam-edge-fill)"></span><span class="jam-edge-ring" style="position:absolute;inset:0;clip-path:var(--jam-edge-ring);background:var(--jam-edge-stroke)"></span>` |  |
+| `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` |  |
+| `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` |  |
+| `shape` | `string` | `var(--jam-shape, none)` | 形状：填充所跟随的 clip-path，默认取宿主的 --jam-shape |
+| `ring` | `string` | `var(--jam-shape-ring, polygon(0 0, 0 0, 0 0))` | 描边环：描边所跟随的 clip-path，默认取宿主的 --jam-shape-ring |
+| `fill` | `string` | `transparent` | 形状内的填充色 |
+| `stroke` | `string` | `var(--jam-ac-color)` | 描边环的颜色 |
+| `color` | `string` | `hsla(var(--jam-ac-h), var(--jam-ac-s), var(--jam-ac-l), 0.45)` | 发光或阴影颜色 |
+| `blur` | `string` | `0.5rem` | 发光或阴影的模糊半径 |
+| `offsetX` | `string` | `0rem` | 阴影水平偏移 |
+| `offsetY` | `string` | `0rem` | 阴影垂直偏移 |
+
+## `layer.shade`
+
+<a id="entry-layer-shade"></a>
+
+形状阴影
+
+让有形状的表面（如不规则模态框或切角卡片）投下柔和阴影。
+
+添加全尺寸、不响应指针的图层（zIndex -1）。外层先应用通用的 filter 和 dropShadow 效果，再应用 drop-shadow(offsetX offsetY blur color)。默认的两个内部元素以 fill（默认表面色）绘制形状，并以可选的 stroke 绘制描边环。自定义 content 会替换这两个元素。
+
+宿主需设置 position:relative。使用 Styles.shape(...) 或 Styles.shape.chamfer(...) 发布 --jam-shape，也可直接传入 shape。切角形状还会发布 --jam-shape-ring。传入 ring 可指定自定义描边轮廓。
+
+与 Styles.shape({ path, box: true }) 搭配可得到随宿主缩放的形状，也可与 Styles.shape.chamfer 搭配。宿主保持不裁剪，以便形状外的阴影可见。
+
+若要让投影向外延伸，请保持宿主和边缘图层不裁剪。自由形状无描边环时，阴影图层绘制填充轮廓，投影来自该填充。
+
+位置参数顺序: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `shape` → `ring` → `fill` → `stroke` → `color` → `blur` → `offsetX` → `offsetY`.
+
+公共参数: [layer.overlay](overlay.zh.md#entry-layer-overlay).
+
+新增与覆盖:
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `-1` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | 未提供 |  |
+| `mask` | `string` | 未提供 |  |
+| `filter` | `string` | 未提供 |  |
+| `padding` | `string` | 未提供 |  |
+| `borderRadius` | `string` | 未提供 |  |
+| `transform` | `string` | 未提供 |  |
+| `border` | `string` | 未提供 |  |
+| `clipPath` | `string` | 未提供 |  |
+| `animation` | `string` | 未提供 |  |
+| `opacity` | `number` | 未提供 |  |
+| `css` | `dictionaryOrString` | 未提供 |  |
+| `depth` | `number` | 未提供 |  |
+| `class` | `string` | 未提供 |  |
+| `attrs` | `dictionary` | 未提供 |  |
+| `rotateX` | `number` | 未提供 |  |
+| `rotateY` | `number` | 未提供 |  |
+| `translateY` | `numberOrString` | 未提供 |  |
+| `slot` | `string` | 未提供 |  |
+| `content` | `any` | `<span class="jam-edge-fill" style="position:absolute;inset:0;clip-path:var(--jam-edge-shape);background:var(--jam-edge-fill)"></span><span class="jam-edge-ring" style="position:absolute;inset:0;clip-path:var(--jam-edge-ring);background:var(--jam-edge-stroke)"></span>` |  |
+| `entryAnimation` | `string` | `fade-in 200ms ease-in-out both` |  |
+| `exitAnimation` | `string` | `fade-out 200ms ease-in-out both` |  |
+| `shape` | `string` | `var(--jam-shape, none)` | 形状：填充所跟随的 clip-path，默认取宿主的 --jam-shape |
+| `ring` | `string` | `var(--jam-shape-ring, polygon(0 0, 0 0, 0 0))` | 描边环：描边所跟随的 clip-path，默认取宿主的 --jam-shape-ring |
+| `fill` | `string` | `var(--jam-color-surface-default)` | 形状内的填充色 |
+| `stroke` | `string` | `transparent` | 描边环的颜色 |
+| `color` | `string` | `hsla(var(--jam-ac-h), calc(var(--jam-ac-s) * 0.5), 10%, calc(var(--jam-lumi-a-base) + var(--jam-lumi-a-dev) * 24))` | 发光或阴影颜色 |
+| `blur` | `string` | `1rem` | 发光或阴影的模糊半径 |
+| `offsetX` | `string` | `0rem` | 阴影水平偏移 |
+| `offsetY` | `string` | `0.375rem` | 阴影垂直偏移 |
+
 ## `layer.progress`
 
 <a id="entry-layer-progress"></a>

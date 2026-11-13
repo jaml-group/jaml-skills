@@ -127,19 +127,19 @@ Put theme/swatch semantic decisions in `sys`:
 -   `space`
 -   `border.radius`
 -   `border.width`
--   `density`
 -   `typography`
--   `height`
 -   `opacity`
 -   `border.style`
 -   `shadow`
 -   `textShadow`
+-   `gradient`
 -   `motion`
 -   `timing`
+-   `zIndex`
 
-For `sys.color`, use adaptive color builders and consult [Color System](../color.md) for exact function usage.
+For `sys.color`, use adaptive color builders with levels from the [lumi level map](./color.md#lumi-levels-and-mode-strategy), and consult [Color System](../color.md) for exact function usage.
 
-Build `shadow` and `textShadow` as complete `shadowToken(...)` values in `sys.mjs`. Include `none`, normal scales, primary scales where needed, and `onPrimary` text shadows for foregrounds rendered on primary backgrounds. Do not reassemble private shadow-part variables in SCSS.
+Build `shadow` and `textShadow` as complete `shadowToken(...)` values in `sys.mjs`. Preserve the box-shadow sizes `xxs` through `xxl` and their `primary` scale. Text-shadow sizes are `xs`, `s` and `m`, with `reverse`, `primary` and `onPrimary` variants plus `carved`. Use `onPrimary` text shadows for foregrounds on primary backgrounds. Write the CSS keyword `none` directly in a recipe that removes a shadow. Keep shadow parts inside the token rather than reassembling them in SCSS.
 
 When a semantic value needs a different literal token in one body mode, follow [Mode-Specific Overrides](./tokens.md#mode-specific-overrides). The matching fallback path must exist in the registered root.
 
@@ -221,6 +221,49 @@ Later swatches inherit omitted token buckets from the first swatch. Follow [Swat
 
 Use swatches for meaningful variations. Do not create a swatch just to compensate for a color that could be adaptive through `lumiO`.
 
+## Standard role recipes
+
+Set `variant: 'standard'` on an element to use the active theme’s standard recipe for its role or native element type. For example, `{ type: 'map', variant: 'standard' }` matches `map-standard`. For a semantic role, set both keys, as in `{ type: 'container', stylize: 'list', variant: 'standard' }`, or use `stylize: 'list-standard'`.
+
+In the theme’s `index.mjs` `styles` map, use a selector such as `map-standard` with an array of styles for the element itself. When the recipe also styles descendants, use a dictionary with `'&'` for the element’s own styles and selector subkeys for the descendants. An [exact top-level key replaces the entire baseline entry](./stylesheets.md#reuse-built-in-style-recipes), including descendant rules. Carry forward each treatment the theme should retain. Omitting the key keeps any baseline entry. Additional selectors contribute their own rules.
+
+| Standard selector      | What the theme supplies                                                                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map-standard`         | Foreground region fills, name ink, outlines and shadow, optional geographic layers, and treatments for coordinate items.                                   |
+| `table-standard`       | Header surface, row numbers, gridlines, striping and hover feedback as appropriate.                                                                        |
+| `chart-standard`       | Chart-level style plugins such as layered series shadows or outlines on tagged custom shapes.                                                              |
+| `calendar-standard`    | Coordinate-item treatments such as the `item-caption` recipe.                                                                                              |
+| `list-standard > item` | Presentation for direct items of the `list` role, such as border and hover treatment. Use this full top-level key when replacing the baseline item recipe. |
+
+### Standard map recipe
+
+Choose the region fill and foreground name ink together. [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) sets those on the existing foreground. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds a separate geographic layer for depth with its own fill, outline and shadow. The item subkeys style the coordinate-aware JAML overlays.
+
+In the following `styles` entry, `sys` is the theme’s system token module. The layer tuner keeps the depth layer dark in dark mode and light in light mode. Use a [named color tuner](../color.md#tuner-presets) or a callback to suit the theme. Carry any additional overlay treatments your theme needs into the replacement.
+
+```javascript
+'map-standard': {
+    '&': [
+        Styles.echarts.map({
+            label: { color: sys.color.fg.default, textShadow: 'none' },
+            tuner: (color) => color.alpha(0.35),
+            borderColor: sys.color.outline.subtle,
+            borderWidth: '0.0625rem',
+            shadow: 'none'
+        }),
+        Styles.echarts.map.layer({
+            merge: true,
+            tuner: (color) => color.luminance(jam.darkMode ? 0.04 : 0.72),
+            border: 'none',
+            shadow: sys.shadow.m
+        })
+    ],
+    'item-colored': ['with.tint', 'color.syncWithMap'],
+    'item-grayed,item-external': ['border.subtle', 'with.elevation'],
+    'item-line': ['background.crystal']
+}
+```
+
 ## Theme-Complete Checklist
 
 A theme is reasonably complete when it has intentional coverage for these areas:
@@ -232,7 +275,9 @@ A theme is reasonably complete when it has intentional coverage for these areas:
 -   role ownership: `group`, `field`, and `actions` arrange children; `section` owns a cohesive content region
 -   peer collections: `list > item` for repeated content, `map > item` for geographic coordinates, and `calendar > item` for date coordinates
 -   style variants: the default role works without one, and supported `jam-variant` selectors are explicit
--   common elements without custom `stylize`: button, input, label, indicator, card, popup, options/select, switch, table
+-   common elements without custom `stylize`: every button type, button groups, input (including text area and file), select, date picker, checkbox and radio options, switch, tags and badges, label, indicator, card, table, tree, list, steps, progress; use the hooks in [Anatomy](./anatomy.md)
+-   overlays: popup, modal, tooltip and notifications
+-   scrollbars, caret and text selection
 -   adaptive values: runtime tokens or supported property-aware shorthands, with no duplicated theme literals
 -   stylesheet boundary: unwrapped low-specificity selectors aligned with `basic.scss`, with no project-dependent custom classes
 -   built-in plugins: surface, optical-role, and child-group contracts reused before custom selectors
@@ -244,6 +289,14 @@ A theme is reasonably complete when it has intentional coverage for these areas:
 -   chart defaults: text, axis, grid, legend, tooltip, plus the adaptive color-set palette
 -   swatches: accent/color-set variants, optional mode-specific token exceptions, optional per-swatch dark mode intent
 -   demo coverage: a small page showing structural stylize values, common elements, and at least one chart
+
+## Verify native recipes
+
+-   **Tables.** The application's [`variant: 'standard'` choice](../JAM-UI/table.md#theme-style-variant) delegates presentation and recipe behaviors to the theme. When replacing `table-standard`, include each treatment the theme should supply. Choose the header surface, [row-number style](../Styles/table-style.md#entry-table-showrownum), and [gridline neck](../Styles/table-style.md#entry-table-gridline) together. With `neck: 'none'`, the header frame drops its bottom border and the body starts with a row-width rule. Inspect that join alongside any header-cell underline. Check row-number ink, sort marks, and keyboard focus in light and dark.
+-   **Maps.** Inspect [the standard map recipe](#standard-map-recipe) with its actual region fills in light and dark mode. Check region names on the lightest and darkest fills, and inspect coordinate items and any extra geo layer in the same view.
+-   **Trees.** Expand a parent and a child branch in the preview. Check that each guide aligns with its parent disclosure and the captions indent by level. If the theme sets table cell padding, check the [tree padding constraint](./tokens.md#tree-cell-padding).
+-   **Adaptive colors.** Use [Lumi levels and semantic roles](./color.md#lumi-levels-and-mode-strategy) for shared light and dark values. Check text and control marks against the actual composited surface, including gradients, translucent fills, and accent parents. Compare decorative rules with text and focus indicators at normal scale.
+-   **Charts.** Inspect the resolved series and labels on the chart surface in both modes. For theme-level draw recipes, check the initial mount, applying and removing the theme on the mounted chart, and mounting again. Confirm the intended effect appears once and is removed when switching away.
 
 ## Review Questions
 

@@ -6,13 +6,13 @@
 
 <a id="entry-shortcut"></a>
 
-Hover action shortcuts
+Action shortcuts
 
-Offer application-defined actions for a hovered target.
+Offer application-defined actions on a hovered surface or from a button.
 
-Pass an object to Plugins.shortcut({ selector, optionsGetter, container?, allowOverflow?, class? }). optionsGetter(target) returns the action ElementOption array. selector matches the hovered target; container resolves the popup host. Without an options provider no popup is created.
+Pass an object to Plugins.shortcut({ selector, triggerSelector?, optionsGetter, container?, allowOverflow?, class? }). selector matches the hovered surface. triggerSelector optionally matches a native or Jam-UI button whose activation opens the same popup. optionsGetter(target) receives the hovered surface or the activated button and returns the action ElementOption array. container resolves the popup host. Without an options provider no popup is created.
 
-This is a hover action popup, not keyboard-shortcut registration. Keep the provider and actions application-owned, encode external query values, and unplug to remove the host listener and destroy the owned popup.
+A direct trigger uses the button's native activation with mouse, Enter, Space or touch. Focus moves to the first enabled action. Escape or a completed command returns focus to the trigger when focus is still inside the popup and the trigger is available. Keep providers and actions application-owned and encode external query values. Unplug removes the owned listeners and popup.
 
 ```javascript jaml-playground
 export default {

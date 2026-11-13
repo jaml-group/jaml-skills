@@ -6,13 +6,13 @@
 
 <a id="entry-shortcut"></a>
 
-悬停快捷操作
+快捷操作
 
-为悬停目标提供应用定义的操作。
+通过悬停目标或按钮提供应用定义的操作。
 
-向 Plugins.shortcut({ selector, optionsGetter, container?, allowOverflow?, class? }) 传入对象。optionsGetter(target) 返回操作的 ElementOption 数组；selector 匹配悬停目标，container 解析弹出层宿主。没有选项提供函数时不会创建弹出层。
+向 Plugins.shortcut({ selector, triggerSelector?, optionsGetter, container?, allowOverflow?, class? }) 传入对象。selector 匹配悬停目标。可选的 triggerSelector 匹配用于打开同一弹出层的原生或 Jam-UI 按钮。optionsGetter(target) 接收悬停目标或激活的按钮并返回操作的 ElementOption 数组。container 解析弹出层宿主。没有选项提供函数时不会创建弹出层。
 
-这是悬停操作弹出层，不是键盘快捷键注册。选项提供函数和操作由应用拥有；外部查询值应编码。卸载插件会移除宿主监听器并销毁其弹出层。
+直接触发使用按钮的原生激活行为，支持鼠标、Enter、空格和触摸。焦点移到第一个可用操作。按 Escape 或执行操作后，若焦点仍在弹出层中且触发按钮可用，焦点会返回该按钮。选项提供函数和操作由应用拥有，外部查询值应编码。卸载会移除监听器和弹出层。
 
 ```javascript jaml-playground
 export default {

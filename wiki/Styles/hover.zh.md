@@ -203,7 +203,7 @@ export default [
 
 定位标记由各次调用共享，不要假定多个标记能独立同时显示，或各宿主的选项设置互不影响。悬停反馈不提供选择状态、键盘激活或焦点语义。
 
-位置参数顺序: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration`.
+位置参数顺序: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration` → `corners` → `ticks` → `color` → `restOpacity` → `travel`.
 
 公共参数: [hover.frame](#common-args-hover-frame).
 
@@ -211,8 +211,14 @@ export default [
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
+| `size` | `number` | 未提供 | 角标长度；默认 2rem，仅在小宿主上缩短 |
 | `breathe` | `boolean` | `true` | 呼吸 |
 | `easing` | `string` | `ease-in-out` | 动画缓动 |
+| `corners` | `string` | 未提供 | 显示的角<br>以空格分隔的 tl、tr、bl、br；省略时显示全部四角。 |
+| `ticks` | `boolean` | `true` | 宽或高目标上的中点刻度 |
+| `color` | `string` | 未提供 | 角标颜色 |
+| `restOpacity` | `number` | 未提供 | 静止时的不透明度 |
+| `travel` | `number` | 未提供 | 呼吸时的外移距离；默认跟随角标长度 |
 
 Shows a crosshair corner-bracket locator on mouseenter. Same args as `frame` with `breathe` default `true`, `easing` default `'ease-in-out'`.
 

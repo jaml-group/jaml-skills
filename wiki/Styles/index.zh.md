@@ -87,6 +87,7 @@
 - [popup-style](popup-style.zh.md) — 原生 popup 的呈现；先选择元素与行为。
 - [progress-style](progress-style.zh.md) — 原生 progress 的呈现；先选择元素与行为。
 - [select-style](select-style.zh.md) — 原生 select 的呈现；先选择元素与行为。
+- [shape](shape.zh.md)
 - [steps](steps.zh.md)
 - [stylize](stylize.zh.md) — 分组样式的已弃用兼容别名；新组合使用 group。
 - [switch-style](switch-style.zh.md) — 原生 switch 的呈现；先选择元素与行为。

@@ -22,6 +22,7 @@ This page routes theme concerns to their owning references. Open only the pages 
 | How do values adapt to mode, accent, and background?                            | [Theme Color](./color.md), [Color System](../color.md) |
 | How do JavaScript style selectors differ from SCSS?                             | [Stylesheets](./stylesheets.md)                        |
 | How should design import/export address a visual declaration?                   | [Recipe](./recipe.md)                                  |
+| Which selectors, parts and variables can restyle an element?                    | [Anatomy](./anatomy.md)                                |
 | How is a theme packaged and registered?                                         | [Structure](./structure.md)                            |
 | How do I implement and review a complete theme?                                 | [Authoring](./authoring.md)                            |
 
@@ -51,6 +52,8 @@ When combining a semantic border and a width preset, put the semantic border fir
 ## Theme Style Variants
 
 Both `stylize: "list-legend"` and `stylize: "list", variant: "legend"` select the same role variant. See [Stylize](./stylize.md) for the runtime contract and [Variant Selectors](./stylesheets.md#variant-selectors) for theme recipes. The theme must supply that alternate recipe for it to have a distinct appearance.
+
+Use [standard role recipes](./authoring.md#standard-role-recipes) to give a theme’s map, table, chart, calendar, and list their standard treatments.
 
 ## Layers
 

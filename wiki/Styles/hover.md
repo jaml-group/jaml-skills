@@ -203,7 +203,7 @@ Use check styles for persistent selection feedback and layer.crosshair for a hos
 
 The locator is shared across calls, so do not assume independent simultaneous markers or independent option settings across hosts. Hover feedback supplies no selection state, keyboard activation or focus semantics.
 
-Positional order: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration`.
+Positional order: `size` → `width` → `bias` → `glow` → `radius` → `delay` → `breathe` → `container` → `clipTarget` → `easing` → `duration` → `corners` → `ticks` → `color` → `restOpacity` → `travel`.
 
 Common arguments: [hover.frame](#common-args-hover-frame).
 
@@ -211,8 +211,14 @@ Additions and overrides:
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
+| `size` | `number` | Not supplied | Bracket length; 2rem by default, shorter only on small hosts |
 | `breathe` | `boolean` | `true` | Breathing |
 | `easing` | `string` | `ease-in-out` | Animation easing |
+| `corners` | `string` | Not supplied | Visible corners<br>Space-separated tl, tr, bl and br; all corners when omitted. |
+| `ticks` | `boolean` | `true` | Centre ticks on wide or tall targets |
+| `color` | `string` | Not supplied | Bracket color |
+| `restOpacity` | `number` | Not supplied | Resting opacity |
+| `travel` | `number` | Not supplied | Breathing travel distance; follows the bracket length by default |
 
 Shows a crosshair corner-bracket locator on mouseenter. Same args as `frame` with `breathe` default `true`, `easing` default `'ease-in-out'`.
 

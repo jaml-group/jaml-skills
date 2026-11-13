@@ -8,7 +8,7 @@
 
 视觉变体的选择与应用忙碌或进度状态分别管理。由应用决定何时添加或移除图层；需要显示可量化进度时，使用进度元素。
 
-这些是装饰图层，不检测待处理任务、报告进度、播报状态或禁用控件。spin 默认为 false；粒子和变体中的可选动画仍可能独立运行。
+这些装饰图层的忙碌状态、进度、播报和控件可用性由应用管理。每个旋转图层通过行内样式将 `--jam-spinner-animation` 设为其 CSS 旋转动画简写。若要在 `prefers-reduced-motion: reduce` 下停止旋转，请在局部样式表中为生成的图层设置 `--jam-spinner-animation: none !important`。使用旋转样式的 `class` 参数定位该图层。粒子和变体中的可选动画仍可能独立运行。
 
 `Styles.layer.spinner.*` provides decorative activity layers. Read [activity versus progress](../../choosing-native-capabilities.md#decorative-activity-and-actual-progress) before using them as loading UI; the entries below describe each variant’s activation and sizing requirements.
 
@@ -41,7 +41,7 @@
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `4rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `true` — 顺时针, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -99,7 +99,7 @@ export default [
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `1rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `true` — 顺时针, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -158,7 +158,7 @@ export default [
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `1rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `true` — 顺时针, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -217,7 +217,7 @@ export default [
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `0.2rem` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `true` — 顺时针, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |
@@ -281,7 +281,7 @@ export default [
 | `inner` | `number` | 未提供 | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | `0` | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>`text` 非空时，启用旋转的任意 `spin` 值均使图层逆时针旋转。<br>选项: `false` — 无, `true` — 对象模式下顺时针, `normal` — 对象模式下顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `5000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `cubic-bezier(0.65, 0.19, 0.4, 0.84)` | 缓动 |
@@ -333,7 +333,7 @@ export default [
 | `inner` | `number` | `70` | 内边缘<br>内边,单位是%,与中边参数互斥,若和外边同时指定,则不需要指定宽度 |
 | `size` | `string` | `100%` | 尺寸<br>如果绑定元素不是正方形,spinner就会变成椭圆,如果不想这样,需要指定不是百分比的size |
 | `width` | `string` | 未提供 | 宽度<br>若指定宽度,则外边/中边/内边3者指定1个即可 |
-| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `normal` — 顺时针, `reverse` — 逆时针 |
+| `spin` | `booleanOrString` | `false` | 旋转<br>选项: `false` — 无, `true` — 顺时针, `normal` — 顺时针, `reverse` — 逆时针 |
 | `duration` | `number` | `10000` | 时长 |
 | `delay` | `number` | `0` | 延迟 |
 | `easing` | `string` | `linear` | 缓动 |

@@ -74,17 +74,17 @@ Treat `default` → `strong` → `heavy` as one interaction-state set, and `outl
 
 This is the recommended authoring contract for a theme that wants every filled-state and edge-emphasis level. It is richer than Jam-UI's built-in compatibility baseline, so a consumer must not assume the optional accent-family edge keys exist unless its theme supplies them.
 
-| Family                                | Recommended tokens                                                                                | Intended use                                                                                  |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `primary`                             | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`, `film`, `veil`, `mask`                  | Main accent fills, states, edges, and reusable accent overlays.                               |
-| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`                                          | The same filled-state and edge ladder for the remaining color-set entries.                    |
-| `neutral`                             | `default`, `strong`, `heavy`, `film`, `veil`, `mask`                                              | Non-accent controls, filled states, and neutral overlays.                                     |
-| `outline`                             | `subtle`, `muted`, `faint`                                                                        | Neutral borders, outlines, separators, and structural marks.                                  |
-| `tint`                                | `default`, `strong`, `heavy`                                                                      | Translucent accent-tinted resting, hover, and active backgrounds.                             |
-| `elevated`                            | `default`, `strong`, `heavy`                                                                      | Translucent elevation resting, hover, and active layers.                                      |
-| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover`                          | Structural surfaces ordered by relative elevation, plus alternate transparent/hover surfaces. |
-| `fg`                                  | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` | Neutral emphasis hierarchy and colored foregrounds on ordinary surfaces.                      |
-| `on`                                  | `primary`, `secondary`, `tertiary`, `quaternary`                                                  | Contrast foregrounds on the corresponding filled accent background.                           |
+| Family                                | Recommended tokens                                                                                | Intended use                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `primary`                             | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`, `film`, `veil`, `mask`                  | Main accent fills, states, edges, and reusable accent overlays.                           |
+| `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`, `muted`, `faint`                                          | The same filled-state and edge ladder for the remaining color-set entries.                |
+| `neutral`                             | `default`, `strong`, `heavy`, `film`, `veil`, `mask`                                              | Non-accent controls, filled states, and neutral overlays.                                 |
+| `outline`                             | `subtle`, `muted`, `faint`                                                                        | Neutral borders, outlines, separators, and structural marks.                              |
+| `tint`                                | `default`, `strong`, `heavy`                                                                      | Translucent accent-tinted resting, hover, and active backgrounds.                         |
+| `elevated`                            | `default`, `strong`, `heavy`, `subtle`                                                            | Translucent elevation resting, hover, active, and faint alternate layers.                 |
+| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`                                        | Structural surfaces ordered by relative elevation, plus an alternate transparent surface. |
+| `fg`                                  | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` | Neutral emphasis hierarchy and colored foregrounds on ordinary surfaces.                  |
+| `on`                                  | `primary`, `secondary`, `tertiary`, `quaternary`                                                  | Contrast foregrounds on the corresponding filled accent background.                       |
 
 ### Built-in compatibility baseline
 
@@ -96,8 +96,9 @@ The built-in `sysLit` exports this color baseline. Theme authoring must merge it
 | `secondary`, `tertiary`, `quaternary` | `default`, `strong`, `heavy`, `subtle`                                                            |
 | `neutral`                             | `default`, `strong`, `heavy`, `film`, `veil`, `mask`                                              |
 | `outline`                             | `subtle`, `muted`, `faint`                                                                        |
-| `tint`, `elevated`                    | `default`, `strong`, `heavy`                                                                      |
-| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`, `alterHover`                          |
+| `tint`                                | `default`, `strong`, `heavy`                                                                      |
+| `elevated`                            | `default`, `strong`, `heavy`, `subtle`                                                            |
+| `surface`                             | `lowest`, `lower`, `default`, `higher`, `highest`, `alter`                                        |
 | `fg`                                  | `strong`, `default`, `subtle`, `muted`, `faint`, `primary`, `secondary`, `tertiary`, `quaternary` |
 | `on`                                  | `primary`, `secondary`, `tertiary`, `quaternary`                                                  |
 | Direct color leaf                     | `transparent`                                                                                     |
@@ -126,6 +127,7 @@ The authoring override dictionary may omit keys supplied by `sysLit`, but the fi
 | `elevated.default` | Resting translucent elevation layer.                 |
 | `elevated.strong`  | Hover state for the elevation treatment.             |
 | `elevated.heavy`   | Active or pressed state for the elevation treatment. |
+| `elevated.subtle`  | Faint layer, such as the hover of an alternate row.  |
 
 A theme may intentionally give hover and active the same value, but it should still provide both semantic state slots.
 
@@ -148,7 +150,6 @@ default
 higher
 highest
 alter
-alterHover
 ```
 
 Meanings:
@@ -158,8 +159,7 @@ Meanings:
 -   `default`: ordinary contained surface
 -   `higher`: raised or hovered surface
 -   `highest`: topmost floating, dialog, or callout surface
--   `alter`: alternate surface, transparent in the built-in baseline
--   `alterHover`: hover layer for that alternate surface
+-   `alter`: alternate surface, transparent in the built-in baseline; striped groups pair it with `elevated.subtle` on hover
 
 This order describes semantic elevation, not a mandatory luminance direction. A theme may make higher surfaces lighter, darker, or more chromatic as long as the layer relationship remains clear.
 
@@ -216,6 +216,53 @@ Choose tokens in this order:
 3. Use `tint.*` for translucent accent states, `elevated.*` for elevation layers, and `primary.film|veil|mask` for reusable fixed-alpha accent overlays.
 4. Use `outline.subtle` / `outline.muted` / `outline.faint` for neutral borders and separators from more visible to least visible; use an accent family's edge decorators only for an intentionally colored edge.
 5. Use `fg.*` for foreground hierarchy on ordinary surfaces and `on.*` on the corresponding filled accent background.
+
+## Lumi Levels And Mode Strategy
+
+`lumiO(level, bias?)` is the lightness component that lets one token serve both modes: `4.5% + 2% × level` in light mode and `106.5% − 2% × level` in dark mode. Low levels sit next to the foreground; high levels sit next to the canvas. The [Color System](../color.md#the-lumi-system) owns the formulas and the related `lumiL`, `lumiA` and `acLumiO` helpers.
+
+### Baseline level map
+
+The built-in `sys.color` uses these levels. Start from the same bands so contrast relationships survive in both modes:
+
+| Tokens                                 | Expression                    | Light mode            | Dark mode             |
+| -------------------------------------- | ----------------------------- | --------------------- | --------------------- |
+| `fg.strong` / `default` / `subtle`     | `lumiO(1)` / `(7)` / `(12)`   | 6.5% / 18.5% / 28.5%  | 100%¹ / 92.5% / 82.5% |
+| `fg.muted` / `faint`                   | `lumiO(19)` / `(27)`          | 42.5% / 58.5%         | 68.5% / 52.5%         |
+| `tint.*` (alpha 0.15–0.3)²             | `lumiO(28)`                   | 60.5%                 | 50.5%                 |
+| `outline.subtle` / `muted` / `faint`   | `lumiO(35)` / `(39)` / `(43)` | 74.5% / 82.5% / 90.5% | 36.5% / 28.5% / 20.5% |
+| `surface.highest` … `lowest`           | `lumiO(44)` … `(48)`          | 92.5% … 100%¹         | 18.5% … 10.5%         |
+| `neutral.default` / `strong` / `heavy` | `lumiO(46…44, '3%')`          | 99.5% / 97.5% / 95.5% | 17.5% / 19.5% / 21.5% |
+
+¹ CSS clamps the computed 104.5% and 100.5% to 100%. ² `tint.strong` adds a `0.07` bias.
+
+Surfaces use `surfaceToken(level)`, an accent-hued neutral at 1.5% of the accent's saturation, or `hslToken(hue, saturation, lumiO(level))` for a theme-chosen tint. Shadow alpha uses `lumiA(level)`, which is stronger in dark mode. Foregrounds on a filled accent use `acLumiO(level)`, which orients against the fill's own darkness instead of the page mode.
+
+### Choosing levels and bias
+
+-   Keep levels as integers and move a token along its band by changing the level.
+-   A bias is an absolute lightness offset with the same sign in both modes. `lumiO(46, 0.02)` is 2% lighter in both modes, which is nearer the canvas in light mode and nearer the foreground in dark mode. Use a bias for a small, mode-neutral nudge. Write it as a number fraction (`0.02`) or a signed percentage (`'+2%'`, `'-3%'`; an unsigned `'3%'` adds); these forms are equivalent. Keep biases additive so CSS colors and chart values resolve the same lightness.
+-   When a value must move in the same semantic direction in both modes, change its level. When a value's relationship genuinely differs by mode, put that path in the sparse mode branch.
+-   The baseline `fg` levels assume a near-white light canvas. When the theme's canvas sits lower (a tinted or mid-light body at levels around 42–46), move `fg.muted` and `fg.faint` to lower levels and recheck 4.5:1 text contrast against the actual canvas in both modes.
+
+### Swatch colors across modes
+
+A swatch's `accentColor` and `colorSet` are authored for light mode unless the swatch sets `darkMode: true`. In the opposite mode the runtime derives a counterpart by shifting OKLCH lightness: 0.18 for the accent and 0.09 for color-set entries. A light-authored color becomes darker in dark mode; a dark-authored color (`darkMode: true`) becomes lighter in light mode. The shift is clamped, so an already bright dark-authored color can reach white and lose its hue. Author sources at mid lightness, check accent fills and their `on.*` foregrounds in both modes, and check each swatch separately: at equal lightness a saturated green or yellow is far more luminous than a blue.
+
+A design whose look depends on exact lightness in both modes can take only hue and saturation from the swatch and give lightness to lumi, for example `acToken(1, 1, lumiOPart(level))`, so the swatch shift does not apply to those tokens.
+
+### Semantic status colors
+
+`success`, `warn`, `error` and `info` (and their aliases `pass`, `warning`, `danger`, `fail`, `normal`) are derived from the active color set rather than fixed values. `success`, `warn` and `error` start from hue anchors 150°, 48° and 0°; when a color-set entry lies within 15° of an anchor, its hue is used instead. Their lightness and chroma follow the first color-set entry. `info` is the first entry's lightness at a quarter of its chroma, at hue 210°. To steer status colors, include color-set entries near those anchors; in a single-hue palette, separate statuses with treatment as well as color.
+
+Colored text such as `fg.primary` and colored tags and indicator values comes from a readable variant the runtime derives from each color (`--jam-ac-text`, `--jam-ac-text-01` …). It is not a token: tune colored text in theme recipes through `fg.*` and `colorTextToken(level)`, and choose swatch colors that keep the derived variant readable on the theme's canvas.
+
+### Mode strategy
+
+1. Author one adaptive `sys` tree with lumi expressions. This is the normal case and serves both modes.
+2. Add a single sparse `dark` or `light` branch for the paths whose relationship changes by mode, as described in [Mode-Specific Overrides](./tokens.md#mode-specific-overrides). A theme whose identity is designed for one mode usually authors its root for that mode and lists its exceptions in the other branch.
+3. Use fixed literal colors only for values that must stay identical in both modes, such as a white gloss highlight over an accent fill. Check them against both modes' surfaces. `on.*` foregrounds orient against the fill, not a gloss layered over it, so keep gloss stops translucent and confirm text contrast against the gloss's lightest stop in both modes; add a text shadow from `textShadow.onPrimary` when a bright stop sits behind text.
+4. Set `swatch.darkMode` only when a swatch should also request a body mode.
 
 ## Context And Ownership Rules
 
