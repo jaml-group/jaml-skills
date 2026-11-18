@@ -39,7 +39,11 @@ Give each record an `id` (string or number) and a caption in `name` (or `cap`). 
 
 ````text
 ```text jamll-content
-{ type: 'list-todo', cap: 'Launch checklist', styles: ['options.disc'], data: [{ id: 'copy', name: 'Final copy approved', finish: true }, { id: 'qa', name: 'QA pass on mobile', finish: true }, { id: 'notes', name: 'Release notes published' }, { id: 'announce', name: 'Announcement scheduled' }] }
+{ type: 'list-todo', cap: 'Launch checklist', styles: ['options.disc'] }
+    | {"id":"copy","name":"Final copy approved","finish":true}
+    | {"id":"qa","name":"QA pass on mobile","finish":true}
+    | {"id":"notes","name":"Release notes published"}
+    | {"id":"announce","name":"Announcement scheduled"}
 ```
 ````
 

@@ -15,7 +15,7 @@ With the `validate_jaml` MCP tool, send the raw source and its format:
 }
 ```
 
-A `.jamll` filename also selects JAMLL. A record is one complete expression on one physical line; indentation supplies children, while inline `components` retain their order before indented additions. Do not include Markdown fences or `export default` in JAMLL input. Without an explicit format, brace-leading source is treated as JSON, otherwise as JavaScript; JAMLL is never inferred from this ambiguous prefix.
+A `.jamll` filename also selects JAMLL. Each element record is one complete expression on one physical line. Indentation supplies children and [data lines](Plugins/markdown.md#jamll-data-lines), while inline `components` retain their order before indented additions. A data line is parsed as literal JSON. Do not include Markdown fences or `export default` in JAMLL input. Without an explicit format, brace-leading source is treated as JSON, otherwise as JavaScript; JAMLL is never inferred from this ambiguous prefix.
 
 ## Run without MCP
 

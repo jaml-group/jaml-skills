@@ -236,7 +236,13 @@ The built-in `sys.color` uses these levels. Start from the same bands so contras
 
 ¹ CSS clamps the computed 104.5% and 100.5% to 100%. ² `tint.strong` adds a `0.07` bias.
 
-Surfaces use `surfaceToken(level)`, an accent-hued neutral at 1.5% of the accent's saturation, or `hslToken(hue, saturation, lumiO(level))` for a theme-chosen tint. Shadow alpha uses `lumiA(level)`, which is stronger in dark mode. Foregrounds on a filled accent use `acLumiO(level)`, which orients against the fill's own darkness instead of the page mode.
+Surfaces use `surfaceToken(level)`, an accent-hued neutral at 1.5% of the accent's saturation, or `lumiHslToken(hue, saturation, level, bias?)` for a theme-chosen tint. Shadow alpha uses `lumiA(level)`, which is stronger in dark mode. Foregrounds on a filled accent use `acLumiO(level)`, which orients against the fill's own darkness instead of the page mode.
+
+### Tinted colors keep their chroma
+
+HSL chroma is `saturation × (1 − |2L − 1|)`, so one saturation reads far more colorful at a dark level than at its light twin near white: a cream at 36% saturation and lumi level 46 is `hsl(60 36% 96.5%)` in light mode, but the same 36% at the dark level's 14.5% lightness turns olive. In Jam-UI 2.0.0 and later, author every tinted lumi color with `lumiHslToken(hue, saturation, level, bias?)`. Its saturation is the light-mode value; in dark mode it becomes the saturation that keeps the same chroma, so the cream above becomes `hsl(60 9% 14.5%)` and earth-brown text gains saturation as it turns light. Use the same `level` and `bias` you would pass to `lumiO`. A light level that resolves to 100% carries no chroma, so its dark counterpart is grey.
+
+Keep a sparse dark branch for deliberate night-time design, such as a different surface hue, not for saturation compensation.
 
 ### Choosing levels and bias
 

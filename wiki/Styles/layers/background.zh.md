@@ -694,6 +694,62 @@ export default [
 | `class` | `string` | 类 |
 | `content` | `any` | 内容 |
 
+## `layer.background.ticks`
+
+<a id="entry-layer-background-ticks"></a>
+
+边缘刻度
+
+在表面的一条边上添加装饰性标尺或定位刻度。
+
+两组刻度从同一个角开始。大刻度绘制在重合的小刻度上方。图层尺寸变化时，CSS 自动重复刻度。默认没有入场或离场动画。
+
+宿主需要有实际的布局尺寸，并加载框架图层样式表。
+
+创建独立的装饰性子图层。撤销样式时移除该图层。
+
+用通用 css 参数设置图层的内缩和尺寸。要组合网格或在多条边上添加刻度，请分别使用图层。
+
+位置参数顺序: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `edge` → `gap` → `width` → `length` → `color` → `majorEvery` → `majorLength` → `majorColor`.
+
+公共参数: [layer.overlay](overlay.zh.md#entry-layer-overlay).
+
+新增与覆盖:
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | 未提供 |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | 未提供 |  |
+| `mask` | `string` | 未提供 |  |
+| `filter` | `string` | 未提供 |  |
+| `padding` | `string` | 未提供 |  |
+| `borderRadius` | `string` | 未提供 |  |
+| `transform` | `string` | 未提供 |  |
+| `border` | `string` | 未提供 |  |
+| `clipPath` | `string` | 未提供 |  |
+| `animation` | `string` | 未提供 |  |
+| `opacity` | `number` | 未提供 |  |
+| `css` | `dictionaryOrString` | 未提供 |  |
+| `depth` | `number` | 未提供 |  |
+| `class` | `string` | 未提供 |  |
+| `attrs` | `dictionary` | `{"aria-hidden":"true"}` |  |
+| `rotateX` | `number` | 未提供 |  |
+| `rotateY` | `number` | 未提供 |  |
+| `translateY` | `numberOrString` | 未提供 |  |
+| `slot` | `string` | 未提供 |  |
+| `content` | `any` | 未提供 |  |
+| `entryAnimation` | `string` | `none` |  |
+| `exitAnimation` | `string` | `none` |  |
+| `edge` | `enum` | `top` | 刻度从此边向内延伸。<br>选项: `top`, `right`, `bottom`, `left` |
+| `gap` | `numberOrString` | `0.5rem` | 相邻两个小刻度起点之间的距离。<br>Unit: `rem` |
+| `width` | `numberOrString` | `0.0625rem` | 刻度沿边缘的粗细，最多占满一个重复单元。<br>Unit: `rem` |
+| `length` | `numberOrString` | `0.25rem` | 小刻度从边缘向内延伸的距离。<br>Unit: `rem` |
+| `color` | `string` | `var(--jam-color-outline-muted)` | 小刻度的颜色。CSS 颜色变量随当前主题变化。 |
+| `majorEvery` | `number` | `4` | 相邻大刻度之间的小刻度间隔数，截断为整数。设为 0 时只绘制一组刻度。 |
+| `majorLength` | `numberOrString` | `0.5rem` | 大刻度从边缘向内延伸的距离。<br>Unit: `rem` |
+| `majorColor` | `string` | 未提供 | 大刻度的颜色，默认使用 color。 |
+
 ## `layer.background.higher`
 
 <a id="entry-layer-background-higher"></a>

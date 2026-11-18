@@ -26,7 +26,10 @@ Omit `status` from every record for how-to instructions. The element shows numbe
 
 ````text
 ```text jamll-content
-{ type: 'steps', cap: 'Reset the router', data: [{ id: 'unplug', name: 'Unplug the router for 30 seconds' }, { id: 'plug', name: 'Plug it back in and wait for the light to turn steady' }, { id: 'connect', name: 'Reconnect your device to the network' }] }
+{ type: 'steps', cap: 'Reset the router' }
+    | {"id":"unplug","name":"Unplug the router for 30 seconds"}
+    | {"id":"plug","name":"Plug it back in and wait for the light to turn steady"}
+    | {"id":"connect","name":"Reconnect your device to the network"}
 ```
 ````
 
@@ -49,7 +52,12 @@ To report progress, give at least one record a `status`. The whole sequence then
 
 ````text
 ```text jamll-content
-{ type: 'steps', cap: 'Order 4821', current: 'address', data: [{ id: 'placed', name: 'Placed', status: 'finish' }, { id: 'packed', name: 'Packed', status: 'finish' }, { id: 'address', name: 'Address verification', status: 'process' }, { id: 'dispatch', name: 'Dispatch — blocked until the address is confirmed', status: 'warning' }, { id: 'delivery', name: 'Delivery — waiting for dispatch', status: 'wait' }] }
+{ type: 'steps', cap: 'Order 4821', current: 'address' }
+    | {"id":"placed","name":"Placed","status":"finish"}
+    | {"id":"packed","name":"Packed","status":"finish"}
+    | {"id":"address","name":"Address verification","status":"process"}
+    | {"id":"dispatch","name":"Dispatch — blocked until the address is confirmed","status":"warning"}
+    | {"id":"delivery","name":"Delivery — waiting for dispatch","status":"wait"}
 ```
 ````
 

@@ -117,3 +117,24 @@ Positional order: `deg` → `arg` → `stops` → `type`.
 | `type` | `string` | `linear` | Style<br>Options: `linear` — Linear, `radial` — Radial, `conic` — Conic, `repeatingLinear` — Repeating linear, `repeatingRadial` — Repeating radial, `repeatingConic` — Repeating conic |
 
 Applies a gradient mask to the element.
+
+
+
+## `mask.edges`
+
+<a id="entry-mask-edges"></a>
+
+Fixed four-edge fade
+
+Intersects horizontal and vertical alpha gradients to fade all four edges. The fade length is capped at half the target on each axis.
+
+The style owns the CSS mask rule and removes it when unplugged.
+
+Mask the inner viewport to keep focus feedback on the outer frame. Use mask.overflow when the fade should follow the remaining scroll content.
+
+Positional order: `size` → `selector`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `size` | `numberOrString` | `1.5` | Fade length on each edge. Pass a number in rem, a CSS length, or a percentage.<br>Unit: `rem`<br>Shorthand |
+| `selector` | `string` | Not supplied | Optional selector for the masked target. Defaults to the styled element. Use an exposed part such as &::part(viewport) to fade an inner viewport. |

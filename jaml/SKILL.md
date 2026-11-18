@@ -34,7 +34,9 @@ For a small conversational view, use the local composition contract below and re
 
 ## JAMLL format
 
-Once interactive JAML is chosen, default to **JAMLL** when the host advertises it with whole-message-success integration: `text jamll-content` for content between paragraphs, `text jamll-artifact` for a distinct panel. Use `text jamll-playground` for editable records when the host supports it. The first token identifies the source syntax. The second chooses the presentation. Write one complete expression yielding an element object per physical line, and use spaces for child indentation. Use a complete JavaScript module when setup or its result needs module scope. See [JAMLL examples and format fallback](references/JAML/conversational-ui.md#progressive-replies-with-jamll). Choose a matching [reply demo](references/JAML/reply-demos.md) when you need a runnable pattern.
+Once interactive JAML is chosen, default to **JAMLL** when the host advertises it with whole-message-success integration: `text jamll-content` for content between paragraphs, `text jamll-artifact` for a distinct panel. Use `text jamll-playground` for editable records when the host supports it. The first token identifies the source syntax. The second chooses the presentation. Write each element as one complete expression on its own line and indent children with spaces. Use a complete JavaScript module when setup or its result needs module scope. See [JAMLL examples and format fallback](references/JAML/conversational-ui.md#progressive-replies-with-jamll). Choose a matching [reply demo](references/JAML/reply-demos.md) when you need a runnable pattern.
+
+When the host supports [JAMLL data lines](references/Plugins/markdown.md#jamll-data-lines), default to them for supported option elements with flat collections. Declare the element without `data`, then indent one `| <strict JSON row>` per row under it. Set `"checked": true` on an enabled choice row to preselect it.
 
 ## Retrieve for the current decision
 

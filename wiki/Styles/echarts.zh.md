@@ -1692,6 +1692,27 @@ NiceStyle
 | `center` | `array` | `["50%","50%"]` | 中心位置 |
 | `padAngle` | `number` | `5` | 间隔角度 |
 
+## `echarts.map.gap`
+
+<a id="entry-echarts-map-gap"></a>
+
+在地图区域的填色与轮廓之间留出透明间隙。
+
+在区域填色周围留出透明间隙。设置偏移时，仅移动轮廓。地图上显式设置的样式优先于标准主题样式。
+
+用于关闭交互和漫游的 GeoJSON 地图，需采用 Canvas 渲染器和纯色区域填充。
+
+图像图层、地图数据系列、自定义投影和特殊地理位置保留原有绘制方式。基础地理图层下方需有空闲画布图层。较大的偏移可能越过间隙或被画布边缘裁切。
+
+位置参数顺序: `width` → `borderColor` → `offsetX` → `offsetY`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `width` | `numberOrString` | `0.1875rem` | 从原地理边界向内缩进的距离，可用 rem、px 长度或 CSS 像素数值。设为零时关闭效果。 |
+| `borderColor` | `dictionaryOrString` | 未提供 | 可选的轮廓颜色，保留原有边框宽度，默认使用各区域原有的边框颜色。 |
+| `offsetX` | `numberOrString` | `0rem` | 轮廓的水平偏移，可用 rem、px 长度或 CSS 像素数值。负值向左。 |
+| `offsetY` | `numberOrString` | `0rem` | 轮廓的垂直偏移，可用 rem、px 长度或 CSS 像素数值。负值向上。 |
+
 ## `echarts.axis.xxx`
 
 <a id="entry-echarts-axis-xxx"></a>
@@ -1729,6 +1750,28 @@ NiceStyle
 | `show` | y 轴预设捕获的轴可见性。<br>此预构建样式捕获 show=true，并将其写入 yAxis.show。它不是参数化工厂；使用 echarts.axis.y 的 show 参数定制此设置。 |
 | `position` | y 轴预设捕获的轴所在侧的位置。<br>此预构建样式捕获 position=left，并将其写入 yAxis.position。它不是参数化工厂；使用 echarts.axis.y 的 position 参数定制此设置。 |
 | `type` | y 轴预设捕获的轴刻度类型。<br>此预构建样式捕获 type=category，并将其写入 yAxis.type。它不是参数化工厂；使用 echarts.axis.y 的 type 参数定制此设置。 |
+
+## `echarts.map.dots`
+
+<a id="entry-echarts-map-dots"></a>
+
+用完整的圆点填充选中的地图区域。
+
+替换前景区域填色，相邻区域共用点阵。悬停时按圆心所在区域为整颗圆点着色。与地图边缘间隙组合时，先为轮廓留出空间，再放置圆点。跨越海岸线、内孔或画布边缘的圆点不会绘制。
+
+用于关闭交互和漫游的 GeoJSON 地图，需采用 Canvas 渲染器。
+
+带地图数据系列、自定义投影或特殊地理位置的地图保留原生填色。直径必须为正，间隙不能为负，圆心间距至少为一个 CSS 像素。
+
+位置参数顺序: `size` → `gap` → `layout` → `color` → `hoverColor`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `size` | `numberOrString` | `0.1875rem` | 圆点直径，可用 rem、px 长度或 CSS 像素数值。 |
+| `gap` | `numberOrString` | `0.25rem` | 相邻圆点边缘之间的距离，可用 rem、px 长度或 CSS 像素数值。 |
+| `layout` | `string` | `grid` | grid 的各行对齐，beehive 的相邻行错开半个圆心间距。<br>选项: `grid`, `beehive` |
+| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | 圆点颜色。使用主题令牌可随配色和模式变化。 |
+| `hoverColor` | `dictionaryOrString` | `var(--jam-color-fg-primary)` | 指针所在区域的整颗圆点颜色，默认使用当前主题的主前景色。 |
 
 ## `echarts.pie.ring`
 
@@ -2129,6 +2172,27 @@ y轴区域切割
 仅交换 x/y 或 angle/radius 轴的 type 和 data；两对坐标轴均存在时优先使用笛卡尔坐标轴。
 
 不转置数据集，也不交换坐标轴样式和范围。
+
+## `echarts.bar.chamfer`
+
+<a id="entry-echarts-bar-chamfer"></a>
+
+柱形切角
+
+切去带填充的原生矩形柱形上指定的视觉角。每个切角的长度不超过柱形短边的三分之一。
+
+随图表渲染更新。移除当前样式后，恢复应用下一条配方或恢复原生路径。
+
+在图表的 `styles` 中使用 `echarts.bar.chamfer`，或在主题的 `chart-standard` 配方中为设置 `variant: 'standard'` 的图表启用。图表样式优先于主题配方。
+
+适用于原生矩形柱形，包括堆叠和混合系列。透明占位、极坐标扇区、大数据模式和背景柱形保持原样。多层阴影沿用自身的堆叠轮廓。
+
+位置参数顺序: `cut` → `corners`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `cut` | `numberOrString` | `0.25rem` | 切角长度，可使用 rem、px 或以 ECharts 像素计的数值。默认 0.25rem。零值或无效长度保留原生形状。 |
+| `corners` | `string` | `tl br` | 以空格分隔的角名，可选 `tl tr br bl`。默认 `tl br`。忽略无法识别的角名。 |
 
 ## `echarts.grid.border`
 

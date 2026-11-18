@@ -24,7 +24,7 @@ Selectors in a theme's `index.scss` must be limited to the framework vocabulary:
 -   runtime `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, and `.jam-tile-style`
 -   role variants such as `.jam-list-style[jam-variant='legend']`, which remain specializations of the `list` role
 -   JAML element selectors such as `jam-table`
--   built-in style-plugin classes from the rule below
+-   framework trait classes and built-in layout and style-plugin classes
 -   combinations of those selectors connected and refined through nesting, combinators, framework attributes, slots, parts, and states
 
 Theme-local custom properties are allowed. Project-dependent custom classes such as `.dashboard-card` or `.customer-summary` are not: they couple a reusable theme to one application. When one framework role needs a stable alternate recipe, use its native `variant` hook instead of inventing a class.
@@ -35,7 +35,7 @@ Theme-local custom properties are allowed. Project-dependent custom classes such
 
 Do not wrap a theme stylesheet in `.jam-theme-[name]`. Jam-UI controls precedence by attaching the active theme stylesheet at theme-application time.
 
-For selector shape and specificity, start from `body`, framework roles, elements, or built-in plugin roles, then express relationships through nesting and connectors. Do not add a theme-root selector merely to raise specificity.
+Follow the [selector and specificity rules](./stylesheets.md#selector-boundary-and-specificity). Start from a role and refine it with framework elements, states, traits, or variants as needed.
 
 ```scss
 body {

@@ -342,7 +342,12 @@ Compare several series over time:
 
 ````text
 ```text jamll-content
-{ type: 'chart-line', cap: 'Visits by channel', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.line.symbol(show:true)'], data: [['Month', 'Search', 'Direct'], ['Jan', 120, 80], ['Feb', 132, 90], ['Mar', 158, 96], ['Apr', 171, 104]] }
+{ type: 'chart-line', cap: 'Visits by channel', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.line.symbol(show:true)'] }
+    | ["Month","Search","Direct"]
+    | ["Jan",120,80]
+    | ["Feb",132,90]
+    | ["Mar",158,96]
+    | ["Apr",171,104]
     { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -355,7 +360,12 @@ Show one series with its area:
 
 ````text
 ```text jamll-content
-{ type: 'chart-line', cap: 'Revenue', style: { width: '100%', height: '16rem' }, styles: ['echarts.line.gradientBg', 'echarts.line.symbol(show:true)'], data: [['Month', 'Revenue'], ['Jan', 42], ['Feb', 48], ['Mar', 45], ['Apr', 57]] }
+{ type: 'chart-line', cap: 'Revenue', style: { width: '100%', height: '16rem' }, styles: ['echarts.line.gradientBg', 'echarts.line.symbol(show:true)'] }
+    | ["Month","Revenue"]
+    | ["Jan",42]
+    | ["Feb",48]
+    | ["Mar",45]
+    | ["Apr",57]
     { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -368,7 +378,12 @@ Show parts of a total. Each stack rounds its outer end:
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Output by source', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.bar(stack:output;maxWidth:28)'], data: [['Quarter', 'Solar', 'Wind'], ['Q1', 30, 44], ['Q2', 52, 38], ['Q3', 61, 29], ['Q4', 34, 47]] }
+{ type: 'chart-bar', cap: 'Output by source', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.bar(stack:output;maxWidth:28)'] }
+    | ["Quarter","Solar","Wind"]
+    | ["Q1",30,44]
+    | ["Q2",52,38]
+    | ["Q3",61,29]
+    | ["Q4",34,47]
     { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -381,7 +396,12 @@ Point out the highest value:
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Sales by store', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:28)', 'echarts.bar.maxHightLight', 'echarts.bar.label(show:true;position:top)'], data: [['Store', 'Sales'], ['Elm', 42], ['Oak', 68], ['Pine', 51], ['Ash', 37]] }
+{ type: 'chart-bar', cap: 'Sales by store', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:28)', 'echarts.bar.maxHightLight', 'echarts.bar.label(show:true;position:top)'] }
+    | ["Store","Sales"]
+    | ["Elm",42]
+    | ["Oak",68]
+    | ["Pine",51]
+    | ["Ash",37]
     { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -394,7 +414,12 @@ Compare a benchmark where smaller is better. List the slowest first, so the best
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.grid(right:3.5rem)', 'echarts.bar.label(show:true;position:right)'], data: [['Page', 'Load time'], ['Checkout', 1380], ['Search', 1140], ['Product', 960], ['Home', 820]] }
+{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.grid(right:3.5rem)', 'echarts.bar.label(show:true;position:right)'] }
+    | ["Page","Load time"]
+    | ["Checkout",1380]
+    | ["Search",1140]
+    | ["Product",960]
+    | ["Home",820]
     { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)'] }
 ```
 ````
@@ -407,7 +432,11 @@ Show shares of a whole. A pie has no value axis, so put the numbers beside it: a
 
 ````text
 ```text jamll-content
-{ type: 'chart-pie', cap: 'Traffic share', style: { width: '100%', height: '16rem' }, styles: ['echarts.tooltip(trigger:item)', 'echarts.pie.ring', 'echarts.pie.position(innerR:45%;outerR:70%;cX:35%)'], data: [['Source', 'Share'], ['Search', 46], ['Direct', 31], ['Referral', 23]] }
+{ type: 'chart-pie', cap: 'Traffic share', style: { width: '100%', height: '16rem' }, styles: ['echarts.tooltip(trigger:item)', 'echarts.pie.ring', 'echarts.pie.position(innerR:45%;outerR:70%;cX:35%)'] }
+    | ["Source","Share"]
+    | ["Search",46]
+    | ["Direct",31]
+    | ["Referral",23]
     { type: 'container', slot: 'layer', styles: ['layout.flex(direction:column)', 'css(gap:xs;position:absolute;right:15%;top:50%;transform:translateY(-50%))'], childStyles: ['indicator.inline', 'value.color.primary', 'css(width:9rem)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Search', value: 0.46, styles: ['indicator.icon.text(color:ac0)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Direct', value: 0.31, styles: ['indicator.icon.text(color:ac1)'] }

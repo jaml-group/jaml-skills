@@ -272,7 +272,7 @@ Requires a bounded body viewport and stable configured row height.
 
 Set animation to a supported animation-name string or false; true is not supported. Variable-height expanded details suspend fixed-row virtualization.
 
-Positional order: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection`.
+Positional order: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection` → `freezeTop`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
@@ -288,6 +288,7 @@ Positional order: `scrollTarget` → `height` → `throttle` → `padding` → `
 | `tileduration` | `number` | `0` | Tile animation duration |
 | `tilerandom` | `boolean` | `false` | Randomize tiles |
 | `defaultDirection` | `string` | `up` | Default direction<br>Options: `up`, `down`, `right`, `left` |
+| `freezeTop` | `number` | `0` |  |
 
 ## `tree.td.text`
 

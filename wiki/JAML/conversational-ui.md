@@ -66,7 +66,9 @@ It already owns caption, value and unit. Use [`steps`](../JAM-UI/steps.md) for o
 
 Once interactive JAML is chosen, default to **JAMLL (JAML Lines)** when the host advertises it with whole-message-success integration. Markdown remains the ordinary reply default, and explicit user format requests take precedence. Choose the native owners first, then emit their definitions in useful reading order. JAMLL changes how a view is delivered; the L3/L2/L1 choice, element contracts, dependencies and data ownership remain the same.
 
-Author `text jamll-content` for lightweight content between paragraphs, `text jamll-artifact` for a distinct panel, or `text jamll-playground` for editable records and a preview. The first token identifies the source syntax. The second chooses the presentation. Write one complete JavaScript expression yielding an element object per physical line. A [documented synchronous builder](../Plugins/markdown.md#record-grammar-and-composition) returning one element object can be a record, including the first line. Start the first record at column one, indent children with spaces and close the fence.
+Author `text jamll-content` for lightweight content between paragraphs, `text jamll-artifact` for a distinct panel, or `text jamll-playground` for editable records and a preview. The first token identifies the source syntax. The second chooses the presentation. Write each element as one complete JavaScript expression on its own physical line. A [documented synchronous builder](../Plugins/markdown.md#record-grammar-and-composition) returning one element object can be a record, including the first line. Start the first record at column one, indent children with spaces and close the fence.
+
+For supported option elements with flat collections, default to [JAMLL data lines](../Plugins/markdown.md#jamll-data-lines) when the host supports them. Declare the element first with its column definitions, styles or other configuration, then add its rows on separate indented lines. Use the matching [reply demo](reply-demos.md) for tables, charts, tags, checklists and steps.
 
 For supplied metrics, emit native indicators directly. Each owns its icon, caption, value and unit, and independent records need no authored wrapper. `valueStates` derives a state from the value, and `color.stateMap` gives that state its semantic color:
 
@@ -130,9 +132,16 @@ For several related views, compose a panel. `layout.autoalign` fits the tiles to
         { type: 'label', cap: 'Four weeks to date', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
     { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94, valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['indicator.trailingIcon', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'color.stateMap(good:success;watch:warn;late:error)', 'value.color.primary'] }
         { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
-    { type: 'chart-line', cap: 'Orders by week', style: { width: '100%', height: '14rem' }, styles: ['echarts.line.gradientBg'], data: [['Week', 'Orders'], ['W1', 280], ['W2', 312], ['W3', 305], ['W4', 387]] }
+    { type: 'chart-line', cap: 'Orders by week', style: { width: '100%', height: '14rem' }, styles: ['echarts.line.gradientBg'] }
+        | ["Week","Orders"]
+        | ["W1",280]
+        | ["W2",312]
+        | ["W3",305]
+        | ["W4",387]
         { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)'] }
-    { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], data: [{ region: 'North', orders: 482 }, { region: 'South', orders: 256 }], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
+    { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
+        | ["North",482]
+        | ["South",256]
 ```
 ````
 

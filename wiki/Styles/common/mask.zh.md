@@ -117,3 +117,24 @@ background.gradient 写入 background-image；mask.gradient 写入 mask-image。
 | `type` | `string` | `linear` | 样式<br>选项: `linear` — 线性, `radial` — 径向, `conic` — 锥形, `repeatingLinear` — 重复线性, `repeatingRadial` — 重复径向, `repeatingConic` — 重复锥形 |
 
 Applies a gradient mask to the element.
+
+
+
+## `mask.edges`
+
+<a id="entry-mask-edges"></a>
+
+固定四边渐隐
+
+将水平与垂直方向的透明度渐变取交集，使四边渐隐。每个方向上的渐隐长度最多为目标对应尺寸的一半。
+
+样式负责应用 CSS 遮罩规则，并在卸载样式时移除该规则。
+
+遮罩内部视口，将焦点反馈保留在外框上。需要随剩余可滚动内容调整渐隐时，使用 mask.overflow。
+
+位置参数顺序: `size` → `selector`.
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `size` | `numberOrString` | `1.5` | 各边的渐隐长度。可传入以 rem 为单位的数值、CSS 长度或百分比。<br>Unit: `rem`<br>支持简写 |
+| `selector` | `string` | 未提供 | 可选的遮罩目标选择器，默认作用于样式所在元素。可用 &::part(viewport) 等公开部件为内部视口添加渐隐。 |

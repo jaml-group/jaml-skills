@@ -156,7 +156,7 @@ Use `text jamll-content` for content between paragraphs, `text jamll-artifact` f
 
 ### Record grammar and composition
 
--   Each physical nonblank line evaluates synchronously as one JavaScript expression yielding an element object. Single quotes, inline handlers and documented builder calls returning one element object are supported, including a builder call as the first record. Records are executable JAML, not JSONL or a static-only subset.
+-   Each element line evaluates synchronously as one JavaScript expression yielding an element object. Single quotes, inline handlers and documented builder calls returning one element object are supported, including a builder call as the first record. Records are executable JAML, not JSONL or a static-only subset.
 -   Emit an object per record, without `export default`, imports, standalone declarations, trailing record commas or semicolons. An array, primitive, `null`, line-only comment or multiline object/handler is not an element record. Visual editor wrapping does not add a record boundary.
 -   Start the first nonblank record at column one. Indent with spaces: greater indentation makes a child of the preceding record, equal indentation makes a sibling, and a dedent returns to an existing ancestor level. No fixed indentation step is required. Tabs are rejected; blank lines and CRLF are accepted.
 -   Records evaluate independently. Put shared `vars` on a parent before its dependent children, and use native bindings/references rather than cross-line JavaScript lexical variables. Indentation spells the tree directly. In an editable playground, a parent with both inline and indented children uses a static `components` array.
@@ -176,6 +176,29 @@ The builder must return one element object synchronously, not a function, array 
 
 For content and artifacts, complete lines mount progressively through native component insertion, retaining earlier elements and state. Already consumed source cannot be rewritten; repeated IDs do not update earlier records. This append-only source rule does not prevent ordinary model writes or reactive updates. Normal JAML capabilities remain available; initialize an owning model's shared state before its consuming children arrive. Data acquisition may stay on its native element. A malformed record stops that block and retains its valid prefix; it does not recover by guessing another parent. An unfinished line waits for more source, and a closing fence flushes a final record without a newline.
 
+### JAMLL data lines
+
+On a host with data-line support, use data lines by default for flat collections owned by the native elements below. Declare the element with its usual configuration and omit `data`, `dataUrl`, and `dataWatcher` for that collection. Under the element, indent one `| ` followed by a strict JSON array or object per physical line. The immediately enclosing element owns the row. A row is a leaf and its values are strings, finite numbers, booleans, or null.
+
+| Native element                                                  | Row shape                                                                                                                                                                           |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options`, `radio`, `checkbox`, `buttongroup`, `select`, `tags` | `[name, value]` or `{"name":"Email","value":"email","checked":true,"disable":false}`. Selectable choices take their initial checked state from enabled rows with `"checked": true`. |
+| `table`                                                         | Tuple in the order of the declared `dataDef` columns.                                                                                                                               |
+| `tree`, `list`, `list-todo`, `steps`                            | Flat `{"id":"review","name":"Review"}` records. The respective native option fields are `value` on trees, `finish` on lists, and `status` on steps.                                 |
+| `chart`                                                         | First row of distinct dimension names, followed by a category and numeric or null series cells on each row.                                                                         |
+| `map`                                                           | `[name, value]` or `{"name":"West","value":4}` with a numeric value and a region matching the map resource.                                                                         |
+| `calendar`                                                      | `[date, name]` or `{"date":"2026-11-19","name":"Ship"}` using a valid `YYYY-MM-DD` date.                                                                                            |
+
+````text
+```text jamll-content
+{ type: 'checkbox', cap: 'Notifications' }
+    | {"name":"Email","value":"email","checked":true}
+    | ["In-app","in-app"]
+```
+````
+
+Content and artifact owners mount empty and receive their rows as complete lines arrive. A chart header alone leaves the plot empty. The host enables controls after whole-message success. Editable previews and saved replay use the same rows. Data lines are literal JSON and bypass the host's JavaScript evaluator. Use the element's ordinary data contract for nested records, cell descriptors, an existing data source, or hosts that support only element records.
+
 ### Message outcome and host ownership
 
 Progressive controls stay inactive until the **entire message succeeds**. `finish()` alone does not enable them: it can also finalize an interrupted answer for display. After the host confirms successful whole-message completion, call `await reply.completeMessage()`. This finalizes the stream and returns `true` only if all progressive JAMLL blocks are closed and valid. Otherwise it returns `false`. An executor session's `finalize` failure invalidates its block, retains the inactive prefix and yields `false`; other stream-rendering failures may reject. One invalid or unclosed progressive block keeps the progressive controls gated. Successful completion verifies the progressive source and lifecycle. This call belongs to the host adapter, not generated element records. For static replay, pass `messageComplete: true` only when the saved message succeeded. Omit it for interrupted/failed replay.
@@ -190,13 +213,14 @@ Add `playground.openJamll(request)` alongside the existing complete-definition `
 
 The request contains `container`, native-owned `mount`, `blockId`, `generation`, `presentation`, `source`, `rawSource`, `closed`, `replay`, application `context`, lifetime `signal` and `canInteract()`. `generation` identifies this occurrence rather than each source append. `source` is Markdown-normalized evaluation text; `rawSource` preserves the original body bytes as decoded text, including indentation and line endings. Use the raw source for exact-source identity. `mount` can add native host controls with owned cleanup; it does not transfer ownership of the shared result container.
 
-| Session member                                   | Contract                                                                                                                             |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `evaluate(expression, { line, depth })`          | Required synchronous evaluation returning one native element object. Arrays, primitives, `null` and Promise results fail the record. |
-| `maxSourceBytes`                                 | Optional nonnegative integer limiting UTF-8 raw body size before each evaluation batch, including blank-line growth.                 |
-| `finalize({ source, rawSource, closed, valid })` | Optional completion of an explicitly closed, valid block; may be asynchronous. Whole-message success waits for it.                   |
-| `complete()`                                     | Optional notification after native enables all valid blocks for a successful whole message.                                          |
-| `dispose()`                                      | Optional cleanup of session resources; it must tolerate retirement without completion.                                               |
+| Session member                                   | Contract                                                                                                                                                                                                                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `evaluate(expression, { line, depth })`          | Synchronous evaluation of each element expression to one native element object. Required for a new result. Arrays, primitives, `null` and Promise results fail the record.                                                                                |
+| `retainedResult: true`                           | For a closed replay with `resultMount` whose exact occurrence and raw source already own a live result. The host provides its retained view. Native checks the source structure and completes the origin without evaluating expressions or mounting rows. |
+| `maxSourceBytes`                                 | Optional nonnegative integer limiting UTF-8 raw body size before each evaluation batch, including blank-line growth.                                                                                                                                      |
+| `finalize({ source, rawSource, closed, valid })` | Optional completion of an explicitly closed, valid block; may be asynchronous. Whole-message success waits for it.                                                                                                                                        |
+| `complete()`                                     | Optional notification after native enables all valid blocks for a successful whole message.                                                                                                                                                               |
+| `dispose()`                                      | Optional cleanup of session resources; it must tolerate retirement without completion.                                                                                                                                                                    |
 
 The host must guard programmatic proposals with `request.canInteract()`; DOM inert alone cannot prevent authored code from calling a lexical API. Fence closure and successful `finalize` do not independently grant response admission. The host owns successful-assistant proof, persistence, review and any outer Send action. Authored expressions remain trusted execution, including under a safe renderer with this explicit executor opt-in.
 
@@ -328,7 +352,7 @@ Choose the actual source syntax with the first token and the presentation with t
 | Strict JSON definition | `json jaml-content`        | `json jaml-artifact`       | `json jaml-playground`       |
 | JavaScript module      | `javascript jaml-content`  | `javascript jaml-artifact` | `javascript jaml-playground` |
 
-JAMLL uses one synchronous element expression per physical line with indented children. JSON parses a JAML definition object or flat array using strict JSON syntax. Author JavaScript as a module that default-exports a JAML definition or flat array. Bare, retired, encoded or mismatched fence markers display as ordinary code.
+JAMLL uses one synchronous expression per element line, with indented children and [data lines](#jamll-data-lines) for supported option elements. JSON parses a JAML definition object or flat array using strict JSON syntax. Author JavaScript as a module that default-exports a JAML definition or flat array. Bare, retired, encoded or mismatched fence markers display as ordinary code.
 
 Content wraps at intrinsic sizes and aligns to the start of its block. Artifacts provide a distinct result surface. A playground shows the editor beside or above the result, depending on available width. The native owner manages mounting, lazy activation and revision cleanup. Each element retains its own styles and semantic parts. Charts require ECharts in the mounting runtime and an explicit nonzero height.
 

@@ -91,16 +91,19 @@ Use runtime tokens only for `sys`, minimal `cmpt`, and chart-derived values. Aut
 
 ## Selector Boundary And Specificity
 
-Theme recipes are role-driven and may refine a role with `jam-variant`. The remaining allowed selectors are framework-owned:
+Start with the `stylize` role. Build and refine recipes using framework-owned hooks.
 
--   `body`
+-   `body` for document-wide recipes
 -   framework `stylize` role classes such as `.jam-app-style`, `.jam-sidebar-style`, or `.jam-tile-style`
--   JAML elements such as `jam-table`
--   framework-owned classes emitted by built-in style plugins
+-   JAML element tags such as `jam-table`
+-   framework variants and states such as `[jam-variant='standard']`, `.jam-checked`, and `:focus-visible`
+-   framework trait classes such as `.jam-bg-accent`, and built-in layout and style plugin classes such as `.jam-layout-sidebar` and `.jam-layout-flex`
 
-Connect and refine those selectors through normal nesting, combinators, framework attributes, slots, parts, and states. Keep the resulting chain no more specific than the equivalent base recipe.
+Connect these hooks through normal nesting, combinators, framework attributes, slots, and parts. Keep the resulting chain no more specific than the equivalent base recipe.
 
-Do not wrap the file in `.jam-theme-[name]`, and do not target project-dependent classes such as `.dashboard-card` or `.customer-summary`. Parser support for an arbitrary class does not make it part of the reusable theme contract. Theme-local CSS custom properties are allowed when a recipe needs an internal composition value.
+Keep the stylesheet unwrapped and exclude application IDs, classes, and route selectors from reusable theme recipes. Theme-local CSS custom properties are allowed when a recipe needs an internal composition value.
+
+For a guttered theme, put the default sidebar inset on the sidebar role and use the same semantic spacing token for related shell edges. Refine the inset when a layout trait or state changes how the role participates in the layout, such as when a sidebar becomes an overlay or folds away. Keep persistent headers at the same origin as content changes, and check the painted edges, divider alignment during resize, and the remaining pane after folding.
 
 ```scss
 body {

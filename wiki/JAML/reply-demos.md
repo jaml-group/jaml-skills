@@ -4,6 +4,8 @@ Choose a demo when its purpose, inputs and prerequisites fit. Replace the sample
 
 The host's advertised capabilities establish which examples are ready. Use the [reply guide](conversational-ui.md) for presentation, interaction and fallback rules.
 
+For supported flat collections, the JAMLL examples use [data lines](../Plugins/markdown.md#jamll-data-lines) to stream rows after the element appears. Use a host with data-line support.
+
 ## Independent metrics
 
 <!-- reply-demo:metrics -->
@@ -92,7 +94,10 @@ Show one count with a short set of related category labels.
 { type: 'container', styles: ['stylize.bento'] }
     { type: 'indicator-number', cap: 'Open tickets', value: 23, styles: ['css(padding:l)', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'value.color.primary'] }
         { type: 'label', cap: 'Most reported', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
-        { type: 'tags', data: ['Billing', 'Login', 'Export'], showCount: false, slot: 'layer', styles: ['indicator.sub', 'tags.chip'] }
+        { type: 'tags', showCount: false, slot: 'layer', styles: ['indicator.sub', 'tags.chip'] }
+            | ["Billing","Billing"]
+            | ["Login","Login"]
+            | ["Export","Export"]
 ```
 ````
 
@@ -119,7 +124,11 @@ Compare records across fields with meaningful numeric cells, sorting and categor
 
 ````text
 ```text jamll-content
-{ type: 'table', cap: 'Delivery by region', style: { width: '100%' }, styles: ['table.stripy', 'table.gridline', 'table.stretchrow', 'table.thead.accent', 'table.hovermarker(style:arrow)'], data: [{ region: 'North', tier: 1, orders: 482, onTime: 0.97 }, { region: 'Central', tier: 1, orders: 391, onTime: 0.88 }, { region: 'South', tier: 2, orders: 256, onTime: 0.64 }, { region: 'Coastal', tier: 2, orders: 155, onTime: 0.92 }], dataDef: [{ key: 'region', cap: 'Region', sort: 'ascend' }, { key: 'tier', cap: 'Tier', align: 'center', filterable: true, menu: { 1: 'Priority', 2: 'Standard' } }, { key: 'orders', cap: 'Orders', type: 'indicator-number', unit: 'orders', styles: ['indicator.capslot.hide', 'indicator.unit.color.accent'] }, { key: 'onTime', cap: 'On time', type: 'progress', width: '8rem', valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['color.stateMap(good:success;watch:warn;late:error)'] }] }
+{ type: 'table', cap: 'Delivery by region', style: { width: '100%' }, styles: ['table.stripy', 'table.gridline', 'table.stretchrow', 'table.thead.accent', 'table.hovermarker(style:arrow)'], dataDef: [{ key: 'region', cap: 'Region', sort: 'ascend' }, { key: 'tier', cap: 'Tier', align: 'center', filterable: true, menu: { 1: 'Priority', 2: 'Standard' } }, { key: 'orders', cap: 'Orders', type: 'indicator-number', unit: 'orders', styles: ['indicator.capslot.hide', 'indicator.unit.color.accent'] }, { key: 'onTime', cap: 'On time', type: 'progress', width: '8rem', valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['color.stateMap(good:success;watch:warn;late:error)'] }] }
+    | ["North",1,482,0.97]
+    | ["Central",1,391,0.88]
+    | ["South",2,256,0.64]
+    | ["Coastal",2,155,0.92]
 ```
 ````
 
@@ -131,7 +140,12 @@ Compare two or more measured series over the same time periods.
 
 ````text
 ```text jamll-content
-{ type: 'chart-line', cap: 'Visits by channel', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.line.symbol(show:true)'], data: [['Month', 'Search', 'Direct'], ['Jan', 120, 80], ['Feb', 132, 90], ['Mar', 158, 96], ['Apr', 171, 104]] }
+{ type: 'chart-line', cap: 'Visits by channel', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.line.symbol(show:true)'] }
+    | ["Month","Search","Direct"]
+    | ["Jan",120,80]
+    | ["Feb",132,90]
+    | ["Mar",158,96]
+    | ["Apr",171,104]
     { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -144,7 +158,12 @@ Show change over time for one measured series.
 
 ````text
 ```text jamll-content
-{ type: 'chart-line', cap: 'Revenue', style: { width: '100%', height: '16rem' }, styles: ['echarts.line.gradientBg', 'echarts.line.symbol(show:true)'], data: [['Month', 'Revenue'], ['Jan', 42], ['Feb', 48], ['Mar', 45], ['Apr', 57]] }
+{ type: 'chart-line', cap: 'Revenue', style: { width: '100%', height: '16rem' }, styles: ['echarts.line.gradientBg', 'echarts.line.symbol(show:true)'] }
+    | ["Month","Revenue"]
+    | ["Jan",42]
+    | ["Feb",48]
+    | ["Mar",45]
+    | ["Apr",57]
     { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -157,7 +176,12 @@ Compare totals and their additive parts across categories.
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Output by source', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.bar(stack:output;maxWidth:28)'], data: [['Quarter', 'Solar', 'Wind'], ['Q1', 30, 44], ['Q2', 52, 38], ['Q3', 61, 29], ['Q4', 34, 47]] }
+{ type: 'chart-bar', cap: 'Output by source', style: { width: '100%', height: '16rem' }, styles: ['echarts.legend', 'echarts.bar(stack:output;maxWidth:28)'] }
+    | ["Quarter","Solar","Wind"]
+    | ["Q1",30,44]
+    | ["Q2",52,38]
+    | ["Q3",61,29]
+    | ["Q4",34,47]
     { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -170,7 +194,12 @@ Highlight the highest value among a few directly comparable categories.
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Sales by store', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:28)', 'echarts.bar.maxHightLight', 'echarts.bar.label(show:true;position:top)'], data: [['Store', 'Sales'], ['Elm', 42], ['Oak', 68], ['Pine', 51], ['Ash', 37]] }
+{ type: 'chart-bar', cap: 'Sales by store', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:28)', 'echarts.bar.maxHightLight', 'echarts.bar.label(show:true;position:top)'] }
+    | ["Store","Sales"]
+    | ["Elm",42]
+    | ["Oak",68]
+    | ["Pine",51]
+    | ["Ash",37]
     { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)'] }
 ```
 ````
@@ -183,7 +212,12 @@ Show ordered comparisons with category labels and clarify which direction is bet
 
 ````text
 ```text jamll-content
-{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.grid(right:3.5rem)', 'echarts.bar.label(show:true;position:right)'], data: [['Page', 'Load time'], ['Checkout', 1380], ['Search', 1140], ['Product', 960], ['Home', 820]] }
+{ type: 'chart-bar', cap: 'Page load time', style: { width: '100%', height: '16rem' }, styles: ['echarts.bar(maxWidth:20)', 'echarts.bar.flipXY', 'echarts.grid(right:3.5rem)', 'echarts.bar.label(show:true;position:right)'] }
+    | ["Page","Load time"]
+    | ["Checkout",1380]
+    | ["Search",1140]
+    | ["Product",960]
+    | ["Home",820]
     { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)'] }
 ```
 ````
@@ -196,7 +230,11 @@ Show a few shares of a meaningful whole and label the precise percentages beside
 
 ````text
 ```text jamll-content
-{ type: 'chart-pie', cap: 'Traffic share', style: { width: '100%', height: '16rem' }, styles: ['echarts.tooltip(trigger:item)', 'echarts.pie.ring', 'echarts.pie.position(innerR:45%;outerR:70%;cX:35%)'], data: [['Source', 'Share'], ['Search', 46], ['Direct', 31], ['Referral', 23]] }
+{ type: 'chart-pie', cap: 'Traffic share', style: { width: '100%', height: '16rem' }, styles: ['echarts.tooltip(trigger:item)', 'echarts.pie.ring', 'echarts.pie.position(innerR:45%;outerR:70%;cX:35%)'] }
+    | ["Source","Share"]
+    | ["Search",46]
+    | ["Direct",31]
+    | ["Referral",23]
     { type: 'container', slot: 'layer', styles: ['layout.flex(direction:column)', 'css(gap:xs;position:absolute;right:15%;top:50%;transform:translateY(-50%))'], childStyles: ['indicator.inline', 'value.color.primary', 'css(width:9rem)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Search', value: 0.46, styles: ['indicator.icon.text(color:ac0)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Direct', value: 0.31, styles: ['indicator.icon.text(color:ac1)'] }
@@ -213,7 +251,10 @@ Use `steps` for instructions whose sequence matters. Omit `status` on every reco
 
 ````text
 ```text jamll-content
-{ type: 'steps', cap: 'Reset the router', data: [{ id: 'unplug', name: 'Unplug the router for 30 seconds' }, { id: 'plug', name: 'Plug it back in and wait for the light to turn steady' }, { id: 'connect', name: 'Reconnect your device to the network' }] }
+{ type: 'steps', cap: 'Reset the router' }
+    | {"id":"unplug","name":"Unplug the router for 30 seconds"}
+    | {"id":"plug","name":"Plug it back in and wait for the light to turn steady"}
+    | {"id":"connect","name":"Reconnect your device to the network"}
 ```
 ````
 
@@ -225,7 +266,11 @@ Let the user mark supplied tasks complete within the view.
 
 ````text
 ```text jamll-content
-{ type: 'list-todo', cap: 'Launch checklist', styles: ['options.disc'], data: [{ id: 'copy', name: 'Final copy approved', finish: true }, { id: 'qa', name: 'QA pass on mobile', finish: true }, { id: 'notes', name: 'Release notes published' }, { id: 'announce', name: 'Announcement scheduled' }] }
+{ type: 'list-todo', cap: 'Launch checklist', styles: ['options.disc'] }
+    | {"id":"copy","name":"Final copy approved","finish":true}
+    | {"id":"qa","name":"QA pass on mobile","finish":true}
+    | {"id":"notes","name":"Release notes published"}
+    | {"id":"announce","name":"Announcement scheduled"}
 ```
 ````
 
@@ -237,7 +282,12 @@ Show the stages of a process in order. Use `status` for the native visual state 
 
 ````text
 ```text jamll-content
-{ type: 'steps', cap: 'Order 4821', current: 'address', data: [{ id: 'placed', name: 'Placed', status: 'finish' }, { id: 'packed', name: 'Packed', status: 'finish' }, { id: 'address', name: 'Address verification', status: 'process' }, { id: 'dispatch', name: 'Dispatch — blocked until the address is confirmed', status: 'warning' }, { id: 'delivery', name: 'Delivery — waiting for dispatch', status: 'wait' }] }
+{ type: 'steps', cap: 'Order 4821', current: 'address' }
+    | {"id":"placed","name":"Placed","status":"finish"}
+    | {"id":"packed","name":"Packed","status":"finish"}
+    | {"id":"address","name":"Address verification","status":"process"}
+    | {"id":"dispatch","name":"Dispatch — blocked until the address is confirmed","status":"warning"}
+    | {"id":"delivery","name":"Delivery — waiting for dispatch","status":"wait"}
 ```
 ````
 
@@ -254,8 +304,15 @@ Combine related metrics, a trend and record detail into one compact view.
         { type: 'label', cap: 'Four weeks to date', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
     { type: 'indicator-percent', icon: '🚚', cap: 'On time', value: 0.94, valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['indicator.trailingIcon', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'color.stateMap(good:success;watch:warn;late:error)', 'value.color.primary'] }
         { type: 'label', cap: 'Target 90%', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
-    { type: 'chart-line', cap: 'Orders by week', style: { width: '100%', height: '14rem' }, styles: ['echarts.line.gradientBg'], data: [['Week', 'Orders'], ['W1', 280], ['W2', 312], ['W3', 305], ['W4', 387]] }
+    { type: 'chart-line', cap: 'Orders by week', style: { width: '100%', height: '14rem' }, styles: ['echarts.line.gradientBg'] }
+        | ["Week","Orders"]
+        | ["W1",280]
+        | ["W2",312]
+        | ["W3",305]
+        | ["W4",387]
         { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)'] }
-    { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], data: [{ region: 'North', orders: 482 }, { region: 'South', orders: 256 }], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
+    { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
+        | ["North",482]
+        | ["South",256]
 ```
 ````

@@ -237,7 +237,7 @@ export default [
 
 将 animation 设为受支持的动画名称字符串或 false；不支持 true。展开的详情高度可变时会暂停固定行虚拟化。
 
-位置参数顺序: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection`.
+位置参数顺序: `scrollTarget` → `height` → `throttle` → `padding` → `getChildrenByRow` → `getRowNum` → `animation` → `easing` → `duration` → `tileduration` → `tilerandom` → `defaultDirection` → `freezeTop`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
@@ -253,6 +253,7 @@ export default [
 | `tileduration` | `number` | `0` | 砖块式动画时长 |
 | `tilerandom` | `boolean` | `false` | 砖块随机排列 |
 | `defaultDirection` | `string` | `up` | 默认方向<br>选项: `up`, `down`, `right`, `left` |
+| `freezeTop` | `number` | `0` | 滚动时保持挂载并固定显示的首部数据行数 |
 
 Enables virtual scrolling for large datasets by fixing row heights to a specific value. Supports animated entry effects.
 

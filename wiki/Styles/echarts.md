@@ -1692,6 +1692,27 @@ Positional order: `radius` → `center` → `padAngle`.
 | `center` | `array` | `["50%","50%"]` | Center position |
 | `padAngle` | `number` | `5` | Gap angle |
 
+## `echarts.map.gap`
+
+<a id="entry-echarts-map-gap"></a>
+
+Transparent inset between each filled region and its outline.
+
+Inserts a transparent band around each filled region. Only the outline moves when offsets are applied. A style on the map takes precedence over its standard theme recipe.
+
+Use on a silent, non-roaming GeoJSON map with the Canvas renderer and solid region fills.
+
+Image layers, map data series, custom projections and special geographic placements retain their native paint. The effect needs a free canvas layer directly under the base geography. Large offsets can cross the gap or clip at the canvas edge.
+
+Positional order: `width` → `borderColor` → `offsetX` → `offsetY`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `width` | `numberOrString` | `0.1875rem` | Inward distance from the original geographic edge, as a rem or px length or a number of CSS pixels. Zero disables the effect. |
+| `borderColor` | `dictionaryOrString` | Not supplied | Optional outline ink. Keeps the native border width and defaults to each region’s border color. |
+| `offsetX` | `numberOrString` | `0rem` | Horizontal outline offset as a rem or px length or a number of CSS pixels. Negative values move left. |
+| `offsetY` | `numberOrString` | `0rem` | Vertical outline offset as a rem or px length or a number of CSS pixels. Negative values move up. |
+
 ## `echarts.axis.xxx`
 
 <a id="entry-echarts-axis-xxx"></a>
@@ -1729,6 +1750,28 @@ Positional order: `nameLocation` → `show` → `position` → `type`.
 | `show` | Captured y-axis preset axis visibility.<br>This prebuilt style captures show=true and writes it to yAxis.show. It is not a parameterized factory; use echarts.axis.y with the show argument to customize this setting. |
 | `position` | Captured y-axis preset axis-side placement.<br>This prebuilt style captures position=left and writes it to yAxis.position. It is not a parameterized factory; use echarts.axis.y with the position argument to customize this setting. |
 | `type` | Captured y-axis preset axis scale type.<br>This prebuilt style captures type=category and writes it to yAxis.type. It is not a parameterized factory; use echarts.axis.y with the type argument to customize this setting. |
+
+## `echarts.map.dots`
+
+<a id="entry-echarts-map-dots"></a>
+
+Paint selected map geography with whole dots.
+
+Replaces the foreground land fill. Adjacent regions share one pattern. Hover recolors whole dots by their centers. A map gap leaves room for its outline before the dots are placed. Dots crossing coastline, hole or canvas edges are omitted.
+
+Use a silent, non-roaming GeoJSON map with the Canvas renderer.
+
+Maps with data series, custom projections or special geographic placements keep their native fill. Size must be positive and gap nonnegative, with a combined pitch of at least one CSS pixel.
+
+Positional order: `size` → `gap` → `layout` → `color` → `hoverColor`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `size` | `numberOrString` | `0.1875rem` | Dot diameter as a rem or px length or a number of CSS pixels. |
+| `gap` | `numberOrString` | `0.25rem` | Edge-to-edge space between nearest dots as a rem or px length or a number of CSS pixels. |
+| `layout` | `string` | `grid` | Grid uses aligned rows. Beehive offsets alternating rows by half the pitch.<br>Options: `grid`, `beehive` |
+| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | Ink for the dots. Use a theme token to follow swatch and mode changes. |
+| `hoverColor` | `dictionaryOrString` | `var(--jam-color-fg-primary)` | Ink for the whole dots under the pointed region. Defaults to the active theme’s primary foreground. |
 
 ## `echarts.pie.ring`
 
@@ -2129,6 +2172,27 @@ Swap type and data between an existing axis pair.
 Exchanges only type and data for x/y or angle/radius axes, preferring Cartesian axes when both pairs exist.
 
 Does not transpose the dataset or swap axis styling and bounds.
+
+## `echarts.bar.chamfer`
+
+<a id="entry-echarts-bar-chamfer"></a>
+
+Chamfered bars
+
+Cuts the selected visual corners of each filled native rectangular bar. Each cut is capped at one third of the bar’s shorter edge.
+
+Follows chart rendering. Removing the active style reveals the next recipe or restores the native path.
+
+Use `echarts.bar.chamfer` in chart `styles` or in the theme’s `chart-standard` recipe for charts with `variant: 'standard'`. A chart style takes precedence over the theme recipe.
+
+Applies to native rectangular bar items, including stacked or mixed series. It skips transparent offsets, polar sectors, large-mode batches and background bars. Layered shadow uses its own stack silhouette.
+
+Positional order: `cut` → `corners`.
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `cut` | `numberOrString` | `0.25rem` | Cut length in rem, px or a number in ECharts pixels. Defaults to 0.25rem. A zero or invalid cut leaves the native shape. |
+| `corners` | `string` | `tl br` | Space-separated corner names from `tl tr br bl`. Defaults to `tl br`. Unrecognized names are ignored. |
 
 ## `echarts.grid.border`
 

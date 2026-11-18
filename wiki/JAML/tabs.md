@@ -54,6 +54,14 @@ Content builds lazily on first selection and remains hidden/inert while inactive
 
 Removing an inactive tab preserves selection. Removing the active tab prefers its previous enabled neighbor, then the next; an explicit eligible `activeId` overrides that fallback. Removal destroys the pane. Closing and reopening a file should create a fresh occurrence identity when it needs a fresh resource session. Persist the application destination list and selected ID explicitly if they should survive reloads; tabs do not save them automatically.
 
+## Move a tab between strips
+
+Call `source.canTransfer(id)` before offering Move or Float, even if you have not created the destination yet. When the destination is available, call `source.canTransfer(id, destination, index?)` to check the target strip and zero-based insertion slot. Use `source.transfer(id, destination, index?)` on the accepted command or drop. Omit the index to append. The source and target must be visible, connected and share their JAML binding scope. Read both `value` properties and update the caller's membership only after success. Transfer selects the moved pane in the destination and emits neither selection nor close callbacks. Use `update` for same-strip reorder.
+
+`view.tablist` is the live strip element. `view.getTab(id)` returns the live header for measuring drop targets or matching a pointer event. The panel, editor and tab keep their identities. A previously unvisited panel builds once in the destination. Any focus handler that updates caller-owned placement should wait for the transfer to finish.
+
+An engine with state-preserving DOM moves can retain an embedded document during a transfer. The fallback for older engines refuses loaded frames and other disconnect-sensitive content, including PDF previews that use an iframe. A false preflight lets you disable cross-strip commands and explain why. Set the optional item flag `requiresConnectedMove: true` if your content has opaque state that must survive without disconnection.
+
 ## Keyboard and focus
 
 Left/Right and Home/End move focus without activating a pane; Enter/Space activate it. Disabled tabs are skipped and Left/Right respect RTL. Sequential Tab enters the selected tab. Delete closes the focused closable tab. The tab button owns the named X in its extra slot. The X stays out of the Tab sequence, and hover, selection and keyboard focus cover the whole tab.

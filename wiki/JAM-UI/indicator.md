@@ -168,7 +168,10 @@ Tags added the same way list what stands behind the number.
 { type: 'container', styles: ['stylize.bento'] }
     { type: 'indicator-number', cap: 'Open tickets', value: 23, styles: ['css(padding:l)', 'indicator.vertical', 'indicator.lefted', 'value.major()', 'cap.main(0.75)', 'value.color.primary'] }
         { type: 'label', cap: 'Most reported', slot: 'layer', styles: ['indicator.sub', 'cap.sub'] }
-        { type: 'tags', data: ['Billing', 'Login', 'Export'], showCount: false, slot: 'layer', styles: ['indicator.sub', 'tags.chip'] }
+        { type: 'tags', showCount: false, slot: 'layer', styles: ['indicator.sub', 'tags.chip'] }
+            | ["Billing","Billing"]
+            | ["Login","Login"]
+            | ["Export","Export"]
 ```
 ````
 

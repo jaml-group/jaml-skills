@@ -51,6 +51,7 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 | `valueIndex`                     | `number`                | `-1`          | Column index to use as the row value. `-1` uses the whole row.                                    |
 | `freezeLeft`                     | `number`                | `0`           | Number of columns to freeze on the left (sticky positioning).                                     |
 | `freezeRight`                    | `number`                | `0`           | Number of columns to freeze on the right (sticky positioning).                                    |
+| `cellMerges`                     | `TableCellMerge[]`      | `[]`          | Declared rectangular cell merges. See [worksheet geometry](#worksheet-geometry).                  |
 | `startRow`                       | `number`                | `1`           | Starting row number for paginated display. Setting this auto-enables `paginated`.                 |
 | `hoveringRow`                    | `number`                | —             | Get/set the currently hovered row index.                                                          |
 | `hoveringCol`                    | `number`                | —             | Get/set the currently hovered column index.                                                       |
@@ -59,6 +60,33 @@ Inherits all params from [AbstractOptionElement](./JAM-UI.md#section-3--abstract
 | `rowDecor`                       | `HTMLElement \| string` | —             | Row decoration element (e.g. highlight bar).                                                      |
 | `colDecor`                       | `HTMLElement \| string` | —             | Column decoration element.                                                                        |
 | `widthAdjustLimit`               | `number`                | `20`          | Minimum column width (px) for user drag-to-resize.                                                |
+
+### Worksheet geometry
+
+Use `table.fixedrowheight(height:2rem;freezeTop:1)` for a bounded worksheet viewport with its first data row pinned. Combine it with `table.xscrollable(freezeLeft:1)` to also pin the first visible column. Frozen rows are counted in displayed order. Frozen columns count only visible columns. A merge spanning both frozen column bands follows the left band.
+
+Each `cellMerges` record specifies `{ row, column, rowSpan, columnSpan }`. `row` is the top-left source row's primary key, or its zero-based data index when the table has no key columns. Define a key column to keep row identity through data replacement and removal. `column` is its zero-based `dataDef` index. The spans count source rows and columns, including hidden columns. The table captures the source membership when a rectangle is first resolvable. A rectangle renders while its visible members stay contiguous and ordered with the original anchor first. Filtering interior members compresses the rectangle. Removing a keyed member or hiding its anchor retires the visible merge until the members are present in order again. Assign new declarations when loading a new sheet. If declarations overlap, the first eligible rectangle wins.
+
+```json jaml-playground
+{
+    "type": "table",
+    "style": { "height": "12rem" },
+    "styles": ["table.gridline", "table.xscrollable(freezeLeft:1)", "table.fixedrowheight(height:2rem;freezeTop:1;animation:false)"],
+    "dataDef": [
+        { "cap": "A", "width": "6rem" },
+        { "cap": "B", "width": "8rem" },
+        { "cap": "C", "width": "8rem" }
+    ],
+    "data": [
+        ["A1", "B1:C2", "C1"],
+        ["A2", "B2", "C2"],
+        ["A3", "B3", "C3"]
+    ],
+    "cellMerges": [{ "row": 0, "column": 1, "rowSpan": 2, "columnSpan": 2 }]
+}
+```
+
+Use `locateTd` for the source value and `resolveCell` for the displayed cell. A covered coordinate resolves to its merge anchor. `await revealCell(row, column)` renders the anchor if the scroll window needs it and scrolls the table body around frozen tracks. It returns the visible cell, or `undefined` if the coordinate is unavailable. The worksheet owns cell selection and keyboard navigation and can use the returned cell's `rowspan` and `colspan` to advance past the merged area.
 
 ### Row hooks
 
@@ -351,13 +379,15 @@ The `styles` property on a `ThOption` registers a scoped stylesheet class for th
 
 ### Row/column access
 
-| Method                          | Description                                               |
-| ------------------------------- | --------------------------------------------------------- |
-| `table.getRow(pKey)`            | Get all cells (`TomatoTd[]`) for a row by primary key.    |
-| `table.getDrawedRow(pKey)`      | Get only rendered cells for a row.                        |
-| `table.getColumn(colIdx)`       | Get all cells for a column by index.                      |
-| `table.getDrawedColumn(colIdx)` | Get only rendered cells for a column.                     |
-| `table.locateTd(pKey, colIdx)`  | Find a specific cell element by row key and column index. |
+| Method                            | Description                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------- |
+| `table.getRow(pKey)`              | Get all cells (`TomatoTd[]`) for a row by primary key.                            |
+| `table.getDrawedRow(pKey)`        | Get only rendered cells for a row.                                                |
+| `table.getColumn(colIdx)`         | Get all cells for a column by index.                                              |
+| `table.getDrawedColumn(colIdx)`   | Get only rendered cells for a column.                                             |
+| `table.locateTd(pKey, colIdx)`    | Find a specific cell element by row key and column index.                         |
+| `table.resolveCell(pKey, colIdx)` | Find the displayed merge anchor or the ordinary source cell for that coordinate.  |
+| `table.revealCell(pKey, colIdx)`  | Return a promise for the displayed cell after revealing it within the table body. |
 
 ### Selection
 
@@ -447,7 +477,11 @@ Give each column the element that fits its values: `menu` maps codes to labels, 
 
 ````text
 ```text jamll-content
-{ type: 'table', cap: 'Delivery by region', style: { width: '100%' }, styles: ['table.stripy', 'table.gridline', 'table.stretchrow', 'table.thead.accent', 'table.hovermarker(style:arrow)'], data: [{ region: 'North', tier: 1, orders: 482, onTime: 0.97 }, { region: 'Central', tier: 1, orders: 391, onTime: 0.88 }, { region: 'South', tier: 2, orders: 256, onTime: 0.64 }, { region: 'Coastal', tier: 2, orders: 155, onTime: 0.92 }], dataDef: [{ key: 'region', cap: 'Region', sort: 'ascend' }, { key: 'tier', cap: 'Tier', align: 'center', filterable: true, menu: { 1: 'Priority', 2: 'Standard' } }, { key: 'orders', cap: 'Orders', type: 'indicator-number', unit: 'orders', styles: ['indicator.capslot.hide', 'indicator.unit.color.accent'] }, { key: 'onTime', cap: 'On time', type: 'progress', width: '8rem', valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['color.stateMap(good:success;watch:warn;late:error)'] }] }
+{ type: 'table', cap: 'Delivery by region', style: { width: '100%' }, styles: ['table.stripy', 'table.gridline', 'table.stretchrow', 'table.thead.accent', 'table.hovermarker(style:arrow)'], dataDef: [{ key: 'region', cap: 'Region', sort: 'ascend' }, { key: 'tier', cap: 'Tier', align: 'center', filterable: true, menu: { 1: 'Priority', 2: 'Standard' } }, { key: 'orders', cap: 'Orders', type: 'indicator-number', unit: 'orders', styles: ['indicator.capslot.hide', 'indicator.unit.color.accent'] }, { key: 'onTime', cap: 'On time', type: 'progress', width: '8rem', valueStates: { good: 'value>=0.9', watch: 'value>=0.7', late: 'value<0.7' }, styles: ['color.stateMap(good:success;watch:warn;late:error)'] }] }
+    | ["North",1,482,0.97]
+    | ["Central",1,391,0.88]
+    | ["South",2,256,0.64]
+    | ["Coastal",2,155,0.92]
 ```
 ````
 

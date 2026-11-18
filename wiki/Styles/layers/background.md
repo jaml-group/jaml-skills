@@ -694,6 +694,62 @@ Additions and overrides:
 | `class` | `string` | Class |
 | `content` | `any` | Content |
 
+## `layer.background.ticks`
+
+<a id="entry-layer-background-ticks"></a>
+
+Edge ticks
+
+Add a decorative ruler or registration marks along one edge of a surface.
+
+Both bands start at the same corner. The major band paints over coincident minor ticks. CSS repeats the bands as the layer resizes. Entry and exit animation default to none.
+
+Use a host with a laid-out box and the framework layer stylesheet.
+
+Creates a separate decorative child layer. Reverting the style removes its layer.
+
+Use the common css argument to inset the layer and size its box. Use separate layers for a grid or ticks on more than one edge.
+
+Positional order: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `edge` → `gap` → `width` → `length` → `color` → `majorEvery` → `majorLength` → `majorColor`.
+
+Common arguments: [layer.overlay](overlay.md#entry-layer-overlay).
+
+Additions and overrides:
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | Not supplied |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | Not supplied |  |
+| `mask` | `string` | Not supplied |  |
+| `filter` | `string` | Not supplied |  |
+| `padding` | `string` | Not supplied |  |
+| `borderRadius` | `string` | Not supplied |  |
+| `transform` | `string` | Not supplied |  |
+| `border` | `string` | Not supplied |  |
+| `clipPath` | `string` | Not supplied |  |
+| `animation` | `string` | Not supplied |  |
+| `opacity` | `number` | Not supplied |  |
+| `css` | `dictionaryOrString` | Not supplied |  |
+| `depth` | `number` | Not supplied |  |
+| `class` | `string` | Not supplied |  |
+| `attrs` | `dictionary` | `{"aria-hidden":"true"}` |  |
+| `rotateX` | `number` | Not supplied |  |
+| `rotateY` | `number` | Not supplied |  |
+| `translateY` | `numberOrString` | Not supplied |  |
+| `slot` | `string` | Not supplied |  |
+| `content` | `any` | Not supplied |  |
+| `entryAnimation` | `string` | `none` |  |
+| `exitAnimation` | `string` | `none` |  |
+| `edge` | `enum` | `top` | Edge from which the ticks extend inward.<br>Options: `top`, `right`, `bottom`, `left` |
+| `gap` | `numberOrString` | `0.5rem` | Distance from the start of one minor tick to the start of the next.<br>Unit: `rem` |
+| `width` | `numberOrString` | `0.0625rem` | Tick thickness along the edge, limited to one interval in each band.<br>Unit: `rem` |
+| `length` | `numberOrString` | `0.25rem` | How far a minor tick extends inward from the edge.<br>Unit: `rem` |
+| `color` | `string` | `var(--jam-color-outline-muted)` | Minor tick color. CSS color variables follow the active theme. |
+| `majorEvery` | `number` | `4` | Number of minor intervals between major ticks, truncated to an integer. Set to 0 for a single series of ticks. |
+| `majorLength` | `numberOrString` | `0.5rem` | How far a major tick extends inward from the edge.<br>Unit: `rem` |
+| `majorColor` | `string` | Not supplied | Major tick color. Defaults to color. |
+
 ## `layer.background.higher`
 
 <a id="entry-layer-background-higher"></a>
