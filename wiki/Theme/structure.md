@@ -9,6 +9,11 @@ src/[theme]/
 ├── index.mjs          default-exported theme option
 ├── styles/
 │   └── index.scss     the complete theme stylesheet
+├── assets/            optional theme-owned resources
+│   ├── fonts/
+│   ├── images/
+│   ├── scripts/       explicitly imported ES module helpers
+│   └── i18n/           theme and swatch labels
 └── tokens/
     ├── sys.mjs        complete sys, plus an optional sparse mode branch
     ├── cmpt.mjs       overrides of supported component seams
@@ -79,7 +84,7 @@ body {
 }
 ```
 
-`index.mjs` registers the stylesheet and swatches. The first swatch carries the token buckets; later swatches inherit them:
+`index.mjs` assembles the theme declaration, stylesheet, styles, swatches and tokens through explicit recipe imports. Keep import-time translation registration out of this module. The first swatch carries the token buckets, and later swatches inherit them.
 
 ```js
 import indexStyle from './styles/index.scss';
@@ -112,7 +117,7 @@ In Jam-UI 2.0.0 and later the page font follows `sys.typography.fontFamily.ui`; 
 
 ## `index.mjs`
 
-`index.mjs` is the main theme module. It owns the theme declaration, imports stylesheet recipes, imports theme tokens, and composes swatches.
+`index.mjs` is the recipe entry point. It assembles the theme option, swatches, tokens, styles and explicit recipe imports.
 
 It must export the theme option as the module default. Theme loaders expect the default export to be a plain object compatible with `new Theme(option)`.
 
@@ -141,7 +146,7 @@ export default {
 
 `recipes.mjs` is intentionally not imported into the runtime theme option above. Design tools, validators, and import/export scripts may import it directly when they need design-time recipe path metadata. Recipe paths compile into full CSS stylesheets before runtime.
 
-The `styles` map shares selector syntax with element `descStyles`. See [theme style entry forms](./stylesheets.md#style-entry-forms) for the theme’s array values. They are attached globally when the theme is applied and use attachment order for priority; Jam-UI does not add a theme-class wrapper. They may mix complete imported stylesheets and runtime style plugins. Use `Styles.stylesheet(importedStyle)` for integrated SCSS. Use normal style/plugin entries when the theme needs behavior that CSS alone cannot express.
+The `styles` map shares selector syntax with element `descStyles`. See [theme style entry forms](./stylesheets.md#style-entry-forms) for the theme’s array values. Styles attach globally in recipe order when the theme is applied. Use `Styles.stylesheet(importedStyle)` for integrated SCSS or the [stylesheet resolver](#theme-assets) for a stylesheet that uses packaged media. Use native style recipes for runtime behavior.
 
 Only selector keys in the JavaScript `styles` object and element `descStyles` receive simple selector refinement. Imported SCSS does not: write literal runtime selectors such as `.jam-list-style[jam-variant='legend'] > .jam-item-style`, never the `list-legend > item` dictionary shorthand.
 
@@ -232,12 +237,68 @@ Runtime user settings may override swatch color behavior. If the app/user has al
 
 For JAML examples, set `jam.darkMode`, `jam.accolor`, or color-set settings only when the requested example specifically calls for a dark mode, accent color, or color set. Do not force these globals in unrelated examples.
 
+## Theme assets
+
+Keep theme-owned fonts in `assets/fonts/`, images in `assets/images/`, ES module helpers in `assets/scripts/`, and labels in `assets/i18n/`. The build treats `assets/scripts/` as source and bundles helpers through explicit imports from their recipes. Theme discovery loads the built theme modules.
+
+A packaged theme can declare `styles: ({ asset, stylesheet }) => ({ ... })`. `asset('images/texture.webp')` returns the URL of that file inside the delivered theme's asset directory. Pass it to a native recipe that accepts an image URL, such as the [standard map image layer](authoring.md#standard-map-recipe). `stylesheet(css)` rebases `url('../assets/...')` references in imported CSS against the delivered theme module. Browsers request fonts and images when the stylesheet or recipe uses them.
+
+### Use a packaged font and image
+
+In the [minimal theme module](#minimal-theme-module), set `sys.typography.fontFamily.ui` to `'"Harbor Sans", system-ui, sans-serif'`. Add `assets/fonts/harbor-sans.woff2` and this rule to `styles/index.scss`:
+
+```scss
+@font-face {
+    font-family: 'Harbor Sans';
+    src: url('../assets/fonts/harbor-sans.woff2') format('woff2');
+    font-display: swap;
+}
+```
+
+Add `assets/images/texture.webp` and set the default-exported theme option's `styles` field to the `styles` function below. Reuse the stylesheet import from the minimal module.
+
+```js
+import indexStyle from './styles/index.scss';
+
+const styles = ({ asset, stylesheet }) => ({
+    'document.header': [Styles.stylesheet(stylesheet(indexStyle))],
+    'main > tile': [Styles.css({ backgroundImage: `url("${asset('images/texture.webp')}")` })]
+});
+```
+
+### Theme and swatch labels
+
+Author `assets/i18n/en.json`, `zh.json`, and any additional dictionaries named for their canonical locale tags. Each dictionary can supply a display `name` and `swatches` keyed by the theme's stable swatch IDs. For the minimal theme, `assets/i18n/en.json` could contain:
+
+```json
+{
+    "name": "Harbor Workshop",
+    "swatches": {
+        "Harbor Blue": "Deep Water",
+        "Harbor Moss": "Tidal Moss"
+    }
+}
+```
+
+Keep theme and swatch IDs stable for saved selections. For example, the built-in theme with ID `Strand` displays as `Slate Relay` in English. Labels are scoped to the owning theme, so two themes can use the same swatch ID. Keep picker actions and other shared controls in Jam-UI's framework translations.
+
+The build advertises available locale dictionaries and embeds the English fallback. Each label resolves through the active locale, its parent tags, the configured fallback chain, then packaged English and finally the stable ID. Advertised dictionaries load asynchronously for registered themes, including inactive ones, and the open picker updates as labels arrive. `jam.themeReady` covers theme initialization independently of locale and media requests. Legacy themes without label assets use shared translation lookup.
+
+Use `jam.getThemeLabel(themeId)` to read a theme's current display name. Use `jam.getThemeLabel(swatchId, 'swatch', themeId)` to read a swatch label from that theme. Omitting the owner in swatch lookup uses the current theme. Keep the stable IDs when saving or applying a selection.
+
 ## Build And Discovery
 
-A folder-theme build can emit one module per theme:
+The theme build emits a flat browser ES module for each theme and the assets alongside it:
 
 ```text
-src/*/index.mjs -> dist/[theme].mjs
+dist/
+├── themes.json
+├── harbor.mjs
+└── harbor/
+    └── assets/
+        ├── fonts/harbor-sans.woff2
+        ├── images/texture.webp
+        └── i18n/{en,zh}.json
 ```
 
 Each compiled module is a browser ES module whose default export is the theme option. The build produces it as follows:
@@ -246,11 +307,11 @@ Each compiled module is a browser ES module whose default export is the theme op
 -   `Styles` is a runtime global and is used directly.
 -   The SCSS import compiles to a CSS string that `Styles.stylesheet(...)` receives.
 
-In a project without an existing themes build, configure the bundler with `@jam/jam-ui` as an external mapped to the global `jam` and an SCSS plugin that inlines compiled CSS as a string, or write the module by hand with those globals and a CSS string.
+Use the asset-aware theme build for the [packaged asset example](#use-a-packaged-font-and-image). For a standalone module with an object-valued `styles` map, you can map the `@jam/jam-ui` external to the global `jam` and compile SCSS to an inline CSS string, or write the module by hand with those globals and a CSS string.
 
-A watch build resolves theme entry points when it starts: after adding a theme folder, restart the watch build. The theme is ready when its module is served from the themes directory and its file appears by `name` in `themes.json`. After each rebuild, confirm the served module changed and reload the page fully; changing only the URL hash keeps the previously loaded theme module.
+Keep the flat module and its `[theme]/assets/` directory together when relocating a build, along with the catalog and any shared chunks. The theme watcher discovers added and removed themes and assets. After a rebuild, check the served files and catalog, then reload the full page to load the updated modules.
 
-For automatic discovery, emit a `themes.json` index beside the compiled theme modules. It is a JSON array with one entry per module; the runtime reads each entry's `name`, the module file name:
+For automatic discovery, the build generates a `themes.json` index beside the compiled theme modules. It is a JSON array with one entry per module. The runtime reads each entry's `name` as the module file name.
 
 ```json
 [{ "name": "harbor.mjs" }, { "name": "studio.mjs" }]
@@ -258,9 +319,7 @@ For automatic discovery, emit a `themes.json` index beside the compiled theme mo
 
 A development server may generate this file as a directory listing with extra fields such as `type`, `mtime` and `size`; the runtime reads only `name`.
 
-Theme and swatch pickers display the `name` values. Choose names that read well as labels; the runtime shows a localized label only for names the framework's own translations already cover.
-
-At runtime, `initThemes()` reads `${Theme.assetsPath}/themes.json`, loads each indexed module from the same directory, and registers its default export with `new Theme(option)`. `Theme.assetsPath` defaults to `assets/themes`; embedded hosts may set it before `jam.themeReady` starts when their assets use another base URI.
+At runtime, `initThemes()` reads `${Theme.assetsPath}/themes.json`, loads each indexed module from the same directory, and registers its default export as a theme. `Theme.assetsPath` defaults to `assets/themes`; embedded hosts may set it before `jam.themeReady` starts when their assets use another base URI.
 
 `Theme.reload()` reloads the current page by default. A host that owns navigation or webview lifecycle may replace this static method while preserving the same no-argument contract used by `switchTheme()`.
 

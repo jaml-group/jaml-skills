@@ -2,11 +2,11 @@
 
 Theme stylesheets express selector logic and styling recipes. They are attached when a theme is applied and intentionally remain unwrapped so their specificity stays aligned with the framework stylesheet.
 
-In a theme file, the `styles` section is not only for raw CSS. It registers global style entries, and each entry may contain normal style plugins:
+The theme's `styles` section registers global CSS and native style recipes on matching roles.
 
 -   `Styles.stylesheet(importedScss)` for complete static CSS/SCSS output.
 -   `Styles.css(...)`, `Styles.rule(...)`, style strings, or custom style objects for normal CSS style work.
--   style plugins that add classes, layers, runtime listeners, measurements, animation helpers, or other JavaScript behavior.
+-   Built-in style plugins for classes, layers, animation and supported runtime behavior. The recipe owns the behavior and its lifecycle. See [standard role recipes](authoring.md#standard-role-recipes) for composition.
 
 The theme’s `styles` object and an element’s `descStyles` share the selector syntax. Each selector key scopes its registered styles. Use the reserved `document.header` entry for a complete document-level stylesheet. Theme-owned registrations are removed when that theme is unapplied, and attachment order controls cascade priority; a theme-root selector is not added.
 
@@ -22,7 +22,7 @@ Do not write `list-legend > item` in SCSS expecting Jam-UI expansion. Sass emits
 
 ### Style entry forms
 
-Nested objects in the theme’s `styles` map define selectors. In each selector’s array, use a registered style path string or a constructed style such as `Styles.layer.background(args)`. Theme arrays also accept two plain object forms. A `{ method, args }` entry calls the registered style factory named by `method` with `args`. A CSS declaration dictionary such as `{ position: 'relative' }` becomes `Styles.css(...)`. For an anonymous plugin-backed style, pass the style returned by `Styles.style({ desc, plugins })()`.
+Nested objects in the theme’s `styles` map define selectors. In each selector’s array, use a registered style path string or a constructed style such as `Styles.layer.background(args)`. Theme arrays also accept two plain object forms. A `{ method, args }` entry calls the registered style factory named by `method` with `args`. A CSS declaration dictionary such as `{ position: 'relative' }` becomes `Styles.css(...)`.
 
 In a component’s `styles` or `descStyles` arrays, use a style path string or call the factory directly with its argument object. Use `Styles.css(declarations)` for a CSS dictionary in those arrays. The [component style formats](../Styles/styles.md#styleoption-formats) describe the anonymous style object form.
 
@@ -385,3 +385,5 @@ export default {
 ```
 
 `document.header` is the reserved registration key for attaching the complete stylesheet without selector scoping. The stylesheet itself is appended globally, without a theme wrapper, when the theme is applied.
+
+When the compiled stylesheet references a packaged font or image through `url('../assets/...')`, pass it through the theme's `stylesheet` resolver before calling `Styles.stylesheet`. See the [packaged font and image example](structure.md#use-a-packaged-font-and-image).

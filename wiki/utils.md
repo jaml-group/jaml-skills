@@ -10,11 +10,13 @@ The `jam` global is the main runtime namespace. It merges all exports from JAML,
 
 In the updated development runtime, `jam.themeReady` exists synchronously after loading Jam-UI. Initialization starts at `DOMContentLoaded` while the document is loading, or in the next microtask when it is already interactive/complete. The stable promise preserves initialization rejection. It resolves after Jam-UI initializes built-in tokens, restores saved theme state, discovers themes, and applies the initial theme. Rambutan route rendering waits for it automatically before invoking render hooks.
 
+Advertised [theme locale dictionaries](Theme/structure.md#theme-and-swatch-labels), fonts and images load independently of `jam.themeReady`. The picker can use packaged English labels while localized labels load.
+
 Older bundles may assign the promise only at `DOMContentLoaded`. Verify that it exists before treating `await jam.themeReady` as a readiness barrier: awaiting `undefined` does not wait for initialization. Early global dark-mode writes in the updated runtime wait for the body color profile and coalesce to the latest request. Wait for it before assigning `colors`/`colorScheme` palettes. This barrier does not establish component rendering, geometry or font readiness.
 
 ### Theme assets for classic-script embedding
 
-On runtimes supporting `jam-theme-assets-path`, set this attribute on the classic runtime script before it executes. Its trimmed, nonempty value becomes `jam.Theme.assetsPath` before automatic initialization starts. Missing or blank values leave the existing path unchanged. The directory must serve `themes.json` and its referenced theme modules and shared chunks. Relative paths resolve against the document base URL; use an absolute URL when embedding under an application-specific asset route.
+On runtimes supporting `jam-theme-assets-path`, set this attribute on the classic runtime script before it executes. Its trimmed, nonempty value becomes `jam.Theme.assetsPath` before automatic initialization starts. Missing or blank values leave the existing path unchanged. Serve `themes.json`, its referenced theme modules and shared chunks, and any [companion asset directories](Theme/structure.md#build-and-discovery). Relative paths resolve against the document base URL; use an absolute URL when embedding under an application-specific asset route.
 
 For a dynamically loaded classic runtime:
 

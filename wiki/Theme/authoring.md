@@ -239,6 +239,10 @@ In the theme’s `index.mjs` `styles` map, use a selector such as `map-standard`
 
 Choose the region fill and foreground name ink together. [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) sets those on the existing foreground. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds a separate geographic layer for depth with its own fill, outline and shadow. The item subkeys style the coordinate-aware JAML overlays.
 
+Pass `colors` to `Styles.echarts.map` for a foreground palette or to `Styles.echarts.map.layer` for a separate layer palette. A palette supplied in the map's `option.geo.itemStyle.color` takes precedence over the foreground recipe's `colors`. The tuner transforms resolvable colors and passes gradient objects, image patterns and unresolved values through unchanged. A foreground or layer recipe's own `tuner` takes precedence over the element's tuner for that recipe. The demo owns its region names and boundary assignments.
+
+For a theme-owned map texture, use the [theme asset resolver](structure.md#theme-assets) in the `styles` function. Add `Styles.echarts.map.layer.image({ image: asset('images/texture.webp') })` to the standard map's `'&'` array and keep its other recipes and item subkeys.
+
 In the following `styles` entry, `sys` is the theme’s system token module. The layer tuner keeps the depth layer dark in dark mode and light in light mode. Use a [named color tuner](../color.md#tuner-presets) or a callback to suit the theme. Carry any additional overlay treatments your theme needs into the replacement.
 
 ```javascript
@@ -263,6 +267,10 @@ In the following `styles` entry, `sys` is the theme’s system token module. The
     'item-line': ['background.crystal']
 }
 ```
+
+### Chart series colors
+
+The swatch's `colorSet` supplies default chart series colors. The [chart element's `tuner`](../JAM-UI/chart.md#params) lets the caller tune its effective color set for one chart. Use `chart-standard` for supported style recipes and check series and label contrast on the rendered chart surface in both modes.
 
 ## Theme-Complete Checklist
 
@@ -293,10 +301,10 @@ A theme is reasonably complete when it has intentional coverage for these areas:
 ## Verify native recipes
 
 -   **Tables.** The application's [`variant: 'standard'` choice](../JAM-UI/table.md#theme-style-variant) delegates presentation and recipe behaviors to the theme. When replacing `table-standard`, include each treatment the theme should supply. Choose the header surface, [row-number style](../Styles/table-style.md#entry-table-showrownum), and [gridline neck](../Styles/table-style.md#entry-table-gridline) together. With `neck: 'none'`, the header frame drops its bottom border and the body starts with a row-width rule. Inspect that join alongside any header-cell underline. Check row-number ink, sort marks, and keyboard focus in light and dark.
--   **Maps.** Inspect [the standard map recipe](#standard-map-recipe) with its actual region fills in light and dark mode. Check region names on the lightest and darkest fills, and inspect coordinate items and any extra geo layer in the same view.
+-   **Maps.** Inspect [the standard map recipe](#standard-map-recipe) with its actual region fills in light and dark mode. Check region names on the lightest and darkest fills, and inspect coordinate items and any extra geo layer in the same view. Verify theme replacement through the picker's **Apply theme** reload. Direct `jam.setTheme()` on a mounted map can retain a prior foreground palette.
 -   **Trees.** Expand a parent and a child branch in the preview. Check that each guide aligns with its parent disclosure and the captions indent by level. If the theme sets table cell padding, check the [tree padding constraint](./tokens.md#tree-cell-padding).
 -   **Adaptive colors.** Use [Lumi levels and semantic roles](./color.md#lumi-levels-and-mode-strategy) for shared light and dark values. Check text and control marks against the actual composited surface, including gradients, translucent fills, and accent parents. Compare decorative rules with text and focus indicators at normal scale.
--   **Charts.** Inspect the resolved series and labels on the chart surface in both modes. For theme-level draw recipes, check the initial mount, applying and removing the theme on the mounted chart, and mounting again. Confirm the intended effect appears once and is removed when switching away.
+-   **Charts.** Use the theme picker to apply and reload each theme. Inspect the resolved series and labels in both modes, including charts whose callers supply their own tuner.
 
 ## Review Questions
 
