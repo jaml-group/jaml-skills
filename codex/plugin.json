@@ -1,0 +1,22 @@
+{
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "jaml-codex",
+    "version": "0.1.0-dev.0",
+    "description": "Render interactive JAML views directly in Codex.",
+    "author": {
+        "name": "jaml-group",
+        "url": "https://github.com/jaml-group"
+    },
+    "repository": "https://github.com/jaml-group/jaml-skills",
+    "extensions": {
+        "com.openai": {
+            "requires_local_executor": true,
+            "interface": {
+                "displayName": "JAML for Codex",
+                "shortDescription": "Render interactive JAML views directly in Codex.",
+                "developerName": "jaml-group",
+                "category": "Productivity"
+            }
+        }
+    }
+}

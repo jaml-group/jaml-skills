@@ -38,6 +38,8 @@ Example: “Use figma2jaml to implement this Figma frame in the existing app and
 
 Framework knowledge maintenance lives with the private Jam-UI source in its repository-local `jamldoc` and `jaml-knowledge` skills. This public repository distributes the consuming `jaml` skill. Reading and using its references requires no private source access or maintenance-skill installation.
 
+For inline JAML replies in Codex desktop, see [JAML for Codex](codex/README.md).
+
 ## Reference and compatibility
 
 Read the [style index](wiki/Styles/index.md) or [plugin index](wiki/Plugins/index.md), then the selected family guide. The guide keeps behavior, argument meaning, defaults, constraints, shared prerequisites and examples together. For ambiguous intent, start with [Choose native capabilities](wiki/choosing-native-capabilities.md). Expand related sections only when they affect the task; a selected argument still depends on the rest of its contract.
