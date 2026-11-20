@@ -4,12 +4,14 @@
 
 A geographic map chart built on ECharts with drill-down, coordinate-aware children, editable connection routes, and custom coordinate overrides. It loads a map profile through `MedlarMap.loader` and supports custom GeoJSON through `mapJSON`.
 
+For a 3D terrain surface or regional slabs, use [`map-3d` and prepare your own terrain assets](map-3d.md).
+
 ## Host prerequisites
 
 A `map` needs ECharts plus geographic data supplied by the host. The framework does not ship a China profile, a default loader module, or regional GeoJSON assets. Choose one data source when constructing the map:
 
 -   `loader: '/maps/profile-loader.mjs'`: a host-served ES module whose default export is a constructible map loader accepting the active map. It supplies profiles, coordinates, region resolution and drill relationships. Serve every GeoJSON file that loader requests.
--   `mapJSON: '/maps/site.geojson'`: a host-served GeoJSON FeatureCollection for a custom map. Feature names must match the names used by `data` and coordinate-aware children. This path uses the built-in GeoJSON loader and does not fetch the default loader module.
+-   `mapJSON: '/maps/site.json'`: a host-served GeoJSON FeatureCollection with a `.json` URL for a custom map. Feature names must match the names used by `data` and coordinate-aware children. This path uses the built-in GeoJSON loader and does not fetch the default loader module.
 
 With neither param, the runtime requests `defaultLoader.mjs` beneath `MedlarMap.jsonPath` (initially `assets/mapProfile/`). That is an integration convention, not a bundled resource. A missing module or GeoJSON response is a host setup error; select a data source before composing the map.
 
@@ -55,6 +57,8 @@ Inherits all params from [CashewChart](./chart.md) (which extends [AbstractOptio
 | `editMode`           | `boolean`                                                               | `false`                                          | Enable draggable labels, endpoints, midpoints, route editing, snap control, and coordinate export controls.                                                                          |
 | `scenery`            | `string`                                                                | `''`                                             | Optional coordinate-override context below the current region.                                                                                                                       |
 | `customCoords`       | `{ connections; labels }`                                               | `{ connections: {}, labels: {} }`                | Read or apply exported connection and label coordinate overrides.                                                                                                                    |
+| `labelPlacement`     | `'anchored'` \| `'callout'`                                             | `'anchored'`                                     | Place direct geographic items at their anchors or automatically offset eligible `item-ghost` labels with leaders.                                                                    |
+| `coloring`           | `'adjacency'` \| `'legacy'`                                             | `'adjacency'`                                    | Assign automatic fills to separate regions with shared borders. `legacy` uses the previous palette assignment.                                                                       |
 | `colored`            | `any[]`                                                                 | `[]`                                             | Regions to highlight with color. Auto-populated based on `region`.                                                                                                                   |
 | `grayed`             | `any[]`                                                                 | `[]`                                             | Regions to render in gray. Auto-populated as complement of `colored`.                                                                                                                |
 | `customAreas`        | `string[]`                                                              | `[]`                                             | Custom area names grouped into the `comboArea` region when loading `mapJSON`.                                                                                                        |
@@ -63,16 +67,21 @@ Inherits all params from [CashewChart](./chart.md) (which extends [AbstractOptio
 | `onregionchange`     | `(profile) => void`                                                     | —                                                | Receives the active region profile after region preparation (including drilling). No previous-profile argument is supplied.                                                          |
 | `onconnectionchange` | `(change: MapConnectionChange) => void`                                 | —                                                | Fired after an edited connection is committed.                                                                                                                                       |
 | `oncoordchange`      | `(change: MapCoordinateChange) => void`                                 | —                                                | Fired after an edited label coordinate is committed.                                                                                                                                 |
+| `mapName`            | `string`                                                                | `''`                                             | Optional registration and loader cache name for a custom GeoJSON source. Use a distinct name for each GeoJSON and `customAreas` combination.                                         |
 | `mapJSON`            | `string` (setter)                                                       | —                                                | Load a custom GeoJSON URL. Sets `customData = true` and fetches + registers the map data.                                                                                            |
 | `loader`             | `string` (setter)                                                       | `defaultLoader.mjs` beneath `MedlarMap.jsonPath` | Load a map-loader module. Its default export must be a constructible loader class accepting the active `MedlarMap` instance.                                                         |
 
 **Data format:** `{name, value}` objects where `name` matches names in the selected loader or GeoJSON. The `value` is used for the color scale.
+
+On builds with adjacency coloring, the automatic palette uses the first five swatch colors by default. A nonempty authored foreground palette supplies its own slot count. Geo option colors take precedence over `Styles.echarts.map({ colors })`, and explicit region styles and data-driven fills keep their assignments. Context geography keeps its background palette. On a mounted map, read `coloringConflicts` for the named neighbor pairs that still receive the same automatic paint. Only neighbors that share a border segment participate.
 
 **Styling:** Map inherits all ECharts styling from CashewChart. Use `Styles.echarts.*` styles, `Styles.eopts` for raw options, or `Styles.efuncs` for programmatic manipulation. See [echarts styles](../Styles/echarts.md).
 
 Set `variant: 'standard'` to select the active theme’s [standard map recipe](../Theme/authoring.md#standard-map-recipe). [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) controls foreground region fills and built-in name ink. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds separately styled geography.
 
 Direct coordinate-aware map children use `stylize: 'item'`. The `map > item` parent context covers labels and related overlays without introducing a separate map-only role. Map recipes may refine the item with native variants such as `colored`, `grayed`, `external`, and `line`; `stylize: 'item-line'` is the compact form of `stylize: 'item'` plus `variant: 'line'`. Use `variant: 'autohide'` for an authored coordinate child that stays hidden until map editing exposes it.
+
+On builds with automatic callouts, set `labelPlacement: 'callout'` and use direct children with `stylize: 'item-ghost'`. A numeric `coord` or a saved name coordinate supplies the anchor. With an unsaved GeoJSON name, Medlar uses the area's centroid when available and falls back to the profile position. The map moves labels only where they fit, and each unplaced label stays anchored. Editing pauses automatic placement. An explicit `jam-map-callout` on the child, such as `attrs: { 'jam-map-callout': 'elbow' }`, selects the authored placement instead.
 
 ```json
 {
@@ -122,7 +131,7 @@ interface MapConnection {
 }
 ```
 
-`from` and `to` use the same profile names or custom coordinate keys accepted by `jam-coord`. A connection-level option overrides `lineOption`; map connections default to `path: 'polyline'`. `state: 'reverse'` reverses dash animation and swaps start/end symbol presentation without changing the authored identifiers.
+Use place names in `from` and `to`. Medlar resolves each name through the loaded geography and saved coordinates. At least one endpoint must be featured for the route to appear. A connection-level option overrides `lineOption`. The default route uses `path: 'polyline'`. `state: 'reverse'` reverses dash animation and swaps start/end symbol presentation while keeping the authored identifiers.
 
 ```javascript
 export default {
@@ -147,7 +156,53 @@ Set `editMode: true` to adjust labels, connection endpoints, and midpoints in th
 
 A child whose `coord` equals a connection id is attached to that route's middle layout. It follows the route position and upright rotation, highlights the line on hover, receives `state: 'reverse'` when applicable, and exposes `jam-flipped` when its visual orientation was corrected.
 
-Custom coordinate keys are resolved from most specific to least specific: `<name>@<region>@<scenery>`, `<name>@<region>`, then `<name>`. The `customCoords` document keeps connection route overrides under `connections` and label overrides under `labels`, so the result of `downloadCustomCoords()` can be loaded back directly.
+### Saved coordinates and label data
+
+Pass both `labels` and `connections` in `customCoords`. `labels` maps place or label keys to `[longitude, latitude]`. Each entry under `connections` uses the connection ID and contains `midpoints`, plus optional `startPoint` and `endPoint` coordinates. Use `midpoints: []` to save a route with no intermediate points. Saved route points take precedence over the base route. `downloadCustomCoords()` exports this same shape.
+
+For a place key or connection ID, the map looks up `<key>@<region>@<scenery>`, then `<key>@<region>`, then `<key>`. In Medlar, applying `customCoords.labels` replaces the saved label positions shared by connected maps. The connection overrides apply to the receiving map. Use one complete label dictionary when several maps share positions.
+
+An authored `label` or `indicator` can use a place name or a `[longitude, latitude]` pair as its `coord`. Keep captions and reading values in the child or its bound data. For active routes, Medlar generates missing endpoint labels and reuses an authored child with the same coordinate key. In-map endpoints use the place key. An out-of-map place can receive a pair key such as `North Basin-Relay Station`, with `-from` or `-to` if both ends need distinct external keys. An offscreen external label can be drawn beside its peer using a temporary display position while the saved coordinates stay as authored.
+
+To serve the arrays and overrides separately, use `connectionsURL` and `customCoordsURL`. Use a per-key URL inside `vars` to fetch reading values alongside local defaults. [Parameter URL suffixes](../JAML/jaml-format.md#param-suffixes--keysuffix)
+
+### Regional readings and route tags
+
+Serve the [synthetic basin GeoJSON](examples/basin-regions.json) at `/assets/terrain/basin-regions.json`. The saved label coordinate places a reading above the route. The connection override sets the route's endpoints and midpoint. The tag follows the route because its `coord` matches the connection's `id`.
+
+```javascript
+const plate = {
+    backgroundColor: 'var(--jam-color-surface-default)',
+    color: 'var(--jam-color-fg-default)',
+    inlineSize: 'max-content',
+    padding: '0.25rem 0.5rem',
+    borderRadius: 'var(--jam-border-radius-s)'
+};
+
+export default {
+    type: 'map',
+    id: 'basin-map-2d',
+    variant: 'standard',
+    mapJSON: '/assets/terrain/basin-regions.json',
+    customAreas: ['North Basin', 'East Shelf'],
+    click2Drill: false,
+    styles: [Styles.echarts.map({ showLabel: false })],
+    style: { height: 'clamp(14rem, 60vw, 24rem)' },
+    vars: { basinReading: 12 },
+    lineOption: { color: 'var(--jam-color-fg-default)' },
+    connections: [{ id: 'basin-link', from: 'North Basin', to: 'East Shelf' }],
+    customCoords: {
+        labels: { 'North Basin': [-113.2, 39.45] },
+        connections: { 'basin-link': { startPoint: [-113.4, 38.5], midpoints: [[-111.95, 38.8]], endPoint: [-110.6, 38.5] } }
+    },
+    components: [
+        { type: 'indicator', id: 'basin-reading', stylize: 'item', coord: 'North Basin', cap: 'North Basin', value: '{{basinReading}}', unit: 'MW', style: plate },
+        { type: 'label', id: 'basin-route-tag', stylize: 'item-line', coord: 'basin-link', cap: 'Basin link', style: plate }
+    ]
+};
+```
+
+The same data can be used in the [regional 3D example](map-3d.md#regional-readings-and-route-tags).
 
 ---
 

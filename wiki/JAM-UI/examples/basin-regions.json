@@ -1,0 +1,41 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "North Basin"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [-114, 38],
+                        [-112, 38],
+                        [-112, 40],
+                        [-114, 40],
+                        [-114, 38]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "East Shelf"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [-112, 38],
+                        [-110, 38],
+                        [-110, 40],
+                        [-112, 40],
+                        [-112, 38]
+                    ]
+                ]
+            }
+        }
+    ]
+}
