@@ -640,9 +640,9 @@ For request ownership, option-object refresh and conditional request sharing, se
 }
 ```
 
-**Reactive vars loading with `varsURL`**
+#### Load model fields with varsURL
 
-Load model data from a remote URL. Each key in the response object is assigned and published through `vars`; existing keys omitted from the response remain. An incoming object-valued key replaces that key’s value, not the entire model dictionary.
+Load model data from a remote URL. Each key in the response object is assigned and published through `vars`; existing keys omitted from the response remain. An incoming object-valued key replaces that key’s value, not the entire model dictionary. When both `vars` and top-level `varsURL` are present on one definition, `vars` takes precedence. Use per-variable URLs inside `vars` to combine local defaults and remote values.
 
 ```json
 {
@@ -652,8 +652,9 @@ Load model data from a remote URL. Each key in the response object is assigned a
 }
 ```
 
-**Reactive Remote Loading (`vars[key]URL`):**
-Any top-level key inside `vars` can be fetched remotely by appending `URL` to the key name. The initial value will be requested from the given URL and automatically placed into the corresponding `vars` key when it arrives.
+#### Fetch individual model variables
+
+Append `URL` to a top-level name inside `vars` to fetch that variable. Supply a nonempty URL. For example, `vars: { userURL: '/api/user' }` requests that URL and assigns the complete response to `vars.user`. Multiple suffixed keys load independently and can sit alongside plain [local control defaults](state-and-data.md#local-defaults-and-separately-fetched-model-data).
 
 You can use binder syntax `{{key}}` within these URLs — when the referenced binder keys change, the data is automatically re-fetched. (Be careful not to reference the same key it populates to avoid an infinite loop!)
 

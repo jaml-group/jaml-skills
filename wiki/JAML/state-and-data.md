@@ -35,6 +35,22 @@ export default {
 
 For direct actions, an `onclick` handler may call a documented method on a referenced element. Use the existing [ref and `model.ref` contract](jaml-format.md#ref); check the target's method and readiness. A one-off command need not become shared state. Conversely, another component's need to observe the current selection is a good reason to publish state instead of manually commanding it.
 
+## Local defaults and separately fetched model data
+
+Keep control defaults and independently loaded datasets in one `vars` object. For example, this model starts with a camera preset and loads labels and borders from separate endpoints.
+
+```json
+{
+    "vars": {
+        "cameraPreset": "low-angle",
+        "labelsURL": "/assets/labels.json",
+        "bordersURL": "/assets/borders.json"
+    }
+}
+```
+
+Each response publishes to its own model key, `labels` or `borders`. Controls can use `valueKey: 'cameraPreset'` and other components can bind to that same value. Choose [per-variable URLs](jaml-format.md#fetch-individual-model-variables) when the model owns both control state and remote data. Use top-level [`varsURL`](jaml-format.md#load-model-fields-with-varsurl) when one endpoint supplies a dictionary of model fields.
+
 ## Private runtime data
 
 A renderer can react to request/options state, fetch its own data and redraw. Its parent need not fetch and distribute the result. The [URL suffix](jaml-format.md#param-suffixes--keysuffix) accepts a URL string or a request-options object: `dataUrl` writes the response into `data`, while `valueUrl` writes into `value`. The target must support that parameter and response shape.
