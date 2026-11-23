@@ -18,4 +18,6 @@ The entries below are registered plugin families. For underlying behavior engine
 - [shortcut](shortcut.md) — Application-defined hover actions; not keyboard-shortcut registration.
 - [show-more](show-more.md) — Reveal another batch of existing native rows.
 - [subRouter](subRouter.md) — A nested outlet beneath the parent or global router.
+- [terrainLabels](terrainLabels.md)
 - [terrainMaterial](terrainMaterial.md)
+- [terrainStrokes](terrainStrokes.md)

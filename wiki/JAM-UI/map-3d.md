@@ -1,8 +1,10 @@
-# map-3d
+# map3d
 
-**Class:** `MulberryMap` · **Type:** `"map-3d"` · **Extends:** `AbstractElement`
+**Class:** `MulberryMap` · **Type:** `"map3d"` · **Extends:** `AbstractElement`
 
-Use `map-3d` to render a local elevation surface or a set of geographic slabs. Deploy the `jam-map-3d.mjs` companion module alongside the Jam-UI browser runtime. Serve your own terrain assets at URLs the browser can fetch. The examples use `/assets/terrain/` as an application-owned URL prefix.
+Declare `type: 'map3d'`. Map 3D mounts as `<jam-map3d>`. Use `jam-map3d` in CSS and DOM selectors.
+
+Use `map3d` to render a local elevation surface or a set of geographic slabs. Deploy the `jam-map-3d.mjs` companion module alongside the Jam-UI browser runtime. Serve your own terrain assets at URLs the browser can fetch. The examples use `/assets/terrain/` as an application-owned URL prefix.
 
 | Scene            | Resources                                                                                                                                              |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -11,7 +13,7 @@ Use `map-3d` to render a local elevation surface or a set of geographic slabs. D
 
 ## Options
 
-Both scenes use the map's regular element styles and `components`. Use a direct child with `coord` to place it geographically. Use `slot: 'layer'` for screen-space controls such as a camera toolbar.
+Both scenes use the map's regular element styles and `components`. Use a direct child with `coord` to place it geographically and set its [label placement](#geographic-label-placement). Use `slot: 'layer'` for screen-space controls such as a camera toolbar.
 
 | Option                                                 | Scope    | Default and behavior                                                                                                                                                                                          |
 | ------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,10 +23,12 @@ Both scenes use the map's regular element styles and `components`. Use a direct 
 | `landCover`                                            | Simple   | Optional class raster URL for the surface colors.                                                                                                                                                             |
 | `backgroundGeoJSON`                                    | Simple   | A URL or inline FeatureCollection of named WGS84 polygons around the primary crop.                                                                                                                            |
 | `backgroundDem`                                        | Both     | Optional broader relief URL. In regional mode it defaults to `dem`. In simple terrain it supplies relief for `backgroundGeoJSON`.                                                                             |
-| `backgroundMode`                                       | Both     | `'flat'`, `'solid'`, or `'wireframe'`. Default `'flat'`. Solid fills the shared relief. Wireframe traces it above the flat context. Simple terrain uses these modes when it has background geography.         |
+| `backgroundMode`                                       | Both     | `'flat'`, `'solid'`, `'wireframe'`, or `'contours'`. Default `'flat'`. Simple terrain uses these modes when it has background geography.                                                                      |
+| `contours`, `contourOptions`                           | Both     | `contours: true` selects contours for the whole map. Configure the [contour layers](#contour-layers-and-opacity) with `contourOptions`.                                                                       |
 | `connections`, `customCoords`, `scenery`, `lineOption` | Regional | Connections and saved geographic positions. See [connections and labels](#connections-and-labels).                                                                                                            |
 | `terrainScale`                                         | Regional | `43`, limited to 1–80. Vertical scale for the shared relief.                                                                                                                                                  |
 | `slabThickness`                                        | Regional | `0.31`, limited to 0–1 scene units. Base thickness of the slab.                                                                                                                                               |
+| `slabOpacity`                                          | Regional | Override [slab opacity](#contour-layers-and-opacity) separately for colored and grayed regions.                                                                                                               |
 | `elevationShading`                                     | Both     | `true`. Apply tint by elevation.                                                                                                                                                                              |
 | `viewMode`                                             | Regional | `'map'` or `'globe'`. Default `'map'`.                                                                                                                                                                        |
 | `showGrid`                                             | Regional | `true`. Show the regional grid.                                                                                                                                                                               |
@@ -96,7 +100,7 @@ Serve the two prepared files and give the map a visible height.
 
 ```json
 {
-    "type": "map-3d",
+    "type": "map3d",
     "dem": "/assets/terrain/dem.tif",
     "landCover": "/assets/terrain/land-cover.tif",
     "style": { "height": "24rem" }
@@ -127,7 +131,7 @@ Serve `mapJSON` as a WGS84 GeoJSON `FeatureCollection` of named `Polygon` or `Mu
 
 ```javascript
 export default {
-    type: 'map-3d',
+    type: 'map3d',
     dem: '/assets/terrain/dem.tif',
     backgroundDem: '/assets/terrain/dem-shared.tif',
     mapJSON: '/assets/terrain/regions.geojson',
@@ -154,26 +158,116 @@ Regional maps accept the [shared connection records](map.md#connections-and-coor
 
 Use the [saved-coordinate shape](map.md#saved-coordinates-and-label-data) with both `labels` and `connections`. `labels` maps names to `[longitude, latitude]`. Saved route entries require a `midpoints` array and can override either endpoint. Mulberry looks for a scoped key with `comboArea` when it has featured regions and `singleMap` otherwise. For example, a scenery can supply `North Basin@comboArea@survey`, followed by `North Basin@comboArea` and the unqualified name. With no saved place coordinate, a loaded region name uses its center. `connectionsURL` and `customCoordsURL` load these JSON values into the matching properties. Pass the raster URLs directly to `dem`, `backgroundDem`, and `landCover`.
 
-For a reading, add a direct `indicator` with `coord` set to a place key and bind its value to app data. A `label` with `coord` set to the connection ID becomes a route tag. Use separate place names and route IDs to keep them unambiguous. A numeric `[longitude, latitude]` also anchors a direct geographic child and is the coordinate form for simple terrain. Use `attrs: { 'jam-map-3d-callout': '' }` to add a leader to a geographic label. `attrs: { 'jam-map-3d-background-label': '' }` gives an authored context label the background treatment.
+For a reading, add a direct `indicator` with `coord` set to a place key and bind its value to app data. A `label` with `coord` set to the connection ID becomes a route tag. Use separate place names and route IDs to keep them unambiguous. A numeric `[longitude, latitude]` also anchors a direct geographic child and is the coordinate form for simple terrain. `attrs: { 'jam-map-3d-background-label': '' }` gives an authored context label the background treatment.
 
 On builds with generated endpoint labels, active routes can supply background and external labels. A matching authored geographic label supplies its own contents. A saved coordinate or region center controls the anchor when available, and the rendered endpoint supplies the fallback. For world labels from a separate asset, use `worldDetails`.
 
 For builds with overhead routes, `overhead: true` places a utility pole at each endpoint and a pylon at each midpoint. The saved route therefore also defines the support positions. The rendered spans follow a polyline with sag and terrain clearance. `animation: true` follows the connection's `state`, while `'default'` and `'reverse'` explicitly select flow direction. `false` disables the flow.
 
+## Geographic label placement
+
+On builds with adjustable geographic labels, set `jam-map-3d-label-placement` in the `attrs` of a direct child with a geographic `coord`. These modes work on simple terrain and in regional Map and Globe views.
+
+| Placement  | Behavior                                                                                                                                                       |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `anchored` | Centers the label on its projected terrain anchor.                                                                                                             |
+| `lifted`   | Raises the anchor vertically from the terrain, or radially in Globe.                                                                                           |
+| `callout`  | Keeps the leader endpoint on the terrain anchor and offsets the label. The renderer looks for room for the card inside the viewport and around nearby content. |
+
+Set `jam-map-3d-label-lift` to a finite nonnegative amount, including `0`. It controls the anchor height for `lifted` and the preferred leader bend height for `callout`. Lift uses normalized terrain scene units, which differ between simple and regional terrain. With no lift supplied, `lifted` uses `0.013` on simple terrain and `1.45` on regional terrain, and `callout` uses a preferred bend lift of `0.31` in both. Terrain scaling changes the ground height the label starts from.
+
+An explicit placement takes precedence over the shorthand `attrs: { 'jam-map-3d-callout': '' }`, which selects `callout` by presence. With neither explicit placement nor the shorthand, a geographic label uses `anchored`, even when a lift is supplied. Lift applies only to `lifted` and `callout`. Background names, route tags and [model-anchored labels](#model-anchors) keep their own placement rules.
+
+Use explicit `lifted` for featured readings that should sit above the terrain. The card's bottom center aligns with the projected lifted point, subject to viewport fitting, and the reading's sphere marker keeps its terrain position.
+
+Both attributes can follow bound variables. Set a variable to an empty string to clear its bound setting. In this example, edit the label's `placement` and `lift` to change the callout. Serve the [basin DEM](examples/basin-dem.tif) at the URL shown.
+
+```javascript
+export default {
+    type: 'map3d',
+    dem: '/assets/terrain/basin-dem.tif',
+    playing: false,
+    indicatorRenderer: 'dom',
+    style: { height: '24rem' },
+    components: [
+        {
+            type: 'label',
+            cap: 'North Basin',
+            coord: [-113.2, 39.45],
+            style: { backgroundColor: 'var(--jam-color-surface-default)', color: 'var(--jam-color-fg-default)', padding: '0.25rem 0.5rem', borderRadius: 'var(--jam-border-radius-s)' },
+            vars: { placement: 'callout', lift: 0.12 },
+            attrs: {
+                'jam-map-3d-label-placement': '{{placement}}',
+                'jam-map-3d-label-lift': '{{lift}}'
+            }
+        }
+    ]
+};
+```
+
+### Model anchors
+
+An authored geographic label or indicator can place a visible marker at its `coord`. Omit `anchor` or use `anchor: { model: 'sphere' }` for the default sphere. Use `anchor: 'none'` for the caption alone. A model uses the same names as `objects`. Set `zoomWithMap: true` to scale the marker with the terrain and `animation: false` to hold its pose. With `hover: 'callout'`, hovering, keyboard focus, or tapping reveals the label and leader.
+
+Add this label to the `components` of the [regional example](#assemble-a-regional-map). The region name provides its coordinate. Use a longitude and latitude pair on simple terrain.
+
+```javascript
+{
+    type: 'label',
+    cap: 'Wind survey',
+    coord: 'North Basin',
+    anchor: { model: 'wind-turbine', zoomWithMap: true, animation: false, hover: 'callout' }
+}
+```
+
 ## Regional appearance
 
-Use the [terrain material plugin](../Plugins/terrainMaterial.md#entry-terrainmaterial) for `normalMap` and `normalMapMetadata`. On builds with regional appearance plugins, `variant: 'standard'` lets a supporting theme supply the finish and strokes. Use `jam-map-3d[jam-variant="standard"]` as the theme selector. Author a local finish when a single map needs its own treatment.
+Use the [terrain material plugin](../Plugins/terrainMaterial.md#entry-terrainmaterial) for `normalMap` and `normalMapMetadata`. On builds with regional appearance plugins, `variant: 'standard'` lets a supporting theme supply the finish and strokes. Use `jam-map3d[jam-variant="standard"]` as the theme selector. Author a local finish when a single map needs its own treatment.
 
-| Plugin option                              | Behavior                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `terrainMaterial({ finish })`              | Choose `'matte'`, `'alabaster'`, `'gloss'`, `'gemstone'`, `'jello'`, `'clay'`, or `'wireframe'`.                                                                                                                                                                                                                                           |
-| `surface`, `side`                          | Override `roughness`, `metalness`, `transmission`, `opacity`, optical `thickness`, `ior`, `clearcoat`, `reflectionStrength`, `faceted`, or `wireframeOpacity` on the named surface. `surface.normalStrength` controls featured normal-map strength. Zero detaches the featured texture.                                                    |
-| `bottom`, `bevel`                          | Set `bottom.opacity`, or give `bevel.featured` and `bevel.background` a `scope` (`'off'`, `'perimeter'`, or `'slab'`), `topRadius`, `bottomRadius`, or `flatOnly`. Radii are fractions of slab thickness. Bottom beveling applies in Flat. `bottomRadius: 'auto'` copies the top radius when the scene has no unfeatured background slabs. |
-| `colors`, `context`, `elevationHighlight`  | `colors` maps region names to color values. `context` can set `color` and `opacity` on unfeatured geography. `elevationHighlight` adjusts the high-elevation tint.                                                                                                                                                                         |
-| `terrainStrokes({ outline, route, grid })` | Each stroke accepts `color` and `opacity`. `outline.width` is a numeric rem amount that defaults to `0.0625`. `outline.color: 'featured'` follows the region's featured paint.                                                                                                                                                             |
-| `terrainLabels({ roles })`                 | Style the map-owned wrappers by role. Roles are `reading`, `endpoint`, `route`, `background`, `callout`, and `label`. Supply CSS strings for `background`, `color`, `border`, `border-radius`, `padding`, `box-shadow`, `backdrop-filter`, or `font-family`.                                                                               |
+| Plugin option                              | Behavior                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `terrainMaterial({ finish })`              | Choose `'matte'`, `'alabaster'`, `'gloss'`, `'gemstone'`, `'jello'`, `'clay'`, `'wireframe'`, or `'contours'`.                                                                                                                                                                                                                        |
+| `surface`, `side`                          | Override `roughness`, `metalness`, `transmission`, `opacity`, optical `thickness`, `ior`, `clearcoat`, `reflectionStrength`, `faceted`, or `wireframeOpacity` on the named surface. `surface.normalStrength` controls featured normal-map strength. Zero detaches the featured texture.                                               |
+| `bottom`, `bevel`                          | Set `bottom.opacity`, or give `bevel.colored` and `bevel.grayed` a `scope` (`'off'`, `'perimeter'`, or `'slab'`), `topRadius`, `bottomRadius`, or `flatOnly`. Radii are fractions of slab thickness. Bottom beveling applies in Flat. `bottomRadius: 'auto'` copies the top radius when the scene has no unfeatured background slabs. |
+| `colors`, `tuner`                          | Give the colored regions an ordered palette of resolvable solid colors or color tokens and an optional named tuner or callback. Palette alpha multiplies slab opacity.                                                                                                                                                                |
+| `grayed`                                   | Give grayed regions an ordered `colors` palette or a single `color`, an optional `tuner`, and separate `opacity`. Adjust paint and opacity for Solid and Wireframe independently.                                                                                                                                                     |
+| `elevationHighlight`                       | Adjust the high-elevation tint.                                                                                                                                                                                                                                                                                                       |
+| `terrainStrokes({ outline, route, grid })` | Each stroke accepts `color` and `opacity`. `outline.width` is a numeric rem amount that defaults to `0.0625`. `outline.color: 'colored'` follows the region's colored paint.                                                                                                                                                          |
+| `terrainLabels({ roles })`                 | Style map label wrappers with `colored`, `grayed`, `external`, `line` (route tag), `ghost`, or `label`. Callout styles can overlay the label role. Use CSS strings for `background`, `color`, `border`, `border-radius`, `padding`, `box-shadow`, `backdrop-filter`, and `font-family`.                                               |
 
-Each appearance plugin updates its part of the mounted map. Removing it restores the last remaining owner or the map default. Normal texture ownership is independent of the finish. Wrapper styles can supply inherited ink to authored children, which keep their own component styles. Use `indicatorRenderer: 'dom'` for a backdrop filter that samples the map behind a label.
+The active coloring method assigns palette slots in both [Medlar](map.md) and Mulberry. On Mulberry, the grayed palette supplies the Flat fill, Solid relief, and the fill under Wireframe. Supply distinct grayed shades for visible variation across regions.
+
+Each appearance plugin updates its part of the mounted map. Local material settings compose over the active theme. Removing a local setting exposes the active theme value. Normal texture ownership is independent of the finish. Use `stylize: 'item'` for native coordinate labels. Mulberry updates colored, grayed, or external variants on focus changes. Theme recipes can share the `item-colored`, `item-grayed`, `item-external`, and `item-line` hooks with Medlar. `color.syncWithMap` follows the active region paint. Placement remains independently selectable. Use `indicatorRenderer: 'dom'` for a backdrop filter that samples the map behind a label.
+
+### Migrate appearance options
+
+Replace region-keyed palettes with ordered arrays in `colors` or `grayed.colors`. Mulberry assigns array slots according to `coloring`. In `terrainLabels({ roles })`, migrate `reading` to `colored`, `route` to `line`, and `background` to `grayed`. An old `endpoint` label uses `grayed` when it belongs to a context region or `external` when it lies outside the displayed geography. Use `callout` to add a placement-specific treatment over the label's role.
+
+### Contour layers and opacity
+
+Contours draw open horizontal sections through the terrain. Choose `finish: 'contours'` in `terrainMaterial` for the main terrain. Use `backgroundMode: 'contours'` or `grayed: { finish: 'contours' }` for the background. Set `contours: true` to enable both.
+
+Set `contourOptions.colored` and `contourOptions.grayed` independently. Each role defaults to a stroke with no fill. Set `stroke: false` to hide its lines. Set `fill` to `'none'`, `'solid'`, or a pattern dictionary with `shape: 'circle' | 'hexagon' | 'square'`. Choose `layerCount: 'auto'` for elevation-based spacing or an integer from 1 through 128 to control the number of evenly spaced cuts. A single cut shows the underside. Set `smoothness` from 0 to 100. It defaults to 10.
+
+On a regional map, `slabOpacity.colored` and `slabOpacity.grayed` each accept `overall` and `fill: { top, sidewall, bottom }`. Use numbers from 0 to 1. A value of `0` makes that part transparent. Omit a fill value or set it to `'auto'` to use the material default. Palette alpha still applies. On contours, `sidewall` controls stroke opacity. Fill opacity blends from `bottom` at the lowest sheet to `top` at the highest. A single sheet uses `bottom`.
+
+Apply these properties to the [regional map example](#assemble-a-regional-map). Keep any normal-map options in the same material recipe if you still use them in other finishes.
+
+```javascript
+{
+    backgroundMode: 'contours',
+    plugins: [Plugins.terrainMaterial({ finish: 'contours' })],
+    contourOptions: {
+        layerCount: 12,
+        colored: { stroke: true, fill: 'solid' },
+        grayed: { stroke: true, fill: 'none' }
+    },
+    slabOpacity: {
+        colored: { overall: 0.8, fill: { top: 0.6, sidewall: 'auto', bottom: 0 } },
+        grayed: { fill: { sidewall: 0.4 } }
+    }
+}
+```
 
 ## Regional readings and route tags
 
@@ -188,7 +282,7 @@ const plate = {
 };
 
 export default {
-    type: 'map-3d',
+    type: 'map3d',
     id: 'basin-map-3d',
     mapJSON: '/assets/terrain/basin-regions.json',
     dem: '/assets/terrain/basin-dem.tif',
@@ -205,7 +299,7 @@ export default {
         connections: { 'basin-link': { startPoint: [-113.4, 38.5], midpoints: [[-111.95, 38.8]], endPoint: [-110.6, 38.5] } }
     },
     components: [
-        { type: 'indicator', id: 'basin-reading', stylize: 'item', coord: 'North Basin', cap: 'North Basin', value: '{{basinReading}}', unit: 'MW', style: plate },
+        { type: 'indicator', id: 'basin-reading', stylize: 'item', coord: 'North Basin', cap: 'North Basin', value: '{{basinReading}}', unit: 'MW', style: plate, attrs: { 'jam-map-3d-label-placement': 'lifted' } },
         { type: 'label', id: 'basin-route-tag', stylize: 'item-line', coord: 'basin-link', cap: 'Basin link', style: plate }
     ]
 };

@@ -32,7 +32,7 @@ Each element type is used as the `"type"` value in JAML. Click through to the in
 | `list`            | `LettuceList`             | [list](./list.md)                 |
 | `locator`         | `LoganLocator`            | [locator](./locator.md)           |
 | `map`             | `MedlarMap`               | [map](./map.md)                   |
-| `map-3d`          | `MulberryMap`             | [map-3d](./map-3d.md)             |
+| `map3d`           | `MulberryMap`             | [map3d](./map-3d.md)              |
 | `notify`          | `NutmegNotify`            | [notify](./notify.md)             |
 | `option`          | `OsteenOption`            | [option](./option.md)             |
 | `options`         | `OliveOptions`            | [options](./options.md)           |

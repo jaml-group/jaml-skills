@@ -4,7 +4,7 @@
 
 A geographic map chart built on ECharts with drill-down, coordinate-aware children, editable connection routes, and custom coordinate overrides. It loads a map profile through `MedlarMap.loader` and supports custom GeoJSON through `mapJSON`.
 
-For a 3D terrain surface or regional slabs, use [`map-3d` and prepare your own terrain assets](map-3d.md).
+For a 3D terrain surface or regional slabs, use [`map3d` and prepare your own terrain assets](map-3d.md).
 
 ## Host prerequisites
 
@@ -59,8 +59,8 @@ Inherits all params from [CashewChart](./chart.md) (which extends [AbstractOptio
 | `customCoords`       | `{ connections; labels }`                                               | `{ connections: {}, labels: {} }`                | Read or apply exported connection and label coordinate overrides.                                                                                                                    |
 | `labelPlacement`     | `'anchored'` \| `'callout'`                                             | `'anchored'`                                     | Place direct geographic items at their anchors or automatically offset eligible `item-ghost` labels with leaders.                                                                    |
 | `coloring`           | `'adjacency'` \| `'legacy'`                                             | `'adjacency'`                                    | Assign automatic fills to separate regions with shared borders. `legacy` uses the previous palette assignment.                                                                       |
-| `colored`            | `any[]`                                                                 | `[]`                                             | Regions to highlight with color. Auto-populated based on `region`.                                                                                                                   |
-| `grayed`             | `any[]`                                                                 | `[]`                                             | Regions to render in gray. Auto-populated as complement of `colored`.                                                                                                                |
+| `colored`            | `any[]`                                                                 | `[]`                                             | Regions highlighted in the current view. Auto-populated based on `region`.                                                                                                           |
+| `grayed`             | `any[]`                                                                 | `[]`                                             | Regions shown for geographic context. Their palette can use any hue. Auto-populated as the complement of `colored`.                                                                  |
 | `customAreas`        | `string[]`                                                              | `[]`                                             | Custom area names grouped into the `comboArea` region when loading `mapJSON`.                                                                                                        |
 | `sizeFactor`         | `number`                                                                | `rem(0.2)`                                       | Scale map label and shadow styling.                                                                                                                                                  |
 | `conf`               | `Dictionary`                                                            | `{}`                                             | Override map display config: `zoom`, `center`.                                                                                                                                       |
@@ -77,7 +77,7 @@ On builds with adjacency coloring, the automatic palette uses the first five swa
 
 **Styling:** Map inherits all ECharts styling from CashewChart. Use `Styles.echarts.*` styles, `Styles.eopts` for raw options, or `Styles.efuncs` for programmatic manipulation. See [echarts styles](../Styles/echarts.md).
 
-Set `variant: 'standard'` to select the active theme’s [standard map recipe](../Theme/authoring.md#standard-map-recipe). [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) controls foreground region fills and built-in name ink. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds separately styled geography.
+Set `variant: 'standard'` to select the active theme’s [standard map recipe](../Theme/authoring.md#standard-map-recipe). [`Styles.echarts.map`](../Styles/echarts.md#entry-echarts-map) controls colored region fills and built-in name ink. Use `Styles.echarts.map.background({ colors, opacity })` with `showBackground: true` to style grayed regions. [`Styles.echarts.map.layer`](../Styles/echarts.md#entry-echarts-map-layer) adds separately styled geography.
 
 Direct coordinate-aware map children use `stylize: 'item'`. The `map > item` parent context covers labels and related overlays without introducing a separate map-only role. Map recipes may refine the item with native variants such as `colored`, `grayed`, `external`, and `line`; `stylize: 'item-line'` is the compact form of `stylize: 'item'` plus `variant: 'line'`. Use `variant: 'autohide'` for an authored coordinate child that stays hidden until map editing exposes it.
 

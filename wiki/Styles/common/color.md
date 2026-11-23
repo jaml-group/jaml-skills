@@ -141,15 +141,13 @@ Synchronize with map color
 
 Match a map annotation accent to its containing region.
 
-Finds the nearest jam-map, waits for draw readiness, resolves jam-coord against geo regions and applies that region areaColor without transparency.
+Matches the label accent to the solid paint of its named colored region in Medlar or Mulberry. Updates when its coordinate or the map's colors change.
 
-Requires a map ancestor, a matching region name and an areaColor.
+Requires a map ancestor and a named coordinate with a resolved colored region paint.
 
-Unmount, style teardown or host destruction invalidates pending draw-readiness work and removes the accent only if this setup applied one. If the style remains installed, remount performs a fresh lookup.
+Removing the style or unmounting the label releases the synchronized accent and restores any authored accent.
 
-This is a mount-time lookup, not a subscription to later map recoloring.
-
-After draw readiness resolves on the nearest parent `jam-map`, matches the element’s `jam-coord` to a region and applies its `itemStyle.areaColor` at full opacity. This is a lookup for each mount, not a subscription to recoloring. Unmount or teardown invalidates pending readiness work and removes the accent only if this setup applied one. No args.
+A coordinate without colored region paint uses the label's own accent or inherits the map accent.
 
 ### `valueMap`
 

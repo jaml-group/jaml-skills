@@ -18,4 +18,6 @@
 - [shortcut](shortcut.zh.md) — 应用定义的悬停操作；不是键盘快捷键注册。
 - [show-more](show-more.zh.md) — 分批显示已有原生行。
 - [subRouter](subRouter.zh.md) — 父路由或全局路由下的嵌套出口。
+- [terrainLabels](terrainLabels.zh.md)
 - [terrainMaterial](terrainMaterial.zh.md)
+- [terrainStrokes](terrainStrokes.zh.md)

@@ -141,15 +141,13 @@ export default [
 
 使地图标注的强调色与其所在区域匹配。
 
-找到最近的 jam-map，等待 draw 就绪，根据 geo 区域解析 jam-coord，并应用该区域的 areaColor，去除透明度。
+将标注的强调色同步为 Medlar 或 Mulberry 中命名着色区域的不透明颜色。标注坐标或地图颜色变化时会更新。
 
-需要地图祖先、匹配的区域名称和 areaColor。
+需要地图祖先，以及能解析为着色区域颜色的命名坐标。
 
-卸载宿主、拆卸样式或销毁宿主时，使待执行的绘制就绪工作失效，并仅在此次设置应用了强调色时移除它。样式仍然安装时，重新挂载会执行一次新的查找。
+移除样式或卸载标注时会解除同步，并恢复原先设置的强调色。
 
-这是挂载时的查找，不订阅后续地图重新着色。
-
-After draw readiness resolves on the nearest parent `jam-map`, matches the element’s `jam-coord` to a region and applies its `itemStyle.areaColor` at full opacity. This is a lookup for each mount, not a subscription to recoloring. Unmount or teardown invalidates pending readiness work and removes the accent only if this setup applied one. No args.
+坐标没有对应的着色区域颜色时，标注使用自身的强调色或继承地图的强调色。
 
 ### `valueMap`
 

@@ -451,13 +451,13 @@ export default [
 
 地图
 
-设置 MedlarMap 流程中前景区域的样式。
+设置 Medlar 中着色区域及其内置地名的样式。
 
-不存在前景和标签默认值时进行初始化，再将地图图层选项合并到 defaultOption.top。非 MedlarMap 元素直接返回，不产生效果。
+将着色区域及标注选项叠加到 Medlar 当前主题配置上。
 
 需要 MedlarMap 及其区域和地图加载流程。
 
-此样式修改 defaultOption；清理移除插件记录，但不恢复原有默认值。
+移除局部样式后，相应选项恢复为当前主题配置或地图默认值。
 
 背景区域使用 background，高亮边界使用 state，额外装饰地理图层使用 layer。
 
@@ -501,19 +501,19 @@ Numeric offsets are ECharts pixels. Positive values move the map right or down, 
 
 地图背景
 
-设置 MedlarMap 上下文背景图层的样式。
+设置 Medlar 中弱化区域及其内置地名的样式。
 
-初始化并将图层和标签选项合并到 defaultOption.background；忽略非 MedlarMap 元素。
+将弱化区域及标注选项叠加到 Medlar 当前主题配置上。
 
 需要 MedlarMap 及其背景区域渲染路径。
 
-清理移除插件数据，但不恢复之前合并的背景默认值。
+移除局部样式后，相应选项恢复为当前主题配置或地图默认值。
 
 位置参数顺序: `colors` → `z` → `offsetX` → `offsetY` → `shadow` → `shadowColor` → `shadowBlur` → `shadowOffsetX` → `shadowOffsetY` → `border` → `borderColor` → `borderWidth` → `borderType` → `borderCap` → `borderJoin` → `borderMiterLimit` → `opacity` → `tuner` → `showLabel` → `label`.
 
 | 参数 | 类型 | 契约 |
 | --- | --- | --- |
-| `colors` | `array` | 颜色集 |
+| `colors` | `array` | 弱化区域的有序色板。如需显示区域间的色彩差异，请提供不同的色调。 |
 | `z` | `number` | z |
 | `offsetX` | `number` | 地图水平偏移量 |
 | `offsetY` | `number` | 地图垂直偏移量 |
@@ -530,11 +530,11 @@ Numeric offsets are ECharts pixels. Positive values move the map right or down, 
 | `borderJoin` | `string` | 边框连接类型 |
 | `borderMiterLimit` | `number` | 边框斜接限制 |
 | `opacity` | `number` | 透明度 |
-| `tuner` | `functionOrString` | 颜色调整器 |
+| `tuner` | `functionOrString` | 灰显区域调色板的命名颜色调整器或 JavaScript 回调。默认为 none，与前景区域的颜色调整器独立。 |
 | `showLabel` | `boolean` | 是否显示标签 |
 | `label` | `dictionary` | 标签 |
 
-Styles the existing background layer with the same offset, palette, shadow, border, and opacity arguments as the foreground map. When omitted, `colors` is a ten-step low-chroma blue-gray ramp and `opacity` is `0.045`. Background colors are rendered with the `none` tuner; the foreground `tuner` argument is not applied to this layer.
+Styles the existing background layer with the same offset, palette, shadow, border, and opacity arguments as the foreground map. When omitted, `colors` is a ten-step low-chroma blue-gray ramp and `opacity` is `0.045`.
 
 Background labels support the same `show` and `textShadow` forms as foreground labels.
 
@@ -594,7 +594,7 @@ Use `merge: true` for one silhouette of the highlighted regions, or omit it to d
 
 draw 函数等待图像加载后再添加图层；已加载的画布按来源缓存。
 
-图像偏移按图表高度为单位移动图案，不作为几何偏移传递。启用 useZoom 时根据图表高度缩放。图像加载失败会在记录日志后向上传播。
+图像偏移按图表高度为单位移动图案，不作为几何偏移传递。启用 useZoom 时根据图表高度缩放。图像加载失败时会记录错误，并使本次绘制失败。
 
 位置参数顺序: `image` → `repeat` → `colors` → `z` → `offsetX` → `offsetY` → `shadow` → `shadowColor` → `shadowBlur` → `shadowOffsetX` → `shadowOffsetY` → `border` → `borderColor` → `borderWidth` → `borderType` → `borderCap` → `borderJoin` → `borderMiterLimit` → `opacity` → `tuner` → `scaleX` → `scaleY` → `zlevel` → `useZoom`.
 
@@ -1755,23 +1755,26 @@ NiceStyle
 
 <a id="entry-echarts-map-dots"></a>
 
-用完整的圆点填充选中的地图区域。
+用完整圆点或沿地理边缘裁切的六边形填充选中的地图区域。
 
-替换前景区域填色，相邻区域共用点阵。悬停时按圆心所在区域为整颗圆点着色。与地图边缘间隙组合时，先为轮廓留出空间，再放置圆点。跨越海岸线、内孔或画布边缘的圆点不会绘制。
+替换前景区域填色，相邻区域共用图案。悬停时按圆心所在区域为整颗圆点着色，跨越海岸线、内孔或画布边缘的圆点不会绘制。地图边缘间隙可为轮廓留出空间。六边形延伸至地理边缘，并保留各区域的轮廓颜色。
 
 用于关闭交互和漫游的 GeoJSON 地图，需采用 Canvas 渲染器。
 
-带地图数据系列、自定义投影或特殊地理位置的地图保留原生填色。直径必须为正，间隙不能为负，圆心间距至少为一个 CSS 像素。
+带地图数据系列、自定义投影或特殊地理位置的地图保留原生填色。尺寸必须为正。间隙、行排列、悬停颜色及地图边缘间隙仅适用于圆点。圆点间隙不能为负，圆心间距至少为一个 CSS 像素。
 
-位置参数顺序: `size` → `gap` → `layout` → `color` → `hoverColor`.
+位置参数顺序: `size` → `gap` → `layout` → `color` → `hoverColor` → `shape` → `strokeWidth` → `strokeColor`.
 
 | 参数 | 类型 | 默认值 | 契约 |
 | --- | --- | --- | --- |
-| `size` | `numberOrString` | `0.1875rem` | 圆点直径，可用 rem、px 长度或 CSS 像素数值。 |
+| `size` | `numberOrString` | `0.1875rem` | 圆点直径或六边形图案的重复宽度，可用 rem、px 长度或 CSS 像素数值。 |
 | `gap` | `numberOrString` | `0.25rem` | 相邻圆点边缘之间的距离，可用 rem、px 长度或 CSS 像素数值。 |
 | `layout` | `string` | `grid` | grid 的各行对齐，beehive 的相邻行错开半个圆心间距。<br>选项: `grid`, `beehive` |
-| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | 圆点颜色。使用主题令牌可随配色和模式变化。 |
+| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | 填充色。使用主题令牌可随配色和模式变化。 |
 | `hoverColor` | `dictionaryOrString` | `var(--jam-color-fg-primary)` | 指针所在区域的整颗圆点颜色，默认使用当前主题的主前景色。 |
+| `shape` | `string` | `circle` | circle 绘制完整圆点；hexagon 绘制交错的六边形，并沿地理边缘裁切。<br>选项: `circle`, `hexagon` |
+| `strokeWidth` | `numberOrString` | 未提供 | 可选的六边形描边宽度，可用 rem、px 长度或 CSS 像素数值，默认为零。 |
+| `strokeColor` | `dictionaryOrString` | 未提供 | 可选的六边形描边色。 |
 
 ## `echarts.pie.ring`
 

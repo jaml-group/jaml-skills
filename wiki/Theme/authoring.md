@@ -268,6 +268,14 @@ In the following `styles` entry, `sys` is the theme’s system token module. The
 }
 ```
 
+### Regional 3D map recipe
+
+For `map3d`, attach `Plugins.terrainMaterial` under `jam-map3d[jam-variant="standard"]`. To share paints with Medlar, use an ordered palette of resolvable solid colors or color tokens. Alpha is supported. Reserve gradient and image fill objects for Medlar.
+
+Use the shared colored list in `terrainMaterial({ colors })` and `Styles.echarts.map({ colors })`. Use the shared grayed list in `terrainMaterial({ grayed: { colors } })` and `Styles.echarts.map.background({ colors })`. The active coloring method assigns palette slots. Each map applies its configured opacity and renderer-specific finish.
+
+Use `item-colored`, `item-grayed`, `item-external`, and `item-line` to target labels in either map. Both maps can use `color.syncWithMap` for the colored item's accent. See [regional 3D appearance](../JAM-UI/map-3d.md#regional-appearance) for relief and slab options.
+
 ### Chart series colors
 
 The swatch's `colorSet` supplies default chart series colors. The [chart element's `tuner`](../JAM-UI/chart.md#params) lets the caller tune its effective color set for one chart. Use `chart-standard` for supported style recipes and check series and label contrast on the rendered chart surface in both modes.

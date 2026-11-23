@@ -60,7 +60,7 @@ Generated from the [element catalog](references/JAM-UI/JAM-UI.md); entries witho
 -   [`card`](references/JAM-UI/card.md) · [`chart`](references/JAM-UI/chart.md) · [`container`](references/JAM-UI/container.md) · [`datepicker`](references/JAM-UI/datepicker.md)
 -   [`daterangepicker`, `timerangepicker`](references/JAM-UI/JAM-UI.md#elements) · [`element`](references/JAM-UI/element.md) · [`indicator`](references/JAM-UI/indicator.md) · [`input`, `code`](references/JAM-UI/input.md)
 -   [`label`](references/JAM-UI/label.md) · [`list`](references/JAM-UI/list.md) · [`locator`](references/JAM-UI/locator.md) · [`map`](references/JAM-UI/map.md)
--   [`map-3d`](references/JAM-UI/map-3d.md) · [`notify`](references/JAM-UI/notify.md) · [`option`](references/JAM-UI/option.md) · [`options`, `checkbox`, `radio`](references/JAM-UI/options.md)
+-   [`map3d`](references/JAM-UI/map-3d.md) · [`notify`](references/JAM-UI/notify.md) · [`option`](references/JAM-UI/option.md) · [`options`, `checkbox`, `radio`](references/JAM-UI/options.md)
 -   [`popup`](references/JAM-UI/popup.md) · [`progress`](references/JAM-UI/progress.md) · [`select`](references/JAM-UI/select.md) · [`shortcuts`](references/JAM-UI/shortcuts.md)
 -   [`steps`](references/JAM-UI/steps.md) · [`switch`](references/JAM-UI/switch.md) · [`table`](references/JAM-UI/table.md) · [`tags`](references/JAM-UI/tags.md)
 -   [`timepicker`](references/JAM-UI/timepicker.md) · [`tree`](references/JAM-UI/tree.md) · [`wrapper`](references/JAM-UI/wrapper.md) · [`data`](references/JAML/state-and-data.md#shared-data-owner)

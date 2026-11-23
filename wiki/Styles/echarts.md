@@ -451,13 +451,13 @@ export default [
 
 Map
 
-Style the foreground regions in the MedlarMap pipeline.
+Style colored regions and their built-in names in Medlar.
 
-Initializes foreground and label defaults if absent, then merges map-layer options into defaultOption.top. It returns without effect on non-MedlarMap elements.
+Composes the colored region and label options over the active theme recipe on Medlar.
 
 Requires MedlarMap with its region/map loading pipeline.
 
-This mutates defaultOption; teardown removes plugin bookkeeping but does not restore the previous defaults.
+Removing a local style restores the corresponding options from the current theme or map defaults.
 
 Use background for context regions, state for the highlighted boundary and layer for additional decorative geography.
 
@@ -501,19 +501,19 @@ Numeric offsets are ECharts pixels. Positive values move the map right or down, 
 
 Map background
 
-Style the contextual background layer of a MedlarMap.
+Style grayed regions and their built-in names in Medlar.
 
-Initializes and merges layer and label options into defaultOption.background; non-MedlarMap elements are ignored.
+Composes the grayed region and label options over the active theme recipe on Medlar.
 
 Requires MedlarMap and its background-region rendering path.
 
-Teardown removes plugin data but does not restore the previously merged background defaults.
+Removing a local style restores the corresponding options from the current theme or map defaults.
 
 Positional order: `colors` → `z` → `offsetX` → `offsetY` → `shadow` → `shadowColor` → `shadowBlur` → `shadowOffsetX` → `shadowOffsetY` → `border` → `borderColor` → `borderWidth` → `borderType` → `borderCap` → `borderJoin` → `borderMiterLimit` → `opacity` → `tuner` → `showLabel` → `label`.
 
 | Argument | Type | Contract |
 | --- | --- | --- |
-| `colors` | `array` | Color set |
+| `colors` | `array` | Ordered palette for grayed regions. Supply distinct shades when you want visible variation across regions. |
 | `z` | `number` | z |
 | `offsetX` | `number` | Horizontal map offset |
 | `offsetY` | `number` | Vertical map offset |
@@ -530,11 +530,11 @@ Positional order: `colors` → `z` → `offsetX` → `offsetY` → `shadow` → 
 | `borderJoin` | `string` | Border join type |
 | `borderMiterLimit` | `number` | Border miter limit |
 | `opacity` | `number` | Opacity |
-| `tuner` | `functionOrString` | Color tuner |
+| `tuner` | `functionOrString` | Named color tuner or JavaScript callback for the grayed palette. Defaults to none. It is independent of the foreground tuner. |
 | `showLabel` | `boolean` | Show labels |
 | `label` | `dictionary` | Label |
 
-Styles the existing background layer with the same offset, palette, shadow, border, and opacity arguments as the foreground map. When omitted, `colors` is a ten-step low-chroma blue-gray ramp and `opacity` is `0.045`. Background colors are rendered with the `none` tuner; the foreground `tuner` argument is not applied to this layer.
+Styles the existing background layer with the same offset, palette, shadow, border, and opacity arguments as the foreground map. When omitted, `colors` is a ten-step low-chroma blue-gray ramp and `opacity` is `0.045`.
 
 Background labels support the same `show` and `textShadow` forms as foreground labels.
 
@@ -594,7 +594,7 @@ Requires MedlarMap, a nonempty image source, loaded base geography and nonzero c
 
 The draw function awaits image loading before adding the layer; loaded canvases are cached by source.
 
-Image offsets shift the pattern by chart-height units and are not forwarded as geometry offsets. Scaling uses the chart height when useZoom is enabled. Image-load failures propagate after logging.
+Image offsets shift the pattern by chart-height units and are not forwarded as geometry offsets. Scaling uses the chart height when useZoom is enabled. An image-load failure is logged and rejects the current draw.
 
 Positional order: `image` → `repeat` → `colors` → `z` → `offsetX` → `offsetY` → `shadow` → `shadowColor` → `shadowBlur` → `shadowOffsetX` → `shadowOffsetY` → `border` → `borderColor` → `borderWidth` → `borderType` → `borderCap` → `borderJoin` → `borderMiterLimit` → `opacity` → `tuner` → `scaleX` → `scaleY` → `zlevel` → `useZoom`.
 
@@ -1755,23 +1755,26 @@ Positional order: `nameLocation` → `show` → `position` → `type`.
 
 <a id="entry-echarts-map-dots"></a>
 
-Paint selected map geography with whole dots.
+Paint selected map geography with whole dots or clipped hexagons.
 
-Replaces the foreground land fill. Adjacent regions share one pattern. Hover recolors whole dots by their centers. A map gap leaves room for its outline before the dots are placed. Dots crossing coastline, hole or canvas edges are omitted.
+Replaces the foreground land fill. Adjacent regions share one pattern. Circles recolor on hover by their centers and omit dots at the coastline, holes, and canvas edges. A map gap also leaves room for its outline. Hexagons repeat to the geographic edges and retain each region's border ink.
 
 Use a silent, non-roaming GeoJSON map with the Canvas renderer.
 
-Maps with data series, custom projections or special geographic placements keep their native fill. Size must be positive and gap nonnegative, with a combined pitch of at least one CSS pixel.
+Maps with data series, custom projections or special geographic placements keep their native fill. Size must be positive. Gap, layout, hover ink, and the map cutout apply to circles only. Circle gap is nonnegative and the combined pitch is at least one CSS pixel.
 
-Positional order: `size` → `gap` → `layout` → `color` → `hoverColor`.
+Positional order: `size` → `gap` → `layout` → `color` → `hoverColor` → `shape` → `strokeWidth` → `strokeColor`.
 
 | Argument | Type | Default | Contract |
 | --- | --- | --- | --- |
-| `size` | `numberOrString` | `0.1875rem` | Dot diameter as a rem or px length or a number of CSS pixels. |
+| `size` | `numberOrString` | `0.1875rem` | Circle diameter or hexagon repeat width as a rem or px length or a number of CSS pixels. |
 | `gap` | `numberOrString` | `0.25rem` | Edge-to-edge space between nearest dots as a rem or px length or a number of CSS pixels. |
 | `layout` | `string` | `grid` | Grid uses aligned rows. Beehive offsets alternating rows by half the pitch.<br>Options: `grid`, `beehive` |
-| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | Ink for the dots. Use a theme token to follow swatch and mode changes. |
+| `color` | `dictionaryOrString` | `var(--jam-color-fg-muted)` | Fill ink. Use a theme token to follow swatch and mode changes. |
 | `hoverColor` | `dictionaryOrString` | `var(--jam-color-fg-primary)` | Ink for the whole dots under the pointed region. Defaults to the active theme’s primary foreground. |
+| `shape` | `string` | `circle` | Use circle for whole dots or hexagon for a staggered repeat that clips at geographic edges.<br>Options: `circle`, `hexagon` |
+| `strokeWidth` | `numberOrString` | Not supplied | Optional hexagon outline width as a rem or px length or a number of CSS pixels. Defaults to zero. |
+| `strokeColor` | `dictionaryOrString` | Not supplied | Optional hexagon outline ink. |
 
 ## `echarts.pie.ring`
 
