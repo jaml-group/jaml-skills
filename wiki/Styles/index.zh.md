@@ -80,6 +80,7 @@
 - [layers/spinner](layers/spinner.zh.md) — 装饰性活动效果；可测量完成度应使用进度所有者。
 - [layers/watermark](layers/watermark.zh.md) — 水印装饰。
 - [list](list.zh.md)
+- [load](load.zh.md)
 - [map-style](map-style.zh.md) — 原生 map 的呈现；先选择元素与行为。
 - [notify-style](notify-style.zh.md) — 原生 notify 的呈现；先选择元素与行为。
 - [on](on.zh.md) — 已有浅色或深色表面上的前景角色。

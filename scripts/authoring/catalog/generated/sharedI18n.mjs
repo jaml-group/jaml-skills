@@ -519,6 +519,7 @@ const JamEvents = [
     'oninit',
     'onkeydown',
     'onkeyup',
+    'onloadingchange',
     'onmount',
     'onmovecancel',
     'onmoveend',

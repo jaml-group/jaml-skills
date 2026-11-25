@@ -80,6 +80,7 @@ For a control, input or metric, select its [native element](../JAM-UI/JAM-UI.md)
 - [layers/spinner](layers/spinner.md) — Decorative activity; use a progress owner for measured completion.
 - [layers/watermark](layers/watermark.md) — Watermark decoration.
 - [list](list.md)
+- [load](load.md)
 - [map-style](map-style.md) — Presentation for native map; select the element and behavior first.
 - [notify-style](notify-style.md) — Presentation for native notify; select the element and behavior first.
 - [on](on.md) — Foreground roles for an existing light or dark surface.

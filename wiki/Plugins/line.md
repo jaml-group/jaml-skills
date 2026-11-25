@@ -17,47 +17,58 @@
 
 ## `LineOption`
 
-| Option                              | Type                                           | Default                       | Description                                                                            |
-| ----------------------------------- | ---------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------- |
-| `color`                             | `string`                                       | Accent-derived                | Line color.                                                                            |
-| `width`                             | `number`                                       | `2`                           | Line width in pixels.                                                                  |
-| `hoverColor`                        | `string`                                       | Accent-derived when removable | Highlighted line color.                                                                |
-| `hoverWidth`                        | `number`                                       | `width * 1.5` when removable  | Highlighted line width.                                                                |
-| `hitWidth`                          | `number`                                       | `0`                           | Extra invisible pointer target width in pixels.                                        |
-| `type`                              | `'solid' \| 'dashed' \| 'dotted'`              | `'solid'`                     | Stroke type. `style` remains as a deprecated alias.                                    |
-| `shadow`                            | `ShadowToken \| ShadowValue \| false`          | `false`                       | Optional SVG drop shadow.                                                              |
-| `container`                         | `HTMLElement \| string`                        | Common ancestor               | Stable container for the SVG layer.                                                    |
-| `path`                              | `'polyline' \| 'catmullRom' \| 'smooth'`       | `'catmullRom'`                | Route interpolation.                                                                   |
-| `endTangent`                        | `'center' \| 'edge' \| 'path'`                 | `'center'`                    | How endpoint marker tangents are resolved.                                             |
-| `tension`                           | `number`                                       | `0.5`                         | Catmull-Rom curve tension.                                                             |
-| `lengthFactor`                      | `number`                                       | `0.6`                         | Smooth-path control-point distance factor.                                             |
-| `angleFactor`                       | `number`                                       | `80`                          | Smooth-path control offset for steep angles.                                           |
-| `startSymbol` / `endSymbol`         | `SymbolType`                                   | `'none'`                      | Endpoint marker.                                                                       |
-| `startSymbolSize` / `endSymbolSize` | `number`                                       | `6`                           | Marker size.                                                                           |
-| `startGap` / `endGap`               | `number`                                       | `0`                           | Endpoint gap in pixels. Markers may increase it.                                       |
-| `animation`                         | `boolean \| 'default' \| 'reverse'`            | `false`                       | Animate the dash flow; `'reverse'` flips its direction.                                |
-| `label`                             | `string`                                       | —                             | Text displayed on the line.                                                            |
-| `labelPosition`                     | `LabelPositionKey`                             | `'cm'`                        | Label placement shortcode.                                                             |
-| `labelColor`                        | `string`                                       | Line color                    | Label color.                                                                           |
-| `labelSize`                         | `number`                                       | `12`                          | Label font size in pixels.                                                             |
-| `labelShadow`                       | `string`                                       | —                             | Label `text-shadow`.                                                                   |
-| `labelOffsetX` / `labelOffsetY`     | `number`                                       | `0`                           | Label offset in pixels.                                                                |
-| `labelSpacing`                      | `number`                                       | `0`                           | Label letter spacing.                                                                  |
-| `labelStroke`                       | `string \| boolean`                            | —                             | Stroke color; `true` selects a contrasting color.                                      |
-| `anchors`                           | `AnchorPairKey`                                | `'auto'`                      | Owner anchor pair shortcode.                                                           |
-| `startAnchor` / `endAnchor`         | `string`                                       | `'auto'`                      | Named side or percentage coordinate such as `'50% 100%'`.                              |
-| `midpoints`                         | `readonly { along: number; across: number }[]` | `[]`                          | Route points relative to the endpoint baseline.                                        |
-| `removable`                         | `boolean`                                      | `false`                       | Show the close control on hover.                                                       |
-| `enterDelay`                        | `number`                                       | `150`                         | Hover activation delay in milliseconds.                                                |
-| `leaveDelay`                        | `number`                                       | `250`                         | Hover deactivation delay in milliseconds.                                              |
-| `onclose`                           | `() => void`                                   | —                             | Handle the close control. Supplying it enables `removable` unless explicitly disabled. |
-| `onremove`                          | `() => void`                                   | —                             | Called after the line is removed.                                                      |
+| Option                              | Type                                                     | Default                       | Description                                                                            |
+| ----------------------------------- | -------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------- |
+| `color`                             | `string`                                                 | Accent-derived                | Line color.                                                                            |
+| `width`                             | `number`                                                 | `2`                           | Line width in pixels.                                                                  |
+| `hoverColor`                        | `string`                                                 | Accent-derived when removable | Highlighted line color.                                                                |
+| `hoverWidth`                        | `number`                                                 | `width * 1.5` when removable  | Highlighted line width.                                                                |
+| `hitWidth`                          | `number`                                                 | `0`                           | Extra invisible pointer target width in pixels.                                        |
+| `type`                              | `'solid' \| 'dashed' \| 'dotted'`                        | `'solid'`                     | Stroke type. `style` remains as a deprecated alias.                                    |
+| `shadow`                            | `ShadowToken \| ShadowValue \| false`                    | `false`                       | Optional SVG drop shadow.                                                              |
+| `container`                         | `HTMLElement \| string`                                  | Common ancestor               | Stable container for the SVG layer.                                                    |
+| `path`                              | `'polyline' \| 'catmullRom' \| 'smooth' \| 'orthogonal'` | `'catmullRom'`                | Route interpolation. See [orthogonal paths](#orthogonal-paths).                        |
+| `cornerRadius`                      | `number`                                                 | `12`                          | Orthogonal bend radius in canvas units. Zero gives square bends.                       |
+| `stubLength`                        | `number`                                                 | `24`                          | Requested orthogonal terminal stub length in canvas units.                             |
+| `endTangent`                        | `'center' \| 'edge' \| 'path'`                           | `'center'`                    | How endpoint marker tangents are resolved.                                             |
+| `tension`                           | `number`                                                 | `0.5`                         | Catmull-Rom curve tension.                                                             |
+| `lengthFactor`                      | `number`                                                 | `0.6`                         | Smooth-path control-point distance factor.                                             |
+| `angleFactor`                       | `number`                                                 | `80`                          | Smooth-path control offset for steep angles.                                           |
+| `startSymbol` / `endSymbol`         | `SymbolType`                                             | `'none'`                      | Endpoint marker.                                                                       |
+| `startSymbolSize` / `endSymbolSize` | `number`                                                 | `6`                           | Marker size.                                                                           |
+| `startGap` / `endGap`               | `number`                                                 | `0`                           | Endpoint gap in pixels. Markers may increase it.                                       |
+| `animation`                         | `boolean \| 'default' \| 'reverse'`                      | `false`                       | Animate the dash flow; `'reverse'` flips its direction.                                |
+| `label`                             | `string`                                                 | —                             | Text displayed on the line.                                                            |
+| `labelPosition`                     | `LabelPositionKey`                                       | `'cm'`                        | Label placement shortcode.                                                             |
+| `labelColor`                        | `string`                                                 | Line color                    | Label color.                                                                           |
+| `labelSize`                         | `number`                                                 | `12`                          | Label font size in pixels.                                                             |
+| `labelShadow`                       | `string`                                                 | —                             | Label `text-shadow`.                                                                   |
+| `labelOffsetX` / `labelOffsetY`     | `number`                                                 | `0`                           | Label offset in pixels.                                                                |
+| `labelSpacing`                      | `number`                                                 | `0`                           | Label letter spacing.                                                                  |
+| `labelStroke`                       | `string \| boolean`                                      | —                             | Stroke color; `true` selects a contrasting color.                                      |
+| `anchors`                           | `AnchorPairKey`                                          | `'auto'`                      | Owner anchor pair shortcode.                                                           |
+| `startAnchor` / `endAnchor`         | `string`                                                 | `'auto'`                      | Named side or percentage coordinate such as `'50% 100%'`.                              |
+| `midpoints`                         | `readonly { along: number; across: number }[]`           | `[]`                          | Route points relative to the endpoint baseline.                                        |
+| `removable`                         | `boolean`                                                | `false`                       | Show the close control on hover.                                                       |
+| `enterDelay`                        | `number`                                                 | `150`                         | Hover activation delay in milliseconds.                                                |
+| `leaveDelay`                        | `number`                                                 | `250`                         | Hover deactivation delay in milliseconds.                                              |
+| `onclose`                           | `() => void`                                             | —                             | Handle the close control. Supplying it enables `removable` unless explicitly disabled. |
+| `onremove`                          | `() => void`                                             | —                             | Called after the line is removed.                                                      |
 
 `SymbolType` is `'none' | 'arrow' | 'triangle' | 'tripleLine' | 'dot' | 'circle' | 'bar' | 'hollowArrow'`.
 
 `LabelPositionKey` combines vertical `u`/`c`/`l` with horizontal `s`/`m`/`e`: `us`, `um`, `ue`, `cs`, `cm`, `ce`, `ls`, `lm`, or `le`.
 
 `AnchorPairKey` is `tt`, `tb`, `bt`, `bb`, `ll`, `lr`, `rl`, `rr`, or `auto`, where each letter selects top, bottom, left, or right.
+
+### Orthogonal paths
+
+Set `path: 'orthogonal'` to route through the endpoints and any `midpoints` using horizontal and vertical legs. Bends are rounded by default. The radius is capped at half the length of each adjoining leg. Use `cornerRadius: 0` for square bends. The requested `stubLength` is clamped to at least one unit, and short spans can shorten the actual stubs. Both options use the line container's local canvas coordinates.
+
+-   For element owners, use `lychee.connect(startEl, endEl, { path: 'orthogonal' })`. When magnets are placed on owner edges, the terminal legs follow the normals of those edges.
+-   For existing magnets, use `LycheeLine.connectMagnets(startMagnet, endMagnet, { path: 'orthogonal' }, directionResolver)`. The optional resolver returns an outward vector for each magnet. Lychee uses the dominant axis of the vector as the endpoint direction. When no direction is supplied, Lychee uses the magnet's position relative to its owner or the direction of the adjacent route leg.
+
+Endpoint gaps follow the same cardinal directions used for the stubs. [Medlar geographic connections](../JAM-UI/map.md#connections-and-coordinate-editing) support `polyline`, `catmullRom`, and `smooth`.
 
 ## Instance API
 

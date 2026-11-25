@@ -15,5 +15,5 @@ Positional order: `outline` → `route` → `grid`.
 | Argument | Type | Contract |
 | --- | --- | --- |
 | `outline` | `dictionary` | Color, opacity and width of region outlines. |
-| `route` | `dictionary` | Color and opacity of route strokes. |
+| `route` | `dictionary` | Color, opacity and width of Lychee routes. Width is the full 3D tube diameter in the fitted view. Supply a number in rem or a rem string. The default is 0.1875rem. Zero hides the tube and ordinary endpoint dots while keeping the connection. |
 | `grid` | `dictionary` | Color and opacity of the map grid. |

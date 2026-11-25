@@ -121,6 +121,12 @@ Specify these transitions before writing the handlers:
 
 Keep a pending gate distinct from permanent settlement. A failed attempt must become retryable; a completed decision or retired operation must reject duplicates. Visible disabled state is feedback, while the shared handler gate enforces the rule. Use the selected helper's actual cancellation/readiness contract: for popup focus, match both the owned target and content in [`showing`](../JAM-UI/popup.md#helper-content-focus-and-dismissal-timing), then check visibility, connection and focus eligibility.
 
+### Write captions for the current load
+
+When the target runtime provides `Styles.load.prompts([...])`, write short captions in the UI's language that name the work or item the user is waiting for. For a terrain view, use `Styles.load.prompts(['Preparing the terrain map…', 'Getting the elevation view ready…'])`.
+
+Every caption should make sense at any point in the wait because the array loops on a timer. When the operation reports real stages, call `element.setLoadingText('Checking spreadsheet columns…')` as that stage begins.
+
 ### Archive with a real Undo
 
 Archive can remain a direct row action when the backend supports restoring the document and its prior placement. The notification presents the recovery action, and the application owns archiving, restoration and the deadline. Follow the [archive/Undo transitions](../JAM-UI/notify.md#archive-and-undo) from request through acknowledgement, restoration, failure and expiry. Undo becomes eligible after the server acknowledges the archive.
