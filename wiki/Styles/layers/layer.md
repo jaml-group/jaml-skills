@@ -150,6 +150,58 @@ Additions and overrides:
 | `offsetX` | `string` | `0rem` | Horizontal shadow offset |
 | `offsetY` | `string` | `0rem` | Vertical shadow offset |
 
+## `layer.lens`
+
+<a id="entry-layer-lens"></a>
+
+Decorative lens
+
+Give a decorative backdrop or HUD a concave bend.
+
+Captures the supplied HTML in a pointer-transparent, inert canvas layer. The center compresses vertically, the sides keep their height, and extra background paint fills the top and bottom of the warped surface.
+
+Use a positioned host with a rendered size, a local stacking context, and the framework layer stylesheet. The effect requires HTML-in-Canvas and WebGL 2.
+
+The renderer follows host size. Unmounting releases the canvas and its WebGL context. Remounting creates a fresh renderer. Reverting the style also removes the layer.
+
+Keep controls and essential text in the host DOM. Supply a CSS background or separate background layer as the fallback.
+
+The lens effect is omitted for missing browser or graphics support, an invalid centerScale, or a lost context. Forced colors hides the decorative layer.
+
+Positional order: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `background` → `centerScale`.
+
+Common arguments: [layer.overlay](overlay.md#entry-layer-overlay).
+
+Additions and overrides:
+
+| Argument | Type | Default | Contract |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `-1` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | Not supplied |  |
+| `mask` | `string` | Not supplied |  |
+| `filter` | `string` | Not supplied |  |
+| `padding` | `string` | Not supplied |  |
+| `borderRadius` | `string` | Not supplied |  |
+| `transform` | `string` | Not supplied |  |
+| `border` | `string` | Not supplied |  |
+| `clipPath` | `string` | Not supplied |  |
+| `animation` | `string` | Not supplied |  |
+| `opacity` | `number` | Not supplied |  |
+| `css` | `dictionaryOrString` | Not supplied |  |
+| `depth` | `number` | Not supplied |  |
+| `class` | `string` | Not supplied |  |
+| `attrs` | `dictionary` | `{"aria-hidden":"true"}` |  |
+| `rotateX` | `number` | Not supplied |  |
+| `rotateY` | `number` | Not supplied |  |
+| `translateY` | `numberOrString` | Not supplied |  |
+| `slot` | `string` | Not supplied |  |
+| `content` | `string` | Not supplied | Trusted HTML string for decorative artwork such as HUD marks or a pattern. |
+| `entryAnimation` | `string` | `none` |  |
+| `exitAnimation` | `string` | `none` |  |
+| `background` | `string` | `var(--jam-color-surface-lowest)` | CSS background shorthand for the captured surface. Use an opaque background to cover the upper and lower edges. |
+| `centerScale` | `number` | `0.94` | Vertical scale at the center. Use a finite number greater than 0 and at most 1. At 1 the layer is flat. Values nearer 1 give a gentler bend. |
+
 ## `layer.shade`
 
 <a id="entry-layer-shade"></a>

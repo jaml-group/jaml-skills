@@ -23,7 +23,7 @@ Positional order: `normalMap` → `normalMapMetadata` → `finish` → `surface`
 | `normalMap` | `string` | URL of a north-up tangent-space normal image. |
 | `normalMapMetadata` | `string` | Optional JSON sidecar URL for a regional map. Set crs to EPSG:4326, normalSpace to tangent, and flipY to true. Set bounds to [west, south, east, north] in longitude and latitude so they cover the shared relief DEM sample centers. |
 | `finish` | `string` | Colored terrain finish. Contours builds the shape from stacked elevation lines with open gaps. Regional maps also offer matte, alabaster, gloss, gemstone, jello, clay and wireframe. Select contours in the map's backgroundMode for background relief. Supplied surface, side, bottom and bevel settings override the preset defaults. |
-| `surface` | `dictionary` |  |
+| `surface` | `dictionary` | Set smoothing from 0 (original relief, the default) to 1 (fully smoothed relief) on regional maps. For example, 0.5 blends the two heights halfway. Set faceted independently for per-face shading. Grounded objects and routes follow the displayed shape in Map and Globe. Elevation readings use the source data. |
 | `side` | `dictionary` |  |
 | `bottom` | `dictionary` | Colored slab bottom style for a regional map. Set opacity from 0 to 1. Palette alpha still applies. |
 | `bevel` | `dictionary` | Set colored or grayed bevel defaults. Each layer can set scope to off, perimeter, or slab, set topRadius and bottomRadius as fractions of base thickness, and set flatOnly. The bottom bevel is drawn in Flat mode. |

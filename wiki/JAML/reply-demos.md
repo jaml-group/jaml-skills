@@ -2,6 +2,8 @@
 
 Choose a demo when its purpose, inputs and prerequisites fit. Replace the sample data with supplied facts and recalculate any summaries or derived labels. Charts require ECharts in the rendering runtime and an explicit nonzero height.
 
+The chart examples put a short detail above the caption and plot using `style: { order: -1 }` on a `slot: 'layer'` label. Match the detail to the chart's `cap` alignment. Center both or give both the same left edge. The [chart guide](../JAM-UI/chart.md#choose-a-chart-for-a-reply) shows how to align the label and its wrapped text.
+
 The host's advertised capabilities establish which examples are ready. Use the [reply guide](conversational-ui.md) for presentation, interaction and fallback rules.
 
 For supported flat collections, the JAMLL examples use [data lines](../Plugins/markdown.md#jamll-data-lines) to stream rows after the element appears. Use a host with data-line support.
@@ -146,7 +148,7 @@ Compare two or more measured series over the same time periods.
     | ["Feb",132,90]
     | ["Mar",158,96]
     | ["Apr",171,104]
-    { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -164,7 +166,7 @@ Show change over time for one measured series.
     | ["Feb",48]
     | ["Mar",45]
     | ["Apr",57]
-    { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -182,7 +184,7 @@ Compare totals and their additive parts across categories.
     | ["Q2",52,38]
     | ["Q3",61,29]
     | ["Q4",34,47]
-    { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -200,7 +202,7 @@ Highlight the highest value among a few directly comparable categories.
     | ["Oak",68]
     | ["Pine",51]
     | ["Ash",37]
-    { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -218,7 +220,7 @@ Show ordered comparisons with category labels and clarify which direction is bet
     | ["Search",1140]
     | ["Product",960]
     | ["Home",820]
-    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)'] }
+    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -239,7 +241,7 @@ Show a few shares of a meaningful whole and label the precise percentages beside
         { type: 'indicator-percent', icon: '●', cap: 'Search', value: 0.46, styles: ['indicator.icon.text(color:ac0)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Direct', value: 0.31, styles: ['indicator.icon.text(color:ac1)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Referral', value: 0.23, styles: ['indicator.icon.text(color:ac2)'] }
-    { type: 'label', cap: 'Search brings almost half of all visits', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Search brings almost half of all visits', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -310,7 +312,7 @@ Combine related metrics, a trend and record detail into one compact view.
         | ["W2",312]
         | ["W3",305]
         | ["W4",387]
-        { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)'] }
+        { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
     { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
         | ["North",482]
         | ["South",256]

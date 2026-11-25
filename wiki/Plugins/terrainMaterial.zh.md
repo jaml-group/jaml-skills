@@ -23,7 +23,7 @@
 | `normalMap` | `string` | 北向上的切线空间法线图像 URL。 |
 | `normalMapMetadata` | `string` | 区域地图可选的 JSON 元数据文件 URL。将 crs 设为 EPSG:4326、normalSpace 设为 tangent、flipY 设为 true。bounds 按 [西边界经度, 南边界纬度, 东边界经度, 北边界纬度] 顺序填写，范围须覆盖共享地形 DEM 的采样点中心。 |
 | `finish` | `string` | 重点地形的材质预设。contours 用分层等高线构成地形，各层之间留空。区域地图还可选择 matte、alabaster、gloss、gemstone、jello、clay 或 wireframe。将地图的 backgroundMode 设为 contours 可为背景地形选择等高线。显式设置的 surface、side、bottom 和 bevel 会覆盖预设中的对应值。 |
-| `surface` | `dictionary` |  |
+| `surface` | `dictionary` | 区域地图的 smoothing 范围为 0（原始地形，默认值）到 1（完全平滑）。例如，0.5 取原始高度与完全平滑后高度的中间值。faceted 独立控制逐面着色。在地图和地球视图中，地面物体和线路跟随显示的地形，高程读数取自原始数据。 |
 | `side` | `dictionary` |  |
 | `bottom` | `dictionary` | 区域地图中重点区域底面的样式。opacity 取值为 0 到 1，并与调色板颜色的不透明度相乘。 |
 | `bevel` | `dictionary` | 设置 colored 或 grayed 板块的默认倒角。每层可将 scope 设为 off、perimeter 或 slab，将 topRadius 和 bottomRadius 设为底座厚度的比例，并使用 flatOnly。底部倒角仅在 Flat 模式绘制。 |

@@ -334,7 +334,12 @@ CashewChart.debounce = 100;
 
 ### Choose a chart for a reply
 
-Each chart type already applies its `basic` style, so these records list only what they add. Each also has one line of detail under the chart, a label child with `slot: 'layer'`: the range and a one-line summary taken from the data, or how to read the chart, such as "smaller is better".
+Each chart type already applies its `basic` style, so these records list only what they add. A label child in `slot: 'layer'` gives a short summary of the data or explains how to read the chart, such as "smaller is better". Set `style: { order: -1 }` on the detail label to place it above the chart caption and plot.
+
+Match the detail label's horizontal alignment to the chart's native `cap`. Center the detail when the caption is centered. When the caption is left-aligned, use the same left edge for the caption row and detail. Apply the text alignment to the detail label itself so wrapped lines follow it.
+
+-   **Centered caption.** Keep the detail label centered and use `cap.text(align:center;whitespace:normal)` on it.
+-   **Left-aligned caption.** Place the detail label at the start with `alignSelf: 'flex-start'` in its `style` and use `cap.text(align:left;whitespace:normal)` on it. To left-align the chart caption itself, add `labelslot.css(alignSelf:flex-start)` to the chart's styles along with `cap.text(align:left;whitespace:normal)`.
 
 Compare several series over time:
 
@@ -348,7 +353,7 @@ Compare several series over time:
     | ["Feb",132,90]
     | ["Mar",158,96]
     | ["Apr",171,104]
-    { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Jan–Apr: Search rose from 120 to 171, Direct from 80 to 104', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -366,7 +371,7 @@ Show one series with its area:
     | ["Feb",48]
     | ["Mar",45]
     | ["Apr",57]
-    { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Jan–Apr: up from 42 to 57, with a dip in March', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -384,7 +389,7 @@ Show parts of a total. Each stack rounds its outer end:
     | ["Q2",52,38]
     | ["Q3",61,29]
     | ["Q4",34,47]
-    { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Solar peaks in Q3 at 61; wind in Q4 at 47', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -402,7 +407,7 @@ Point out the highest value:
     | ["Oak",68]
     | ["Pine",51]
     | ["Ash",37]
-    { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Oak leads with 68, 17 ahead of Pine', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -420,7 +425,7 @@ Compare a benchmark where smaller is better. List the slowest first, so the best
     | ["Search",1140]
     | ["Product",960]
     | ["Home",820]
-    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)'] }
+    { type: 'label', cap: 'Load time in ms, smaller is better', slot: 'layer', styles: ['cap.sub(0.85)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 
@@ -441,7 +446,7 @@ Show shares of a whole. A pie has no value axis, so put the numbers beside it: a
         { type: 'indicator-percent', icon: '●', cap: 'Search', value: 0.46, styles: ['indicator.icon.text(color:ac0)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Direct', value: 0.31, styles: ['indicator.icon.text(color:ac1)'] }
         { type: 'indicator-percent', icon: '●', cap: 'Referral', value: 0.23, styles: ['indicator.icon.text(color:ac2)'] }
-    { type: 'label', cap: 'Search brings almost half of all visits', slot: 'layer', styles: ['cap.sub(0.5)'] }
+    { type: 'label', cap: 'Search brings almost half of all visits', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
 ```
 ````
 

@@ -138,7 +138,7 @@ For several related views, compose a panel. `layout.autoalign` fits the tiles to
         | ["W2",312]
         | ["W3",305]
         | ["W4",387]
-        { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)'] }
+        { type: 'label', cap: 'W1–W4: up from 280 to 387', slot: 'layer', styles: ['cap.sub(0.5)', 'cap.text(align:center;whitespace:normal)'], style: { order: -1 } }
     { type: 'table', cap: 'Regions', styles: ['table.stripy', 'table.stretchrow'], dataDef: [{ key: 'region', cap: 'Region' }, { key: 'orders', cap: 'Orders', type: 'indicator-number', styles: ['indicator.capslot.hide'] }] }
         | ["North",482]
         | ["South",256]

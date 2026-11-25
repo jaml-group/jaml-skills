@@ -150,6 +150,58 @@ Layer styles and loading guidance:
 | `offsetX` | `string` | `0rem` | 阴影水平偏移 |
 | `offsetY` | `string` | `0rem` | 阴影垂直偏移 |
 
+## `layer.lens`
+
+<a id="entry-layer-lens"></a>
+
+装饰性镜头
+
+为装饰性背景或 HUD 添加内凹变形。
+
+将传入的 HTML 捕获到不可交互且不拦截指针事件的画布图层。中央纵向压缩，两侧保持原高度，额外绘制的背景填满变形区域的上下边缘。
+
+为宿主设置定位和独立的层叠上下文，确保宿主有实际布局尺寸，并加载框架图层样式表。效果依赖 HTML-in-Canvas 和 WebGL 2。
+
+渲染器随宿主尺寸更新。卸载时释放画布及其 WebGL 上下文，重新挂载时创建新的渲染器。撤销样式时也会移除图层。
+
+将控件和必要文本保留在宿主 DOM 中。使用 CSS 背景或单独的背景图层作为回退。
+
+浏览器或图形环境缺少支持、centerScale 无效或上下文丢失时，镜头效果不显示。强制颜色模式下隐藏装饰层。
+
+位置参数顺序: `zIndex` → `dropShadow` → `boxShadow` → `mask` → `filter` → `padding` → `borderRadius` → `transform` → `border` → `clipPath` → `animation` → `opacity` → `css` → `depth` → `class` → `attrs` → `rotateX` → `rotateY` → `translateY` → `slot` → `content` → `entryAnimation` → `exitAnimation` → `background` → `centerScale`.
+
+公共参数: [layer.overlay](overlay.zh.md#entry-layer-overlay).
+
+新增与覆盖:
+
+| 参数 | 类型 | 默认值 | 契约 |
+| --- | --- | --- | --- |
+| `zIndex` | `number` | `-1` |  |
+| `dropShadow` | `boolean` | `false` |  |
+| `boxShadow` | `string` | 未提供 |  |
+| `mask` | `string` | 未提供 |  |
+| `filter` | `string` | 未提供 |  |
+| `padding` | `string` | 未提供 |  |
+| `borderRadius` | `string` | 未提供 |  |
+| `transform` | `string` | 未提供 |  |
+| `border` | `string` | 未提供 |  |
+| `clipPath` | `string` | 未提供 |  |
+| `animation` | `string` | 未提供 |  |
+| `opacity` | `number` | 未提供 |  |
+| `css` | `dictionaryOrString` | 未提供 |  |
+| `depth` | `number` | 未提供 |  |
+| `class` | `string` | 未提供 |  |
+| `attrs` | `dictionary` | `{"aria-hidden":"true"}` |  |
+| `rotateX` | `number` | 未提供 |  |
+| `rotateY` | `number` | 未提供 |  |
+| `translateY` | `numberOrString` | 未提供 |  |
+| `slot` | `string` | 未提供 |  |
+| `content` | `string` | 未提供 | 用于 HUD 刻度或图案等装饰的可信 HTML 字符串。 |
+| `entryAnimation` | `string` | `none` |  |
+| `exitAnimation` | `string` | `none` |  |
+| `background` | `string` | `var(--jam-color-surface-lowest)` | 捕获表面的 CSS background 简写值。使用不透明背景可填满上下边缘。 |
+| `centerScale` | `number` | `0.94` | 中央的纵向缩放比例。使用大于 0 且不超过 1 的有限数值。设为 1 时图层保持平直，越接近 1，弯曲越轻微。 |
+
 ## `layer.shade`
 
 <a id="entry-layer-shade"></a>
