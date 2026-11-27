@@ -123,9 +123,9 @@ Keep a pending gate distinct from permanent settlement. A failed attempt must be
 
 ### Write captions for the current load
 
-When the target runtime provides `Styles.load.prompts([...])`, write short captions in the UI's language that name the work or item the user is waiting for. For a terrain view, use `Styles.load.prompts(['Preparing the terrain map…', 'Getting the elevation view ready…'])`.
+When the target runtime provides `Styles.load.prompts([...])`, write short captions in the UI's language that name the work or item the user is waiting for. For a survey import without stage updates, use `Styles.load.prompts(['Importing survey data…', 'Preparing survey results…'])`.
 
-Every caption should make sense at any point in the wait because the array loops on a timer. When the operation reports real stages, call `element.setLoadingText('Checking spreadsheet columns…')` as that stage begins.
+Every caption should make sense at any point in the wait because the array loops on a timer. When the operation reports real stages, call `element.setLoadingText('Checking spreadsheet columns…')` as that stage begins. `map3d` supplies its own [localized terrain loading captions](../JAM-UI/map-3d.md#terrain-loading-and-readiness).
 
 ### Archive with a real Undo
 

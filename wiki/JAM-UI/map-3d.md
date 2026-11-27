@@ -31,6 +31,7 @@ Both scenes use the map's regular element styles and `components`. Use a direct 
 | `slabOpacity`                                          | Regional | Override [slab opacity](#contour-layers-and-opacity) separately for colored and grayed regions.                                                                                           |
 | `elevationShading`                                     | Both     | `true`. Apply tint by elevation.                                                                                                                                                          |
 | `viewMode`                                             | Regional | `'map'` or `'globe'`. Default `'map'`.                                                                                                                                                    |
+| `initialCamera`                                        | Both     | A preset name or [camera pose](#initial-camera) for the first terrain frame and for `resetCamera()`.                                                                                      |
 | `showGrid`                                             | Regional | `true`. Show the regional grid.                                                                                                                                                           |
 | `showWorldBorders`, `worldBorders`, `worldDetails`     | Regional | `showWorldBorders` defaults to `false`. Supply optional world context URLs as described in [assemble a regional map](#assemble-a-regional-map).                                           |
 | `spacing`                                              | Simple   | `78`, limited to 0–100. Controls layer separation.                                                                                                                                        |
@@ -53,19 +54,62 @@ Object model names are `cooling-tower`, `smokestacks`, `wind-turbine`, `solar-ar
 
 ## Camera, readiness, and events
 
-To follow the terrain loading indicator, listen for `terrainloadstart` in the map’s `on` dictionary. Call camera and elevation methods after `onterrainready()`. `onterrainerror(error)` receives an `Error`. Optional land cover and normal textures may finish later. Call `reloadTerrain()` to retry the current source. Set `onindicatorrendererchange(renderer)` to observe a change to `'html-in-canvas'` or `'dom'`. Use `on: { terrainmotionchange(event) { /* ... */ } }` to receive the effective playing state as a boolean in `event.detail`.
+### Initial camera
 
-| Public API                        | Behavior                                                                                                                                                               |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resetCamera()`                   | Restore the default view. Builds with camera presets accept `'showcase'`, `'top-down'`, or `'low-angle'` on a regional map.                                            |
-| `fitRegions()`                    | Frame the loaded regions and pause orbit on a regional map.                                                                                                            |
-| `sampleElevation(coord)`          | Read elevation in meters at `[longitude, latitude]`.                                                                                                                   |
-| `locateCoordinate(coord)`         | Read elevation and move the map's pin to the coordinate.                                                                                                               |
-| `focusRegion(name)`               | On a build with regional focus, focus a featured region from the overview. Returns `false` for an unavailable move. Use the overview to move between featured regions. |
-| `returnToOverview()`              | End regional focus while retaining camera heading, pitch within the overview limits, and relative zoom. Returns `false` if the map is already in the overview.         |
-| `regionNames` and `focusedRegion` | On a build with regional focus, read the overview's featured names and the active name. The overview has `focusedRegion === undefined`.                                |
+Set `initialCamera` on the map definition to frame the first terrain draw. Serve the [elevation GeoTIFF](#prepare-an-elevation-geotiff) at the URL below. This example sets `playing: false` to keep the opening view still.
 
-Regional focus keeps the loaded terrain and changes which routes and labels are active. `onregionclick({ name, adcode })` reports the clicked region. `onregionchange({ region, previousRegion })` reports a focus change, using `undefined` for the overview. Call `returnToOverview()` before focusing another region. Use `resetCamera()` or `fitRegions()` to restore the fitted camera. The map canvas supports arrow-key rotation and zoom with plus and minus.
+```json
+{
+    "type": "map3d",
+    "dem": "/assets/terrain/dem.tif",
+    "initialCamera": { "preset": "showcase", "pitch": 32.5, "zoom": 1.4, "bearing": 15 },
+    "playing": false,
+    "styles": ["load.spinner"],
+    "style": { "height": "24rem" }
+}
+```
+
+Use `'showcase'`, `'top-down'`, or `'low-angle'` on its own, or supply `{ preset?, pitch?, zoom?, bearing? }` to override individual values. Omitted values come from the chosen preset, which defaults to `'showcase'`. Numeric fields accept finite values, including fractions.
+
+-   `pitch` is in degrees from directly overhead. Each scene applies its orbit limits. Globe caps pitch at the fitted geography's horizon.
+-   `zoom` is relative to the geographic fit. `1` uses the fitted scale. Regional Map and Globe clamp zoom to 0.75–3, and a simple DEM clamps it to 0.65–4.
+-   `bearing` is in degrees clockwise from geographic north. On a UTM crop, north follows the local meridian at the fitted target.
+
+The fit determines the center. Assigning `initialCamera` on a mounted map sets the pose for the next terrain mount and the next no-argument `resetCamera()`.
+
+### Terrain loading and readiness
+
+Map3D tracks loading and readiness independently of presentation. Apply [`load.spinner`](../Styles/load.md#entry-load-spinner) or [`load.progress`](../Styles/load.md#entry-load-progress) in `styles` to display its loading state.
+
+The initial terrain load and explicit `reloadTerrain()` calls keep terrain loading active until the first successful draw to the live canvas. A map that starts in a collapsed panel stays pending until its canvas can draw. Use `onterrainready()` for work that needs the rendered terrain, including camera and elevation calls. A successful `reloadTerrain()` completes at the same first-frame boundary. Handle failures with `onterrainerror(error)`, which receives an `Error`, and call `reloadTerrain()` to retry the current sources. Optional land cover, material textures, and progressive contours can finish after readiness.
+
+Listen for `terrainloadstart` in the map's `on` dictionary to observe when terrain starts contributing to the loading indicator. The current locale supplies captions for the active stage. During source processing the caption names the next outstanding source and gives the count processed so far. An elevation raster reused for the background counts once.
+
+| Stage              | English                                            | 中文                                   |
+| ------------------ | -------------------------------------------------- | -------------------------------------- |
+| Renderer startup   | Loading the 3D renderer…                           | 正在加载三维渲染器…                    |
+| Source processing  | Loading terrain elevation… (1/3 sources processed) | 正在加载地形高程数据…（已处理 1/3 项） |
+| Scene construction | Building the terrain scene…                        | 正在构建地形场景…                      |
+| First draw         | Drawing the first frame…                           | 正在绘制首帧…                          |
+
+An application caption set with `setLoadingText(text)` takes precedence. Call `setLoadingText()` to show the current terrain caption again. The application can keep its own loading contribution active after terrain settles.
+
+### Camera controls and other events
+
+| Public API                        | Behavior                                                                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `resetCamera()`                   | Restore the overview with the current `initialCamera`, or the showcase view when it is omitted.                                                                          |
+| `resetCamera(pose)`               | Frame the loaded overview immediately with the supplied preset or pose for this call.                                                                                    |
+| `fitRegions()`                    | Frame the loaded regions and pause orbit on a regional map.                                                                                                              |
+| `sampleElevation(coord)`          | Read elevation in meters at `[longitude, latitude]`.                                                                                                                     |
+| `locateCoordinate(coord)`         | Read elevation and move the map's pin to the coordinate.                                                                                                                 |
+| `focusRegion(name)`               | On a build with regional focus, focus a featured region from the overview. Returns `false` for an unavailable move. Use the overview to move between featured regions.   |
+| `returnToOverview()`              | End regional focus, restore the overview's saved zoom, and carry the current bearing and pitch within the overview's limits. Returns `false` if already in the overview. |
+| `regionNames` and `focusedRegion` | On a build with regional focus, read the overview's featured names and the active name. The overview has `focusedRegion === undefined`.                                  |
+
+Regional focus keeps the loaded terrain and changes which routes and labels are active. `onregionclick({ name, adcode })` reports the clicked region. `onregionchange({ region, previousRegion })` reports a focus change, using `undefined` for the overview. Call `returnToOverview()` before focusing another region. The map canvas supports arrow-key rotation and zoom with plus and minus.
+
+Set `onindicatorrendererchange(renderer)` to observe a change to `'html-in-canvas'` or `'dom'`. Use `on: { terrainmotionchange(event) { /* ... */ } }` to receive the effective playing state as a boolean in `event.detail`.
 
 With `playing: 'auto'`, camera rotation pauses while the user rotates the view or interacts with a model callout. On a regional map, hovering a colored slab, colored label or route tag also pauses rotation. Orbit resumes after about two idle seconds. Zoom can continue during orbit.
 
