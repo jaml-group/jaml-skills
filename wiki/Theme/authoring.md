@@ -196,7 +196,7 @@ Use external component variable inventories as a checklist, not a target shape. 
 
 ## 8. Build `chart`
 
-Define only the declarative ECharts overrides that should be merged into the framework's adaptive chart theme builder. Use `sys` token references for semantic values and authoring `ref` values for stable primitives. The chart recipe is cooked against the chart element immediately before it is registered or consumed by ECharts.
+Define only the declarative ECharts overrides that should be merged into the framework's adaptive chart theme builder. Use `sys` token references for semantic values and authoring `ref` values for stable primitives. The chart recipe is cooked against the chart element immediately before it is registered or consumed by ECharts. For a native chart shadow, pass a system shadow token through the [`shadow` shorthand](./tokens.md#chart-shadows).
 
 Do not invent a parallel chart color system or repeat the swatch palette in `chart`. The runtime builder takes its series palette from the active JAML color set and rebuilds against the chart element when light/dark mode, accent color, color set, or swatch changes.
 

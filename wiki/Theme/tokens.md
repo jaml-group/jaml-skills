@@ -549,6 +549,23 @@ Keep the override dictionary declarative. The framework's runtime `buildEchartsT
 
 The exported lower-level `cookEchartsValue(value, el?, key?)` resolves token wrappers, token builders, CSS `var()`/`calc()` color expressions, `chroma.Color` values, and standalone `rem`/`px` lengths. It recursively cooks arrays and plain dictionaries, then expands the `shadow`, `textShadow`, `border: 'none'`, and `textBorder: 'none'` shorthands into ECharts option fields.
 
+### Chart shadows
+
+Use a system shadow token as the `shadow` value in the chart style that owns the paint. For a line series, `lineStyle` styles the stroke and `itemStyle` styles its symbols.
+
+```js
+export const chart = {
+    line: {
+        lineStyle: { shadow: sys.shadow.s },
+        itemStyle: { shadow: sys.shadow.xs }
+    }
+};
+```
+
+At runtime, the chart cooker calls the token's `.build(el)` against the chart element. It converts the result to ECharts' `shadowColor`, `shadowBlur`, `shadowOffsetX`, and `shadowOffsetY` fields. This resolves adaptive shadow colors in the chart's current mode and converts lengths to the numbers ECharts expects.
+
+A token made with `shadowComposer` supplies its main shadow to these native fields. To paint multiple CSS shadow layers, inset effects, or spread on supported series, use the [layered shadow style](../Styles/echarts.md#entry-echarts-shadow-layered) in a `chart-standard` recipe.
+
 ## Token Module Contract
 
 The authoring foundation exports plain source data:

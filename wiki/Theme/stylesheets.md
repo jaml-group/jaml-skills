@@ -119,6 +119,12 @@ jam-table > .jam-td {
 }
 ```
 
+### Mode selectors
+
+Theme stylesheets can use `.jam-light` and `.jam-dark`. Use `body.jam-light` or `body.jam-dark` for a treatment that follows the page mode. For a role that owns a local Lumi scope, match its mode class and role on the same element, such as `.jam-dark.jam-card-style`. An ancestor selector such as `.jam-dark .jam-card-style` also matches cards inside a nested light scope.
+
+The [`switch.darkmode` style](../Styles/switch-style.md#entry-switch-darkmode) adds `.jam-darkmode` to the switch in both modes. To adapt a CSS value with the same selector in both modes, use the [Lumi switches](../color.md#lumi-switches-in-css).
+
 ## Complete Stylesheets
 
 `Styles.stylesheet(importedStyle)` in a theme’s `document.header` entry attaches a complete document-level stylesheet. Other registration keys scope its element selectors to that key, for both imported strings and dictionary-form sheets. Use `document.header` for a complete theme sheet; registering that same sheet under `button`, for example, changes its selector scope.

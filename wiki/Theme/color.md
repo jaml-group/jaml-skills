@@ -270,6 +270,8 @@ Colored text such as `fg.primary` and colored tags and indicator values comes fr
 3. Use fixed literal colors only for values that must stay identical in both modes, such as a white gloss highlight over an accent fill. Check them against both modes' surfaces. `on.*` foregrounds orient against the fill, not a gloss layered over it, so keep gloss stops translucent and confirm text contrast against the gloss's lightest stop in both modes; add a text shadow from `textShadow.onPrimary` when a bright stop sits behind text.
 4. Set `swatch.darkMode` only when a swatch should also request a body mode.
 
+In stylesheet recipes, use the [Lumi switches](../color.md#lumi-switches-in-css) for declarations that calculate a value by mode. Use [mode selectors](./stylesheets.md#mode-selectors) when you want a rule to apply in a specific mode.
+
 ## Context And Ownership Rules
 
 Theme color is selected by usage and background context, not by element or role identity. This restriction includes borders, outlines, and separators as well as text, icons, and fills.

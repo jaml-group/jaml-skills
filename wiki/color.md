@@ -124,6 +124,25 @@ For an intentional literal, use CSS HSL notation such as `hsl(210 70% 55%)` or `
 
 The CSS custom properties `--jam-lumi-o-*` and `--jam-lumi-l-*` supply the luminosity context inherited by CSS expressions.
 
+### Lumi switches in CSS
+
+Use these built-in unitless values in CSS calculations when a declaration needs a different value in each mode.
+
+| CSS variable     | Light mode | Dark mode |
+| ---------------- | ---------: | --------: |
+| `--jam-lumi-s`   |          1 |         0 |
+| `--jam-lumi-o-s` |          0 |         1 |
+
+Multiply the switch by `100%` when the calculation needs a percentage. This border uses the subtle outline in dark mode and the muted outline in light mode.
+
+```css
+.jam-tile-style {
+    border-color: color-mix(in srgb, var(--jam-color-outline-subtle) calc(100% * var(--jam-lumi-o-s)), var(--jam-color-outline-muted));
+}
+```
+
+When a component publishes a local Lumi profile, put the calculation on the component or a descendant that inherits its Lumi variables. A custom property defined on `body` resolves against the body’s mode before descendants inherit it. For mode-specific rules, see [Theme Stylesheets](./Theme/stylesheets.md#mode-selectors).
+
 ---
 
 ## Color values (`ColorType`)
