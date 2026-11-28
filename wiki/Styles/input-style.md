@@ -26,13 +26,13 @@
 
 Ghost input
 
-Compose a text input or textarea on an application-owned surface.
+Place a text input, textarea or compose editor on a shared surface.
 
-Makes the native input background transparent in normal, hover, focus, disabled and read-only states; removes its resting border width and shadow. Preserves the native focus outline, label, padding, radius, editing and row behavior. No arguments.
+Keeps the editing surface transparent across hover, focus, disabled and read-only states. Removes its resting border and shadow. The input keeps its label, padding, editing behavior and focus indication.
 
-Use input or input-textarea with styles: ['input.ghost'] in the updated development runtime. Omit cap and icon when the composition needs no label.
+Use styles: ['input.ghost'] on input, input-textarea or input-compose. On runtimes with form-level compose focus, place a ghost input-compose directly inside a parent with stylize: 'form' to draw one ring around the form when the editor has focus.
 
-This is a style, not a textarea subtype: input-textarea-ghost does not select the native textarea. For a shared composer focus outline, style the enclosing container with :focus-within and suppress the inner outline only on that input. File, color and external editor surfaces are not covered.
+Keep the native focus cue. For an app-authored focus perimeter, always use var(--jam-input-focus-outline-width) solid var(--jam-input-focus-outline-color) on its owner. A standalone editor and an ordinary ghost textarea keep their own focus treatment. File, color and external editor surfaces have separate contracts.
 
 ```javascript jaml-playground
 export default {

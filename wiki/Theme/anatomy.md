@@ -39,18 +39,18 @@ Elements carry a default role when the author sets none:
 
 ## Shared State Hooks
 
-| Hook                                 | Meaning                                                            |
-| ------------------------------------ | ------------------------------------------------------------------ |
-| `[disabled]`                         | Disabled element; the framework already fades it                   |
-| `[readonly]`                         | Read-only input                                                    |
-| `[type='…']`                         | Element subtype when it differs from the element type              |
-| `[state='…']`                        | Element-specific state value                                       |
-| `.jam-checked`, `.jam-indeterminate` | Checked and mixed selection on buttons, switches and options       |
-| `.jam-active`                        | Pressed button, also set from the keyboard                         |
-| `.jam-hover`                         | Hover state set by the runtime, alongside `:hover`                 |
-| `.jam-required`                      | Required input                                                     |
-| `.jam-with-icon`, `.jam-icon-only`   | Icon presence                                                      |
-| `:focus-visible`                     | Keyboard focus; inputs draw their focus outline on `::part(agent)` |
+| Hook                                 | Meaning                                                      |
+| ------------------------------------ | ------------------------------------------------------------ |
+| `[disabled]`                         | Disabled element; the framework already fades it             |
+| `[readonly]`                         | Read-only input                                              |
+| `[type='…']`                         | Element subtype when it differs from the element type        |
+| `[state='…']`                        | Element-specific state value                                 |
+| `.jam-checked`, `.jam-indeterminate` | Checked and mixed selection on buttons, switches and options |
+| `.jam-active`                        | Pressed button, also set from the keyboard                   |
+| `.jam-hover`                         | Hover state set by the runtime, alongside `:hover`           |
+| `.jam-required`                      | Required input                                               |
+| `.jam-with-icon`, `.jam-icon-only`   | Icon presence                                                |
+| `:focus-visible`                     | Keyboard focus on buttons and ordinary input agents          |
 
 Elements also inherit `--jam-cap-opacity`, `--jam-value-opacity`, `--jam-icon-font-size` and `--jam-icon-text-shadow` (the `icon.textShadow` token) from their host, which tune caption, value and icon presentation without reaching into slots.
 
@@ -131,7 +131,7 @@ When a theme paints a region with an accent fill itself, rather than through `wi
 
 -   A plain text input has no `type` attribute. Other subtypes set `[type='search' | 'number' | 'password' | 'color' | 'range' | 'file' | 'textarea' | 'code' | 'compose']`.
 -   Parts: `labelslot`, `iconslot`, `capslot`, `agent` (the native control), `unitslot` for numbers.
--   The field's border, background, radius and focus outline are painted on `::part(agent)`, not on the host: `border-style: solid` with `--jam-input-border-width`, `--jam-input-border-color`, `--jam-input-border-radius`, and `background-color: var(--jam-input-background-color)`, which hover and focus change to `--jam-input-hover-background-color`. Keyboard focus draws an outline from `--jam-input-focus-outline-width` and `--jam-input-focus-outline-color`.
+-   The native text field paints its border, background and radius on `::part(agent)`. It uses `border-style: solid` with `--jam-input-border-width`, `--jam-input-border-color`, `--jam-input-border-radius`, and `background-color: var(--jam-input-background-color)`, which hover and focus change to `--jam-input-hover-background-color`. Ordinary text fields and textareas draw their focus ring with `--jam-input-focus-outline-width` and `--jam-input-focus-outline-color`. A ghost `input-compose` directly inside a `stylize: 'form'` parent draws one ring on the form using the input focus width and foreground ink. [Ghost input focus](../JAM-UI/input.md#ghost-textarea-and-shared-composer-focus)
 -   Restyle the field through those values, or with `jam-input::part(agent)` rules for treatments such as an inset bevel. Caret and selection come from `--jam-caret-color` and `--jam-selection-*`. A `file` input renders as a button.
 
 ### Select and date picker — `jam-select`, `jam-datepicker`

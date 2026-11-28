@@ -15,6 +15,12 @@ For a new app or substantial capability, start from [Design](design.md) and the 
 
 A virtualized table can use `Styles.props({ contain: 'size' })` when its layout supplies a height, such as in a bounded grid or flex region or a sized card. Size containment removes the table’s intrinsic size contribution on both axes. The table can collapse if the layout leaves its height to its contents, even with fixed-height rows.
 
+## Application headers and controls
+
+When building an application header, especially a desktop title row, size it with `--jam-header-height` and check the controls fit at the intended density. [Application header height](../references/JAML/component.md#application-header-height)
+
+For a contextual extra action, use a native `button-ghost` in the `extra` slot with `jam-extra-btn`. Add `jam-silent` when the action should appear on approach or keyboard focus. For a ghost input, keep the native focus ring or draw the shared ring with `--jam-input-focus-outline-width` and `--jam-input-focus-outline-color`. [Extra buttons](../references/JAM-UI/button.md#extra-buttons) · [Ghost input focus](../references/JAM-UI/input.md#ghost-textarea-and-shared-composer-focus)
+
 ## Load when the task needs it
 
 | Task involves                       | Read                                                                                                                                                                                                                                    |

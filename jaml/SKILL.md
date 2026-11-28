@@ -85,6 +85,7 @@ Follow the [composition order](references/JAML/purpose-and-composition.md#decide
 
 -   **State:** ask who owns, publishes and consumes it, and prefer native semantic owners and state-consuming peers; direct event-driven control stays supported. See [state and data](references/JAML/state-and-data.md).
 -   **Presentation:** use [style ownership](references/Styles/styles.md#style-ownership-and-composition), [roles](references/Theme/stylize.md) and [token consumption](references/Theme/tokens.md#consuming-tokens). Reuse presentation through styles and business composition through [builders, CCs and usages](references/JAML/component.md).
+-   For desktop title rows and other app headers, contextual extra buttons, or ghost inputs, follow [application header sizing, action reveal and focus outlines](workflows/compose.md#application-headers-and-controls).
 -   **Color and state:** use [semantic color](references/color.md#semantic-colors) to communicate status and emphasis in normal composition. Set the native owner's `color` context, then select its foreground for the surface: `color.primary` on ordinary surfaces, matching `color.on.*` on filled accents. Derive changing presentation from the existing state owner.
 -   **Extensions:** extend through builders, CCs, usages, suffixes or plugins when a verified gap needs it. Meaningful reusable additions follow [Upstream candidates](workflows/upstream-candidates.md).
 

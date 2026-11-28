@@ -12,9 +12,9 @@ More actions for direct children
 
 Attach a reusable trailing action menu to selected direct children of a native container.
 
-Matches one target class, with an optional leading dot. Existing children and later child additions receive one native extra-slot button. The button uses display:none at rest, takes caption space on hover or focus, and remains displayed while open; non-hover or coarse input keeps it visible. Synchronous getcontent(target) runs at each opening and returns native JAML content or nodes. click2Hide delegates to the native dropdown default and event ordering; callbacks are not wrapped. By default the dropdown aligns with the trigger right edge, with cursor-based popup and arrow alignment disabled; native options can override this.
+Matches one target class, with an optional leading dot. Each matching child gets one button-ghost in its extra slot with the classes jam-extra-btn jam-silent. The trigger reserves space at rest, appears faintly on hover of the child and stays visible on keyboard focus or while expanded. Coarse or hoverless pointers see it at rest. Synchronous getcontent(target) runs at each opening and returns native JAML content or nodes. click2Hide delegates to the native dropdown default and event ordering; callbacks are not wrapped. By default the dropdown aligns with the trigger right edge, with cursor-based popup and arrow alignment disabled; native options can override this.
 
-Use native direct children with an inline extra slot and a focusable target for keyboard discovery. Give menu actions accessible names and role=menuitem.
+Use native direct children with an inline extra slot. The injected trigger is keyboard-focusable. Give menu actions accessible names and role=menuitem.
 
 Owns only its injected buttons and one popup per application. Removal, container remount and unplug reconcile child lifetimes; replacement and pending opening cleanup cannot close a newer popup. Caller extra content and onchildadd callbacks remain intact.
 
@@ -26,7 +26,7 @@ Positional order: `target` → `getcontent` → `triggerStyles` → `click2Hide`
 | --- | --- | --- |
 | `target` | `string` | One class name identifying eligible direct children. |
 | `getcontent` | `function` | Synchronous callback receiving the current child and returning popup content on each opening. |
-| `triggerStyles` | `array` |  |
+| `triggerStyles` | `array` | Additional native styles applied to the injected button after icon.more. |
 | `click2Hide` | `boolean` | Forward native click dismissal; omission retains the dropdown default of false and existing callback ordering. |
 | `clickElsewhere2Hide` | `boolean` | Forward native outside-click dismissal; omission retains true. |
 

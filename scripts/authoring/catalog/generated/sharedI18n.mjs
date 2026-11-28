@@ -64,7 +64,7 @@ function formatValues(str, values, formatter = formatField) {
     let _automaticIndex = 0;
     let _indexMode;
     let _result = '';
-    for (let i = 0; i < str.length; ) {
+    for (let i = 0; i < str.length;) {
         const _char = str[i];
         if ((_char === '{' || _char === '}') && str[i + 1] === _char) {
             _result += _char;

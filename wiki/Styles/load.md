@@ -34,13 +34,13 @@ Loading spinner
 
 Show a compact busy indicator over the element doing the work.
 
-Shows the spinner with the active caption and any explicit percentage. It pauses rotation under reduced motion.
+Shows a spinner with room for a caption and an explicit percentage. On a button, input, select, datepicker, timepicker or label with less than 6rem available in its loading layer, shows only the spinner or the known percentage. Rotation pauses under reduced motion.
 
 Apply to a native Jam-UI element with a loading state from an initial URL request or `setLoading(progress?)`.
 
 The element owns its loading state. The layer is removed when the element becomes idle, unmounts, or loses its loading style.
 
-Choose one presentation per host. Add `load.prompts` for rotating captions or `setLoadingText(text)` when the operation reports a real stage.
+Choose one presentation per host. Its transparent layer keeps the themed surface and decoration visible. Content keeps its layout while hidden. A busy button keeps its accessible name and activation behavior. Add `load.prompts` for rotating captions or `setLoadingText(text)` when the operation reports a real stage.
 
 ## `load.progress`
 
@@ -50,10 +50,10 @@ Loading progress bar
 
 Show the progress of work on the element doing it.
 
-Shows a numeric percentage when progress is supplied and an indeterminate band otherwise. The loading caption stays visible when progress is unknown. The presentation honors reduced motion.
+Shows a percentage for known progress or an indeterminate band for unknown progress. On a button, input, select, datepicker, timepicker or label with less than 6rem available in its loading layer, shows only the known percentage or the indeterminate indicator. Honors reduced motion.
 
 Apply to a native Jam-UI element with a loading state from an initial URL request or `setLoading(progress?)`.
 
 The element owns its loading state. The layer is removed when the element becomes idle, unmounts, or loses its loading style.
 
-Choose one presentation per host. Add `load.prompts` for rotating captions or `setLoadingText(text)` when the operation reports a real stage.
+Choose one presentation per host. Its transparent layer keeps the themed surface and decoration visible. Content keeps its layout while hidden. A busy button keeps its accessible name and activation behavior. Add `load.prompts` for rotating captions or `setLoadingText(text)` when the operation reports a real stage.

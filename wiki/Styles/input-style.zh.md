@@ -26,13 +26,13 @@
 
 透明输入框
 
-在应用拥有的背景上组合文本输入框或多行文本框。
+在共享表面上放置文本输入框、多行文本框或组合编辑器。
 
-将原生输入区域的普通、悬停、聚焦、禁用和只读背景设为透明，并移除静态边框宽度和阴影。保留原生聚焦轮廓、标签、内边距、圆角、编辑和行数行为。无参数。
+输入区域在悬停、聚焦、禁用和只读状态下保持透明，静止时无边框和阴影。保留标签、内边距、编辑行为与焦点提示。
 
-在更新后的开发运行时中，对 input 或 input-textarea 使用 styles: ['input.ghost']。不需要标签时省略 cap 和 icon。
+在 input、input-textarea 或 input-compose 上使用 styles: ['input.ghost']。在支持表单焦点轮廓的运行时，将透明 input-compose 作为 stylize: 'form' 的直接子项，编辑器聚焦时表单外围便会显示一道轮廓。
 
-这是样式而非多行输入子类型；input-textarea-ghost 不会选择原生 textarea。共享编辑器聚焦轮廓应放在父容器的 :focus-within 上，仅在内部输入框关闭自身轮廓。文件、颜色和外部编辑器不在覆盖范围内。
+保留原生焦点提示。应用自行绘制焦点轮廓时，始终在负责显示轮廓的元素上使用 var(--jam-input-focus-outline-width) solid var(--jam-input-focus-outline-color)。独立编辑器和普通透明多行文本框各自保留焦点样式。文件、颜色和外部编辑器使用各自的展示规则。
 
 ```javascript jaml-playground
 export default {

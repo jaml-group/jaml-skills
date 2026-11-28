@@ -267,7 +267,7 @@ For file paste uploads, register a lifecycle-managed **capture-phase** `paste` l
 
 Compose wraps and grows natively. `rows: 'auto'` uses `minRows` as its minimum; numeric `rows` sets a minimum height. A positive `maxRows` caps the scrolling editing viewport in line-height units; nonpositive values leave it uncapped. For an 18-row composer, set `maxRows: 18`; no textarea auto-row plugin is needed. This limits visible height, not source length. Set the inheritable `--jam-compose-max-height` to an application-owned CSS length or viewport calculation to cap the same scroller further on short screens. Both its minimum and maximum respect this allowance; no second overflow wrapper is needed.
 
-Keep toolbar and usage-stat spacing in the surrounding application container. `input.ghost` supports a transparent input with native focus treatment. For one shared outline, follow the wrapper `:focus-within` pattern below. The compose content uses `--jam-space-s` padding; the code editor's `--code-padding` setting is not its padding owner.
+Keep toolbar and usage-stat spacing in the surrounding application container. `input.ghost` supports a transparent input with native focus treatment. For one perimeter around a ghost composer, place the `input-compose` directly inside a native `stylize: 'form'` parent. The compose content uses `--jam-space-s` padding; the code editor's `--code-padding` setting is not its padding owner. [Ghost input focus](#ghost-textarea-and-shared-composer-focus)
 
 The owned picker has a compact candidate contract with optional icon, description and group heading. It does not automatically re-anchor on subsequent editor scroll/resize, and it is not an arbitrary rich-content command palette. Native browser checks do not establish real IME or assistive-technology behavior on every platform; qualify those in the consuming application.
 
@@ -291,9 +291,13 @@ export default {
 };
 ```
 
-For one rounded composer containing the textarea, attachment button, settings and Send action, keep those controls as siblings inside the application-owned wrapper. The native textarea owns bounded growth. To show one focus outline around that wrapper, use `Styles.css({ selector: '&:focus-within', outline: 'var(--jam-input-focus-outline-width) solid var(--jam-input-focus-outline-color)' })` on it. Suppress the inner outline only on the input with `Styles.css({ '--jam-input-focus-outline-width': '0px' })`; leave the wrapper's outline tokens intact. `focus` targets `:focus`, so it is not a substitute for `:focus-within` on the wrapper. Keep a visible focus indication for keyboard users.
+Keep the native focus cue when using `input.ghost`. On runtimes with form-level compose focus, a direct `input-compose` child with this style moves the visible ring to its `stylize: 'form'` parent. The editor keeps keyboard focus and its caret. Tabbing to a sibling button gives that button its own focus cue. Standalone compose editors and ordinary ghost textareas keep their own focus treatment.
 
-The ghost style is a new development capability; verify the delivered runtime, including keyboard, disabled/read-only and theme states. It covers native text inputs and textareas, not file/color controls or external code-editor surfaces.
+Whenever the app draws a ghost input’s focus ring, use both input outline tokens on the element that paints it. The native compose form already paints its perimeter using the input focus width and the theme’s foreground ink.
+
+For one rounded composer containing the textarea, attachment button, settings and Send action, keep those controls as siblings inside the application-owned wrapper. The native textarea owns bounded growth. To show one focus outline around that wrapper, apply that token-based outline to the wrapper with `Styles.css({ selector: '&:focus-within', outline: 'var(--jam-input-focus-outline-width) solid var(--jam-input-focus-outline-color)' })`. Once the perimeter is visible, set `style: { '--jam-input-focus-outline-width': '0rem' }` on just the textarea to suppress its duplicate ring. `focus` targets `:focus`, so it is not a substitute for `:focus-within` on the wrapper. Keep a visible focus indication for keyboard users.
+
+The ghost style is a new development capability; verify the delivered runtime, including keyboard, disabled/read-only and theme states. This guidance covers native text fields, textareas and the compose editor. File, color and external editors have their own presentation contracts.
 
 ## Examples
 

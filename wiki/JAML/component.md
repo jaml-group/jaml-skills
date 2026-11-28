@@ -181,6 +181,12 @@ The `app` role alone supplies presentation, not full-page geometry. A custom she
 
 Set `stylize` in the JAML definition so the framework processes it and supplies `.jam-app-style`. A raw HTML `stylize="app"` attribute on a static element is not equivalent to rendering that JAML definition. Keep one app role for the standalone shell and retain content roles beneath it; see [layout-owned profiles](../Theme/stylize.md#layout-owned-stylize-profiles). A justified peer region outside the selected layout uses the explicit [composite-host pattern](#composite-application-hosts) below; it is not an incidental mounting wrapper.
 
+### Application header height
+
+On runtimes that support `cmpt.header.height`, choose a height that fits the title and controls, especially when a desktop shell shares the row with native window controls. For example, use `header: { cap: 'Workspace', style: { '--jam-header-height': '3rem' } }` in `jaml.application`. Check the fit with the target font size, theme and narrow layout. Native window-control placement and drag regions belong to the desktop host.
+
+The token sizes the application header’s border box, including inside a frame. Theme gutters sit outside that box. Set the property on the header for a local choice, or on the app root when nested shells should inherit it. The built-in value is `initial`, which preserves theme sizing until a theme or app chooses a length. Sidebar and inspector headings size independently. [Component tokens](../Theme/tokens.md#cmpt)
+
 ### Sidebar builder and application integration
 
 On development runtimes supporting `jaml.sidebar`, use `jaml.sidebar(layout, jamlOverride?)` to compose a sidebar. Its final argument customizes the sidebar root. `jaml.application(layout, jamlOverride?)` likewise accepts a final application-root override. Existing runtime versions may not include the sidebar builder; verify support before use.
@@ -259,6 +265,8 @@ jaml.application({
     }
 });
 ```
+
+For a themed inspector title row, use `stylize: 'panel-inspector'` on the inspector and `stylize: 'header-inspector'` on its immediate header child. The panel owns the outer frame and the theme supplies the local header treatment. Size the inspector row explicitly when it should align with the application title row.
 
 The inspector retains its authored role, class bindings, children and plugins; the layout adds its placement class. The application owns width, responsive behavior, visibility, resize interaction and inspector scrolling. Use normal visibility bindings or `display:none` to release the occupied width while preserving the model; resizing its authored width reallocates the shell width. The layout stretches the inspector to the full application height. `scroll: 'content'` and `scroll: 'regions'` retain their existing body ownership and do not select inspector scrolling. Supply a width appropriate to the viewport; there is no automatic breakpoint or default panel width.
 

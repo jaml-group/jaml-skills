@@ -113,5 +113,5 @@ When title, icon, and cap content are all absent, the card collapses its title r
 
 ## Notes
 
--   To place a child in the `extra` slot, set `slot: "extra"` on the child, or add the `jam-extra-btn` CSS class.
+-   To place a child in the `extra` slot, set `slot: "extra"` on the child, or add the `jam-extra-btn` CSS class. For a compact ghost action and its optional hover reveal, follow [extra buttons](button.md#extra-buttons).
 -   `CherryCard` extends `CoconutContainer`, so it inherits `clear()`, `isStable`, and automatic child observation.

@@ -50,6 +50,14 @@ Inherits all params from [AbstractElement](./JAM-UI.md). For a disclosure with d
 
 ---
 
+## Extra buttons
+
+Use a direct child in a host that supports the `extra` slot. Set `slot: 'extra'` for placement and `class: 'jam-extra-btn'` for compact action styling. A regular `button` grows slightly on hover. Choose `type: 'button-ghost'` for an extra action that keeps its size. Give an icon-only action a name, such as `attrs: { 'aria-label': 'Pin note' }`.
+
+For a secondary action that should appear when someone approaches the host, use `class: 'jam-extra-btn jam-silent'` on the ghost button. Its background, border and shadow stay clear. With a fine, hover-capable pointer, an enabled button keeps its space and tab stop while hidden at rest. Hovering the host reveals the glyph faintly. Direct hover, visible keyboard focus or `aria-expanded="true"` reveals it fully. On touch or other coarse or hoverless pointers it stays visible. Reduced motion removes the reveal transition.
+
+Keep frequently used actions visible when someone needs to find them before hovering. For a More menu on matching children, the popup plugin supplies its own named silent trigger and maintains its expanded state. [More actions](../Plugins/popup.md#entry-popup-more)
+
 ## Focused keyboard activation
 
 In the updated development runtime, a focused button host handles Enter on keydown and Space on release. It ignores browser key-repeat duplication, composition, and Alt/Ctrl/Meta combinations; `repeat` is the separate opt-in hold behavior. Disabled buttons do not activate. Key events originating from a nested input or another nested control are not treated as activation of the button host. Handlers reached before the framework's window-bubble listener can call `preventDefault()` to suppress activation. This is a listener fallback, not a browser-native post-dispatch default action; later window listeners cannot reliably cancel an already-fired click.
